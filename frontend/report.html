@@ -4,8 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cassandra — Your Chess Report Card</title>
+    <meta property="og:title" content="Cassandra — Chess Report Card">
+    <meta property="og:description" content="What do 102K games reveal about your opening choices? Get your personalized chess report card.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://cassandrachess.vercel.app/report">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Cassandra — Chess Report Card">
+    <meta name="twitter:description" content="What do 102K games reveal about your opening choices? Get your personalized chess report card.">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -629,8 +637,28 @@
             <!-- Share -->
             <div class="share-section">
                 <p style="color:#808080;font-size:13px;margin-bottom:16px;">Think your friends are better? Challenge them.</p>
-                <button class="share-btn" onclick="copyShareLink()">Copy Link</button>
-                <button class="share-btn secondary" onclick="shareTwitter()">Share on X</button>
+                <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+                    <button class="share-btn" onclick="copyShareLink()">Copy Link</button>
+                    <button class="share-btn secondary" onclick="shareToTwitterWithScreenshot()">Share on X</button>
+                    <button class="share-btn" onclick="downloadShareCard()" style="background:#333;color:#f5f5f5;">Download Image</button>
+                </div>
+            </div>
+
+            <!-- Hidden Share Card (for screenshot capture) -->
+            <div id="shareCard" style="position:absolute;left:-9999px;top:0;z-index:-1;">
+                <div id="shareCardInner" style="width:600px;padding:40px;background:linear-gradient(135deg,#0f0f0f 0%,#1a1020 50%,#0f0f0f 100%);border-radius:20px;font-family:'Inter',sans-serif;color:#f5f5f5;">
+                    <div style="text-align:center;margin-bottom:28px;">
+                        <div style="font-size:14px;font-weight:600;color:#c084fc;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Cassandra Chess Report Card</div>
+                        <div id="shareCardPlayer" style="font-size:32px;font-weight:800;color:#f5f5f5;"></div>
+                        <div id="shareCardRating" style="font-size:14px;color:#808080;margin-top:4px;"></div>
+                    </div>
+                    <div id="shareCardGrades" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;"></div>
+                    <div id="shareCardOpenings" style="margin-bottom:24px;"></div>
+                    <div style="text-align:center;padding-top:16px;border-top:1px solid #333;">
+                        <span style="font-size:12px;color:#808080;">cassandrachess.vercel.app/report</span>
+                        <span style="font-size:12px;color:#555;margin-left:12px;">Powered by 102K game dataset</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1229,6 +1257,142 @@
             const text = `My Cassandra Chess Report Card is in. See what 102K games reveal about my opening choices. Get yours:`;
             const url = window.location.href;
             window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        }
+
+        function populateShareCard() {
+            const player = document.getElementById('playerName').textContent;
+            const rating = document.getElementById('playerRating').textContent;
+            document.getElementById('shareCardPlayer').textContent = player;
+            document.getElementById('shareCardRating').textContent = rating;
+
+            // Copy grades
+            const gradeCards = document.querySelectorAll('#gradeRow .grade-card');
+            const shareGrades = document.getElementById('shareCardGrades');
+            shareGrades.innerHTML = '';
+            gradeCards.forEach(card => {
+                const grade = card.querySelector('.grade');
+                const label = card.querySelector('.grade-label');
+                const detail = card.querySelector('.grade-detail');
+                shareGrades.innerHTML += `
+                    <div style="background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:16px 8px;text-align:center;">
+                        <div style="font-size:32px;font-weight:800;color:${grade.style.color};">${grade.textContent}</div>
+                        <div style="font-size:11px;color:#808080;margin-top:4px;">${label.textContent}</div>
+                        <div style="font-size:10px;color:#555;margin-top:2px;">${detail.textContent}</div>
+                    </div>
+                `;
+            });
+
+            // Add top openings summary
+            const shareOpenings = document.getElementById('shareCardOpenings');
+            const comparisonBars = document.querySelectorAll('#openingsComparison .wdb-row');
+            if (comparisonBars.length > 0) {
+                let topHtml = '<div style="font-size:12px;font-weight:600;color:#c084fc;margin-bottom:8px;">TOP OPENINGS</div>';
+                const topN = Math.min(3, comparisonBars.length);
+                for (let i = 0; i < topN; i++) {
+                    const row = comparisonBars[i];
+                    const nameEl = row.querySelector('.wdb-label');
+                    const barsEl = row.querySelector('.wdb-bars');
+                    if (nameEl) {
+                        topHtml += `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #222;font-size:13px;">
+                            <span style="color:#d0d0d0;">${nameEl.textContent.trim()}</span>
+                        </div>`;
+                    }
+                }
+                shareOpenings.innerHTML = topHtml;
+            } else {
+                shareOpenings.innerHTML = '';
+            }
+        }
+
+        async function captureShareCard() {
+            populateShareCard();
+            // Temporarily move share card on-screen for capture
+            const card = document.getElementById('shareCard');
+            card.style.position = 'fixed';
+            card.style.left = '0';
+            card.style.top = '0';
+            card.style.zIndex = '9999';
+
+            await new Promise(r => setTimeout(r, 100)); // Let fonts render
+
+            const canvas = await html2canvas(document.getElementById('shareCardInner'), {
+                backgroundColor: '#0f0f0f',
+                scale: 2,
+                useCORS: true,
+                logging: false
+            });
+
+            // Move card back off-screen
+            card.style.position = 'absolute';
+            card.style.left = '-9999px';
+            card.style.zIndex = '-1';
+
+            return canvas;
+        }
+
+        async function shareToTwitterWithScreenshot() {
+            const btn = event.target;
+            btn.textContent = 'Generating image...';
+            btn.disabled = true;
+
+            try {
+                const canvas = await captureShareCard();
+                // Convert to blob and trigger download
+                canvas.toBlob(async (blob) => {
+                    // Download the image
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `cassandra-report-${document.getElementById('playerName').textContent}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                    // Open Twitter with pre-filled text
+                    const username = document.getElementById('playerName').textContent;
+                    const text = `My Cassandra Chess Report Card is in 🔮\n\nSee what 102K games reveal about my opening choices.\n\nGet yours:`;
+                    const shareUrl = window.location.href;
+                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+
+                    btn.textContent = 'Image downloaded! Attach it to your tweet ↗';
+                    btn.disabled = false;
+                    setTimeout(() => { btn.textContent = 'Share on X'; }, 5000);
+                }, 'image/png');
+            } catch (e) {
+                console.error('Screenshot failed:', e);
+                // Fallback to regular share
+                shareTwitter();
+                btn.textContent = 'Share on X';
+                btn.disabled = false;
+            }
+        }
+
+        async function downloadShareCard() {
+            const btn = event.target;
+            btn.textContent = 'Generating...';
+            btn.disabled = true;
+
+            try {
+                const canvas = await captureShareCard();
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `cassandra-report-${document.getElementById('playerName').textContent}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    btn.textContent = 'Downloaded!';
+                    btn.disabled = false;
+                    setTimeout(() => { btn.textContent = 'Download Image'; }, 2000);
+                }, 'image/png');
+            } catch (e) {
+                console.error('Screenshot failed:', e);
+                btn.textContent = 'Download Image';
+                btn.disabled = false;
+            }
         }
 
         // ========== PUZZLE ENGINE ==========
