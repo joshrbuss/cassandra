@@ -231,7 +231,7 @@
         .wdb-bars {
             display: flex;
             gap: 2px;
-            height: 24px;
+            height: 28px;
             border-radius: 4px;
             overflow: hidden;
         }
@@ -682,27 +682,53 @@
         <section>
             <div class="section-header">
                 <h2>The Opening Illusion</h2>
-                <span class="section-badge">Top Openings</span>
+                <span class="section-badge">Attribution</span>
             </div>
             <p style="color: #a0a0a0; margin-bottom: 24px;">
-                The 15 most popular openings and their win/draw/loss ratios across all games.
+                Players spend hundreds of hours studying openings. But how much does opening choice actually matter? We ran it like a marketing attribution problem.
             </p>
+
+            <!-- Attribution Headline -->
+            <div id="attributionHeadline" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:40px;">
+                <div style="background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:32px;text-align:center;">
+                    <div style="font-size:56px;font-weight:700;color:#c084fc;" id="eloSpreadNum">—</div>
+                    <div style="font-size:13px;color:#808080;text-transform:uppercase;letter-spacing:0.5px;margin-top:8px;">Elo Difference Impact</div>
+                    <div style="font-size:14px;color:#a0a0a0;margin-top:4px;">percentage point swing in score</div>
+                </div>
+                <div style="background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:32px;text-align:center;">
+                    <div style="font-size:56px;font-weight:700;color:#4ade80;" id="openingSpreadNum">—</div>
+                    <div style="font-size:13px;color:#808080;text-transform:uppercase;letter-spacing:0.5px;margin-top:8px;">Opening Choice Impact</div>
+                    <div style="font-size:14px;color:#a0a0a0;margin-top:4px;">percentage point swing in score</div>
+                </div>
+            </div>
+
+            <div class="insight-callout" id="attributionInsight">
+                Loading attribution data...
+            </div>
+
+            <!-- Elo Difference Chart -->
+            <h3 style="font-size:18px;font-weight:600;margin:40px 0 16px;color:#e8e8e8;">Score by Elo Difference</h3>
+            <p style="color:#808080;font-size:13px;margin-bottom:16px;">How much being higher or lower rated than your opponent affects your expected score.</p>
+            <div id="eloDiffChart" style="margin-bottom:40px;">
+                <div class="loading-indicator">Loading...</div>
+            </div>
+
+            <!-- Openings Table -->
+            <h3 style="font-size:18px;font-weight:600;margin:40px 0 16px;color:#e8e8e8;">Score by Opening Choice</h3>
+            <p style="color:#808080;font-size:13px;margin-bottom:16px;">The top 15 openings and their actual win/draw/loss percentages. Notice how narrow the spread is.</p>
             <table class="openings-table" id="openingsTable">
                 <thead>
                     <tr>
                         <th>Opening</th>
                         <th>Code</th>
                         <th>Games</th>
-                        <th>Outcome Distribution</th>
+                        <th>W / D / L</th>
                     </tr>
                 </thead>
                 <tbody id="openingsTableBody">
                     <tr><td colspan="4" style="text-align: center; padding: 40px;">Loading data...</td></tr>
                 </tbody>
             </table>
-            <div class="insight-callout" id="caroKannInsight">
-                But here's the thing — these positions transpose into each other more than you'd think.
-            </div>
         </section>
 
         <!-- Top Positions Section -->
@@ -843,6 +869,41 @@
             container.innerHTML = html;
         }
 
+        // Render attribution headline + elo diff chart
+        function renderAttribution() {
+            if (!analysisData || !analysisData.attribution) return;
+
+            const attr = analysisData.attribution;
+            const summary = attr.summary;
+
+            // Headline numbers
+            document.getElementById('eloSpreadNum').textContent = summary.elo_spread_pp + 'pp';
+            document.getElementById('openingSpreadNum').textContent = summary.opening_spread_pp + 'pp';
+
+            // Insight callout
+            const insight = document.getElementById('attributionInsight');
+            insight.innerHTML = `Your elo is <strong style="color:#c084fc;">${summary.elo_multiplier}x</strong> more impactful than your opening choice. Opening selection explains only <strong style="color:#4ade80;">~${summary.opening_pct_of_variance}%</strong> of outcome variance. The best opening (${summary.best_opening}, ${summary.best_opening_score}%) vs the worst (${summary.worst_opening}, ${summary.worst_opening_score}%) is a ${summary.opening_spread_pp}pp gap — barely a rounding error compared to being 200 elo higher than your opponent.`;
+
+            // Elo diff chart
+            const container = document.getElementById('eloDiffChart');
+            let html = '';
+            for (const bucket of attr.elo_diff_impact) {
+                const pct = (bucket.score * 100).toFixed(1);
+                const barWidth = pct;
+                const color = bucket.score > 0.6 ? '#4ade80' : bucket.score > 0.45 ? '#60a5fa' : '#f87171';
+                html += `<div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+                    <span style="font-size:12px;color:#888;width:110px;text-align:right;flex-shrink:0;">${bucket.label}</span>
+                    <div style="flex:1;height:28px;background:#1a1a1a;border:1px solid #333;border-radius:6px;overflow:hidden;position:relative;">
+                        <div style="height:100%;width:${barWidth}%;background:${color};border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;min-width:50px;">
+                            <span style="font-size:12px;font-weight:600;color:white;">${pct}%</span>
+                        </div>
+                    </div>
+                    <span style="font-size:11px;color:#666;width:60px;">${bucket.games.toLocaleString()}g</span>
+                </div>`;
+            }
+            container.innerHTML = html;
+        }
+
         // Render openings table
         function renderOpenings() {
             if (!analysisData || !analysisData.openings) return;
@@ -863,10 +924,12 @@
                         <td><span class="opening-code">${o.eco}</span></td>
                         <td>${o.games.toLocaleString()}</td>
                         <td>
-                            <div class="wdb-bars">
-                                <div class="wdb-bar wdb-win" style="width: ${wPct}%;" title="W: ${wPct}%"></div>
-                                <div class="wdb-bar wdb-draw" style="width: ${dPct}%;" title="D: ${dPct}%"></div>
-                                <div class="wdb-bar wdb-loss" style="width: ${bPct}%;" title="L: ${bPct}%"></div>
+                            <div style="display:flex;align-items:center;gap:4px;">
+                                <div class="wdb-bars" style="flex:1;">
+                                    <div class="wdb-bar wdb-win" style="width: ${wPct}%;">${parseFloat(wPct) > 15 ? wPct + '%' : ''}</div>
+                                    <div class="wdb-bar wdb-draw" style="width: ${dPct}%;"></div>
+                                    <div class="wdb-bar wdb-loss" style="width: ${bPct}%;">${parseFloat(bPct) > 15 ? bPct + '%' : ''}</div>
+                                </div>
                             </div>
                         </td>
                     </tr>
@@ -1049,6 +1112,7 @@
 
         function renderAll() {
             renderEloDistribution();
+            renderAttribution();
             renderOpenings();
             renderPositions();
             renderDiversityViz();

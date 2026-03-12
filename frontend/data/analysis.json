@@ -5695,5 +5695,285 @@
         }
       }
     }
-  ]
+  ],
+  "attribution": {
+    "elo_diff_impact": [
+      {
+        "label": "-200+",
+        "games": 3028,
+        "score": 0.223
+      },
+      {
+        "label": "-100 to -200",
+        "games": 4790,
+        "score": 0.391
+      },
+      {
+        "label": "-50 to -100",
+        "games": 9993,
+        "score": 0.454
+      },
+      {
+        "label": "Even",
+        "games": 66361,
+        "score": 0.517
+      },
+      {
+        "label": "+50 to +100",
+        "games": 10155,
+        "score": 0.583
+      },
+      {
+        "label": "+100 to +200",
+        "games": 4919,
+        "score": 0.636
+      },
+      {
+        "label": "+200+",
+        "games": 3090,
+        "score": 0.811
+      }
+    ],
+    "opening_scores": [
+      {
+        "eco": "D00",
+        "name": "Queen's Pawn Game",
+        "games": 2521,
+        "score": 0.515
+      },
+      {
+        "eco": "D00",
+        "name": "Queen's Pawn Game: Accelerated London System",
+        "games": 1862,
+        "score": 0.532
+      },
+      {
+        "eco": "B10",
+        "name": "Caro-Kann Defense",
+        "games": 1833,
+        "score": 0.476
+      },
+      {
+        "eco": "C41",
+        "name": "Philidor Defense",
+        "games": 1786,
+        "score": 0.519
+      },
+      {
+        "eco": "B06",
+        "name": "Modern Defense",
+        "games": 1558,
+        "score": 0.496
+      },
+      {
+        "eco": "B00",
+        "name": "Pirc Defense",
+        "games": 1414,
+        "score": 0.525
+      },
+      {
+        "eco": "A45",
+        "name": "Indian Defense",
+        "games": 1382,
+        "score": 0.525
+      },
+      {
+        "eco": "A00",
+        "name": "Van't Kruijs Opening",
+        "games": 1375,
+        "score": 0.487
+      },
+      {
+        "eco": "A40",
+        "name": "Horwitz Defense",
+        "games": 1270,
+        "score": 0.517
+      },
+      {
+        "eco": "B01",
+        "name": "Scandinavian Defense",
+        "games": 1232,
+        "score": 0.48
+      },
+      {
+        "eco": "B01",
+        "name": "Scandinavian Defense: Mieses-Kotroc Variation",
+        "games": 1218,
+        "score": 0.524
+      },
+      {
+        "eco": "B00",
+        "name": "Owen Defense",
+        "games": 1050,
+        "score": 0.515
+      },
+      {
+        "eco": "C01",
+        "name": "French Defense: Exchange Variation",
+        "games": 1043,
+        "score": 0.5
+      },
+      {
+        "eco": "B20",
+        "name": "Sicilian Defense: Bowdler Attack",
+        "games": 1009,
+        "score": 0.454
+      },
+      {
+        "eco": "B30",
+        "name": "Sicilian Defense: Old Sicilian",
+        "games": 988,
+        "score": 0.493
+      },
+      {
+        "eco": "D02",
+        "name": "Queen's Pawn Game: Chigorin Variation",
+        "games": 973,
+        "score": 0.514
+      },
+      {
+        "eco": "A40",
+        "name": "Queen's Pawn Game: Modern Defense",
+        "games": 823,
+        "score": 0.513
+      },
+      {
+        "eco": "B13",
+        "name": "Caro-Kann Defense: Exchange Variation",
+        "games": 809,
+        "score": 0.494
+      },
+      {
+        "eco": "C00",
+        "name": "French Defense: Knight Variation",
+        "games": 808,
+        "score": 0.52
+      },
+      {
+        "eco": "C23",
+        "name": "Bishop's Opening",
+        "games": 806,
+        "score": 0.511
+      },
+      {
+        "eco": "D02",
+        "name": "Queen's Pawn Game: Zukertort Variation",
+        "games": 709,
+        "score": 0.506
+      },
+      {
+        "eco": "C44",
+        "name": "Scotch Game",
+        "games": 703,
+        "score": 0.555
+      },
+      {
+        "eco": "B01",
+        "name": "Scandinavian Defense: Valencian Variation",
+        "games": 701,
+        "score": 0.516
+      },
+      {
+        "eco": "B20",
+        "name": "Sicilian Defense",
+        "games": 684,
+        "score": 0.469
+      },
+      {
+        "eco": "C20",
+        "name": "King's Pawn Game: Leonardis Variation",
+        "games": 654,
+        "score": 0.509
+      },
+      {
+        "eco": "A43",
+        "name": "Benoni Defense: Old Benoni",
+        "games": 650,
+        "score": 0.504
+      },
+      {
+        "eco": "A00",
+        "name": "Hungarian Opening",
+        "games": 639,
+        "score": 0.542
+      },
+      {
+        "eco": "A40",
+        "name": "Englund Gambit",
+        "games": 628,
+        "score": 0.537
+      },
+      {
+        "eco": "C46",
+        "name": "Three Knights Opening",
+        "games": 609,
+        "score": 0.52
+      },
+      {
+        "eco": "B01",
+        "name": "Scandinavian Defense: Modern Variation",
+        "games": 591,
+        "score": 0.508
+      },
+      {
+        "eco": "C00",
+        "name": "French Defense: Normal Variation",
+        "games": 584,
+        "score": 0.516
+      },
+      {
+        "eco": "B21",
+        "name": "Sicilian Defense: McDonnell Attack",
+        "games": 568,
+        "score": 0.478
+      },
+      {
+        "eco": "B23",
+        "name": "Sicilian Defense: Closed",
+        "games": 553,
+        "score": 0.522
+      },
+      {
+        "eco": "C50",
+        "name": "Italian Game: Anti-Fried Liver Defense",
+        "games": 536,
+        "score": 0.527
+      },
+      {
+        "eco": "B22",
+        "name": "Sicilian Defense: Alapin Variation",
+        "games": 518,
+        "score": 0.508
+      },
+      {
+        "eco": "A40",
+        "name": "English Defense",
+        "games": 512,
+        "score": 0.516
+      },
+      {
+        "eco": "B01",
+        "name": "Scandinavian Defense: Main Line",
+        "games": 510,
+        "score": 0.516
+      },
+      {
+        "eco": "B50",
+        "name": "Sicilian Defense: Modern Variations",
+        "games": 508,
+        "score": 0.48
+      }
+    ],
+    "summary": {
+      "elo_spread_pp": 58.8,
+      "opening_spread_pp": 10.0,
+      "elo_multiplier": 5.9,
+      "opening_pct_of_variance": 15.0,
+      "elo_pct_of_variance": 85.0,
+      "best_opening": "Scotch Game",
+      "best_opening_score": 55.5,
+      "worst_opening": "Sicilian Defense: Bowdler Attack",
+      "worst_opening_score": 45.4
+    }
+  }
 }
