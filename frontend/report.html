@@ -621,7 +621,7 @@
                         <button class="analyze-btn" id="genPuzzlesBtn" onclick="generatePuzzles()" style="font-size:16px;padding:16px 36px;">
                             Generate My Puzzles
                         </button>
-                        <p style="font-size:12px;color:#555;margin-top:10px;">Runs Stockfish in your browser — takes ~1-2 minutes for 20 games</p>
+                        <p style="font-size:12px;color:#555;margin-top:10px;">Runs Stockfish in your browser — typically 15-30 seconds</p>
                     </div>
                 </div>
                 <div id="puzzleLoading" style="display:none;text-align:center;padding:24px 0;">
@@ -1517,15 +1517,18 @@
                 plText.textContent = 'Stockfish ready. Analyzing your games...';
                 plBar.style.width = '10%';
 
-                // Pick recent games with PGNs (up to 20 for speed)
-                const gamesWithPGN = fetchedGames.filter(g => g.pgn && g.pgn.length > 50).slice(-20);
+                // Pick recent games with PGNs (up to 10 for speed)
+                const gamesWithPGN = fetchedGames.filter(g => g.pgn && g.pgn.length > 50).slice(-10);
                 puzzles = [];
+                const TARGET_PUZZLES = 8; // Stop early once we have enough
 
                 for (let gi = 0; gi < gamesWithPGN.length; gi++) {
+                    if (puzzles.length >= TARGET_PUZZLES) break;
+
                     const game = gamesWithPGN[gi];
                     const pct = 10 + (gi / gamesWithPGN.length) * 85;
                     plBar.style.width = pct + '%';
-                    plText.textContent = `Analyzing game ${gi + 1}/${gamesWithPGN.length}...`;
+                    plText.textContent = `Analyzing game ${gi + 1}/${gamesWithPGN.length}... (${puzzles.length} puzzles found)`;
                     plSub.textContent = `vs ${game.opponent} (${game.opening || 'Unknown'})`;
 
                     try {
@@ -1559,62 +1562,75 @@
 
         async function analyzeGameForPuzzles(game) {
             const moves = extractMovesFromPGN(game.pgn);
-            if (moves.length < 6) return [];
+            if (moves.length < 10) return [];
 
             const chess = new Chess();
             const found = [];
-            let prevEval = null;
+            const MAX_PUZZLES_PER_GAME = 2; // Don't over-mine one game
+            const DEPTH = 8; // Depth 8 is fast but catches blunders
+            const SKIP_FIRST_N = 8; // Skip book moves (first 8 half-moves = 4 full moves)
+            const MAX_MOVE = 60; // Don't analyze deep endgames
 
-            for (let i = 0; i < moves.length && i < 80; i++) {
+            // Phase 1: Replay all moves and store positions where it's the player's turn
+            const candidatePositions = [];
+            for (let i = 0; i < moves.length && i < MAX_MOVE; i++) {
                 const fen = chess.fen();
                 const isPlayerTurn = (chess.turn() === 'w' && game.isWhite) || (chess.turn() === 'b' && !game.isWhite);
 
-                // Only evaluate on player's turn (and not the first couple moves)
-                if (isPlayerTurn && i >= 4) {
-                    try {
-                        // Get eval BEFORE the move
-                        const evalBefore = await sfEval(fen, 12);
-                        const scoreBefore = evalBefore.score.type === 'cp' ? evalBefore.score.value : (evalBefore.score.value > 0 ? 9999 : -9999);
-
-                        // Make the player's move
-                        const moveResult = chess.move(moves[i], { sloppy: true });
-                        if (!moveResult) break;
-
-                        // Get eval AFTER the move (from opponent's perspective, so negate)
-                        const evalAfter = await sfEval(chess.fen(), 12);
-                        const scoreAfter = evalAfter.score.type === 'cp' ? -evalAfter.score.value : (evalAfter.score.value > 0 ? -9999 : 9999);
-
-                        // Calculate loss from player's perspective
-                        const evalLoss = scoreBefore - scoreAfter;
-
-                        // If significant blunder (>100cp loss) and best move is different
-                        if (evalLoss > 100 && evalBefore.bestmove !== moveResult.from + moveResult.to) {
-                            found.push({
-                                fen: fen,
-                                playedMove: moveResult.san,
-                                playedMoveUCI: moveResult.from + moveResult.to,
-                                bestMove: evalBefore.bestmove,
-                                bestMoveSAN: uciToSAN(fen, evalBefore.bestmove),
-                                evalLoss: evalLoss,
-                                evalBefore: scoreBefore,
-                                moveNumber: Math.ceil((i + 1) / 2),
-                                opponent: game.opponent,
-                                opening: game.opening,
-                                isWhite: game.isWhite,
-                                playerRating: game.playerRating,
-                                opponentRating: game.opponentRating
-                            });
-                        }
-
-                        continue; // Already made the move above
-                    } catch (e) {
-                        // If eval fails, just continue
-                    }
+                if (isPlayerTurn && i >= SKIP_FIRST_N) {
+                    candidatePositions.push({ fen, moveIdx: i, playedMoveStr: moves[i] });
                 }
 
-                // Make move
                 const m = chess.move(moves[i], { sloppy: true });
                 if (!m) break;
+            }
+
+            // Phase 2: Eval only the candidate positions (1 eval per position, not 2)
+            for (const pos of candidatePositions) {
+                if (found.length >= MAX_PUZZLES_PER_GAME) break;
+
+                try {
+                    const evalResult = await sfEval(pos.fen, DEPTH);
+                    const bestMoveUCI = evalResult.bestmove;
+                    const scoreBefore = evalResult.score.type === 'cp' ? evalResult.score.value : (evalResult.score.value > 0 ? 9999 : -9999);
+
+                    // Replay the player's actual move
+                    const tempChess = new Chess(pos.fen);
+                    const moveResult = tempChess.move(pos.playedMoveStr, { sloppy: true });
+                    if (!moveResult) continue;
+
+                    const playerMoveUCI = moveResult.from + moveResult.to;
+
+                    // If player played the best move, no blunder — skip expensive 2nd eval
+                    if (playerMoveUCI === bestMoveUCI) continue;
+
+                    // Only do 2nd eval if player didn't play the best move
+                    const evalAfter = await sfEval(tempChess.fen(), DEPTH);
+                    const scoreAfter = evalAfter.score.type === 'cp' ? -evalAfter.score.value : (evalAfter.score.value > 0 ? -9999 : 9999);
+
+                    const evalLoss = scoreBefore - scoreAfter;
+
+                    // Blunder threshold: >150cp loss (was 100, raising to reduce noise)
+                    if (evalLoss > 150) {
+                        found.push({
+                            fen: pos.fen,
+                            playedMove: moveResult.san,
+                            playedMoveUCI: playerMoveUCI,
+                            bestMove: bestMoveUCI,
+                            bestMoveSAN: uciToSAN(pos.fen, bestMoveUCI),
+                            evalLoss: evalLoss,
+                            evalBefore: scoreBefore,
+                            moveNumber: Math.ceil((pos.moveIdx + 1) / 2),
+                            opponent: game.opponent,
+                            opening: game.opening,
+                            isWhite: game.isWhite,
+                            playerRating: game.playerRating,
+                            opponentRating: game.opponentRating
+                        });
+                    }
+                } catch (e) {
+                    // If eval fails, just skip
+                }
             }
 
             return found;
