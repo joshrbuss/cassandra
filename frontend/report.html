@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cassandra — Your Chess Report Card</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -424,6 +425,96 @@
 
         .error-msg.active { display: block; }
 
+        /* Puzzle Board */
+        .puzzle-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .puzzle-card.active {
+            border-color: #c084fc;
+            box-shadow: 0 0 20px rgba(192, 132, 252, 0.15);
+        }
+
+        .puzzle-board {
+            width: 320px;
+            height: 320px;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            gap: 0;
+            margin: 0 auto 16px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .puzzle-board .sq {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            line-height: 1;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+
+        .puzzle-board .sq.light { background-color: #e8d5b5; }
+        .puzzle-board .sq.dark { background-color: #b58863; }
+        .puzzle-board .sq.selected { background-color: #829769 !important; }
+        .puzzle-board .sq.hint { background-color: rgba(192, 132, 252, 0.4) !important; }
+        .puzzle-board .sq.correct { background-color: rgba(74, 222, 128, 0.4) !important; }
+        .puzzle-board .sq.wrong { background-color: rgba(248, 113, 113, 0.4) !important; }
+
+        .puzzle-meta {
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .puzzle-status {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .puzzle-nav {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .puzzle-nav button {
+            padding: 8px 20px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: #e8e8e8;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .puzzle-nav button:hover { border-color: #c084fc; }
+
+        .puzzle-list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #1a1a1a;
+            cursor: pointer;
+            gap: 12px;
+            transition: background 0.2s;
+        }
+
+        .puzzle-list-item:hover { background: #1a1a1a; border-radius: 8px; }
+        .puzzle-list-item.active-puzzle { background: #1a1a1a; border-left: 3px solid #c084fc; }
+
         /* Responsive */
         @media (max-width: 768px) {
             .input-section h1 { font-size: 36px; }
@@ -513,6 +604,28 @@
                 <div id="colorContent"></div>
             </div>
 
+            <!-- Puzzles From Your Games -->
+            <div class="report-section">
+                <h2>Puzzles From Your Blunders</h2>
+                <p class="section-desc">We analyze your recent games with Stockfish to find positions where you missed the best move — then turn them into puzzles you can solve.</p>
+                <div id="puzzleSection">
+                    <div style="text-align:center;padding:32px 0;">
+                        <button class="analyze-btn" id="genPuzzlesBtn" onclick="generatePuzzles()" style="font-size:16px;padding:16px 36px;">
+                            Generate My Puzzles
+                        </button>
+                        <p style="font-size:12px;color:#555;margin-top:10px;">Runs Stockfish in your browser — takes ~1-2 minutes for 20 games</p>
+                    </div>
+                </div>
+                <div id="puzzleLoading" style="display:none;text-align:center;padding:24px 0;">
+                    <p style="font-size:15px;color:#a0a0a0;margin-bottom:8px;" id="puzzleLoadingText">Initializing Stockfish...</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="puzzleProgressBar"></div>
+                    </div>
+                    <p style="font-size:12px;color:#555;margin-top:8px;" id="puzzleLoadingSub"></p>
+                </div>
+                <div id="puzzleResults" style="display:none;"></div>
+            </div>
+
             <!-- Share -->
             <div class="share-section">
                 <p style="color:#808080;font-size:13px;margin-bottom:16px;">Think your friends are better? Challenge them.</p>
@@ -526,6 +639,11 @@
         let platform = 'chesscom';
         let datasetOpenings = null;
         let datasetAttribution = null;
+        let fetchedGames = []; // Store raw games with PGNs for puzzle generation
+        let puzzles = [];
+        let currentPuzzleIdx = 0;
+        let selectedSquare = null;
+        let puzzleChess = null; // chess.js instance for active puzzle
 
         // Load dataset for comparison
         async function loadDataset() {
@@ -592,6 +710,7 @@
                     throw new Error('No games found for this username');
                 }
 
+                fetchedGames = games; // Store for puzzle generation
                 setProgress(70, `Analyzing ${games.length} games...`);
                 const report = analyzeGames(games, username);
 
@@ -676,7 +795,9 @@
                     eco,
                     timeClass: g.time_class || 'unknown',
                     moveCount,
-                    timestamp: g.end_time || 0
+                    timestamp: g.end_time || 0,
+                    pgn: g.pgn || '',
+                    opponent: opponent.username || '?'
                 };
             });
         }
@@ -719,7 +840,9 @@
                     eco: g.opening?.eco || '',
                     timeClass: g.speed || 'unknown',
                     moveCount,
-                    timestamp: g.createdAt || 0
+                    timestamp: g.createdAt || 0,
+                    pgn: g.pgn || '',
+                    opponent: (isWhite ? g.players?.black?.user?.name : g.players?.white?.user?.name) || '?'
                 };
             });
         }
@@ -1106,6 +1229,397 @@
             const text = `My Cassandra Chess Report Card is in. See what 102K games reveal about my opening choices. Get yours:`;
             const url = window.location.href;
             window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        }
+
+        // ========== PUZZLE ENGINE ==========
+        const PIECE_CHARS = {
+            'K': '\u2654', 'Q': '\u2655', 'R': '\u2656', 'B': '\u2657', 'N': '\u2658', 'P': '\u2659',
+            'k': '\u265A', 'q': '\u265B', 'r': '\u265C', 'b': '\u265D', 'n': '\u265E', 'p': '\u265F'
+        };
+
+        let sfWorker = null;
+        let sfReady = false;
+        let sfResolve = null;
+
+        function initStockfish() {
+            return new Promise((resolve, reject) => {
+                try {
+                    sfWorker = new Worker('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');
+                    sfWorker.onmessage = function(e) {
+                        const line = e.data;
+                        if (line === 'uciok') {
+                            sfWorker.postMessage('isready');
+                        } else if (line === 'readyok') {
+                            sfReady = true;
+                            resolve();
+                        } else if (sfResolve && typeof line === 'string' && line.startsWith('bestmove')) {
+                            const parts = line.split(' ');
+                            sfResolve({ bestmove: parts[1] });
+                            sfResolve = null;
+                        }
+                    };
+                    sfWorker.onerror = (e) => reject(e);
+                    sfWorker.postMessage('uci');
+                } catch (e) {
+                    reject(e);
+                }
+            });
+        }
+
+        function sfEval(fen, depth = 12) {
+            return new Promise((resolve) => {
+                // Collect eval info from info lines
+                let lastScore = null;
+                const origHandler = sfWorker.onmessage;
+                sfWorker.onmessage = function(e) {
+                    const line = e.data;
+                    if (typeof line === 'string') {
+                        // Parse score from info lines
+                        const scoreMatch = line.match(/score (cp|mate) (-?\d+)/);
+                        if (scoreMatch) {
+                            if (scoreMatch[1] === 'cp') lastScore = { type: 'cp', value: parseInt(scoreMatch[2]) };
+                            else lastScore = { type: 'mate', value: parseInt(scoreMatch[2]) };
+                        }
+                        if (line.startsWith('bestmove')) {
+                            const parts = line.split(' ');
+                            sfWorker.onmessage = origHandler;
+                            resolve({
+                                bestmove: parts[1],
+                                score: lastScore || { type: 'cp', value: 0 }
+                            });
+                        }
+                    }
+                };
+                sfWorker.postMessage('position fen ' + fen);
+                sfWorker.postMessage('go depth ' + depth);
+            });
+        }
+
+        function parseFenToBoard(fen) {
+            const rows = fen.split(' ')[0].split('/');
+            const board = [];
+            for (const row of rows) {
+                const r = [];
+                for (const ch of row) {
+                    if (ch >= '1' && ch <= '8') {
+                        for (let i = 0; i < parseInt(ch); i++) r.push(null);
+                    } else {
+                        r.push(ch);
+                    }
+                }
+                board.push(r);
+            }
+            return board;
+        }
+
+        function extractMovesFromPGN(pgn) {
+            if (!pgn) return [];
+            // Remove headers
+            const moveText = pgn.replace(/\[.*?\]\s*/g, '').replace(/\{.*?\}/g, '').trim();
+            // Extract moves: "1. e4 e5 2. Nf3 Nc6" etc.
+            const tokens = moveText.split(/\s+/);
+            const moves = [];
+            for (const t of tokens) {
+                // Skip move numbers, results, and empty
+                if (t.match(/^\d+\.+$/) || t.match(/^(1-0|0-1|1\/2|½|\*)$/) || !t.trim()) continue;
+                moves.push(t);
+            }
+            return moves;
+        }
+
+        async function generatePuzzles() {
+            if (fetchedGames.length === 0) return;
+
+            document.getElementById('puzzleSection').querySelector('div').style.display = 'none';
+            document.getElementById('puzzleLoading').style.display = 'block';
+            document.getElementById('puzzleResults').style.display = 'none';
+
+            const plText = document.getElementById('puzzleLoadingText');
+            const plSub = document.getElementById('puzzleLoadingSub');
+            const plBar = document.getElementById('puzzleProgressBar');
+
+            try {
+                plText.textContent = 'Loading Stockfish engine...';
+                plBar.style.width = '5%';
+                await initStockfish();
+
+                // Configure for speed
+                sfWorker.postMessage('setoption name Skill Level value 20');
+
+                plText.textContent = 'Stockfish ready. Analyzing your games...';
+                plBar.style.width = '10%';
+
+                // Pick recent games with PGNs (up to 20 for speed)
+                const gamesWithPGN = fetchedGames.filter(g => g.pgn && g.pgn.length > 50).slice(-20);
+                puzzles = [];
+
+                for (let gi = 0; gi < gamesWithPGN.length; gi++) {
+                    const game = gamesWithPGN[gi];
+                    const pct = 10 + (gi / gamesWithPGN.length) * 85;
+                    plBar.style.width = pct + '%';
+                    plText.textContent = `Analyzing game ${gi + 1}/${gamesWithPGN.length}...`;
+                    plSub.textContent = `vs ${game.opponent} (${game.opening || 'Unknown'})`;
+
+                    try {
+                        const gamePuzzles = await analyzeGameForPuzzles(game);
+                        puzzles = puzzles.concat(gamePuzzles);
+                    } catch (e) {
+                        console.log('Error analyzing game:', e);
+                    }
+
+                    // Yield to UI
+                    await new Promise(r => setTimeout(r, 10));
+                }
+
+                // Sort by eval loss (biggest blunders first)
+                puzzles.sort((a, b) => b.evalLoss - a.evalLoss);
+
+                plBar.style.width = '100%';
+                plText.textContent = `Found ${puzzles.length} puzzles!`;
+
+                setTimeout(() => {
+                    document.getElementById('puzzleLoading').style.display = 'none';
+                    renderPuzzleResults();
+                }, 500);
+
+            } catch (e) {
+                plText.textContent = 'Error: ' + e.message;
+                plSub.textContent = 'Stockfish WASM may not be supported in your browser.';
+                console.error('Puzzle generation error:', e);
+            }
+        }
+
+        async function analyzeGameForPuzzles(game) {
+            const moves = extractMovesFromPGN(game.pgn);
+            if (moves.length < 6) return [];
+
+            const chess = new Chess();
+            const found = [];
+            let prevEval = null;
+
+            for (let i = 0; i < moves.length && i < 80; i++) {
+                const fen = chess.fen();
+                const isPlayerTurn = (chess.turn() === 'w' && game.isWhite) || (chess.turn() === 'b' && !game.isWhite);
+
+                // Only evaluate on player's turn (and not the first couple moves)
+                if (isPlayerTurn && i >= 4) {
+                    try {
+                        // Get eval BEFORE the move
+                        const evalBefore = await sfEval(fen, 12);
+                        const scoreBefore = evalBefore.score.type === 'cp' ? evalBefore.score.value : (evalBefore.score.value > 0 ? 9999 : -9999);
+
+                        // Make the player's move
+                        const moveResult = chess.move(moves[i], { sloppy: true });
+                        if (!moveResult) break;
+
+                        // Get eval AFTER the move (from opponent's perspective, so negate)
+                        const evalAfter = await sfEval(chess.fen(), 12);
+                        const scoreAfter = evalAfter.score.type === 'cp' ? -evalAfter.score.value : (evalAfter.score.value > 0 ? -9999 : 9999);
+
+                        // Calculate loss from player's perspective
+                        const evalLoss = scoreBefore - scoreAfter;
+
+                        // If significant blunder (>100cp loss) and best move is different
+                        if (evalLoss > 100 && evalBefore.bestmove !== moveResult.from + moveResult.to) {
+                            found.push({
+                                fen: fen,
+                                playedMove: moveResult.san,
+                                playedMoveUCI: moveResult.from + moveResult.to,
+                                bestMove: evalBefore.bestmove,
+                                bestMoveSAN: uciToSAN(fen, evalBefore.bestmove),
+                                evalLoss: evalLoss,
+                                evalBefore: scoreBefore,
+                                moveNumber: Math.ceil((i + 1) / 2),
+                                opponent: game.opponent,
+                                opening: game.opening,
+                                isWhite: game.isWhite,
+                                playerRating: game.playerRating,
+                                opponentRating: game.opponentRating
+                            });
+                        }
+
+                        continue; // Already made the move above
+                    } catch (e) {
+                        // If eval fails, just continue
+                    }
+                }
+
+                // Make move
+                const m = chess.move(moves[i], { sloppy: true });
+                if (!m) break;
+            }
+
+            return found;
+        }
+
+        function uciToSAN(fen, uci) {
+            if (!uci || uci.length < 4) return uci;
+            try {
+                const c = new Chess(fen);
+                const move = c.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] || undefined });
+                return move ? move.san : uci;
+            } catch (e) {
+                return uci;
+            }
+        }
+
+        // ========== PUZZLE UI ==========
+        function renderPuzzleResults() {
+            const container = document.getElementById('puzzleResults');
+            container.style.display = 'block';
+
+            if (puzzles.length === 0) {
+                container.innerHTML = '<div class="insight-box">No significant blunders found in your recent games. Nice playing!</div>';
+                return;
+            }
+
+            let html = `
+                <div class="insight-box" style="margin-bottom:24px;">
+                    Found <strong style="color:#c084fc;">${puzzles.length} positions</strong> where you missed the best move.
+                    The biggest blunder cost you <strong style="color:#f87171;">${puzzles[0].evalLoss}cp</strong> (${puzzles[0].evalLoss >= 300 ? 'a full piece or more' : 'a significant advantage'}).
+                </div>
+                <div style="display:grid;grid-template-columns:280px 1fr;gap:24px;">
+                    <div id="puzzleList" style="max-height:500px;overflow-y:auto;"></div>
+                    <div id="puzzleBoard"></div>
+                </div>
+            `;
+            container.innerHTML = html;
+
+            renderPuzzleList();
+            if (puzzles.length > 0) loadPuzzle(0);
+        }
+
+        function renderPuzzleList() {
+            const list = document.getElementById('puzzleList');
+            let html = '';
+            puzzles.slice(0, 20).forEach((p, i) => {
+                const severity = p.evalLoss >= 300 ? '#f87171' : p.evalLoss >= 200 ? '#fb923c' : '#facc15';
+                html += `
+                    <div class="puzzle-list-item ${i === 0 ? 'active-puzzle' : ''}" onclick="loadPuzzle(${i})" id="puzzleItem${i}">
+                        <div style="width:8px;height:8px;border-radius:50%;background:${severity};flex-shrink:0;"></div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-size:13px;font-weight:600;color:#e8e8e8;">Move ${p.moveNumber} vs ${p.opponent}</div>
+                            <div style="font-size:11px;color:#666;">${p.opening || 'Unknown'} · -${p.evalLoss}cp</div>
+                        </div>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        }
+
+        function loadPuzzle(idx) {
+            currentPuzzleIdx = idx;
+            const p = puzzles[idx];
+            selectedSquare = null;
+
+            // Update active list item
+            document.querySelectorAll('.puzzle-list-item').forEach((el, i) => {
+                el.classList.toggle('active-puzzle', i === idx);
+            });
+
+            // Set up puzzle chess instance
+            puzzleChess = new Chess(p.fen);
+
+            const container = document.getElementById('puzzleBoard');
+            const board = parseFenToBoard(p.fen);
+            const flipped = !p.isWhite; // flip for black
+
+            let html = `
+                <div class="puzzle-card active">
+                    <div class="puzzle-status" id="puzzleStatus" style="color:#c084fc;">
+                        Find the best move! (${p.isWhite ? 'White' : 'Black'} to play)
+                    </div>
+                    <div class="puzzle-board" id="activePuzzleBoard">
+            `;
+
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const row = flipped ? 7 - r : r;
+                    const col = flipped ? 7 - c : c;
+                    const isLight = (row + col) % 2 === 0;
+                    const piece = board[row][col];
+                    const sq = String.fromCharCode(97 + col) + (8 - row);
+                    const pieceHtml = piece ? PIECE_CHARS[piece] : '';
+                    html += `<div class="sq ${isLight ? 'light' : 'dark'}" data-sq="${sq}" onclick="clickSquare('${sq}')">${pieceHtml}</div>`;
+                }
+            }
+
+            html += `
+                    </div>
+                    <div class="puzzle-meta">
+                        <div style="font-size:13px;color:#808080;margin-top:8px;">
+                            You played <strong style="color:#f87171;">${p.playedMove}</strong> (${p.evalLoss >= 300 ? 'blunder' : p.evalLoss >= 200 ? 'mistake' : 'inaccuracy'}, -${p.evalLoss}cp)
+                        </div>
+                        <div class="puzzle-nav">
+                            <button onclick="showHint()">Hint</button>
+                            <button onclick="showAnswer()">Show Answer</button>
+                            <button onclick="loadPuzzle(${Math.min(idx + 1, puzzles.length - 1)})">Next</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function clickSquare(sq) {
+            const p = puzzles[currentPuzzleIdx];
+            if (!puzzleChess) return;
+
+            if (selectedSquare) {
+                // Try to make the move
+                const moveUCI = selectedSquare + sq;
+                const bestUCI = p.bestMove;
+
+                // Highlight
+                const allSquares = document.querySelectorAll('#activePuzzleBoard .sq');
+                allSquares.forEach(s => s.classList.remove('selected', 'correct', 'wrong', 'hint'));
+
+                if (moveUCI === bestUCI || moveUCI === bestUCI.slice(0, 4)) {
+                    // Correct!
+                    document.querySelector(`[data-sq="${selectedSquare}"]`)?.classList.add('correct');
+                    document.querySelector(`[data-sq="${sq}"]`)?.classList.add('correct');
+                    document.getElementById('puzzleStatus').textContent = 'Correct! ' + p.bestMoveSAN + ' was the best move.';
+                    document.getElementById('puzzleStatus').style.color = '#4ade80';
+                } else {
+                    // Wrong
+                    document.querySelector(`[data-sq="${selectedSquare}"]`)?.classList.add('wrong');
+                    document.querySelector(`[data-sq="${sq}"]`)?.classList.add('wrong');
+                    document.getElementById('puzzleStatus').textContent = 'Not quite. Try again or see the answer.';
+                    document.getElementById('puzzleStatus').style.color = '#f87171';
+                }
+                selectedSquare = null;
+            } else {
+                // Select a square
+                const allSquares = document.querySelectorAll('#activePuzzleBoard .sq');
+                allSquares.forEach(s => s.classList.remove('selected'));
+                document.querySelector(`[data-sq="${sq}"]`)?.classList.add('selected');
+                selectedSquare = sq;
+            }
+        }
+
+        function showHint() {
+            const p = puzzles[currentPuzzleIdx];
+            const fromSq = p.bestMove.slice(0, 2);
+            const allSquares = document.querySelectorAll('#activePuzzleBoard .sq');
+            allSquares.forEach(s => s.classList.remove('hint', 'selected'));
+            document.querySelector(`[data-sq="${fromSq}"]`)?.classList.add('hint');
+            document.getElementById('puzzleStatus').textContent = 'Hint: Try moving the highlighted piece.';
+            document.getElementById('puzzleStatus').style.color = '#c084fc';
+            selectedSquare = null;
+        }
+
+        function showAnswer() {
+            const p = puzzles[currentPuzzleIdx];
+            const fromSq = p.bestMove.slice(0, 2);
+            const toSq = p.bestMove.slice(2, 4);
+            const allSquares = document.querySelectorAll('#activePuzzleBoard .sq');
+            allSquares.forEach(s => s.classList.remove('hint', 'selected', 'correct', 'wrong'));
+            document.querySelector(`[data-sq="${fromSq}"]`)?.classList.add('correct');
+            document.querySelector(`[data-sq="${toSq}"]`)?.classList.add('correct');
+            document.getElementById('puzzleStatus').textContent = `Answer: ${p.bestMoveSAN} (you played ${p.playedMove})`;
+            document.getElementById('puzzleStatus').style.color = '#4ade80';
+            selectedSquare = null;
         }
     </script>
 </body>
