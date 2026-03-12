@@ -758,21 +758,26 @@
             else if (r < 2200) report.eloBracket = '2000-2200';
             else report.eloBracket = '2200+';
 
+            // Map result string to property key
+            const resultKey = { win: 'wins', loss: 'losses', draw: 'draws' };
+
             for (const g of games) {
+                const rk = resultKey[g.result] || 'losses';
+
                 // Overall
-                report.overall[g.result + 's']++;
+                report.overall[rk]++;
 
                 // Color
                 const color = g.isWhite ? 'asWhite' : 'asBlack';
                 report[color].games++;
-                report[color][g.result + 's']++;
+                report[color][rk]++;
 
                 // Time class
                 if (!report.timeClasses[g.timeClass]) {
                     report.timeClasses[g.timeClass] = { wins: 0, losses: 0, draws: 0, games: 0 };
                 }
                 report.timeClasses[g.timeClass].games++;
-                report.timeClasses[g.timeClass][g.result + 's']++;
+                report.timeClasses[g.timeClass][rk]++;
 
                 // Opening
                 const opKey = g.opening.toLowerCase().trim();
@@ -781,14 +786,14 @@
                         report.openings[opKey] = { name: g.opening, eco: g.eco, wins: 0, losses: 0, draws: 0, games: 0 };
                     }
                     report.openings[opKey].games++;
-                    report.openings[opKey][g.result + 's']++;
+                    report.openings[opKey][rk]++;
                 }
 
                 // Phase (by move count)
                 let phase = 'middlegame';
                 if (g.moveCount <= 15) phase = 'opening';
                 else if (g.moveCount > 40) phase = 'endgame';
-                report.phases[phase][g.result + 's']++;
+                report.phases[phase][rk]++;
             }
 
             // Calculate opening attribution
