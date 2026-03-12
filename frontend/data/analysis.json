@@ -1,0 +1,5699 @@
+{
+  "generated_at": "2026-03-11 23:10:05",
+  "db_stats": {
+    "total_games": 102336,
+    "total_positions": 7034270,
+    "unique_positions": 6002089,
+    "evaluated_positions": 0
+  },
+  "brackets": [
+    {
+      "label": "0-800",
+      "low": 0,
+      "high": 800,
+      "games": 2641,
+      "positions": 124621
+    },
+    {
+      "label": "800-1000",
+      "low": 800,
+      "high": 1000,
+      "games": 5537,
+      "positions": 244145
+    },
+    {
+      "label": "1000-1200",
+      "low": 1000,
+      "high": 1200,
+      "games": 9934,
+      "positions": 474274
+    },
+    {
+      "label": "1200-1400",
+      "low": 1200,
+      "high": 1400,
+      "games": 15351,
+      "positions": 794181
+    },
+    {
+      "label": "1400-1600",
+      "low": 1400,
+      "high": 1600,
+      "games": 21360,
+      "positions": 1162206
+    },
+    {
+      "label": "1600-1800",
+      "low": 1600,
+      "high": 1800,
+      "games": 26013,
+      "positions": 1476262
+    },
+    {
+      "label": "1800-2000",
+      "low": 1800,
+      "high": 2000,
+      "games": 24560,
+      "positions": 1442468
+    },
+    {
+      "label": "2000-2200",
+      "low": 2000,
+      "high": 2200,
+      "games": 15233,
+      "positions": 882316
+    },
+    {
+      "label": "2200-2500",
+      "low": 2200,
+      "high": 2500,
+      "games": 6562,
+      "positions": 393359
+    },
+    {
+      "label": "2500+",
+      "low": 2500,
+      "high": 9999,
+      "games": 595,
+      "positions": 40438
+    }
+  ],
+  "openings": [
+    {
+      "eco": "B01",
+      "name": "Scandinavian Defense: Modern Variation",
+      "games": 5555,
+      "white_win_rate": 0.4839,
+      "black_win_rate": 0.47,
+      "draw_rate": 0.0461
+    },
+    {
+      "eco": "A40",
+      "name": "Queen's Pawn Game: Modern Defense",
+      "games": 5329,
+      "white_win_rate": 0.504,
+      "black_win_rate": 0.4577,
+      "draw_rate": 0.0383
+    },
+    {
+      "eco": "D00",
+      "name": "Queen's Pawn Game: Accelerated London System",
+      "games": 4816,
+      "white_win_rate": 0.4971,
+      "black_win_rate": 0.4608,
+      "draw_rate": 0.0422
+    },
+    {
+      "eco": "A00",
+      "name": "Polish Opening",
+      "games": 4778,
+      "white_win_rate": 0.4843,
+      "black_win_rate": 0.4763,
+      "draw_rate": 0.0393
+    },
+    {
+      "eco": "B00",
+      "name": "Pirc Defense",
+      "games": 4587,
+      "white_win_rate": 0.4992,
+      "black_win_rate": 0.4628,
+      "draw_rate": 0.0379
+    },
+    {
+      "eco": "C00",
+      "name": "French Defense: Knight Variation",
+      "games": 3437,
+      "white_win_rate": 0.4996,
+      "black_win_rate": 0.4658,
+      "draw_rate": 0.0346
+    },
+    {
+      "eco": "C50",
+      "name": "Italian Game: Giuoco Pianissimo, Normal",
+      "games": 2896,
+      "white_win_rate": 0.5059,
+      "black_win_rate": 0.4579,
+      "draw_rate": 0.0363
+    },
+    {
+      "eco": "D02",
+      "name": "Queen's Pawn Game: London System, with e6",
+      "games": 2769,
+      "white_win_rate": 0.5023,
+      "black_win_rate": 0.4543,
+      "draw_rate": 0.0433
+    },
+    {
+      "eco": "B10",
+      "name": "Caro-Kann Defense",
+      "games": 2459,
+      "white_win_rate": 0.4599,
+      "black_win_rate": 0.5055,
+      "draw_rate": 0.0346
+    },
+    {
+      "eco": "C41",
+      "name": "Philidor Defense: Exchange Variation",
+      "games": 2392,
+      "white_win_rate": 0.5109,
+      "black_win_rate": 0.4486,
+      "draw_rate": 0.0406
+    },
+    {
+      "eco": "C44",
+      "name": "Scotch Game: Lolli Variation",
+      "games": 2268,
+      "white_win_rate": 0.5207,
+      "black_win_rate": 0.4414,
+      "draw_rate": 0.0379
+    },
+    {
+      "eco": "C20",
+      "name": "King's Pawn Game: Leonardis Variation",
+      "games": 2171,
+      "white_win_rate": 0.503,
+      "black_win_rate": 0.4588,
+      "draw_rate": 0.0382
+    },
+    {
+      "eco": "B06",
+      "name": "Modern Defense: Mongredien Defense, with Nc3",
+      "games": 2061,
+      "white_win_rate": 0.4857,
+      "black_win_rate": 0.4682,
+      "draw_rate": 0.0461
+    },
+    {
+      "eco": "A45",
+      "name": "Indian Defense",
+      "games": 2006,
+      "white_win_rate": 0.4995,
+      "black_win_rate": 0.4581,
+      "draw_rate": 0.0424
+    },
+    {
+      "eco": "B20",
+      "name": "Sicilian Defense: Mengarini Variation",
+      "games": 1959,
+      "white_win_rate": 0.4461,
+      "black_win_rate": 0.5105,
+      "draw_rate": 0.0434
+    },
+    {
+      "eco": "B12",
+      "name": "Caro-Kann Defense: Advance Variation, Short Variation",
+      "games": 1508,
+      "white_win_rate": 0.5007,
+      "black_win_rate": 0.4655,
+      "draw_rate": 0.0338
+    },
+    {
+      "eco": "C40",
+      "name": "Elephant Gambit",
+      "games": 1478,
+      "white_win_rate": 0.5304,
+      "black_win_rate": 0.4344,
+      "draw_rate": 0.0352
+    },
+    {
+      "eco": "B21",
+      "name": "Sicilian Defense: McDonnell Attack",
+      "games": 1460,
+      "white_win_rate": 0.4774,
+      "black_win_rate": 0.4904,
+      "draw_rate": 0.0322
+    },
+    {
+      "eco": "B30",
+      "name": "Sicilian Defense: Old Sicilian",
+      "games": 1288,
+      "white_win_rate": 0.4891,
+      "black_win_rate": 0.4767,
+      "draw_rate": 0.0342
+    },
+    {
+      "eco": "C42",
+      "name": "Petrov's Defense: Italian Variation",
+      "games": 1235,
+      "white_win_rate": 0.5004,
+      "black_win_rate": 0.4599,
+      "draw_rate": 0.0397
+    },
+    {
+      "eco": "C23",
+      "name": "Bishop's Opening",
+      "games": 1187,
+      "white_win_rate": 0.5004,
+      "black_win_rate": 0.4516,
+      "draw_rate": 0.048
+    },
+    {
+      "eco": "C01",
+      "name": "French Defense: Exchange Variation, Monte Carlo Variation",
+      "games": 1178,
+      "white_win_rate": 0.4822,
+      "black_win_rate": 0.4694,
+      "draw_rate": 0.0484
+    },
+    {
+      "eco": "A04",
+      "name": "Zukertort Opening: Queen's Gambit Invitation",
+      "games": 1113,
+      "white_win_rate": 0.5022,
+      "black_win_rate": 0.4447,
+      "draw_rate": 0.053
+    },
+    {
+      "eco": "A01",
+      "name": "Nimzo-Larsen Attack: Classical Variation",
+      "games": 1108,
+      "white_win_rate": 0.5126,
+      "black_win_rate": 0.4522,
+      "draw_rate": 0.0352
+    },
+    {
+      "eco": "C02",
+      "name": "French Defense: Advance Variation, Paulsen Attack",
+      "games": 1052,
+      "white_win_rate": 0.4658,
+      "black_win_rate": 0.4914,
+      "draw_rate": 0.0428
+    },
+    {
+      "eco": "B13",
+      "name": "Caro-Kann Defense: Panov Attack",
+      "games": 1015,
+      "white_win_rate": 0.4867,
+      "black_win_rate": 0.464,
+      "draw_rate": 0.0493
+    },
+    {
+      "eco": "B50",
+      "name": "Sicilian Defense: Modern Variations, Anti-Qxd4 Move Order",
+      "games": 972,
+      "white_win_rate": 0.464,
+      "black_win_rate": 0.4805,
+      "draw_rate": 0.0556
+    },
+    {
+      "eco": "A43",
+      "name": "Benoni Defense: Old Benoni",
+      "games": 961,
+      "white_win_rate": 0.487,
+      "black_win_rate": 0.4683,
+      "draw_rate": 0.0447
+    },
+    {
+      "eco": "B40",
+      "name": "Sicilian Defense: Pin Variation",
+      "games": 923,
+      "white_win_rate": 0.4756,
+      "black_win_rate": 0.4897,
+      "draw_rate": 0.0347
+    },
+    {
+      "eco": "B23",
+      "name": "Sicilian Defense: Closed",
+      "games": 921,
+      "white_win_rate": 0.5147,
+      "black_win_rate": 0.4463,
+      "draw_rate": 0.0391
+    },
+    {
+      "eco": "C25",
+      "name": "Vienna Game: Max Lange Defense",
+      "games": 891,
+      "white_win_rate": 0.5163,
+      "black_win_rate": 0.4512,
+      "draw_rate": 0.0325
+    },
+    {
+      "eco": "C47",
+      "name": "Four Knights Game: Italian Variation",
+      "games": 843,
+      "white_win_rate": 0.4958,
+      "black_win_rate": 0.4508,
+      "draw_rate": 0.0534
+    },
+    {
+      "eco": "B02",
+      "name": "Alekhine Defense: Two Pawns Attack, Lasker Variation",
+      "games": 769,
+      "white_win_rate": 0.4785,
+      "black_win_rate": 0.4694,
+      "draw_rate": 0.052
+    },
+    {
+      "eco": "A06",
+      "name": "Zukertort Opening: Tennison Gambit",
+      "games": 740,
+      "white_win_rate": 0.473,
+      "black_win_rate": 0.4905,
+      "draw_rate": 0.0365
+    },
+    {
+      "eco": "C45",
+      "name": "Scotch Game",
+      "games": 738,
+      "white_win_rate": 0.5054,
+      "black_win_rate": 0.4499,
+      "draw_rate": 0.0447
+    },
+    {
+      "eco": "B22",
+      "name": "Sicilian Defense: Alapin Variation",
+      "games": 733,
+      "white_win_rate": 0.4625,
+      "black_win_rate": 0.4816,
+      "draw_rate": 0.0559
+    },
+    {
+      "eco": "D06",
+      "name": "Queen's Gambit Declined: Marshall Defense",
+      "games": 705,
+      "white_win_rate": 0.5348,
+      "black_win_rate": 0.427,
+      "draw_rate": 0.0383
+    },
+    {
+      "eco": "A10",
+      "name": "English Opening: Anglo-Scandinavian Defense",
+      "games": 689,
+      "white_win_rate": 0.5123,
+      "black_win_rate": 0.4441,
+      "draw_rate": 0.0435
+    },
+    {
+      "eco": "D01",
+      "name": "Rapport-Jobava System",
+      "games": 688,
+      "white_win_rate": 0.5334,
+      "black_win_rate": 0.4346,
+      "draw_rate": 0.032
+    },
+    {
+      "eco": "B32",
+      "name": "Sicilian Defense: Accelerated Dragon",
+      "games": 686,
+      "white_win_rate": 0.5379,
+      "black_win_rate": 0.4242,
+      "draw_rate": 0.0379
+    },
+    {
+      "eco": "C46",
+      "name": "Three Knights Opening",
+      "games": 676,
+      "white_win_rate": 0.4956,
+      "black_win_rate": 0.466,
+      "draw_rate": 0.0385
+    },
+    {
+      "eco": "C30",
+      "name": "King's Gambit Declined: Queen's Knight Defense",
+      "games": 642,
+      "white_win_rate": 0.5156,
+      "black_win_rate": 0.4595,
+      "draw_rate": 0.0249
+    },
+    {
+      "eco": "A41",
+      "name": "Old Indian Defense",
+      "games": 598,
+      "white_win_rate": 0.4465,
+      "black_win_rate": 0.505,
+      "draw_rate": 0.0485
+    },
+    {
+      "eco": "A46",
+      "name": "Torre Attack: Classical Defense, Nimzowitsch Variation",
+      "games": 565,
+      "white_win_rate": 0.4832,
+      "black_win_rate": 0.4726,
+      "draw_rate": 0.0442
+    },
+    {
+      "eco": "A02",
+      "name": "Bird Opening",
+      "games": 564,
+      "white_win_rate": 0.5408,
+      "black_win_rate": 0.4078,
+      "draw_rate": 0.0514
+    },
+    {
+      "eco": "B07",
+      "name": "Modern Defense: Geller's System",
+      "games": 559,
+      "white_win_rate": 0.4669,
+      "black_win_rate": 0.4866,
+      "draw_rate": 0.0465
+    },
+    {
+      "eco": "C24",
+      "name": "Bishop's Opening: Vienna Hybrid",
+      "games": 552,
+      "white_win_rate": 0.5254,
+      "black_win_rate": 0.433,
+      "draw_rate": 0.0417
+    },
+    {
+      "eco": "C55",
+      "name": "Italian Game: Two Knights Defense, Modern Bishop's Opening",
+      "games": 543,
+      "white_win_rate": 0.5138,
+      "black_win_rate": 0.4549,
+      "draw_rate": 0.0313
+    },
+    {
+      "eco": "D10",
+      "name": "Slav Defense",
+      "games": 541,
+      "white_win_rate": 0.4769,
+      "black_win_rate": 0.4824,
+      "draw_rate": 0.0407
+    },
+    {
+      "eco": "D20",
+      "name": "Queen's Gambit Accepted",
+      "games": 505,
+      "white_win_rate": 0.495,
+      "black_win_rate": 0.4693,
+      "draw_rate": 0.0356
+    }
+  ],
+  "pareto_positions": [
+    {
+      "position_hash": "7bedc49b2193112c",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "total_visits": 100496,
+      "unique_games": 100496,
+      "avg_move_number": 1.0,
+      "top_moves": [
+        {
+          "san": "e4",
+          "uci": "e2e4",
+          "count": 60336,
+          "freq": 0.637
+        },
+        {
+          "san": "d4",
+          "uci": "d2d4",
+          "count": 26252,
+          "freq": 0.2771
+        },
+        {
+          "san": "c4",
+          "uci": "c2c4",
+          "count": 3399,
+          "freq": 0.0359
+        },
+        {
+          "san": "Nf3",
+          "uci": "g1f3",
+          "count": 3121,
+          "freq": 0.0329
+        },
+        {
+          "san": "e3",
+          "uci": "e2e3",
+          "count": 1618,
+          "freq": 0.0171
+        }
+      ]
+    },
+    {
+      "position_hash": "614a77c5580d8901",
+      "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+      "total_visits": 60336,
+      "unique_games": 60336,
+      "avg_move_number": 1.0,
+      "top_moves": [
+        {
+          "san": "e5",
+          "uci": "e7e5",
+          "count": 23527,
+          "freq": 0.4515
+        },
+        {
+          "san": "c5",
+          "uci": "c7c5",
+          "count": 11371,
+          "freq": 0.2182
+        },
+        {
+          "san": "d5",
+          "uci": "d7d5",
+          "count": 6044,
+          "freq": 0.116
+        },
+        {
+          "san": "e6",
+          "uci": "e7e6",
+          "count": 5789,
+          "freq": 0.1111
+        },
+        {
+          "san": "c6",
+          "uci": "c7c6",
+          "count": 5377,
+          "freq": 0.1032
+        }
+      ]
+    },
+    {
+      "position_hash": "83df54935c9117ee",
+      "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1",
+      "total_visits": 26252,
+      "unique_games": 26252,
+      "avg_move_number": 1.0,
+      "top_moves": [
+        {
+          "san": "d5",
+          "uci": "d7d5",
+          "count": 11076,
+          "freq": 0.5079
+        },
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 5541,
+          "freq": 0.2541
+        },
+        {
+          "san": "e6",
+          "uci": "e7e6",
+          "count": 2361,
+          "freq": 0.1083
+        },
+        {
+          "san": "e5",
+          "uci": "e7e5",
+          "count": 1634,
+          "freq": 0.0749
+        },
+        {
+          "san": "g6",
+          "uci": "g7g6",
+          "count": 1195,
+          "freq": 0.0548
+        }
+      ]
+    },
+    {
+      "position_hash": "71d40fb7e91bbec9",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "total_visits": 23527,
+      "unique_games": 23527,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "Nf3",
+          "uci": "g1f3",
+          "count": 14388,
+          "freq": 0.6647
+        },
+        {
+          "san": "Bc4",
+          "uci": "f1c4",
+          "count": 2565,
+          "freq": 0.1185
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 1729,
+          "freq": 0.0799
+        },
+        {
+          "san": "f4",
+          "uci": "f2f4",
+          "count": 1491,
+          "freq": 0.0689
+        },
+        {
+          "san": "d4",
+          "uci": "d2d4",
+          "count": 1473,
+          "freq": 0.068
+        }
+      ]
+    },
+    {
+      "position_hash": "70855f3bbecce265",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
+      "total_visits": 14409,
+      "unique_games": 14409,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "Nc6",
+          "uci": "b8c6",
+          "count": 9223,
+          "freq": 0.6759
+        },
+        {
+          "san": "d6",
+          "uci": "d7d6",
+          "count": 2159,
+          "freq": 0.1582
+        },
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 1535,
+          "freq": 0.1125
+        },
+        {
+          "san": "Bc5",
+          "uci": "f8c5",
+          "count": 435,
+          "freq": 0.0319
+        },
+        {
+          "san": "d5",
+          "uci": "d7d5",
+          "count": 294,
+          "freq": 0.0215
+        }
+      ]
+    },
+    {
+      "position_hash": "8b72e99490c8a6f0",
+      "fen": "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "total_visits": 11371,
+      "unique_games": 11371,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "Nf3",
+          "uci": "g1f3",
+          "count": 6033,
+          "freq": 0.6135
+        },
+        {
+          "san": "d4",
+          "uci": "d2d4",
+          "count": 1036,
+          "freq": 0.1054
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 1035,
+          "freq": 0.1053
+        },
+        {
+          "san": "Bc4",
+          "uci": "f1c4",
+          "count": 1018,
+          "freq": 0.1035
+        },
+        {
+          "san": "c3",
+          "uci": "c2c3",
+          "count": 711,
+          "freq": 0.0723
+        }
+      ]
+    },
+    {
+      "position_hash": "06095571fe216111",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2",
+      "total_visits": 11076,
+      "unique_games": 11076,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "c4",
+          "uci": "c2c4",
+          "count": 3407,
+          "freq": 0.337
+        },
+        {
+          "san": "Bf4",
+          "uci": "c1f4",
+          "count": 2365,
+          "freq": 0.2339
+        },
+        {
+          "san": "Nf3",
+          "uci": "g1f3",
+          "count": 2212,
+          "freq": 0.2188
+        },
+        {
+          "san": "e3",
+          "uci": "e2e3",
+          "count": 1131,
+          "freq": 0.1119
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 994,
+          "freq": 0.0983
+        }
+      ]
+    },
+    {
+      "position_hash": "cdf57eb14909ffdf",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3",
+      "total_visits": 9410,
+      "unique_games": 9410,
+      "avg_move_number": 3.0,
+      "top_moves": [
+        {
+          "san": "Bc4",
+          "uci": "f1c4",
+          "count": 3894,
+          "freq": 0.427
+        },
+        {
+          "san": "Bb5",
+          "uci": "f1b5",
+          "count": 1921,
+          "freq": 0.2107
+        },
+        {
+          "san": "d4",
+          "uci": "d2d4",
+          "count": 1908,
+          "freq": 0.2092
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 1022,
+          "freq": 0.1121
+        },
+        {
+          "san": "c3",
+          "uci": "c2c3",
+          "count": 374,
+          "freq": 0.041
+        }
+      ]
+    },
+    {
+      "position_hash": "34dddf5248df1dcd",
+      "fen": "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
+      "total_visits": 6071,
+      "unique_games": 6071,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "Nc6",
+          "uci": "b8c6",
+          "count": 2506,
+          "freq": 0.4204
+        },
+        {
+          "san": "d6",
+          "uci": "d7d6",
+          "count": 1934,
+          "freq": 0.3244
+        },
+        {
+          "san": "e6",
+          "uci": "e7e6",
+          "count": 1082,
+          "freq": 0.1815
+        },
+        {
+          "san": "g6",
+          "uci": "g7g6",
+          "count": 276,
+          "freq": 0.0463
+        },
+        {
+          "san": "a6",
+          "uci": "a7a6",
+          "count": 163,
+          "freq": 0.0273
+        }
+      ]
+    },
+    {
+      "position_hash": "7a2249134d585b69",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "total_visits": 6044,
+      "unique_games": 6044,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "exd5",
+          "uci": "e4d5",
+          "count": 4110,
+          "freq": 0.7163
+        },
+        {
+          "san": "e5",
+          "uci": "e4e5",
+          "count": 829,
+          "freq": 0.1445
+        },
+        {
+          "san": "Nf3",
+          "uci": "g1f3",
+          "count": 359,
+          "freq": 0.0626
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 297,
+          "freq": 0.0518
+        },
+        {
+          "san": "d4",
+          "uci": "d2d4",
+          "count": 143,
+          "freq": 0.0249
+        }
+      ]
+    },
+    {
+      "position_hash": "ec10a5620fe7ee2c",
+      "fen": "rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "total_visits": 5789,
+      "unique_games": 5789,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "d4",
+          "uci": "d2d4",
+          "count": 2800,
+          "freq": 0.5394
+        },
+        {
+          "san": "Nf3",
+          "uci": "g1f3",
+          "count": 1550,
+          "freq": 0.2986
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 334,
+          "freq": 0.0643
+        },
+        {
+          "san": "f4",
+          "uci": "f2f4",
+          "count": 258,
+          "freq": 0.0497
+        },
+        {
+          "san": "Bc4",
+          "uci": "f1c4",
+          "count": 249,
+          "freq": 0.048
+        }
+      ]
+    },
+    {
+      "position_hash": "46f9336c46c8676a",
+      "fen": "rnbqkb1r/pppppppp/5n2/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 1 2",
+      "total_visits": 5541,
+      "unique_games": 5541,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "c4",
+          "uci": "c2c4",
+          "count": 2004,
+          "freq": 0.3979
+        },
+        {
+          "san": "Nf3",
+          "uci": "g1f3",
+          "count": 1122,
+          "freq": 0.2228
+        },
+        {
+          "san": "Bf4",
+          "uci": "c1f4",
+          "count": 993,
+          "freq": 0.1971
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 512,
+          "freq": 0.1016
+        },
+        {
+          "san": "e3",
+          "uci": "e2e3",
+          "count": 406,
+          "freq": 0.0806
+        }
+      ]
+    },
+    {
+      "position_hash": "5729c89ad2c9f1ab",
+      "fen": "rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "total_visits": 5377,
+      "unique_games": 5377,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "d4",
+          "uci": "d2d4",
+          "count": 2562,
+          "freq": 0.5242
+        },
+        {
+          "san": "Nf3",
+          "uci": "g1f3",
+          "count": 1375,
+          "freq": 0.2814
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 415,
+          "freq": 0.0849
+        },
+        {
+          "san": "Bc4",
+          "uci": "f1c4",
+          "count": 325,
+          "freq": 0.0665
+        },
+        {
+          "san": "f4",
+          "uci": "f2f4",
+          "count": 210,
+          "freq": 0.043
+        }
+      ]
+    },
+    {
+      "position_hash": "ef570fe96e0efb6c",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3",
+      "total_visits": 4218,
+      "unique_games": 4218,
+      "avg_move_number": 3.0,
+      "top_moves": [
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 1442,
+          "freq": 0.3853
+        },
+        {
+          "san": "Bc5",
+          "uci": "f8c5",
+          "count": 1286,
+          "freq": 0.3436
+        },
+        {
+          "san": "h6",
+          "uci": "h7h6",
+          "count": 556,
+          "freq": 0.1485
+        },
+        {
+          "san": "d6",
+          "uci": "d7d6",
+          "count": 307,
+          "freq": 0.082
+        },
+        {
+          "san": "f5",
+          "uci": "f7f5",
+          "count": 152,
+          "freq": 0.0406
+        }
+      ]
+    },
+    {
+      "position_hash": "4aedef0d809ac351",
+      "fen": "rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2",
+      "total_visits": 4110,
+      "unique_games": 4110,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "Qxd5",
+          "uci": "d8d5",
+          "count": 2787,
+          "freq": 0.6871
+        },
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 922,
+          "freq": 0.2273
+        },
+        {
+          "san": "c6",
+          "uci": "c7c6",
+          "count": 220,
+          "freq": 0.0542
+        },
+        {
+          "san": "e6",
+          "uci": "e7e6",
+          "count": 103,
+          "freq": 0.0254
+        },
+        {
+          "san": "Bf5",
+          "uci": "c8f5",
+          "count": 24,
+          "freq": 0.0059
+        }
+      ]
+    },
+    {
+      "position_hash": "6ac1a2d10a8a4e8e",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
+      "total_visits": 3417,
+      "unique_games": 3417,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "e6",
+          "uci": "e7e6",
+          "count": 1005,
+          "freq": 0.3297
+        },
+        {
+          "san": "c6",
+          "uci": "c7c6",
+          "count": 683,
+          "freq": 0.2241
+        },
+        {
+          "san": "dxc4",
+          "uci": "d5c4",
+          "count": 660,
+          "freq": 0.2165
+        },
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 548,
+          "freq": 0.1798
+        },
+        {
+          "san": "e5",
+          "uci": "e7e5",
+          "count": 152,
+          "freq": 0.0499
+        }
+      ]
+    },
+    {
+      "position_hash": "b1ebba1baafbced9",
+      "fen": "rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq - 0 1",
+      "total_visits": 3399,
+      "unique_games": 3399,
+      "avg_move_number": 1.0,
+      "top_moves": [
+        {
+          "san": "e5",
+          "uci": "e7e5",
+          "count": 1045,
+          "freq": 0.3933
+        },
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 628,
+          "freq": 0.2364
+        },
+        {
+          "san": "c5",
+          "uci": "c7c5",
+          "count": 363,
+          "freq": 0.1366
+        },
+        {
+          "san": "e6",
+          "uci": "e7e6",
+          "count": 348,
+          "freq": 0.131
+        },
+        {
+          "san": "d5",
+          "uci": "d7d5",
+          "count": 273,
+          "freq": 0.1027
+        }
+      ]
+    },
+    {
+      "position_hash": "adc233cb377d330e",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1",
+      "total_visits": 3121,
+      "unique_games": 3121,
+      "avg_move_number": 1.0,
+      "top_moves": [
+        {
+          "san": "d5",
+          "uci": "d7d5",
+          "count": 1116,
+          "freq": 0.4759
+        },
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 428,
+          "freq": 0.1825
+        },
+        {
+          "san": "c5",
+          "uci": "c7c5",
+          "count": 309,
+          "freq": 0.1318
+        },
+        {
+          "san": "e6",
+          "uci": "e7e6",
+          "count": 274,
+          "freq": 0.1168
+        },
+        {
+          "san": "Nc6",
+          "uci": "b8c6",
+          "count": 218,
+          "freq": 0.093
+        }
+      ]
+    },
+    {
+      "position_hash": "c3c39ccefd26e408",
+      "fen": "rnbqkbnr/pppp1ppp/4p3/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2",
+      "total_visits": 3111,
+      "unique_games": 3111,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "d5",
+          "uci": "d7d5",
+          "count": 2071,
+          "freq": 0.7536
+        },
+        {
+          "san": "c5",
+          "uci": "c7c5",
+          "count": 211,
+          "freq": 0.0768
+        },
+        {
+          "san": "d6",
+          "uci": "d7d6",
+          "count": 157,
+          "freq": 0.0571
+        },
+        {
+          "san": "b6",
+          "uci": "b7b6",
+          "count": 156,
+          "freq": 0.0568
+        },
+        {
+          "san": "c6",
+          "uci": "c7c6",
+          "count": 153,
+          "freq": 0.0557
+        }
+      ]
+    },
+    {
+      "position_hash": "1bf1d7d79f4bc2e3",
+      "fen": "rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3",
+      "total_visits": 2787,
+      "unique_games": 2787,
+      "avg_move_number": 3.0,
+      "top_moves": [
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 2000,
+          "freq": 0.7315
+        },
+        {
+          "san": "Nf3",
+          "uci": "g1f3",
+          "count": 388,
+          "freq": 0.1419
+        },
+        {
+          "san": "d4",
+          "uci": "d2d4",
+          "count": 248,
+          "freq": 0.0907
+        },
+        {
+          "san": "c4",
+          "uci": "c2c4",
+          "count": 67,
+          "freq": 0.0245
+        },
+        {
+          "san": "Qf3",
+          "uci": "d1f3",
+          "count": 31,
+          "freq": 0.0113
+        }
+      ]
+    },
+    {
+      "position_hash": "ef9e79ad5a536f00",
+      "fen": "rnbqkbnr/pp1ppppp/2p5/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2",
+      "total_visits": 2697,
+      "unique_games": 2697,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "d5",
+          "uci": "d7d5",
+          "count": 2479,
+          "freq": 0.933
+        },
+        {
+          "san": "d6",
+          "uci": "d7d6",
+          "count": 102,
+          "freq": 0.0384
+        },
+        {
+          "san": "e6",
+          "uci": "e7e6",
+          "count": 50,
+          "freq": 0.0188
+        },
+        {
+          "san": "g6",
+          "uci": "g7g6",
+          "count": 20,
+          "freq": 0.0075
+        },
+        {
+          "san": "b5",
+          "uci": "b7b5",
+          "count": 6,
+          "freq": 0.0023
+        }
+      ]
+    },
+    {
+      "position_hash": "960736462fa33c2a",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R b KQkq - 1 2",
+      "total_visits": 2598,
+      "unique_games": 2598,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 808,
+          "freq": 0.3746
+        },
+        {
+          "san": "Nc6",
+          "uci": "b8c6",
+          "count": 504,
+          "freq": 0.2337
+        },
+        {
+          "san": "e6",
+          "uci": "e7e6",
+          "count": 431,
+          "freq": 0.1998
+        },
+        {
+          "san": "Bf5",
+          "uci": "c8f5",
+          "count": 240,
+          "freq": 0.1113
+        },
+        {
+          "san": "c6",
+          "uci": "c7c6",
+          "count": 174,
+          "freq": 0.0807
+        }
+      ]
+    },
+    {
+      "position_hash": "583e4d214fa731f6",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2",
+      "total_visits": 2565,
+      "unique_games": 2565,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "Nc6",
+          "uci": "b8c6",
+          "count": 884,
+          "freq": 0.3786
+        },
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 814,
+          "freq": 0.3486
+        },
+        {
+          "san": "Bc5",
+          "uci": "f8c5",
+          "count": 299,
+          "freq": 0.1281
+        },
+        {
+          "san": "d6",
+          "uci": "d7d6",
+          "count": 269,
+          "freq": 0.1152
+        },
+        {
+          "san": "c6",
+          "uci": "c7c6",
+          "count": 69,
+          "freq": 0.0296
+        }
+      ]
+    },
+    {
+      "position_hash": "3d967224715bcf06",
+      "fen": "r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3",
+      "total_visits": 2506,
+      "unique_games": 2506,
+      "avg_move_number": 3.0,
+      "top_moves": [
+        {
+          "san": "d4",
+          "uci": "d2d4",
+          "count": 1108,
+          "freq": 0.4673
+        },
+        {
+          "san": "Bc4",
+          "uci": "f1c4",
+          "count": 479,
+          "freq": 0.202
+        },
+        {
+          "san": "Bb5",
+          "uci": "f1b5",
+          "count": 315,
+          "freq": 0.1329
+        },
+        {
+          "san": "c3",
+          "uci": "c2c3",
+          "count": 271,
+          "freq": 0.1143
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 198,
+          "freq": 0.0835
+        }
+      ]
+    },
+    {
+      "position_hash": "0877ecb0d4741283",
+      "fen": "rnbqkbnr/pp2pppp/2p5/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3",
+      "total_visits": 2500,
+      "unique_games": 2500,
+      "avg_move_number": 3.0,
+      "top_moves": [
+        {
+          "san": "e5",
+          "uci": "e4e5",
+          "count": 959,
+          "freq": 0.3942
+        },
+        {
+          "san": "exd5",
+          "uci": "e4d5",
+          "count": 727,
+          "freq": 0.2988
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 524,
+          "freq": 0.2154
+        },
+        {
+          "san": "Nd2",
+          "uci": "b1d2",
+          "count": 127,
+          "freq": 0.0522
+        },
+        {
+          "san": "f3",
+          "uci": "f2f3",
+          "count": 96,
+          "freq": 0.0395
+        }
+      ]
+    },
+    {
+      "position_hash": "047b9fc00ba37188",
+      "fen": "rnbqkbnr/ppp1pppp/3p4/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "total_visits": 2366,
+      "unique_games": 2366,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "d4",
+          "uci": "d2d4",
+          "count": 1180,
+          "freq": 0.5315
+        },
+        {
+          "san": "Nf3",
+          "uci": "g1f3",
+          "count": 620,
+          "freq": 0.2793
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 167,
+          "freq": 0.0752
+        },
+        {
+          "san": "Bc4",
+          "uci": "f1c4",
+          "count": 162,
+          "freq": 0.073
+        },
+        {
+          "san": "f4",
+          "uci": "f2f4",
+          "count": 91,
+          "freq": 0.041
+        }
+      ]
+    },
+    {
+      "position_hash": "954d11578e91b235",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/3P1B2/8/PPP1PPPP/RN1QKBNR b KQkq - 1 2",
+      "total_visits": 2365,
+      "unique_games": 2365,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 621,
+          "freq": 0.2983
+        },
+        {
+          "san": "Nc6",
+          "uci": "b8c6",
+          "count": 576,
+          "freq": 0.2767
+        },
+        {
+          "san": "e6",
+          "uci": "e7e6",
+          "count": 424,
+          "freq": 0.2037
+        },
+        {
+          "san": "Bf5",
+          "uci": "c8f5",
+          "count": 314,
+          "freq": 0.1508
+        },
+        {
+          "san": "c5",
+          "uci": "c7c5",
+          "count": 147,
+          "freq": 0.0706
+        }
+      ]
+    },
+    {
+      "position_hash": "3993890dc34c6b8e",
+      "fen": "rnbqkbnr/pppp1ppp/4p3/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2",
+      "total_visits": 2361,
+      "unique_games": 2361,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "c4",
+          "uci": "c2c4",
+          "count": 712,
+          "freq": 0.3395
+        },
+        {
+          "san": "Bf4",
+          "uci": "c1f4",
+          "count": 467,
+          "freq": 0.2227
+        },
+        {
+          "san": "Nf3",
+          "uci": "g1f3",
+          "count": 390,
+          "freq": 0.186
+        },
+        {
+          "san": "e4",
+          "uci": "e2e4",
+          "count": 311,
+          "freq": 0.1483
+        },
+        {
+          "san": "e3",
+          "uci": "e2e3",
+          "count": 217,
+          "freq": 0.1035
+        }
+      ]
+    },
+    {
+      "position_hash": "3342438a1bb56ec4",
+      "fen": "rnbqkbnr/ppp2ppp/3p4/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3",
+      "total_visits": 2239,
+      "unique_games": 2239,
+      "avg_move_number": 3.0,
+      "top_moves": [
+        {
+          "san": "Bc4",
+          "uci": "f1c4",
+          "count": 978,
+          "freq": 0.4679
+        },
+        {
+          "san": "d4",
+          "uci": "d2d4",
+          "count": 653,
+          "freq": 0.3124
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 268,
+          "freq": 0.1282
+        },
+        {
+          "san": "c3",
+          "uci": "c2c3",
+          "count": 104,
+          "freq": 0.0498
+        },
+        {
+          "san": "h3",
+          "uci": "h2h3",
+          "count": 87,
+          "freq": 0.0416
+        }
+      ]
+    },
+    {
+      "position_hash": "b38a1f6b0e5b5aeb",
+      "fen": "rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3",
+      "total_visits": 2111,
+      "unique_games": 2111,
+      "avg_move_number": 3.0,
+      "top_moves": [
+        {
+          "san": "e5",
+          "uci": "e4e5",
+          "count": 747,
+          "freq": 0.3635
+        },
+        {
+          "san": "exd5",
+          "uci": "e4d5",
+          "count": 617,
+          "freq": 0.3002
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 442,
+          "freq": 0.2151
+        },
+        {
+          "san": "Nd2",
+          "uci": "b1d2",
+          "count": 201,
+          "freq": 0.0978
+        },
+        {
+          "san": "Bd3",
+          "uci": "f1d3",
+          "count": 48,
+          "freq": 0.0234
+        }
+      ]
+    },
+    {
+      "position_hash": "19df4d230841ef1a",
+      "fen": "rnbqkb1r/pppppppp/5n2/8/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
+      "total_visits": 2061,
+      "unique_games": 2061,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "e6",
+          "uci": "e7e6",
+          "count": 657,
+          "freq": 0.3616
+        },
+        {
+          "san": "g6",
+          "uci": "g7g6",
+          "count": 639,
+          "freq": 0.3517
+        },
+        {
+          "san": "c5",
+          "uci": "c7c5",
+          "count": 225,
+          "freq": 0.1238
+        },
+        {
+          "san": "d5",
+          "uci": "d7d5",
+          "count": 154,
+          "freq": 0.0848
+        },
+        {
+          "san": "e5",
+          "uci": "e7e5",
+          "count": 142,
+          "freq": 0.0782
+        }
+      ]
+    },
+    {
+      "position_hash": "7ec63b9507a335e9",
+      "fen": "rnb1kbnr/ppp1pppp/8/3q4/8/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 3",
+      "total_visits": 2000,
+      "unique_games": 2000,
+      "avg_move_number": 3.0,
+      "top_moves": [
+        {
+          "san": "Qd8",
+          "uci": "d5d8",
+          "count": 731,
+          "freq": 0.3745
+        },
+        {
+          "san": "Qa5",
+          "uci": "d5a5",
+          "count": 624,
+          "freq": 0.3197
+        },
+        {
+          "san": "Qe6+",
+          "uci": "d5e6",
+          "count": 241,
+          "freq": 0.1235
+        },
+        {
+          "san": "Qe5+",
+          "uci": "d5e5",
+          "count": 209,
+          "freq": 0.1071
+        },
+        {
+          "san": "Qd6",
+          "uci": "d5d6",
+          "count": 147,
+          "freq": 0.0753
+        }
+      ]
+    },
+    {
+      "position_hash": "deaa4bdecdf7f08d",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
+      "total_visits": 1968,
+      "unique_games": 1968,
+      "avg_move_number": 3.0,
+      "top_moves": [
+        {
+          "san": "exd4",
+          "uci": "e5d4",
+          "count": 1485,
+          "freq": 0.8119
+        },
+        {
+          "san": "d6",
+          "uci": "d7d6",
+          "count": 172,
+          "freq": 0.094
+        },
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 84,
+          "freq": 0.0459
+        },
+        {
+          "san": "f6",
+          "uci": "f7f6",
+          "count": 56,
+          "freq": 0.0306
+        },
+        {
+          "san": "Nxd4",
+          "uci": "c6d4",
+          "count": 32,
+          "freq": 0.0175
+        }
+      ]
+    },
+    {
+      "position_hash": "06b641a7b1bd67e4",
+      "fen": "rnbqkbnr/pp2pppp/3p4/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3",
+      "total_visits": 1950,
+      "unique_games": 1950,
+      "avg_move_number": 3.0,
+      "top_moves": [
+        {
+          "san": "d4",
+          "uci": "d2d4",
+          "count": 1040,
+          "freq": 0.5699
+        },
+        {
+          "san": "Bc4",
+          "uci": "f1c4",
+          "count": 302,
+          "freq": 0.1655
+        },
+        {
+          "san": "c3",
+          "uci": "c2c3",
+          "count": 218,
+          "freq": 0.1195
+        },
+        {
+          "san": "Bb5+",
+          "uci": "f1b5",
+          "count": 138,
+          "freq": 0.0756
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 127,
+          "freq": 0.0696
+        }
+      ]
+    },
+    {
+      "position_hash": "12503db0547147e3",
+      "fen": "rnbqkbnr/pppppp1p/6p1/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "total_visits": 1943,
+      "unique_games": 1943,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "d4",
+          "uci": "d2d4",
+          "count": 873,
+          "freq": 0.4938
+        },
+        {
+          "san": "Nf3",
+          "uci": "g1f3",
+          "count": 486,
+          "freq": 0.2749
+        },
+        {
+          "san": "Bc4",
+          "uci": "f1c4",
+          "count": 157,
+          "freq": 0.0888
+        },
+        {
+          "san": "f4",
+          "uci": "f2f4",
+          "count": 130,
+          "freq": 0.0735
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 122,
+          "freq": 0.069
+        }
+      ]
+    },
+    {
+      "position_hash": "0cff5c5836a12eb9",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3",
+      "total_visits": 1924,
+      "unique_games": 1924,
+      "avg_move_number": 3.0,
+      "top_moves": [
+        {
+          "san": "a6",
+          "uci": "a7a6",
+          "count": 452,
+          "freq": 0.279
+        },
+        {
+          "san": "d6",
+          "uci": "d7d6",
+          "count": 419,
+          "freq": 0.2586
+        },
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 370,
+          "freq": 0.2284
+        },
+        {
+          "san": "Bc5",
+          "uci": "f8c5",
+          "count": 255,
+          "freq": 0.1574
+        },
+        {
+          "san": "Nge7",
+          "uci": "g8e7",
+          "count": 124,
+          "freq": 0.0765
+        }
+      ]
+    },
+    {
+      "position_hash": "552c416f4c0c1df3",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "total_visits": 1778,
+      "unique_games": 1778,
+      "avg_move_number": 1.0,
+      "top_moves": [
+        {
+          "san": "e4",
+          "uci": "e2e4",
+          "count": 1282,
+          "freq": 0.7432
+        },
+        {
+          "san": "d4",
+          "uci": "d2d4",
+          "count": 374,
+          "freq": 0.2168
+        },
+        {
+          "san": "Nf3",
+          "uci": "g1f3",
+          "count": 29,
+          "freq": 0.0168
+        },
+        {
+          "san": "c4",
+          "uci": "c2c4",
+          "count": 20,
+          "freq": 0.0116
+        },
+        {
+          "san": "e3",
+          "uci": "e2e3",
+          "count": 20,
+          "freq": 0.0116
+        }
+      ]
+    },
+    {
+      "position_hash": "fc8b777263bea88d",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR b KQkq - 0 2",
+      "total_visits": 1770,
+      "unique_games": 1770,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "Nc6",
+          "uci": "b8c6",
+          "count": 682,
+          "freq": 0.4241
+        },
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 511,
+          "freq": 0.3178
+        },
+        {
+          "san": "d6",
+          "uci": "d7d6",
+          "count": 207,
+          "freq": 0.1287
+        },
+        {
+          "san": "Bc5",
+          "uci": "f8c5",
+          "count": 132,
+          "freq": 0.0821
+        },
+        {
+          "san": "Bb4",
+          "uci": "f8b4",
+          "count": 76,
+          "freq": 0.0473
+        }
+      ]
+    },
+    {
+      "position_hash": "582b9052e82a3218",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2",
+      "total_visits": 1634,
+      "unique_games": 1634,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "dxe5",
+          "uci": "d4e5",
+          "count": 955,
+          "freq": 0.6614
+        },
+        {
+          "san": "d5",
+          "uci": "d4d5",
+          "count": 163,
+          "freq": 0.1129
+        },
+        {
+          "san": "e3",
+          "uci": "e2e3",
+          "count": 129,
+          "freq": 0.0893
+        },
+        {
+          "san": "c4",
+          "uci": "c2c4",
+          "count": 105,
+          "freq": 0.0727
+        },
+        {
+          "san": "Nf3",
+          "uci": "g1f3",
+          "count": 92,
+          "freq": 0.0637
+        }
+      ]
+    },
+    {
+      "position_hash": "6d1e4841fea62edd",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/4P3/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+      "total_visits": 1618,
+      "unique_games": 1618,
+      "avg_move_number": 1.0,
+      "top_moves": [
+        {
+          "san": "e5",
+          "uci": "e7e5",
+          "count": 630,
+          "freq": 0.4615
+        },
+        {
+          "san": "d5",
+          "uci": "d7d5",
+          "count": 359,
+          "freq": 0.263
+        },
+        {
+          "san": "c5",
+          "uci": "c7c5",
+          "count": 150,
+          "freq": 0.1099
+        },
+        {
+          "san": "e6",
+          "uci": "e7e6",
+          "count": 147,
+          "freq": 0.1077
+        },
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 79,
+          "freq": 0.0579
+        }
+      ]
+    },
+    {
+      "position_hash": "b940c6a5017d1c24",
+      "fen": "rnbqkbnr/pppp1ppp/4p3/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
+      "total_visits": 1597,
+      "unique_games": 1597,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "d5",
+          "uci": "d7d5",
+          "count": 932,
+          "freq": 0.6971
+        },
+        {
+          "san": "c6",
+          "uci": "c7c6",
+          "count": 113,
+          "freq": 0.0845
+        },
+        {
+          "san": "c5",
+          "uci": "c7c5",
+          "count": 112,
+          "freq": 0.0838
+        },
+        {
+          "san": "d6",
+          "uci": "d7d6",
+          "count": 92,
+          "freq": 0.0688
+        },
+        {
+          "san": "b6",
+          "uci": "b7b6",
+          "count": 88,
+          "freq": 0.0658
+        }
+      ]
+    },
+    {
+      "position_hash": "9943184025266bdd",
+      "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+      "total_visits": 1596,
+      "unique_games": 1596,
+      "avg_move_number": 4.0,
+      "top_moves": [
+        {
+          "san": "d3",
+          "uci": "d2d3",
+          "count": 588,
+          "freq": 0.3874
+        },
+        {
+          "san": "Ng5",
+          "uci": "f3g5",
+          "count": 445,
+          "freq": 0.2931
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 235,
+          "freq": 0.1548
+        },
+        {
+          "san": "O-O",
+          "uci": "e1g1",
+          "count": 139,
+          "freq": 0.0916
+        },
+        {
+          "san": "d4",
+          "uci": "d2d4",
+          "count": 111,
+          "freq": 0.0731
+        }
+      ]
+    },
+    {
+      "position_hash": "950664f2bf66957a",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+      "total_visits": 1574,
+      "unique_games": 1574,
+      "avg_move_number": 4.0,
+      "top_moves": [
+        {
+          "san": "Nxd4",
+          "uci": "f3d4",
+          "count": 933,
+          "freq": 0.5958
+        },
+        {
+          "san": "Bc4",
+          "uci": "f1c4",
+          "count": 400,
+          "freq": 0.2554
+        },
+        {
+          "san": "c3",
+          "uci": "c2c3",
+          "count": 113,
+          "freq": 0.0722
+        },
+        {
+          "san": "Ng5",
+          "uci": "f3g5",
+          "count": 112,
+          "freq": 0.0715
+        },
+        {
+          "san": "Bb5",
+          "uci": "f1b5",
+          "count": 8,
+          "freq": 0.0051
+        }
+      ]
+    },
+    {
+      "position_hash": "9b55987dcfcd310d",
+      "fen": "rnbqkb1r/pppp1ppp/5n2/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3",
+      "total_visits": 1544,
+      "unique_games": 1544,
+      "avg_move_number": 3.0,
+      "top_moves": [
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 556,
+          "freq": 0.3749
+        },
+        {
+          "san": "Nxe5",
+          "uci": "f3e5",
+          "count": 456,
+          "freq": 0.3075
+        },
+        {
+          "san": "Bc4",
+          "uci": "f1c4",
+          "count": 245,
+          "freq": 0.1652
+        },
+        {
+          "san": "d4",
+          "uci": "d2d4",
+          "count": 124,
+          "freq": 0.0836
+        },
+        {
+          "san": "d3",
+          "uci": "d2d3",
+          "count": 102,
+          "freq": 0.0688
+        }
+      ]
+    },
+    {
+      "position_hash": "08003eeed82be69f",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2",
+      "total_visits": 1511,
+      "unique_games": 1511,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "exd4",
+          "uci": "e5d4",
+          "count": 971,
+          "freq": 0.6921
+        },
+        {
+          "san": "Nc6",
+          "uci": "b8c6",
+          "count": 222,
+          "freq": 0.1582
+        },
+        {
+          "san": "d6",
+          "uci": "d7d6",
+          "count": 105,
+          "freq": 0.0748
+        },
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 57,
+          "freq": 0.0406
+        },
+        {
+          "san": "d5",
+          "uci": "d7d5",
+          "count": 48,
+          "freq": 0.0342
+        }
+      ]
+    },
+    {
+      "position_hash": "a93e45429600a644",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4PP2/8/PPPP2PP/RNBQKBNR b KQkq - 0 2",
+      "total_visits": 1496,
+      "unique_games": 1496,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "exf4",
+          "uci": "e5f4",
+          "count": 585,
+          "freq": 0.4258
+        },
+        {
+          "san": "Nc6",
+          "uci": "b8c6",
+          "count": 358,
+          "freq": 0.2606
+        },
+        {
+          "san": "d6",
+          "uci": "d7d6",
+          "count": 226,
+          "freq": 0.1645
+        },
+        {
+          "san": "d5",
+          "uci": "d7d5",
+          "count": 146,
+          "freq": 0.1063
+        },
+        {
+          "san": "Bc5",
+          "uci": "f8c5",
+          "count": 59,
+          "freq": 0.0429
+        }
+      ]
+    },
+    {
+      "position_hash": "d4762c821a37d431",
+      "fen": "rnbqkbnr/pp1ppppp/2p5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
+      "total_visits": 1401,
+      "unique_games": 1401,
+      "avg_move_number": 2.0,
+      "top_moves": [
+        {
+          "san": "d5",
+          "uci": "d7d5",
+          "count": 1294,
+          "freq": 0.9411
+        },
+        {
+          "san": "d6",
+          "uci": "d7d6",
+          "count": 38,
+          "freq": 0.0276
+        },
+        {
+          "san": "e6",
+          "uci": "e7e6",
+          "count": 23,
+          "freq": 0.0167
+        },
+        {
+          "san": "g6",
+          "uci": "g7g6",
+          "count": 14,
+          "freq": 0.0102
+        },
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 6,
+          "freq": 0.0044
+        }
+      ]
+    },
+    {
+      "position_hash": "cea406873b8637f6",
+      "fen": "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+      "total_visits": 1345,
+      "unique_games": 1345,
+      "avg_move_number": 4.0,
+      "top_moves": [
+        {
+          "san": "c3",
+          "uci": "c2c3",
+          "count": 386,
+          "freq": 0.3203
+        },
+        {
+          "san": "O-O",
+          "uci": "e1g1",
+          "count": 296,
+          "freq": 0.2456
+        },
+        {
+          "san": "d3",
+          "uci": "d2d3",
+          "count": 291,
+          "freq": 0.2415
+        },
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 142,
+          "freq": 0.1178
+        },
+        {
+          "san": "b4",
+          "uci": "b2b4",
+          "count": 90,
+          "freq": 0.0747
+        }
+      ]
+    },
+    {
+      "position_hash": "cd2ba18f5b22801a",
+      "fen": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3",
+      "total_visits": 1336,
+      "unique_games": 1336,
+      "avg_move_number": 3.0,
+      "top_moves": [
+        {
+          "san": "Nc3",
+          "uci": "b1c3",
+          "count": 800,
+          "freq": 0.6309
+        },
+        {
+          "san": "Nf3",
+          "uci": "g1f3",
+          "count": 259,
+          "freq": 0.2043
+        },
+        {
+          "san": "cxd5",
+          "uci": "c4d5",
+          "count": 107,
+          "freq": 0.0844
+        },
+        {
+          "san": "e3",
+          "uci": "e2e3",
+          "count": 78,
+          "freq": 0.0615
+        },
+        {
+          "san": "a3",
+          "uci": "a2a3",
+          "count": 24,
+          "freq": 0.0189
+        }
+      ]
+    },
+    {
+      "position_hash": "4b710899cccd1921",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/2N2N2/PPPP1PPP/R1BQKB1R b KQkq - 3 3",
+      "total_visits": 1330,
+      "unique_games": 1330,
+      "avg_move_number": 3.0,
+      "top_moves": [
+        {
+          "san": "Nf6",
+          "uci": "g8f6",
+          "count": 630,
+          "freq": 0.5181
+        },
+        {
+          "san": "Bc5",
+          "uci": "f8c5",
+          "count": 315,
+          "freq": 0.259
+        },
+        {
+          "san": "d6",
+          "uci": "d7d6",
+          "count": 125,
+          "freq": 0.1028
+        },
+        {
+          "san": "Bb4",
+          "uci": "f8b4",
+          "count": 113,
+          "freq": 0.0929
+        },
+        {
+          "san": "f5",
+          "uci": "f7f5",
+          "count": 33,
+          "freq": 0.0271
+        }
+      ]
+    }
+  ],
+  "game_lengths": {
+    "blitz": {
+      "count": 73859,
+      "avg": 69.8,
+      "median": 66,
+      "min": 2,
+      "max": 434,
+      "histogram": {
+        "90": 5213,
+        "120": 2091,
+        "70": 8718,
+        "80": 6694,
+        "130": 1419,
+        "40": 8857,
+        "20": 3496,
+        "50": 10482,
+        "110": 2952,
+        "60": 10237,
+        "170": 121,
+        "100": 4025,
+        "30": 6202,
+        "10": 1594,
+        "150": 429,
+        "140": 918,
+        "180": 65,
+        "160": 239,
+        "430": 1,
+        "200": 24,
+        "220": 8,
+        "190": 42,
+        "210": 15,
+        "230": 5,
+        "260": 3,
+        "340": 1,
+        "0": 5,
+        "240": 2,
+        "250": 1
+      }
+    },
+    "rapid": {
+      "count": 28368,
+      "avg": 66.0,
+      "median": 60,
+      "min": 1,
+      "max": 259,
+      "histogram": {
+        "60": 3421,
+        "50": 3922,
+        "90": 1744,
+        "150": 207,
+        "180": 53,
+        "110": 1013,
+        "120": 758,
+        "80": 2138,
+        "100": 1322,
+        "70": 2747,
+        "20": 2047,
+        "30": 2975,
+        "10": 1177,
+        "40": 3735,
+        "140": 321,
+        "130": 521,
+        "160": 118,
+        "190": 31,
+        "200": 15,
+        "170": 72,
+        "220": 6,
+        "250": 1,
+        "0": 15,
+        "210": 6,
+        "240": 2,
+        "230": 1
+      }
+    }
+  },
+  "hubs": [
+    {
+      "position_hash": "7bedc49b2193112c",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "games": 100496,
+      "openings": 444,
+      "opening_ecos": [
+        "D02",
+        "B10",
+        "A40",
+        "B03",
+        "B13",
+        "B30",
+        "A28",
+        "B06",
+        "D31",
+        "C20"
+      ],
+      "avg_move_number": 1.0
+    },
+    {
+      "position_hash": "83df54935c9117ee",
+      "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1",
+      "games": 26252,
+      "openings": 267,
+      "opening_ecos": [
+        "D02",
+        "A40",
+        "D31",
+        "A45",
+        "D94",
+        "D00",
+        "A46",
+        "E60",
+        "D55",
+        "E87"
+      ],
+      "avg_move_number": 1.0
+    },
+    {
+      "position_hash": "614a77c5580d8901",
+      "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+      "games": 60336,
+      "openings": 221,
+      "opening_ecos": [
+        "B10",
+        "B03",
+        "B13",
+        "B30",
+        "B06",
+        "C20",
+        "C00",
+        "C40",
+        "C46",
+        "B20"
+      ],
+      "avg_move_number": 1.0
+    },
+    {
+      "position_hash": "46f9336c46c8676a",
+      "fen": "rnbqkb1r/pppppppp/5n2/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 1 2",
+      "games": 5541,
+      "openings": 183,
+      "opening_ecos": [
+        "A45",
+        "D94",
+        "A46",
+        "D00",
+        "E60",
+        "D55",
+        "E87",
+        "B00",
+        "D06",
+        "D01"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "19df4d230841ef1a",
+      "fen": "rnbqkb1r/pppppppp/5n2/8/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
+      "games": 2061,
+      "openings": 148,
+      "opening_ecos": [
+        "D94",
+        "E60",
+        "D55",
+        "E87",
+        "D06",
+        "A50",
+        "D15",
+        "A51",
+        "E12",
+        "D85"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "b1ebba1baafbced9",
+      "fen": "rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq - 0 1",
+      "games": 3399,
+      "openings": 132,
+      "opening_ecos": [
+        "A28",
+        "A24",
+        "A10",
+        "A34",
+        "A15",
+        "A13",
+        "A11",
+        "A16",
+        "A20",
+        "A40"
+      ],
+      "avg_move_number": 1.0
+    },
+    {
+      "position_hash": "adc233cb377d330e",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1",
+      "games": 3121,
+      "openings": 132,
+      "opening_ecos": [
+        "A05",
+        "A07",
+        "A04",
+        "D02",
+        "C00",
+        "A13",
+        "B44",
+        "A15",
+        "D07",
+        "B07"
+      ],
+      "avg_move_number": 1.0
+    },
+    {
+      "position_hash": "06095571fe216111",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2",
+      "games": 11076,
+      "openings": 116,
+      "opening_ecos": [
+        "D02",
+        "D31",
+        "D00",
+        "D01",
+        "D10",
+        "D06",
+        "D04",
+        "D30",
+        "D55",
+        "D50"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "552c416f4c0c1df3",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "games": 1778,
+      "openings": 103,
+      "opening_ecos": [
+        "D00",
+        "C45",
+        "B15",
+        "B02",
+        "A03",
+        "B01",
+        "B08",
+        "A01",
+        "B30",
+        "B00"
+      ],
+      "avg_move_number": 1.0
+    },
+    {
+      "position_hash": "8b72e99490c8a6f0",
+      "fen": "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "games": 11371,
+      "openings": 86,
+      "opening_ecos": [
+        "B30",
+        "B20",
+        "B32",
+        "B27",
+        "B21",
+        "B70",
+        "B52",
+        "B33",
+        "B31",
+        "B23"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "3993890dc34c6b8e",
+      "fen": "rnbqkbnr/pppp1ppp/4p3/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2",
+      "games": 2361,
+      "openings": 86,
+      "opening_ecos": [
+        "A40",
+        "D31",
+        "C00",
+        "C02",
+        "D30",
+        "D01",
+        "E32",
+        "D37",
+        "D02",
+        "C10"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "6ac1a2d10a8a4e8e",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
+      "games": 3417,
+      "openings": 82,
+      "opening_ecos": [
+        "D31",
+        "D10",
+        "D06",
+        "D30",
+        "D55",
+        "D50",
+        "D45",
+        "D02",
+        "D08",
+        "D43"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "71d40fb7e91bbec9",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "games": 23527,
+      "openings": 81,
+      "opening_ecos": [
+        "C20",
+        "C40",
+        "C46",
+        "C50",
+        "C47",
+        "C64",
+        "C21",
+        "C55",
+        "C25",
+        "C42"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "94af3d8f44071432",
+      "fen": "rnbqkb1r/pppppppp/5n2/8/3P4/5N2/PPP1PPPP/RNBQKB1R b KQkq - 2 2",
+      "games": 1269,
+      "openings": 79,
+      "opening_ecos": [
+        "A46",
+        "A43",
+        "A48",
+        "D02",
+        "D04",
+        "A47",
+        "D03",
+        "E11",
+        "A49",
+        "B08"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "e6835760c831d76a",
+      "fen": "rnbqkb1r/pppppppp/5n2/8/2P5/8/PP1PPPPP/RNBQKBNR w KQkq - 1 2",
+      "games": 628,
+      "openings": 76,
+      "opening_ecos": [
+        "A24",
+        "A15",
+        "A16",
+        "E76",
+        "E90",
+        "A22",
+        "A18",
+        "A17",
+        "A34",
+        "E10"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "b788e21f7a5146d2",
+      "fen": "rnbqkb1r/pppp1ppp/4pn2/8/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3",
+      "games": 736,
+      "openings": 75,
+      "opening_ecos": [
+        "D55",
+        "E12",
+        "D52",
+        "D37",
+        "E24",
+        "D38",
+        "E32",
+        "D30",
+        "E00",
+        "A50"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "34dddf5248df1dcd",
+      "fen": "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
+      "games": 6071,
+      "openings": 73,
+      "opening_ecos": [
+        "B30",
+        "B32",
+        "B27",
+        "B70",
+        "B52",
+        "B33",
+        "B31",
+        "B50",
+        "B29",
+        "B44"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "30fc8040186b6e40",
+      "fen": "rnbqkbnr/pppp1ppp/4p3/8/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
+      "games": 757,
+      "openings": 63,
+      "opening_ecos": [
+        "D31",
+        "D30",
+        "A40",
+        "E32",
+        "D37",
+        "E15",
+        "D32",
+        "A84",
+        "D38",
+        "A13"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "70855f3bbecce265",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
+      "games": 14409,
+      "openings": 60,
+      "opening_ecos": [
+        "C40",
+        "C46",
+        "C50",
+        "C47",
+        "C64",
+        "C55",
+        "C42",
+        "C57",
+        "C54",
+        "C44"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "1c961345c1a39c8c",
+      "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+      "games": 1279,
+      "openings": 59,
+      "opening_ecos": [
+        "C45",
+        "B15",
+        "B02",
+        "B01",
+        "B08",
+        "B30",
+        "B06",
+        "B07",
+        "C40",
+        "C02"
+      ],
+      "avg_move_number": 1.0
+    },
+    {
+      "position_hash": "d2a6532b3188c5a4",
+      "fen": "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 2 2",
+      "games": 428,
+      "openings": 58,
+      "opening_ecos": [
+        "D02",
+        "A15",
+        "A05",
+        "A48",
+        "A46",
+        "E90",
+        "E65",
+        "A49",
+        "A07",
+        "E14"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "8fd47aa5040412c9",
+      "fen": "rnbqkb1r/pppp1ppp/4pn2/8/2PP4/2N5/PP2PPPP/R1BQKBNR b KQkq - 1 3",
+      "games": 459,
+      "openings": 57,
+      "opening_ecos": [
+        "D52",
+        "E12",
+        "E24",
+        "D38",
+        "E32",
+        "A50",
+        "D35",
+        "E27",
+        "E20",
+        "D60"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "960736462fa33c2a",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R b KQkq - 1 2",
+      "games": 2598,
+      "openings": 56,
+      "opening_ecos": [
+        "D02",
+        "D04",
+        "D07",
+        "D26",
+        "D32",
+        "D43",
+        "D30",
+        "D03",
+        "D93",
+        "D31"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "cdf57eb14909ffdf",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3",
+      "games": 9410,
+      "openings": 53,
+      "opening_ecos": [
+        "C46",
+        "C50",
+        "C47",
+        "C64",
+        "C55",
+        "C57",
+        "C54",
+        "C44",
+        "C63",
+        "C48"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "cd2ba18f5b22801a",
+      "fen": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3",
+      "games": 1336,
+      "openings": 52,
+      "opening_ecos": [
+        "D31",
+        "D30",
+        "D55",
+        "D45",
+        "D37",
+        "E06",
+        "D53",
+        "D34",
+        "D40",
+        "D38"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "b758d90873393a66",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 0 2",
+      "games": 1116,
+      "openings": 51,
+      "opening_ecos": [
+        "A05",
+        "A07",
+        "D02",
+        "D07",
+        "D32",
+        "D77",
+        "D04",
+        "A09",
+        "A06",
+        "A08"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "483e7ff8198a23c2",
+      "fen": "rnbqkb1r/pppppp1p/5np1/8/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3",
+      "games": 650,
+      "openings": 51,
+      "opening_ecos": [
+        "D94",
+        "E60",
+        "E87",
+        "D85",
+        "E67",
+        "E61",
+        "A65",
+        "E90",
+        "E63",
+        "E91"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "d510ba1191c77f2f",
+      "fen": "rnbqkb1r/ppp1pppp/5n2/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq - 2 3",
+      "games": 1125,
+      "openings": 50,
+      "opening_ecos": [
+        "D04",
+        "D02",
+        "D43",
+        "D03",
+        "D93",
+        "A48",
+        "D05",
+        "E48",
+        "D13",
+        "D38"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "56241711515e96bb",
+      "fen": "rnbqkb1r/ppp1pppp/5n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 2 3",
+      "games": 273,
+      "openings": 47,
+      "opening_ecos": [
+        "D23",
+        "D43",
+        "D93",
+        "D30",
+        "A15",
+        "D02",
+        "D94",
+        "D06",
+        "D13",
+        "D38"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "06b641a7b1bd67e4",
+      "fen": "rnbqkbnr/pp2pppp/3p4/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3",
+      "games": 1950,
+      "openings": 46,
+      "opening_ecos": [
+        "B70",
+        "B52",
+        "B50",
+        "B75",
+        "B90",
+        "B54",
+        "B51",
+        "B71",
+        "B56",
+        "B80"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "242dcc507f89c23f",
+      "fen": "rnbqkb1r/ppp1pppp/5n2/3p4/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3",
+      "games": 702,
+      "openings": 44,
+      "opening_ecos": [
+        "D06",
+        "D50",
+        "D23",
+        "D15",
+        "D35",
+        "D93",
+        "D30",
+        "D55",
+        "D37",
+        "D38"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "50f0d2f44bd920d8",
+      "fen": "rnbqkbnr/pp2pppp/3p4/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
+      "games": 1052,
+      "openings": 43,
+      "opening_ecos": [
+        "B70",
+        "B75",
+        "B90",
+        "B50",
+        "B54",
+        "B71",
+        "B56",
+        "B80",
+        "B98",
+        "B92"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "12c68703725eaec5",
+      "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1",
+      "games": 373,
+      "openings": 43,
+      "opening_ecos": [
+        "D00",
+        "D02",
+        "D10",
+        "D91",
+        "D73",
+        "E61",
+        "D11",
+        "A40",
+        "A48",
+        "A41"
+      ],
+      "avg_move_number": 1.0
+    },
+    {
+      "position_hash": "0f55299d66f7c8e9",
+      "fen": "rnbqkb1r/pppppppp/5n2/8/2P5/2N5/PP1PPPPP/R1BQKBNR b KQkq - 2 2",
+      "games": 342,
+      "openings": 43,
+      "opening_ecos": [
+        "A24",
+        "A16",
+        "E76",
+        "A22",
+        "A18",
+        "A17",
+        "A34",
+        "D40",
+        "E90",
+        "E40"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "dcc632cbf32a05ce",
+      "fen": "rnbqkbnr/pp2pppp/3p4/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+      "games": 1016,
+      "openings": 42,
+      "opening_ecos": [
+        "B70",
+        "B75",
+        "B90",
+        "B54",
+        "B50",
+        "B71",
+        "B80",
+        "B98",
+        "B92",
+        "B76"
+      ],
+      "avg_move_number": 4.0
+    },
+    {
+      "position_hash": "673c6054c94bab98",
+      "fen": "rnbqkb1r/pppppp1p/5np1/8/2PP4/2N5/PP2PPPP/R1BQKBNR b KQkq - 1 3",
+      "games": 504,
+      "openings": 42,
+      "opening_ecos": [
+        "D94",
+        "E87",
+        "E67",
+        "E61",
+        "A65",
+        "E90",
+        "E91",
+        "D85",
+        "E71",
+        "D92"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "d6172aa415f2aaf0",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "games": 51,
+      "openings": 42,
+      "opening_ecos": [
+        "C16",
+        "D30",
+        "E11",
+        "C04",
+        "D85",
+        "C01",
+        "B23",
+        "D06",
+        "D79",
+        "D31"
+      ],
+      "avg_move_number": 1.0
+    },
+    {
+      "position_hash": "6f26065a30825872",
+      "fen": "rnbqkbnr/pp2pppp/3p4/8/3NP3/8/PPP2PPP/RNBQKB1R b KQkq - 0 4",
+      "games": 876,
+      "openings": 40,
+      "opening_ecos": [
+        "B70",
+        "B75",
+        "B90",
+        "B54",
+        "B50",
+        "B71",
+        "B80",
+        "B98",
+        "B92",
+        "B76"
+      ],
+      "avg_move_number": 4.0
+    },
+    {
+      "position_hash": "8c6e88f2b75781d0",
+      "fen": "rnbqkb1r/pp2pppp/3p1n2/8/3NP3/2N5/PPP2PPP/R1BQKB1R b KQkq - 2 5",
+      "games": 657,
+      "openings": 40,
+      "opening_ecos": [
+        "B70",
+        "B90",
+        "B71",
+        "B56",
+        "B80",
+        "B98",
+        "B92",
+        "B76",
+        "B94",
+        "B95"
+      ],
+      "avg_move_number": 5.0
+    },
+    {
+      "position_hash": "740bdde6cb166776",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/2N5/PPPPPPPP/R1BQKBNR b KQkq - 1 1",
+      "games": 505,
+      "openings": 40,
+      "opening_ecos": [
+        "A00",
+        "C25",
+        "B06",
+        "A45",
+        "C20",
+        "A02",
+        "C29",
+        "D00",
+        "B10",
+        "D01"
+      ],
+      "avg_move_number": 1.0
+    },
+    {
+      "position_hash": "e84c41a3aa92c722",
+      "fen": "rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 0 4",
+      "games": 401,
+      "openings": 40,
+      "opening_ecos": [
+        "D55",
+        "A13",
+        "D30",
+        "D45",
+        "D37",
+        "E06",
+        "E10",
+        "D43",
+        "D44",
+        "D02"
+      ],
+      "avg_move_number": 4.0
+    },
+    {
+      "position_hash": "3fa44f5e246407b6",
+      "fen": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 0 3",
+      "games": 362,
+      "openings": 40,
+      "opening_ecos": [
+        "D02",
+        "A13",
+        "D30",
+        "D45",
+        "D37",
+        "E06",
+        "D34",
+        "A90",
+        "D43",
+        "D44"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "a044631fd6529b18",
+      "fen": "rnbqkb1r/pp2pppp/3p1n2/8/3NP3/8/PPP2PPP/RNBQKB1R w KQkq - 1 5",
+      "games": 693,
+      "openings": 38,
+      "opening_ecos": [
+        "B70",
+        "B90",
+        "B54",
+        "B71",
+        "B80",
+        "B98",
+        "B92",
+        "B76",
+        "B56",
+        "B94"
+      ],
+      "avg_move_number": 5.0
+    },
+    {
+      "position_hash": "ec10a5620fe7ee2c",
+      "fen": "rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "games": 5789,
+      "openings": 37,
+      "opening_ecos": [
+        "C00",
+        "C11",
+        "C01",
+        "C10",
+        "C02",
+        "C07",
+        "B00",
+        "C18",
+        "C14",
+        "C19"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "3d967224715bcf06",
+      "fen": "r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3",
+      "games": 2506,
+      "openings": 37,
+      "opening_ecos": [
+        "B30",
+        "B32",
+        "B33",
+        "B31",
+        "B56",
+        "B44",
+        "B36",
+        "B21",
+        "B34",
+        "B60"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "0cff5c5836a12eb9",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3",
+      "games": 1924,
+      "openings": 37,
+      "opening_ecos": [
+        "C64",
+        "C63",
+        "C65",
+        "C61",
+        "C60",
+        "C71",
+        "C62",
+        "C77",
+        "C68",
+        "C70"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "4101a5387ad0f21d",
+      "fen": "rnbqkb1r/pppp1ppp/4pn2/8/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 1 3",
+      "games": 263,
+      "openings": 36,
+      "opening_ecos": [
+        "D55",
+        "E12",
+        "D37",
+        "D30",
+        "E11",
+        "E15",
+        "E09",
+        "E10",
+        "D43",
+        "E50"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "a5da0bebaa7e649e",
+      "fen": "rnbqkbnr/pppppp1p/6p1/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2",
+      "games": 1195,
+      "openings": 34,
+      "opening_ecos": [
+        "B06",
+        "A40",
+        "E67",
+        "B09",
+        "A42",
+        "B08",
+        "A41",
+        "B07",
+        "E81",
+        "E90"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "81e9417fd20b508d",
+      "fen": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR b KQkq - 1 3",
+      "games": 820,
+      "openings": 34,
+      "opening_ecos": [
+        "D31",
+        "D55",
+        "D37",
+        "D53",
+        "D40",
+        "D38",
+        "D35",
+        "D32",
+        "D43",
+        "D64"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "e6489e9735a1b09d",
+      "fen": "rnbqkbnr/pppp1ppp/4p3/8/2P5/8/PP1PPPPP/RNBQKBNR w KQkq - 0 2",
+      "games": 348,
+      "openings": 34,
+      "opening_ecos": [
+        "A13",
+        "A40",
+        "E15",
+        "A17",
+        "A18",
+        "D35",
+        "D30",
+        "E05",
+        "C00",
+        "A14"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "c3c39ccefd26e408",
+      "fen": "rnbqkbnr/pppp1ppp/4p3/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2",
+      "games": 3111,
+      "openings": 33,
+      "opening_ecos": [
+        "C11",
+        "C01",
+        "C10",
+        "C02",
+        "C00",
+        "C07",
+        "C18",
+        "C14",
+        "C19",
+        "B40"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "e4e8cb55687f105f",
+      "fen": "r1bqkbnr/pp1ppppp/2n5/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
+      "games": 1118,
+      "openings": 33,
+      "opening_ecos": [
+        "B32",
+        "B33",
+        "B56",
+        "B44",
+        "B36",
+        "B21",
+        "B34",
+        "B60",
+        "B45",
+        "B38"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "dfec9e21e2e4db52",
+      "fen": "r1bqkbnr/pp1ppppp/2n5/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+      "games": 1113,
+      "openings": 33,
+      "opening_ecos": [
+        "B32",
+        "B33",
+        "B56",
+        "B44",
+        "B36",
+        "B21",
+        "B34",
+        "B60",
+        "B45",
+        "B38"
+      ],
+      "avg_move_number": 4.0
+    },
+    {
+      "position_hash": "14da7e5679546856",
+      "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 1 2",
+      "games": 1003,
+      "openings": 33,
+      "opening_ecos": [
+        "B00",
+        "C47",
+        "C62",
+        "C60",
+        "C61",
+        "C46",
+        "C50",
+        "C44",
+        "C48",
+        "C54"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "9010e201cfeaec47",
+      "fen": "rnbqkbnr/ppp1pppp/3p4/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2",
+      "games": 892,
+      "openings": 33,
+      "opening_ecos": [
+        "E70",
+        "A41",
+        "A48",
+        "A53",
+        "B00",
+        "C00",
+        "B07",
+        "E81",
+        "E60",
+        "A46"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "4dcf83f02998442d",
+      "fen": "rnbqkbnr/pp1ppppp/8/2p5/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2",
+      "games": 1034,
+      "openings": 32,
+      "opening_ecos": [
+        "A56",
+        "A43",
+        "A08",
+        "B21",
+        "B32",
+        "D02",
+        "A44",
+        "A60",
+        "D32",
+        "B13"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "934272b2ac7059a1",
+      "fen": "rnbqk2r/ppppppbp/5np1/8/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4",
+      "games": 403,
+      "openings": 32,
+      "opening_ecos": [
+        "E87",
+        "E67",
+        "E61",
+        "A65",
+        "A10",
+        "E90",
+        "E91",
+        "E71",
+        "E70",
+        "E76"
+      ],
+      "avg_move_number": 4.0
+    },
+    {
+      "position_hash": "2ada650c61481696",
+      "fen": "rnbqkb1r/pppppppp/5n2/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 1 2",
+      "games": 1148,
+      "openings": 31,
+      "opening_ecos": [
+        "B03",
+        "B02",
+        "B05",
+        "A05",
+        "C26",
+        "B07",
+        "C50",
+        "C42",
+        "B04",
+        "C11"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "2eaa116d7e293807",
+      "fen": "r1bqkbnr/pp1ppppp/2n5/8/3NP3/8/PPP2PPP/RNBQKB1R b KQkq - 0 4",
+      "games": 1004,
+      "openings": 31,
+      "opening_ecos": [
+        "B32",
+        "B33",
+        "B56",
+        "B44",
+        "B36",
+        "B34",
+        "B60",
+        "B45",
+        "B38",
+        "B35"
+      ],
+      "avg_move_number": 4.0
+    },
+    {
+      "position_hash": "0edac5bf40da50f5",
+      "fen": "rnbqkb1r/pppppppp/5n2/8/2P5/5N2/PP1PPPPP/RNBQKB1R b KQkq - 0 2",
+      "games": 92,
+      "openings": 31,
+      "opening_ecos": [
+        "A15",
+        "A13",
+        "E05",
+        "A29",
+        "D75",
+        "D23",
+        "D38",
+        "A38",
+        "E97",
+        "E10"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "a50ffe3f1a6972d4",
+      "fen": "rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4",
+      "games": 720,
+      "openings": 30,
+      "opening_ecos": [
+        "D55",
+        "D50",
+        "D52",
+        "D38",
+        "D35",
+        "D37",
+        "D53",
+        "D40",
+        "D60",
+        "D45"
+      ],
+      "avg_move_number": 4.0
+    },
+    {
+      "position_hash": "fcb8bf34da7eb67e",
+      "fen": "rnbqkb1r/ppp1pppp/5n2/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR b KQkq - 1 3",
+      "games": 370,
+      "openings": 30,
+      "opening_ecos": [
+        "D06",
+        "D50",
+        "D15",
+        "D35",
+        "D37",
+        "D38",
+        "D53",
+        "D45",
+        "D24",
+        "D41"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "1c607d7d61e806e6",
+      "fen": "rnbqk2r/pppp1ppp/4pn2/8/1bPP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4",
+      "games": 244,
+      "openings": 30,
+      "opening_ecos": [
+        "E24",
+        "E32",
+        "E27",
+        "E20",
+        "E21",
+        "E48",
+        "E26",
+        "E38",
+        "E22",
+        "E30"
+      ],
+      "avg_move_number": 4.0
+    },
+    {
+      "position_hash": "92700ad268ecb9e4",
+      "fen": "rnbqkbnr/ppp2ppp/4p3/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq - 0 3",
+      "games": 668,
+      "openings": 29,
+      "opening_ecos": [
+        "D02",
+        "D26",
+        "D37",
+        "D30",
+        "D05",
+        "A40",
+        "E18",
+        "A90",
+        "D43",
+        "A04"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "8806bfa115bf7040",
+      "fen": "rnbqkb1r/pppp1ppp/4pn2/8/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq - 0 3",
+      "games": 336,
+      "openings": 29,
+      "opening_ecos": [
+        "A46",
+        "E11",
+        "D05",
+        "E12",
+        "E10",
+        "E14",
+        "D32",
+        "B14",
+        "E06",
+        "D38"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "bc240b6c910646b6",
+      "fen": "rnbqkbnr/pp1ppppp/2p5/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2",
+      "games": 946,
+      "openings": 28,
+      "opening_ecos": [
+        "A40",
+        "B12",
+        "B13",
+        "D10",
+        "D15",
+        "B15",
+        "D11",
+        "B18",
+        "D31",
+        "D45"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "e8cc6e27dd27cb9f",
+      "fen": "rnbqkb1r/pppppp1p/5np1/8/3P4/5N2/PPP1PPPP/RNBQKB1R w KQkq - 0 3",
+      "games": 413,
+      "openings": 28,
+      "opening_ecos": [
+        "A48",
+        "A49",
+        "B08",
+        "E90",
+        "E60",
+        "E65",
+        "D85",
+        "E92",
+        "D03",
+        "D79"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "c98f81344f4a38d9",
+      "fen": "rnbqkbnr/pp2pppp/2p5/3p4/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3",
+      "games": 943,
+      "openings": 27,
+      "opening_ecos": [
+        "D31",
+        "D10",
+        "D43",
+        "D15",
+        "D11",
+        "D12",
+        "D52",
+        "D66",
+        "D14",
+        "D17"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "3f86b7b9b85ca093",
+      "fen": "r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4",
+      "games": 452,
+      "openings": 27,
+      "opening_ecos": [
+        "C77",
+        "C68",
+        "C70",
+        "C78",
+        "C88",
+        "C80",
+        "C69",
+        "C84",
+        "C97",
+        "C91"
+      ],
+      "avg_move_number": 4.0
+    },
+    {
+      "position_hash": "f8289a8059469b55",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "games": 387,
+      "openings": 27,
+      "opening_ecos": [
+        "C45",
+        "C40",
+        "C41",
+        "C42",
+        "C47",
+        "C44",
+        "C55",
+        "C53",
+        "C50",
+        "B00"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "0805080e39f6ad2a",
+      "fen": "rnbqkbnr/pp1ppppp/8/2p5/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 0 2",
+      "games": 309,
+      "openings": 27,
+      "opening_ecos": [
+        "B44",
+        "A04",
+        "B27",
+        "B30",
+        "A30",
+        "A08",
+        "A38",
+        "B40",
+        "D05",
+        "B33"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "ec1caec5642e5234",
+      "fen": "rnbqkbnr/pppp1ppp/4p3/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 0 2",
+      "games": 274,
+      "openings": 27,
+      "opening_ecos": [
+        "C00",
+        "A04",
+        "A13",
+        "A46",
+        "D34",
+        "E06",
+        "D44",
+        "C02",
+        "D38",
+        "D02"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "6e606caee11339ad",
+      "fen": "rnbqkb1r/ppp1pppp/3p1n2/8/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 1 3",
+      "games": 239,
+      "openings": 27,
+      "opening_ecos": [
+        "E70",
+        "A53",
+        "E81",
+        "A54",
+        "E94",
+        "E73",
+        "E91",
+        "E61",
+        "E63",
+        "E64"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "323d13955fbbb467",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2",
+      "games": 235,
+      "openings": 27,
+      "opening_ecos": [
+        "D00",
+        "D02",
+        "D10",
+        "D91",
+        "D73",
+        "D11",
+        "D14",
+        "D01",
+        "D07",
+        "D23"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "1695ec8640629e08",
+      "fen": "rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/2N2N2/PP2PPPP/R1BQKB1R b KQkq - 1 4",
+      "games": 397,
+      "openings": 26,
+      "opening_ecos": [
+        "D55",
+        "D52",
+        "D37",
+        "D38",
+        "D40",
+        "D43",
+        "D44",
+        "D45",
+        "D24",
+        "D41"
+      ],
+      "avg_move_number": 4.0
+    },
+    {
+      "position_hash": "d8d07e9f8c4aac15",
+      "fen": "rnbqk2r/ppppppbp/5np1/8/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 4",
+      "games": 153,
+      "openings": 26,
+      "opening_ecos": [
+        "D85",
+        "E63",
+        "A40",
+        "E60",
+        "E90",
+        "E64",
+        "D90",
+        "E67",
+        "E98",
+        "E92"
+      ],
+      "avg_move_number": 4.0
+    },
+    {
+      "position_hash": "0a7650f07762e96a",
+      "fen": "rnbqkbnr/pp1ppppp/8/2p5/4P3/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 2",
+      "games": 1043,
+      "openings": 25,
+      "opening_ecos": [
+        "B23",
+        "B24",
+        "B43",
+        "B28",
+        "B90",
+        "B60",
+        "B45",
+        "B40",
+        "B46",
+        "B25"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "912a0549c98cdfbe",
+      "fen": "rnbqkbnr/pppppp1p/6p1/8/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
+      "games": 378,
+      "openings": 25,
+      "opening_ecos": [
+        "A10",
+        "A40",
+        "A42",
+        "A41",
+        "E81",
+        "E90",
+        "E61",
+        "E70",
+        "E62",
+        "E71"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "7ee409e2d65f0889",
+      "fen": "r1bqkbnr/1ppp1ppp/p1n5/4p3/B3P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 4",
+      "games": 283,
+      "openings": 25,
+      "opening_ecos": [
+        "C77",
+        "C70",
+        "C78",
+        "C88",
+        "C80",
+        "C84",
+        "C97",
+        "C91",
+        "C76",
+        "C71"
+      ],
+      "avg_move_number": 4.0
+    },
+    {
+      "position_hash": "21835f21656cd769",
+      "fen": "rnbqkb1r/pp2pppp/2p2n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 0 4",
+      "games": 199,
+      "openings": 25,
+      "opening_ecos": [
+        "D43",
+        "A50",
+        "D13",
+        "D11",
+        "D15",
+        "D17",
+        "D52",
+        "E09",
+        "D02",
+        "D46"
+      ],
+      "avg_move_number": 4.0
+    },
+    {
+      "position_hash": "7a2249134d585b69",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "games": 6044,
+      "openings": 24,
+      "opening_ecos": [
+        "B01",
+        "B14",
+        "B12",
+        "B02",
+        "C02",
+        "B00",
+        "A06",
+        "A03",
+        "B13",
+        "D00"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "430cb477f601738a",
+      "fen": "rnbqkbnr/pppp1ppp/4p3/8/3P4/5N2/PPP1PPPP/RNBQKB1R b KQkq - 1 2",
+      "games": 468,
+      "openings": 24,
+      "opening_ecos": [
+        "A40",
+        "D02",
+        "D37",
+        "A04",
+        "A46",
+        "D05",
+        "E06",
+        "D44",
+        "D45",
+        "D38"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "69b7ec4b10f1c28a",
+      "fen": "rnbqk1nr/ppppppbp/6p1/8/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 1 3",
+      "games": 346,
+      "openings": 24,
+      "opening_ecos": [
+        "A10",
+        "A40",
+        "A41",
+        "E81",
+        "E90",
+        "E61",
+        "A42",
+        "E62",
+        "E71",
+        "E70"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "bfe619acadcd930e",
+      "fen": "rnbqkb1r/pppppp1p/5np1/8/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 1 3",
+      "games": 153,
+      "openings": 24,
+      "opening_ecos": [
+        "E60",
+        "D85",
+        "E63",
+        "E90",
+        "E64",
+        "D90",
+        "E67",
+        "E98",
+        "E92",
+        "E61"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "538c1eadba4971fa",
+      "fen": "rnbqkbnr/pp1p1ppp/4p3/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3",
+      "games": 1194,
+      "openings": 23,
+      "opening_ecos": [
+        "B44",
+        "B40",
+        "B43",
+        "B46",
+        "B32",
+        "B47",
+        "B45",
+        "B49",
+        "B41",
+        "C02"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "1b50e4bcd1f28b36",
+      "fen": "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2",
+      "games": 450,
+      "openings": 23,
+      "opening_ecos": [
+        "B00",
+        "C62",
+        "C60",
+        "C61",
+        "C50",
+        "C46",
+        "C44",
+        "C48",
+        "C54",
+        "C51"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "0b35ad2878a1efe3",
+      "fen": "rnbqkb1r/pp2pppp/2p2n2/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 0 4",
+      "games": 392,
+      "openings": 23,
+      "opening_ecos": [
+        "D15",
+        "D43",
+        "D10",
+        "D06",
+        "D45",
+        "D52",
+        "D66",
+        "D14",
+        "D17",
+        "A16"
+      ],
+      "avg_move_number": 4.0
+    },
+    {
+      "position_hash": "dfd1521f936a7c09",
+      "fen": "rnbqkb1r/ppp1pppp/3p1n2/8/2PP4/2N5/PP2PPPP/R1BQKBNR b KQkq - 2 3",
+      "games": 166,
+      "openings": 23,
+      "opening_ecos": [
+        "E70",
+        "A53",
+        "A10",
+        "E81",
+        "E94",
+        "A54",
+        "E90",
+        "E73",
+        "E91",
+        "E61"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "583e4d214fa731f6",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2",
+      "games": 2565,
+      "openings": 22,
+      "opening_ecos": [
+        "C24",
+        "C50",
+        "C23",
+        "C55",
+        "C54",
+        "C57",
+        "C26",
+        "C44",
+        "C41",
+        "C42"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "047b9fc00ba37188",
+      "fen": "rnbqkbnr/ppp1pppp/3p4/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "games": 2366,
+      "openings": 22,
+      "opening_ecos": [
+        "B00",
+        "B07",
+        "B08",
+        "B09",
+        "C41",
+        "C00",
+        "E70",
+        "B50",
+        "B06",
+        "C50"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "b38a1f6b0e5b5aeb",
+      "fen": "rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3",
+      "games": 2111,
+      "openings": 22,
+      "opening_ecos": [
+        "C11",
+        "C01",
+        "C10",
+        "C02",
+        "C07",
+        "C18",
+        "C14",
+        "C19",
+        "C06",
+        "C00"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "fc8b777263bea88d",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR b KQkq - 0 2",
+      "games": 1770,
+      "openings": 22,
+      "opening_ecos": [
+        "C25",
+        "C26",
+        "C29",
+        "C47",
+        "C68",
+        "C42",
+        "C46",
+        "C28",
+        "C50",
+        "C48"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "f54b5e87078dcb49",
+      "fen": "rnbqkbnr/pp2pppp/2p5/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 1 3",
+      "games": 250,
+      "openings": 22,
+      "opening_ecos": [
+        "D11",
+        "D31",
+        "D13",
+        "D15",
+        "D17",
+        "D43",
+        "D46",
+        "D02",
+        "D30",
+        "D45"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "60c8d89835f69804",
+      "fen": "rnbqk1nr/ppppppbp/6p1/8/2PP4/2N5/PP2PPPP/R1BQKBNR b KQkq - 0 3",
+      "games": 249,
+      "openings": 22,
+      "opening_ecos": [
+        "A10",
+        "A40",
+        "A41",
+        "E90",
+        "E61",
+        "A42",
+        "E70",
+        "E81",
+        "E71",
+        "E91"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "12503db0547147e3",
+      "fen": "rnbqkbnr/pppppp1p/6p1/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "games": 1943,
+      "openings": 21,
+      "opening_ecos": [
+        "B06",
+        "B08",
+        "E90",
+        "B09",
+        "B27",
+        "B07",
+        "A41",
+        "E81",
+        "A71",
+        "A04"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "a4a506d9b0892352",
+      "fen": "rnbqkbnr/pppppp1p/6p1/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2",
+      "games": 1060,
+      "openings": 21,
+      "opening_ecos": [
+        "B06",
+        "A40",
+        "B08",
+        "E90",
+        "B09",
+        "A41",
+        "B07",
+        "B27",
+        "E81",
+        "E76"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "d8eff6ab83b05476",
+      "fen": "rnbqkbnr/pp1ppppp/8/2p5/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2",
+      "games": 1050,
+      "openings": 21,
+      "opening_ecos": [
+        "B21",
+        "B40",
+        "B22",
+        "C00",
+        "B34",
+        "B32",
+        "B44",
+        "B90",
+        "B33",
+        "B50"
+      ],
+      "avg_move_number": 2.0
+    },
+    {
+      "position_hash": "6e7ea39debaeaca9",
+      "fen": "rnbqkbnr/pp1p1ppp/4p3/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
+      "games": 706,
+      "openings": 21,
+      "opening_ecos": [
+        "B44",
+        "C00",
+        "B40",
+        "B43",
+        "B46",
+        "B32",
+        "B47",
+        "B45",
+        "B49",
+        "B41"
+      ],
+      "avg_move_number": 3.0
+    },
+    {
+      "position_hash": "b5f26bd0fd581926",
+      "fen": "rnbqk2r/ppp1ppbp/3p1np1/8/2PPP3/2N5/PP3PPP/R1BQKBNR w KQkq - 0 5",
+      "games": 293,
+      "openings": 21,
+      "opening_ecos": [
+        "E87",
+        "E70",
+        "E76",
+        "E90",
+        "E91",
+        "E71",
+        "E81",
+        "E73",
+        "E97",
+        "E83"
+      ],
+      "avg_move_number": 5.0
+    },
+    {
+      "position_hash": "a178f8e7fcb8ee53",
+      "fen": "rnbqk2r/ppppppbp/5np1/8/2PPP3/2N5/PP3PPP/R1BQKBNR b KQkq - 0 4",
+      "games": 244,
+      "openings": 21,
+      "opening_ecos": [
+        "E87",
+        "E76",
+        "A65",
+        "E90",
+        "E91",
+        "E71",
+        "E70",
+        "E81",
+        "E97",
+        "E73"
+      ],
+      "avg_move_number": 4.0
+    }
+  ],
+  "total_transposition_hubs": 100,
+  "move_diversity": [
+    {
+      "position_hash": "7bedc49b2193112c",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "by_elo": {
+        "0-800": {
+          "entropy": 2.073,
+          "concentration": 0.583,
+          "unique_moves": 19,
+          "total_observations": 1114
+        },
+        "800-1000": {
+          "entropy": 1.759,
+          "concentration": 0.627,
+          "unique_moves": 20,
+          "total_observations": 3749
+        },
+        "1000-1200": {
+          "entropy": 1.691,
+          "concentration": 0.643,
+          "unique_moves": 19,
+          "total_observations": 7547
+        },
+        "1200-1400": {
+          "entropy": 1.719,
+          "concentration": 0.636,
+          "unique_moves": 19,
+          "total_observations": 12361
+        },
+        "1400-1600": {
+          "entropy": 1.717,
+          "concentration": 0.623,
+          "unique_moves": 20,
+          "total_observations": 17422
+        },
+        "1600-1800": {
+          "entropy": 1.755,
+          "concentration": 0.607,
+          "unique_moves": 19,
+          "total_observations": 21208
+        },
+        "1800-2000": {
+          "entropy": 1.774,
+          "concentration": 0.587,
+          "unique_moves": 19,
+          "total_observations": 19869
+        },
+        "2000-2200": {
+          "entropy": 1.871,
+          "concentration": 0.55,
+          "unique_moves": 20,
+          "total_observations": 11825
+        },
+        "2200-2500": {
+          "entropy": 1.943,
+          "concentration": 0.506,
+          "unique_moves": 18,
+          "total_observations": 5014
+        },
+        "2500+": {
+          "entropy": 1.806,
+          "concentration": 0.494,
+          "unique_moves": 9,
+          "total_observations": 387
+        }
+      }
+    },
+    {
+      "position_hash": "614a77c5580d8901",
+      "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+      "by_elo": {
+        "0-800": {
+          "entropy": 2.31,
+          "concentration": 0.591,
+          "unique_moves": 18,
+          "total_observations": 665
+        },
+        "800-1000": {
+          "entropy": 2.324,
+          "concentration": 0.571,
+          "unique_moves": 18,
+          "total_observations": 2376
+        },
+        "1000-1200": {
+          "entropy": 2.379,
+          "concentration": 0.536,
+          "unique_moves": 19,
+          "total_observations": 4796
+        },
+        "1200-1400": {
+          "entropy": 2.457,
+          "concentration": 0.509,
+          "unique_moves": 18,
+          "total_observations": 7922
+        },
+        "1400-1600": {
+          "entropy": 2.63,
+          "concentration": 0.444,
+          "unique_moves": 18,
+          "total_observations": 10811
+        },
+        "1600-1800": {
+          "entropy": 2.709,
+          "concentration": 0.384,
+          "unique_moves": 20,
+          "total_observations": 12843
+        },
+        "1800-2000": {
+          "entropy": 2.831,
+          "concentration": 0.294,
+          "unique_moves": 19,
+          "total_observations": 11599
+        },
+        "2000-2200": {
+          "entropy": 2.764,
+          "concentration": 0.318,
+          "unique_moves": 17,
+          "total_observations": 6537
+        },
+        "2200-2500": {
+          "entropy": 2.766,
+          "concentration": 0.347,
+          "unique_moves": 14,
+          "total_observations": 2593
+        },
+        "2500+": {
+          "entropy": 2.552,
+          "concentration": 0.376,
+          "unique_moves": 11,
+          "total_observations": 194
+        }
+      }
+    },
+    {
+      "position_hash": "83df54935c9117ee",
+      "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1",
+      "by_elo": {
+        "0-800": {
+          "entropy": 2.682,
+          "concentration": 0.492,
+          "unique_moves": 17,
+          "total_observations": 264
+        },
+        "800-1000": {
+          "entropy": 2.444,
+          "concentration": 0.554,
+          "unique_moves": 20,
+          "total_observations": 876
+        },
+        "1000-1200": {
+          "entropy": 2.513,
+          "concentration": 0.523,
+          "unique_moves": 19,
+          "total_observations": 1755
+        },
+        "1200-1400": {
+          "entropy": 2.491,
+          "concentration": 0.523,
+          "unique_moves": 18,
+          "total_observations": 2909
+        },
+        "1400-1600": {
+          "entropy": 2.606,
+          "concentration": 0.47,
+          "unique_moves": 17,
+          "total_observations": 4358
+        },
+        "1600-1800": {
+          "entropy": 2.71,
+          "concentration": 0.428,
+          "unique_moves": 18,
+          "total_observations": 5567
+        },
+        "1800-2000": {
+          "entropy": 2.694,
+          "concentration": 0.382,
+          "unique_moves": 19,
+          "total_observations": 5537
+        },
+        "2000-2200": {
+          "entropy": 2.624,
+          "concentration": 0.345,
+          "unique_moves": 18,
+          "total_observations": 3356
+        },
+        "2200-2500": {
+          "entropy": 2.332,
+          "concentration": 0.475,
+          "unique_moves": 15,
+          "total_observations": 1498
+        },
+        "2500+": {
+          "entropy": 1.816,
+          "concentration": 0.538,
+          "unique_moves": 10,
+          "total_observations": 132
+        }
+      }
+    },
+    {
+      "position_hash": "71d40fb7e91bbec9",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "by_elo": {
+        "0-800": {
+          "entropy": 2.945,
+          "concentration": 0.423,
+          "unique_moves": 22,
+          "total_observations": 376
+        },
+        "800-1000": {
+          "entropy": 2.379,
+          "concentration": 0.537,
+          "unique_moves": 20,
+          "total_observations": 1327
+        },
+        "1000-1200": {
+          "entropy": 2.287,
+          "concentration": 0.57,
+          "unique_moves": 24,
+          "total_observations": 2608
+        },
+        "1200-1400": {
+          "entropy": 2.186,
+          "concentration": 0.594,
+          "unique_moves": 25,
+          "total_observations": 3925
+        },
+        "1400-1600": {
+          "entropy": 2.012,
+          "concentration": 0.621,
+          "unique_moves": 23,
+          "total_observations": 4746
+        },
+        "1600-1800": {
+          "entropy": 1.992,
+          "concentration": 0.607,
+          "unique_moves": 20,
+          "total_observations": 4867
+        },
+        "1800-2000": {
+          "entropy": 1.835,
+          "concentration": 0.646,
+          "unique_moves": 19,
+          "total_observations": 3514
+        },
+        "2000-2200": {
+          "entropy": 1.653,
+          "concentration": 0.68,
+          "unique_moves": 13,
+          "total_observations": 1582
+        },
+        "2200-2500": {
+          "entropy": 1.3,
+          "concentration": 0.764,
+          "unique_moves": 8,
+          "total_observations": 538
+        },
+        "2500+": {
+          "entropy": 1.031,
+          "concentration": 0.818,
+          "unique_moves": 5,
+          "total_observations": 44
+        }
+      }
+    },
+    {
+      "position_hash": "70855f3bbecce265",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
+      "by_elo": {
+        "0-800": {
+          "entropy": 2.936,
+          "concentration": 0.331,
+          "unique_moves": 18,
+          "total_observations": 166
+        },
+        "800-1000": {
+          "entropy": 2.355,
+          "concentration": 0.504,
+          "unique_moves": 18,
+          "total_observations": 732
+        },
+        "1000-1200": {
+          "entropy": 1.996,
+          "concentration": 0.61,
+          "unique_moves": 19,
+          "total_observations": 1463
+        },
+        "1200-1400": {
+          "entropy": 1.915,
+          "concentration": 0.608,
+          "unique_moves": 20,
+          "total_observations": 2416
+        },
+        "1400-1600": {
+          "entropy": 1.694,
+          "concentration": 0.641,
+          "unique_moves": 17,
+          "total_observations": 2976
+        },
+        "1600-1800": {
+          "entropy": 1.676,
+          "concentration": 0.66,
+          "unique_moves": 17,
+          "total_observations": 3047
+        },
+        "1800-2000": {
+          "entropy": 1.652,
+          "concentration": 0.668,
+          "unique_moves": 16,
+          "total_observations": 2178
+        },
+        "2000-2200": {
+          "entropy": 1.384,
+          "concentration": 0.734,
+          "unique_moves": 10,
+          "total_observations": 991
+        },
+        "2200-2500": {
+          "entropy": 1.189,
+          "concentration": 0.783,
+          "unique_moves": 7,
+          "total_observations": 397
+        },
+        "2500+": {
+          "entropy": 1.177,
+          "concentration": 0.651,
+          "unique_moves": 4,
+          "total_observations": 43
+        }
+      }
+    },
+    {
+      "position_hash": "8b72e99490c8a6f0",
+      "fen": "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "by_elo": {
+        "0-800": {
+          "entropy": 3.425,
+          "concentration": 0.219,
+          "unique_moves": 14,
+          "total_observations": 32
+        },
+        "800-1000": {
+          "entropy": 2.975,
+          "concentration": 0.331,
+          "unique_moves": 15,
+          "total_observations": 130
+        },
+        "1000-1200": {
+          "entropy": 2.665,
+          "concentration": 0.439,
+          "unique_moves": 17,
+          "total_observations": 449
+        },
+        "1200-1400": {
+          "entropy": 2.699,
+          "concentration": 0.426,
+          "unique_moves": 19,
+          "total_observations": 907
+        },
+        "1400-1600": {
+          "entropy": 2.565,
+          "concentration": 0.491,
+          "unique_moves": 23,
+          "total_observations": 1614
+        },
+        "1600-1800": {
+          "entropy": 2.477,
+          "concentration": 0.526,
+          "unique_moves": 24,
+          "total_observations": 2492
+        },
+        "1800-2000": {
+          "entropy": 2.414,
+          "concentration": 0.538,
+          "unique_moves": 23,
+          "total_observations": 2886
+        },
+        "2000-2200": {
+          "entropy": 2.218,
+          "concentration": 0.585,
+          "unique_moves": 17,
+          "total_observations": 1938
+        },
+        "2200-2500": {
+          "entropy": 1.787,
+          "concentration": 0.658,
+          "unique_moves": 14,
+          "total_observations": 857
+        },
+        "2500+": {
+          "entropy": 1.445,
+          "concentration": 0.682,
+          "unique_moves": 5,
+          "total_observations": 66
+        }
+      }
+    },
+    {
+      "position_hash": "06095571fe216111",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2",
+      "by_elo": {
+        "0-800": {
+          "entropy": 2.91,
+          "concentration": 0.268,
+          "unique_moves": 12,
+          "total_observations": 127
+        },
+        "800-1000": {
+          "entropy": 2.959,
+          "concentration": 0.228,
+          "unique_moves": 17,
+          "total_observations": 491
+        },
+        "1000-1200": {
+          "entropy": 2.748,
+          "concentration": 0.296,
+          "unique_moves": 17,
+          "total_observations": 931
+        },
+        "1200-1400": {
+          "entropy": 2.8,
+          "concentration": 0.25,
+          "unique_moves": 20,
+          "total_observations": 1448
+        },
+        "1400-1600": {
+          "entropy": 2.686,
+          "concentration": 0.271,
+          "unique_moves": 16,
+          "total_observations": 2036
+        },
+        "1600-1800": {
+          "entropy": 2.623,
+          "concentration": 0.328,
+          "unique_moves": 17,
+          "total_observations": 2362
+        },
+        "1800-2000": {
+          "entropy": 2.528,
+          "concentration": 0.371,
+          "unique_moves": 17,
+          "total_observations": 2139
+        },
+        "2000-2200": {
+          "entropy": 2.281,
+          "concentration": 0.449,
+          "unique_moves": 13,
+          "total_observations": 1058
+        },
+        "2200-2500": {
+          "entropy": 2.126,
+          "concentration": 0.433,
+          "unique_moves": 10,
+          "total_observations": 441
+        },
+        "2500+": {
+          "entropy": 1.379,
+          "concentration": 0.558,
+          "unique_moves": 5,
+          "total_observations": 43
+        }
+      }
+    },
+    {
+      "position_hash": "cdf57eb14909ffdf",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3",
+      "by_elo": {
+        "0-800": {
+          "entropy": 2.378,
+          "concentration": 0.302,
+          "unique_moves": 8,
+          "total_observations": 53
+        },
+        "800-1000": {
+          "entropy": 2.409,
+          "concentration": 0.374,
+          "unique_moves": 13,
+          "total_observations": 377
+        },
+        "1000-1200": {
+          "entropy": 2.266,
+          "concentration": 0.41,
+          "unique_moves": 13,
+          "total_observations": 938
+        },
+        "1200-1400": {
+          "entropy": 2.347,
+          "concentration": 0.382,
+          "unique_moves": 15,
+          "total_observations": 1451
+        },
+        "1400-1600": {
+          "entropy": 2.225,
+          "concentration": 0.428,
+          "unique_moves": 14,
+          "total_observations": 1906
+        },
+        "1600-1800": {
+          "entropy": 2.181,
+          "concentration": 0.425,
+          "unique_moves": 14,
+          "total_observations": 2005
+        },
+        "1800-2000": {
+          "entropy": 2.077,
+          "concentration": 0.456,
+          "unique_moves": 14,
+          "total_observations": 1527
+        },
+        "2000-2200": {
+          "entropy": 2.105,
+          "concentration": 0.383,
+          "unique_moves": 10,
+          "total_observations": 810
+        },
+        "2200-2500": {
+          "entropy": 1.933,
+          "concentration": 0.369,
+          "unique_moves": 7,
+          "total_observations": 320
+        },
+        "2500+": {
+          "entropy": 1.067,
+          "concentration": 0.696,
+          "unique_moves": 3,
+          "total_observations": 23
+        }
+      }
+    },
+    {
+      "position_hash": "34dddf5248df1dcd",
+      "fen": "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
+      "by_elo": {
+        "800-1000": {
+          "entropy": 1.658,
+          "concentration": 0.653,
+          "unique_moves": 6,
+          "total_observations": 49
+        },
+        "1000-1200": {
+          "entropy": 2.09,
+          "concentration": 0.547,
+          "unique_moves": 12,
+          "total_observations": 170
+        },
+        "1200-1400": {
+          "entropy": 1.932,
+          "concentration": 0.52,
+          "unique_moves": 12,
+          "total_observations": 417
+        },
+        "1400-1600": {
+          "entropy": 2.126,
+          "concentration": 0.423,
+          "unique_moves": 12,
+          "total_observations": 736
+        },
+        "1600-1800": {
+          "entropy": 1.918,
+          "concentration": 0.447,
+          "unique_moves": 11,
+          "total_observations": 1354
+        },
+        "1800-2000": {
+          "entropy": 1.867,
+          "concentration": 0.428,
+          "unique_moves": 10,
+          "total_observations": 1499
+        },
+        "2000-2200": {
+          "entropy": 1.948,
+          "concentration": 0.364,
+          "unique_moves": 9,
+          "total_observations": 1210
+        },
+        "2200-2500": {
+          "entropy": 2.025,
+          "concentration": 0.394,
+          "unique_moves": 7,
+          "total_observations": 579
+        },
+        "2500+": {
+          "entropy": 1.705,
+          "concentration": 0.431,
+          "unique_moves": 4,
+          "total_observations": 51
+        }
+      }
+    },
+    {
+      "position_hash": "7a2249134d585b69",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "by_elo": {
+        "0-800": {
+          "entropy": 3.017,
+          "concentration": 0.338,
+          "unique_moves": 13,
+          "total_observations": 74
+        },
+        "800-1000": {
+          "entropy": 2.762,
+          "concentration": 0.387,
+          "unique_moves": 13,
+          "total_observations": 274
+        },
+        "1000-1200": {
+          "entropy": 2.312,
+          "concentration": 0.509,
+          "unique_moves": 17,
+          "total_observations": 581
+        },
+        "1200-1400": {
+          "entropy": 1.894,
+          "concentration": 0.611,
+          "unique_moves": 15,
+          "total_observations": 741
+        },
+        "1400-1600": {
+          "entropy": 1.691,
+          "concentration": 0.66,
+          "unique_moves": 18,
+          "total_observations": 1136
+        },
+        "1600-1800": {
+          "entropy": 1.384,
+          "concentration": 0.748,
+          "unique_moves": 14,
+          "total_observations": 1299
+        },
+        "1800-2000": {
+          "entropy": 1.357,
+          "concentration": 0.753,
+          "unique_moves": 12,
+          "total_observations": 1245
+        },
+        "2000-2200": {
+          "entropy": 1.125,
+          "concentration": 0.809,
+          "unique_moves": 8,
+          "total_observations": 517
+        },
+        "2200-2500": {
+          "entropy": 0.826,
+          "concentration": 0.871,
+          "unique_moves": 6,
+          "total_observations": 171
+        }
+      }
+    },
+    {
+      "position_hash": "ec10a5620fe7ee2c",
+      "fen": "rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "by_elo": {
+        "0-800": {
+          "entropy": 2.611,
+          "concentration": 0.279,
+          "unique_moves": 10,
+          "total_observations": 43
+        },
+        "800-1000": {
+          "entropy": 2.799,
+          "concentration": 0.321,
+          "unique_moves": 15,
+          "total_observations": 159
+        },
+        "1000-1200": {
+          "entropy": 2.605,
+          "concentration": 0.354,
+          "unique_moves": 15,
+          "total_observations": 353
+        },
+        "1200-1400": {
+          "entropy": 2.501,
+          "concentration": 0.357,
+          "unique_moves": 17,
+          "total_observations": 678
+        },
+        "1400-1600": {
+          "entropy": 2.306,
+          "concentration": 0.424,
+          "unique_moves": 20,
+          "total_observations": 1005
+        },
+        "1600-1800": {
+          "entropy": 2.2,
+          "concentration": 0.47,
+          "unique_moves": 19,
+          "total_observations": 1219
+        },
+        "1800-2000": {
+          "entropy": 2.112,
+          "concentration": 0.538,
+          "unique_moves": 17,
+          "total_observations": 1229
+        },
+        "2000-2200": {
+          "entropy": 1.828,
+          "concentration": 0.657,
+          "unique_moves": 14,
+          "total_observations": 823
+        },
+        "2200-2500": {
+          "entropy": 1.608,
+          "concentration": 0.678,
+          "unique_moves": 8,
+          "total_observations": 264
+        },
+        "2500+": {
+          "entropy": 1.198,
+          "concentration": 0.625,
+          "unique_moves": 3,
+          "total_observations": 16
+        }
+      }
+    },
+    {
+      "position_hash": "46f9336c46c8676a",
+      "fen": "rnbqkb1r/pppppppp/5n2/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 1 2",
+      "by_elo": {
+        "0-800": {
+          "entropy": 2.867,
+          "concentration": 0.235,
+          "unique_moves": 8,
+          "total_observations": 17
+        },
+        "800-1000": {
+          "entropy": 3.153,
+          "concentration": 0.197,
+          "unique_moves": 15,
+          "total_observations": 71
+        },
+        "1000-1200": {
+          "entropy": 2.848,
+          "concentration": 0.23,
+          "unique_moves": 13,
+          "total_observations": 183
+        },
+        "1200-1400": {
+          "entropy": 2.742,
+          "concentration": 0.245,
+          "unique_moves": 13,
+          "total_observations": 359
+        },
+        "1400-1600": {
+          "entropy": 2.783,
+          "concentration": 0.29,
+          "unique_moves": 16,
+          "total_observations": 639
+        },
+        "1600-1800": {
+          "entropy": 2.658,
+          "concentration": 0.36,
+          "unique_moves": 16,
+          "total_observations": 1008
+        },
+        "1800-2000": {
+          "entropy": 2.473,
+          "concentration": 0.381,
+          "unique_moves": 17,
+          "total_observations": 1382
+        },
+        "2000-2200": {
+          "entropy": 2.378,
+          "concentration": 0.422,
+          "unique_moves": 16,
+          "total_observations": 1130
+        },
+        "2200-2500": {
+          "entropy": 2.175,
+          "concentration": 0.421,
+          "unique_moves": 13,
+          "total_observations": 693
+        },
+        "2500+": {
+          "entropy": 1.894,
+          "concentration": 0.458,
+          "unique_moves": 5,
+          "total_observations": 59
+        }
+      }
+    },
+    {
+      "position_hash": "5729c89ad2c9f1ab",
+      "fen": "rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "by_elo": {
+        "0-800": {
+          "entropy": 2.685,
+          "concentration": 0.308,
+          "unique_moves": 9,
+          "total_observations": 26
+        },
+        "800-1000": {
+          "entropy": 2.915,
+          "concentration": 0.28,
+          "unique_moves": 14,
+          "total_observations": 132
+        },
+        "1000-1200": {
+          "entropy": 2.393,
+          "concentration": 0.384,
+          "unique_moves": 14,
+          "total_observations": 302
+        },
+        "1200-1400": {
+          "entropy": 2.484,
+          "concentration": 0.402,
+          "unique_moves": 17,
+          "total_observations": 610
+        },
+        "1400-1600": {
+          "entropy": 2.352,
+          "concentration": 0.4,
+          "unique_moves": 19,
+          "total_observations": 924
+        },
+        "1600-1800": {
+          "entropy": 2.337,
+          "concentration": 0.434,
+          "unique_moves": 18,
+          "total_observations": 1167
+        },
+        "1800-2000": {
+          "entropy": 2.142,
+          "concentration": 0.514,
+          "unique_moves": 17,
+          "total_observations": 1107
+        },
+        "2000-2200": {
+          "entropy": 1.907,
+          "concentration": 0.621,
+          "unique_moves": 15,
+          "total_observations": 770
+        },
+        "2200-2500": {
+          "entropy": 1.545,
+          "concentration": 0.702,
+          "unique_moves": 10,
+          "total_observations": 305
+        },
+        "2500+": {
+          "entropy": 1.598,
+          "concentration": 0.618,
+          "unique_moves": 5,
+          "total_observations": 34
+        }
+      }
+    },
+    {
+      "position_hash": "ef570fe96e0efb6c",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3",
+      "by_elo": {
+        "0-800": {
+          "entropy": 2.432,
+          "concentration": 0.357,
+          "unique_moves": 9,
+          "total_observations": 28
+        },
+        "800-1000": {
+          "entropy": 2.713,
+          "concentration": 0.445,
+          "unique_moves": 16,
+          "total_observations": 146
+        },
+        "1000-1200": {
+          "entropy": 2.76,
+          "concentration": 0.337,
+          "unique_moves": 19,
+          "total_observations": 392
+        },
+        "1200-1400": {
+          "entropy": 2.539,
+          "concentration": 0.357,
+          "unique_moves": 15,
+          "total_observations": 658
+        },
+        "1400-1600": {
+          "entropy": 2.628,
+          "concentration": 0.292,
+          "unique_moves": 16,
+          "total_observations": 906
+        },
+        "1600-1800": {
+          "entropy": 2.525,
+          "concentration": 0.346,
+          "unique_moves": 19,
+          "total_observations": 949
+        },
+        "1800-2000": {
+          "entropy": 2.321,
+          "concentration": 0.363,
+          "unique_moves": 11,
+          "total_observations": 684
+        },
+        "2000-2200": {
+          "entropy": 2.07,
+          "concentration": 0.444,
+          "unique_moves": 11,
+          "total_observations": 329
+        },
+        "2200-2500": {
+          "entropy": 1.517,
+          "concentration": 0.475,
+          "unique_moves": 7,
+          "total_observations": 118
+        }
+      }
+    },
+    {
+      "position_hash": "4aedef0d809ac351",
+      "fen": "rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2",
+      "by_elo": {
+        "0-800": {
+          "entropy": 1.457,
+          "concentration": 0.7,
+          "unique_moves": 5,
+          "total_observations": 20
+        },
+        "800-1000": {
+          "entropy": 1.008,
+          "concentration": 0.838,
+          "unique_moves": 7,
+          "total_observations": 117
+        },
+        "1000-1200": {
+          "entropy": 0.946,
+          "concentration": 0.841,
+          "unique_moves": 7,
+          "total_observations": 296
+        },
+        "1200-1400": {
+          "entropy": 1.161,
+          "concentration": 0.743,
+          "unique_moves": 10,
+          "total_observations": 436
+        },
+        "1400-1600": {
+          "entropy": 1.223,
+          "concentration": 0.734,
+          "unique_moves": 8,
+          "total_observations": 777
+        },
+        "1600-1800": {
+          "entropy": 1.389,
+          "concentration": 0.68,
+          "unique_moves": 10,
+          "total_observations": 941
+        },
+        "1800-2000": {
+          "entropy": 1.469,
+          "concentration": 0.627,
+          "unique_moves": 11,
+          "total_observations": 963
+        },
+        "2000-2200": {
+          "entropy": 1.526,
+          "concentration": 0.482,
+          "unique_moves": 6,
+          "total_observations": 407
+        },
+        "2200-2500": {
+          "entropy": 1.404,
+          "concentration": 0.608,
+          "unique_moves": 5,
+          "total_observations": 148
+        }
+      }
+    },
+    {
+      "position_hash": "6ac1a2d10a8a4e8e",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2",
+      "by_elo": {
+        "800-1000": {
+          "entropy": 2.423,
+          "concentration": 0.417,
+          "unique_moves": 11,
+          "total_observations": 60
+        },
+        "1000-1200": {
+          "entropy": 2.555,
+          "concentration": 0.352,
+          "unique_moves": 12,
+          "total_observations": 182
+        },
+        "1200-1400": {
+          "entropy": 2.627,
+          "concentration": 0.323,
+          "unique_moves": 12,
+          "total_observations": 381
+        },
+        "1400-1600": {
+          "entropy": 2.752,
+          "concentration": 0.24,
+          "unique_moves": 12,
+          "total_observations": 541
+        },
+        "1600-1800": {
+          "entropy": 2.706,
+          "concentration": 0.3,
+          "unique_moves": 13,
+          "total_observations": 776
+        },
+        "1800-2000": {
+          "entropy": 2.618,
+          "concentration": 0.305,
+          "unique_moves": 13,
+          "total_observations": 813
+        },
+        "2000-2200": {
+          "entropy": 2.207,
+          "concentration": 0.423,
+          "unique_moves": 8,
+          "total_observations": 466
+        },
+        "2200-2500": {
+          "entropy": 1.965,
+          "concentration": 0.425,
+          "unique_moves": 7,
+          "total_observations": 167
+        },
+        "2500+": {
+          "entropy": 1.545,
+          "concentration": 0.583,
+          "unique_moves": 5,
+          "total_observations": 24
+        }
+      }
+    },
+    {
+      "position_hash": "b1ebba1baafbced9",
+      "fen": "rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq - 0 1",
+      "by_elo": {
+        "0-800": {
+          "entropy": 1.93,
+          "concentration": 0.467,
+          "unique_moves": 5,
+          "total_observations": 15
+        },
+        "800-1000": {
+          "entropy": 2.637,
+          "concentration": 0.362,
+          "unique_moves": 9,
+          "total_observations": 58
+        },
+        "1000-1200": {
+          "entropy": 2.737,
+          "concentration": 0.446,
+          "unique_moves": 12,
+          "total_observations": 139
+        },
+        "1200-1400": {
+          "entropy": 2.826,
+          "concentration": 0.4,
+          "unique_moves": 15,
+          "total_observations": 330
+        },
+        "1400-1600": {
+          "entropy": 2.845,
+          "concentration": 0.407,
+          "unique_moves": 15,
+          "total_observations": 420
+        },
+        "1600-1800": {
+          "entropy": 2.983,
+          "concentration": 0.337,
+          "unique_moves": 17,
+          "total_observations": 692
+        },
+        "1800-2000": {
+          "entropy": 3.109,
+          "concentration": 0.247,
+          "unique_moves": 18,
+          "total_observations": 826
+        },
+        "2000-2200": {
+          "entropy": 2.967,
+          "concentration": 0.265,
+          "unique_moves": 14,
+          "total_observations": 600
+        },
+        "2200-2500": {
+          "entropy": 2.912,
+          "concentration": 0.244,
+          "unique_moves": 12,
+          "total_observations": 299
+        },
+        "2500+": {
+          "entropy": 2.466,
+          "concentration": 0.3,
+          "unique_moves": 7,
+          "total_observations": 20
+        }
+      }
+    },
+    {
+      "position_hash": "adc233cb377d330e",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1",
+      "by_elo": {
+        "0-800": {
+          "entropy": 2.917,
+          "concentration": 0.296,
+          "unique_moves": 10,
+          "total_observations": 27
+        },
+        "800-1000": {
+          "entropy": 3.114,
+          "concentration": 0.377,
+          "unique_moves": 16,
+          "total_observations": 114
+        },
+        "1000-1200": {
+          "entropy": 3.074,
+          "concentration": 0.35,
+          "unique_moves": 15,
+          "total_observations": 214
+        },
+        "1200-1400": {
+          "entropy": 3.025,
+          "concentration": 0.371,
+          "unique_moves": 16,
+          "total_observations": 299
+        },
+        "1400-1600": {
+          "entropy": 2.998,
+          "concentration": 0.392,
+          "unique_moves": 16,
+          "total_observations": 411
+        },
+        "1600-1800": {
+          "entropy": 3.026,
+          "concentration": 0.376,
+          "unique_moves": 16,
+          "total_observations": 561
+        },
+        "1800-2000": {
+          "entropy": 2.969,
+          "concentration": 0.37,
+          "unique_moves": 15,
+          "total_observations": 562
+        },
+        "2000-2200": {
+          "entropy": 2.879,
+          "concentration": 0.305,
+          "unique_moves": 14,
+          "total_observations": 544
+        },
+        "2200-2500": {
+          "entropy": 2.652,
+          "concentration": 0.345,
+          "unique_moves": 15,
+          "total_observations": 354
+        },
+        "2500+": {
+          "entropy": 2.427,
+          "concentration": 0.343,
+          "unique_moves": 8,
+          "total_observations": 35
+        }
+      }
+    },
+    {
+      "position_hash": "c3c39ccefd26e408",
+      "fen": "rnbqkbnr/pppp1ppp/4p3/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2",
+      "by_elo": {
+        "0-800": {
+          "entropy": 2.581,
+          "concentration": 0.294,
+          "unique_moves": 7,
+          "total_observations": 17
+        },
+        "800-1000": {
+          "entropy": 2.832,
+          "concentration": 0.485,
+          "unique_moves": 16,
+          "total_observations": 66
+        },
+        "1000-1200": {
+          "entropy": 2.739,
+          "concentration": 0.483,
+          "unique_moves": 17,
+          "total_observations": 143
+        },
+        "1200-1400": {
+          "entropy": 2.634,
+          "concentration": 0.532,
+          "unique_moves": 19,
+          "total_observations": 278
+        },
+        "1400-1600": {
+          "entropy": 2.5,
+          "concentration": 0.562,
+          "unique_moves": 20,
+          "total_observations": 486
+        },
+        "1600-1800": {
+          "entropy": 2.19,
+          "concentration": 0.62,
+          "unique_moves": 18,
+          "total_observations": 626
+        },
+        "1800-2000": {
+          "entropy": 1.848,
+          "concentration": 0.695,
+          "unique_moves": 17,
+          "total_observations": 780
+        },
+        "2000-2200": {
+          "entropy": 1.08,
+          "concentration": 0.843,
+          "unique_moves": 13,
+          "total_observations": 523
+        },
+        "2200-2500": {
+          "entropy": 0.719,
+          "concentration": 0.894,
+          "unique_moves": 7,
+          "total_observations": 180
+        },
+        "2500+": {
+          "entropy": 0.0,
+          "concentration": 1.0,
+          "unique_moves": 1,
+          "total_observations": 12
+        }
+      }
+    },
+    {
+      "position_hash": "1bf1d7d79f4bc2e3",
+      "fen": "rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3",
+      "by_elo": {
+        "0-800": {
+          "entropy": 1.439,
+          "concentration": 0.706,
+          "unique_moves": 5,
+          "total_observations": 17
+        },
+        "800-1000": {
+          "entropy": 1.327,
+          "concentration": 0.756,
+          "unique_moves": 6,
+          "total_observations": 86
+        },
+        "1000-1200": {
+          "entropy": 1.278,
+          "concentration": 0.779,
+          "unique_moves": 9,
+          "total_observations": 249
+        },
+        "1200-1400": {
+          "entropy": 0.994,
+          "concentration": 0.832,
+          "unique_moves": 10,
+          "total_observations": 340
+        },
+        "1400-1600": {
+          "entropy": 1.348,
+          "concentration": 0.743,
+          "unique_moves": 11,
+          "total_observations": 552
+        },
+        "1600-1800": {
+          "entropy": 1.366,
+          "concentration": 0.718,
+          "unique_moves": 9,
+          "total_observations": 642
+        },
+        "1800-2000": {
+          "entropy": 1.687,
+          "concentration": 0.579,
+          "unique_moves": 9,
+          "total_observations": 582
+        },
+        "2000-2200": {
+          "entropy": 1.264,
+          "concentration": 0.71,
+          "unique_moves": 5,
+          "total_observations": 217
+        },
+        "2200-2500": {
+          "entropy": 0.942,
+          "concentration": 0.822,
+          "unique_moves": 5,
+          "total_observations": 101
+        }
+      }
+    }
+  ]
+}

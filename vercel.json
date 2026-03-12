@@ -1,0 +1,9 @@
+{
+  "outputDirectory": "frontend",
+  "rewrites": [
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/puzzles", "destination": "/puzzle-viewer.html" },
+    { "source": "/explorer", "destination": "/explorer.html" },
+    { "source": "/", "destination": "/highlights.html" }
+  ]
+}

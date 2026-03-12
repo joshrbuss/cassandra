@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cassandra — Your Personal Puzzles</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --surface-3: #2e2e2e;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #888;
+    --accent: #c084fc;
+    --accent-dim: #7c3aed;
+    --green: #4ade80;
+    --red: #f87171;
+    --orange: #fb923c;
+    --blue: #60a5fa;
+    --light-square: #e8d5b5;
+    --dark-square: #b58863;
+    --highlight: rgba(192, 132, 252, 0.35);
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+  .header h1 span { color: var(--accent); }
+  .header-stats {
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .header-stats strong { color: var(--text); font-weight: 600; }
+
+  /* ── Layout ── */
+  .main {
+    display: grid;
+    grid-template-columns: 320px 1fr 380px;
+    height: calc(100vh - 73px);
+  }
+
+  /* ── Puzzle List (left) ── */
+  .puzzle-list {
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 16px 0;
+  }
+  .puzzle-list-header {
+    padding: 0 16px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+  }
+  .puzzle-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  .puzzle-item:hover { background: var(--surface); }
+  .puzzle-item.active {
+    background: var(--surface);
+    border-left-color: var(--accent);
+  }
+  .puzzle-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .puzzle-item-title {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .puzzle-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .badge-blunder { background: rgba(248,113,113,0.15); color: var(--red); }
+  .badge-mistake { background: rgba(251,146,60,0.15); color: var(--orange); }
+  .badge-missed { background: rgba(96,165,250,0.15); color: var(--blue); }
+  .puzzle-item-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .impact-bar {
+    height: 3px;
+    border-radius: 2px;
+    background: var(--surface-3);
+    margin-top: 6px;
+    overflow: hidden;
+  }
+  .impact-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+
+  /* ── Board (center) ── */
+  .board-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    background: var(--surface);
+  }
+  .board-label {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    width: min(560px, calc(100vh - 240px));
+    height: min(560px, calc(100vh - 240px));
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .square {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: min(48px, calc((100vh - 240px) / 10));
+    position: relative;
+    user-select: none;
+  }
+  .square.light { background: var(--light-square); }
+  .square.dark { background: var(--dark-square); }
+  .square.highlight-your { background: rgba(248,113,113,0.5); }
+  .square.highlight-best { background: rgba(74,222,128,0.5); }
+  .square-label {
+    position: absolute;
+    font-size: 10px;
+    font-weight: 600;
+    opacity: 0.6;
+  }
+  .square-label.file { bottom: 2px; right: 4px; }
+  .square-label.rank { top: 2px; left: 4px; }
+  .light .square-label { color: var(--dark-square); }
+  .dark .square-label { color: var(--light-square); }
+
+  .board-controls {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .btn {
+    padding: 8px 20px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: var(--surface-3); border-color: var(--accent); }
+  .btn.active { background: var(--accent-dim); border-color: var(--accent); }
+
+  /* ── Info Panel (right) ── */
+  .info-panel {
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 24px;
+  }
+  .info-section {
+    margin-bottom: 24px;
+  }
+  .info-section h3 {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+  .move-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .move-card {
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .move-card.yours { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.3); }
+  .move-card.best { background: rgba(74,222,128,0.08); border-color: rgba(74,222,128,0.3); }
+  .move-card-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .move-card.yours .move-card-label { color: var(--red); }
+  .move-card.best .move-card-label { color: var(--green); }
+  .move-card-move {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .move-card-eval {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .eval-bar-container {
+    height: 8px;
+    background: var(--surface-3);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 12px;
+  }
+  .eval-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  .context-moves {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    padding: 12px;
+    background: var(--surface-2);
+    border-radius: 6px;
+  }
+  .context-move { color: var(--text-dim); }
+  .context-move.yours { color: var(--text); font-weight: 600; }
+  .context-move.mistake { color: var(--red); font-weight: 700; text-decoration: underline; }
+
+  .game-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .meta-item {
+    font-size: 13px;
+    padding: 8px 10px;
+    background: var(--surface-2);
+    border-radius: 4px;
+  }
+  .meta-item .label {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 2px;
+  }
+
+  .insight-box {
+    padding: 14px;
+    background: rgba(192,132,252,0.08);
+    border: 1px solid rgba(192,132,252,0.2);
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .insight-box strong { color: var(--accent); }
+
+  /* ── Empty / Loading states ── */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-dim);
+    text-align: center;
+    padding: 32px;
+  }
+  .empty-state h2 { font-size: 18px; margin-bottom: 8px; color: var(--text); }
+  .empty-state p { font-size: 14px; max-width: 360px; line-height: 1.6; }
+  .empty-state code {
+    display: block;
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: var(--surface-2);
+    border-radius: 6px;
+    font-size: 12px;
+    text-align: left;
+    color: var(--green);
+  }
+
+  /* ── File upload ── */
+  .upload-zone {
+    margin-top: 20px;
+    padding: 24px;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .upload-zone:hover { border-color: var(--accent); background: var(--surface); }
+  .upload-zone input { display: none; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>Cassandra</span> — Personal Puzzles</h1>
+  <div class="header-stats" id="header-stats"></div>
+</div>
+
+<div class="main">
+  <div class="puzzle-list" id="puzzle-list">
+    <div class="empty-state" id="empty-state">
+      <h2>Load Your Puzzles</h2>
+      <p>Drop your puzzle JSON file here, or click to browse. Generate puzzles with:</p>
+      <code>python3 scripts/my_puzzles.py YOUR_USERNAME \<br>&nbsp;&nbsp;--stockfish $(which stockfish)</code>
+      <div class="upload-zone" id="upload-zone">
+        <p>Drop puzzles_*.json here</p>
+        <input type="file" id="file-input" accept=".json">
+      </div>
+    </div>
+  </div>
+
+  <div class="board-container">
+    <div class="board-label" id="board-label">Select a puzzle to begin</div>
+    <div class="board" id="board"></div>
+    <div class="board-controls">
+      <button class="btn" id="btn-position" onclick="showPosition()">Position</button>
+      <button class="btn" id="btn-your-move" onclick="showYourMove()">Your Move</button>
+      <button class="btn" id="btn-best-move" onclick="showBestMove()">Best Move</button>
+    </div>
+  </div>
+
+  <div class="info-panel" id="info-panel">
+    <div class="empty-state">
+      <p>Select a puzzle from the list to see analysis</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Piece rendering ──────────────────────────────────────────
+const PIECES = {
+  'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+  'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+};
+
+// ── State ────────────────────────────────────────────────────
+let puzzles = [];
+let currentPuzzle = null;
+let currentView = 'position'; // 'position', 'your-move', 'best-move'
+
+// ── FEN parsing ──────────────────────────────────────────────
+function parseFEN(fen) {
+  const board = [];
+  const rows = fen.split(' ')[0].split('/');
+  for (const row of rows) {
+    const boardRow = [];
+    for (const ch of row) {
+      if (ch >= '1' && ch <= '8') {
+        for (let i = 0; i < parseInt(ch); i++) boardRow.push(null);
+      } else {
+        boardRow.push(ch);
+      }
+    }
+    board.push(boardRow);
+  }
+  return board;
+}
+
+function uciToSquares(uci) {
+  if (!uci || uci.length < 4) return { from: null, to: null };
+  const files = 'abcdefgh';
+  const from = { col: files.indexOf(uci[0]), row: 8 - parseInt(uci[1]) };
+  const to = { col: files.indexOf(uci[2]), row: 8 - parseInt(uci[3]) };
+  return { from, to };
+}
+
+// Apply a UCI move to a FEN (basic — handles most cases)
+function applyMove(fen, uci) {
+  const board = parseFEN(fen);
+  const { from, to } = uciToSquares(uci);
+  if (!from || !to) return board;
+
+  const piece = board[from.row][from.col];
+  board[to.row][to.col] = piece;
+  board[from.row][from.col] = null;
+
+  // Pawn promotion
+  if (uci.length === 5) {
+    const promoChar = uci[4];
+    const isWhite = piece === piece.toUpperCase();
+    board[to.row][to.col] = isWhite ? promoChar.toUpperCase() : promoChar.toLowerCase();
+  }
+
+  return board;
+}
+
+// ── Board rendering ──────────────────────────────────────────
+function renderBoard(boardArray, highlightFrom, highlightTo, highlightClass) {
+  const boardEl = document.getElementById('board');
+  boardEl.innerHTML = '';
+  const files = 'abcdefgh';
+
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const sq = document.createElement('div');
+      const isLight = (row + col) % 2 === 0;
+      sq.className = 'square ' + (isLight ? 'light' : 'dark');
+
+      // Highlights
+      if (highlightFrom && highlightFrom.row === row && highlightFrom.col === col) {
+        sq.classList.add(highlightClass);
+      }
+      if (highlightTo && highlightTo.row === row && highlightTo.col === col) {
+        sq.classList.add(highlightClass);
+      }
+
+      // Coordinate labels
+      if (row === 7) {
+        const fileLabel = document.createElement('span');
+        fileLabel.className = 'square-label file';
+        fileLabel.textContent = files[col];
+        sq.appendChild(fileLabel);
+      }
+      if (col === 0) {
+        const rankLabel = document.createElement('span');
+        rankLabel.className = 'square-label rank';
+        rankLabel.textContent = 8 - row;
+        sq.appendChild(rankLabel);
+      }
+
+      // Piece
+      const piece = boardArray[row][col];
+      if (piece) {
+        sq.textContent = PIECES[piece] || '';
+      }
+
+      boardEl.appendChild(sq);
+    }
+  }
+}
+
+// ── View modes ───────────────────────────────────────────────
+function showPosition() {
+  if (!currentPuzzle) return;
+  currentView = 'position';
+  updateButtons();
+  const board = parseFEN(currentPuzzle.fen);
+  renderBoard(board);
+  document.getElementById('board-label').textContent =
+    `Move ${currentPuzzle.move_number} — Find the best move`;
+}
+
+function showYourMove() {
+  if (!currentPuzzle) return;
+  currentView = 'your-move';
+  updateButtons();
+  const board = applyMove(currentPuzzle.fen, currentPuzzle.your_move_uci);
+  const { from, to } = uciToSquares(currentPuzzle.your_move_uci);
+  renderBoard(board, from, to, 'highlight-your');
+  document.getElementById('board-label').textContent =
+    `You played ${currentPuzzle.your_move} (−${currentPuzzle.eval_loss.toFixed(0)}cp)`;
+}
+
+function showBestMove() {
+  if (!currentPuzzle) return;
+  currentView = 'best-move';
+  updateButtons();
+  const board = applyMove(currentPuzzle.fen, currentPuzzle.correct_move_uci);
+  const { from, to } = uciToSquares(currentPuzzle.correct_move_uci);
+  renderBoard(board, from, to, 'highlight-best');
+  document.getElementById('board-label').textContent =
+    `Best was ${currentPuzzle.correct_move}`;
+}
+
+function updateButtons() {
+  document.getElementById('btn-position').className = 'btn' + (currentView === 'position' ? ' active' : '');
+  document.getElementById('btn-your-move').className = 'btn' + (currentView === 'your-move' ? ' active' : '');
+  document.getElementById('btn-best-move').className = 'btn' + (currentView === 'best-move' ? ' active' : '');
+}
+
+// ── Puzzle list ──────────────────────────────────────────────
+function renderPuzzleList() {
+  const listEl = document.getElementById('puzzle-list');
+  const emptyEl = document.getElementById('empty-state');
+  if (emptyEl) emptyEl.remove();
+
+  listEl.innerHTML = '<div class="puzzle-list-header">Puzzles — sorted by impact</div>';
+
+  const maxImpact = Math.max(...puzzles.map(p => p.impact_score || 0), 1);
+
+  puzzles.forEach((puzzle, i) => {
+    const item = document.createElement('div');
+    item.className = 'puzzle-item' + (i === 0 ? ' active' : '');
+    item.dataset.index = i;
+
+    const badgeClass = puzzle.mistake_type === 'blunder' ? 'badge-blunder' :
+                       puzzle.mistake_type === 'missed_tactic' ? 'badge-missed' : 'badge-mistake';
+    const badgeText = puzzle.mistake_type === 'missed_tactic' ? 'tactic' : puzzle.mistake_type;
+
+    const impactPct = ((puzzle.impact_score || 0) / maxImpact * 100).toFixed(0);
+
+    item.innerHTML = `
+      <div class="puzzle-item-top">
+        <span class="puzzle-item-title">Move ${puzzle.move_number} — ${puzzle.your_move} → ${puzzle.correct_move}</span>
+        <span class="puzzle-badge ${badgeClass}">${badgeText}</span>
+      </div>
+      <div class="puzzle-item-sub">
+        vs ${puzzle.opponent} (${puzzle.your_elo}) · ${puzzle.time_class} · −${puzzle.eval_loss.toFixed(0)}cp
+      </div>
+      <div class="impact-bar"><div class="impact-bar-fill" style="width:${impactPct}%"></div></div>
+    `;
+
+    item.addEventListener('click', () => selectPuzzle(i));
+    listEl.appendChild(item);
+  });
+
+  // Update header stats
+  document.getElementById('header-stats').innerHTML = `
+    <span><strong>${puzzles.length}</strong> puzzles</span>
+    <span><strong>${new Set(puzzles.map(p => p.game_url)).size}</strong> games</span>
+    <span>Avg loss: <strong>${(puzzles.reduce((s,p) => s + p.eval_loss, 0) / puzzles.length).toFixed(0)}cp</strong></span>
+  `;
+}
+
+// ── Select a puzzle ──────────────────────────────────────────
+function selectPuzzle(index) {
+  currentPuzzle = puzzles[index];
+
+  // Update active state in list
+  document.querySelectorAll('.puzzle-item').forEach((el, i) => {
+    el.classList.toggle('active', i === index);
+  });
+
+  // Show position
+  showPosition();
+
+  // Render info panel
+  renderInfoPanel();
+}
+
+function renderInfoPanel() {
+  const p = currentPuzzle;
+  const panel = document.getElementById('info-panel');
+
+  // Eval bar (0-100, 50 = equal)
+  const evalPct = Math.max(5, Math.min(95, 50 + (p.correct_eval || 0) / 10));
+
+  // Phase
+  const phase = p.move_number <= 10 ? 'Opening' : p.move_number <= 25 ? 'Middlegame' : 'Endgame';
+
+  // Build context moves HTML
+  let contextHtml = '';
+  if (p.preceding_moves && p.preceding_moves.length > 0) {
+    for (const m of p.preceding_moves) {
+      const cls = m.is_yours ? 'yours' : '';
+      contextHtml += `<span class="context-move ${cls}">${m.move_number}${m.is_yours ? '.' : '...'} ${m.move_san} </span>`;
+    }
+    contextHtml += `<span class="context-move mistake">${p.move_number}. ${p.your_move}?</span>`;
+  }
+
+  panel.innerHTML = `
+    <div class="info-section">
+      <h3>Your Move vs Best Move</h3>
+      <div class="move-compare">
+        <div class="move-card yours">
+          <div class="move-card-label">You Played</div>
+          <div class="move-card-move">${p.your_move}</div>
+          <div class="move-card-eval">−${p.eval_loss.toFixed(0)} centipawns</div>
+        </div>
+        <div class="move-card best">
+          <div class="move-card-label">Best Move</div>
+          <div class="move-card-move">${p.correct_move}</div>
+          <div class="move-card-eval">${p.difficulty} to find</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-section">
+      <h3>How You Got Here</h3>
+      <div class="context-moves">${contextHtml || '<span class="context-move">No context available</span>'}</div>
+    </div>
+
+    <div class="info-section">
+      <h3>Game Details</h3>
+      <div class="game-meta">
+        <div class="meta-item"><div class="label">Opening</div>${p.opening || 'Unknown'}</div>
+        <div class="meta-item"><div class="label">Phase</div>${phase}</div>
+        <div class="meta-item"><div class="label">Time Control</div>${p.time_class}</div>
+        <div class="meta-item"><div class="label">Your Rating</div>${p.your_elo}</div>
+        <div class="meta-item"><div class="label">Opponent</div>${p.opponent}</div>
+        <div class="meta-item"><div class="label">Difficulty</div>${p.difficulty}</div>
+      </div>
+    </div>
+
+    ${p.tactical_motif ? `
+    <div class="info-section">
+      <h3>Tactical Motif</h3>
+      <div class="insight-box">
+        <strong>${p.tactical_motif.replace(/_/g, ' ')}</strong> — This pattern appeared in your game.
+        Learning to spot ${p.tactical_motif.replace(/_/g, ' ')}s in this type of position
+        could save you an average of ${p.eval_loss.toFixed(0)} centipawns.
+      </div>
+    </div>
+    ` : ''}
+
+    <div class="info-section">
+      <h3>Impact Score</h3>
+      <div class="insight-box">
+        This puzzle has an impact score of <strong>${(p.impact_score || 0).toFixed(0)}</strong>.
+        ${p.impact_score > 500 ? 'This is a high-priority position to study — mastering it could significantly improve your play.' :
+          p.impact_score > 200 ? 'Worth reviewing — this type of position comes up in your games.' :
+          'A smaller improvement opportunity, but still valuable.'}
+      </div>
+    </div>
+
+    ${p.game_url ? `
+    <div class="info-section">
+      <a href="${p.game_url}" target="_blank" class="btn" style="display:block;text-align:center;text-decoration:none;">
+        View Full Game
+      </a>
+    </div>
+    ` : ''}
+  `;
+}
+
+// ── File loading ─────────────────────────────────────────────
+function loadPuzzles(data) {
+  // Sort by impact score descending
+  puzzles = data.sort((a, b) => (b.impact_score || 0) - (a.impact_score || 0));
+
+  // Normalize field names (handle both snake_case from JSON)
+  puzzles = puzzles.map(p => ({
+    ...p,
+    your_move: p.your_move || p.your_move_san || '?',
+    correct_move: p.correct_move || p.correct_move_san || '?',
+    your_move_uci: p.your_move_uci || '',
+    correct_move_uci: p.correct_move_uci || '',
+    eval_loss: p.eval_loss || 0,
+    impact_score: p.impact_score || 0,
+    move_number: p.move_number || 0,
+    opponent: p.opponent || p.opponent_username || '?',
+    your_elo: p.your_elo || 0,
+    time_class: p.time_class || '?',
+    opening: p.opening || p.opening_name || '',
+    game_url: p.game_url || '',
+    mistake_type: p.mistake_type || 'mistake',
+    tactical_motif: p.tactical_motif || null,
+    difficulty: p.difficulty || 'medium',
+    preceding_moves: p.preceding_moves || [],
+    correct_eval: p.correct_eval || 0,
+  }));
+
+  renderPuzzleList();
+  if (puzzles.length > 0) selectPuzzle(0);
+}
+
+// ── File upload handling ─────────────────────────────────────
+const uploadZone = document.getElementById('upload-zone');
+const fileInput = document.getElementById('file-input');
+
+if (uploadZone) {
+  uploadZone.addEventListener('click', () => fileInput.click());
+  uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.style.borderColor = 'var(--accent)'; });
+  uploadZone.addEventListener('dragleave', () => { uploadZone.style.borderColor = 'var(--border)'; });
+  uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) readFile(file);
+  });
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) readFile(file);
+  });
+}
+
+function readFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      loadPuzzles(data);
+    } catch (err) {
+      alert('Failed to parse JSON: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ── Auto-load if puzzle file exists nearby ───────────────────
+// Try to fetch the default puzzle file
+async function tryAutoLoad() {
+  const paths = [
+    'puzzles_J_R_B_01.json',
+    '../puzzles_J_R_B_01.json',
+    'puzzles_j_r_b_01.json',
+    '../puzzles_j_r_b_01.json',
+  ];
+  for (const path of paths) {
+    try {
+      const resp = await fetch(path);
+      if (resp.ok) {
+        const data = await resp.json();
+        loadPuzzles(data);
+        return;
+      }
+    } catch {}
+  }
+}
+tryAutoLoad();
+
+// ── Keyboard navigation ──────────────────────────────────────
+document.addEventListener('keydown', (e) => {
+  if (!puzzles.length) return;
+  const currentIdx = puzzles.indexOf(currentPuzzle);
+
+  if (e.key === 'ArrowDown' || e.key === 'j') {
+    e.preventDefault();
+    selectPuzzle(Math.min(currentIdx + 1, puzzles.length - 1));
+  } else if (e.key === 'ArrowUp' || e.key === 'k') {
+    e.preventDefault();
+    selectPuzzle(Math.max(currentIdx - 1, 0));
+  } else if (e.key === '1') { showPosition(); }
+  else if (e.key === '2') { showYourMove(); }
+  else if (e.key === '3') { showBestMove(); }
+});
+
+// Render empty board on load
+renderBoard(parseFEN('8/8/8/8/8/8/8/8 w - - 0 1'));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+# Cassandra Chess Engine
+# Core chess
+python-chess>=1.999
+stockfish>=3.28.0
+
+# Data pipeline
+requests>=2.31.0
+aiohttp>=3.9.0
+
+# Database
+sqlalchemy>=2.0.0
+alembic>=1.13.0
+
+# Analysis
+numpy>=1.26.0
+pandas>=2.1.0
+scipy>=1.12.0
+
+# API
+fastapi>=0.109.0
+uvicorn>=0.27.0
+
+# Utilities
+tqdm>=4.66.0
+python-dotenv>=1.0.0

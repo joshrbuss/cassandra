@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cassandra — Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0f0f0f; --surface: #1a1a1a; --surface-2: #242424; --surface-3: #2e2e2e;
+    --border: #333; --text: #e8e8e8; --text-dim: #888;
+    --accent: #c084fc; --accent-dim: #7c3aed;
+    --green: #4ade80; --red: #f87171; --orange: #fb923c; --blue: #60a5fa;
+    --light-square: #e8d5b5; --dark-square: #b58863;
+  }
+
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+
+  .header {
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .header h1 { font-size: 22px; font-weight: 600; }
+  .header h1 span { color: var(--accent); }
+  .nav { display: flex; gap: 4px; }
+  .nav a {
+    padding: 8px 16px; border-radius: 6px; text-decoration: none;
+    color: var(--text-dim); font-size: 13px; font-weight: 500;
+    transition: all 0.15s;
+  }
+  .nav a:hover { background: var(--surface); color: var(--text); }
+  .nav a.active { background: var(--accent-dim); color: white; }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px 32px; }
+
+  .stats-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px;
+  }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px;
+  }
+  .stat-card .label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .stat-card .value { font-size: 28px; font-weight: 700; }
+  .stat-card .sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+  .section { margin-bottom: 32px; }
+  .section-header {
+    font-size: 16px; font-weight: 600; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-header .badge {
+    font-size: 11px; padding: 3px 8px; border-radius: 10px;
+    background: rgba(192,132,252,0.15); color: var(--accent);
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px; overflow: hidden;
+  }
+  .card h3 {
+    font-size: 13px; font-weight: 600; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px;
+  }
+
+  /* Bar chart */
+  .bar-chart { display: flex; flex-direction: column; gap: 6px; }
+  .bar-row { display: flex; align-items: center; gap: 8px; }
+  .bar-label { font-size: 12px; width: 80px; text-align: right; color: var(--text-dim); flex-shrink: 0; }
+  .bar-track { flex: 1; height: 20px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; display: flex; align-items: center; padding-left: 8px; font-size: 11px; font-weight: 600; }
+  .bar-value { font-size: 12px; width: 60px; text-align: right; color: var(--text-dim); flex-shrink: 0; }
+
+  /* Table */
+  .table { width: 100%; border-collapse: collapse; }
+  .table th {
+    text-align: left; font-size: 11px; font-weight: 600; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .table td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid var(--surface-3); }
+  .table tr:hover td { background: var(--surface-2); }
+
+  .win-bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; width: 120px; }
+  .win-bar .w { background: var(--green); }
+  .win-bar .d { background: var(--text-dim); }
+  .win-bar .b { background: var(--red); }
+
+  /* Mini board */
+  .mini-board {
+    display: inline-grid; grid-template-columns: repeat(8, 1fr);
+    width: 160px; height: 160px; border-radius: 4px; overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .mini-sq {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; user-select: none;
+  }
+  .mini-sq.light { background: var(--light-square); }
+  .mini-sq.dark { background: var(--dark-square); }
+
+  /* Hub card */
+  .hub-card {
+    display: flex; gap: 16px; padding: 16px;
+    background: var(--surface-2); border-radius: 8px; margin-bottom: 12px;
+  }
+  .hub-info { flex: 1; }
+  .hub-info .title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .hub-info .meta { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+  .eco-tag {
+    display: inline-block; font-size: 11px; padding: 2px 6px; margin: 2px;
+    background: var(--surface-3); border-radius: 4px; color: var(--accent);
+  }
+
+  /* Diversity chart */
+  .diversity-grid { display: grid; grid-template-columns: 100px 1fr; gap: 4px; align-items: center; }
+  .diversity-label { font-size: 12px; color: var(--text-dim); text-align: right; padding-right: 8px; }
+  .diversity-bar { display: flex; gap: 2px; align-items: center; }
+  .diversity-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 7px; color: white; font-weight: 700;
+  }
+
+  .empty-msg {
+    text-align: center; padding: 40px; color: var(--text-dim); font-size: 14px;
+  }
+  .empty-msg code {
+    display: block; margin-top: 12px; padding: 10px; background: var(--surface-2);
+    border-radius: 6px; font-size: 12px; color: var(--green);
+  }
+
+  .upload-area {
+    margin-top: 20px; padding: 20px; border: 2px dashed var(--border);
+    border-radius: 8px; cursor: pointer; text-align: center;
+    transition: all 0.2s;
+  }
+  .upload-area:hover { border-color: var(--accent); background: var(--surface); }
+  .upload-area input { display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>Cassandra</span> — Dashboard</h1>
+  <div class="nav">
+    <a href="dashboard.html" class="active">Dashboard</a>
+    <a href="puzzle-viewer.html">Puzzles</a>
+  </div>
+</div>
+
+<div class="container" id="app">
+  <div class="empty-msg" id="empty-state">
+    <h2>Load Analysis Data</h2>
+    <p>Run the analysis script first, then load the output here:</p>
+    <code>python3 scripts/analyze_database.py</code>
+    <div class="upload-area" id="upload-area">
+      <p>Drop analysis.json here, or click to browse</p>
+      <input type="file" id="file-input" accept=".json">
+    </div>
+  </div>
+</div>
+
+<script>
+const PIECES = {
+  'K':'♔','Q':'♕','R':'♖','B':'♗','N':'♘','P':'♙',
+  'k':'♚','q':'♛','r':'♜','b':'♝','n':'♞','p':'♟'
+};
+
+function parseFEN(fen) {
+  const board = [];
+  const rows = fen.split(' ')[0].split('/');
+  for (const row of rows) {
+    const r = [];
+    for (const ch of row) {
+      if (ch >= '1' && ch <= '8') for (let i = 0; i < parseInt(ch); i++) r.push(null);
+      else r.push(ch);
+    }
+    board.push(r);
+  }
+  return board;
+}
+
+function renderMiniBoard(fen) {
+  const board = parseFEN(fen);
+  let html = '<div class="mini-board">';
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const cls = (r + c) % 2 === 0 ? 'light' : 'dark';
+      const piece = board[r][c] ? (PIECES[board[r][c]] || '') : '';
+      html += `<div class="mini-sq ${cls}">${piece}</div>`;
+    }
+  }
+  html += '</div>';
+  return html;
+}
+
+function fmt(n) { return n.toLocaleString(); }
+
+function renderDashboard(data) {
+  const app = document.getElementById('app');
+  const stats = data.db_stats;
+
+  let html = '';
+
+  // ── Stat cards ──
+  html += '<div class="stats-row">';
+  html += `<div class="stat-card"><div class="label">Total Games</div><div class="value">${fmt(stats.total_games)}</div><div class="sub">in database</div></div>`;
+  html += `<div class="stat-card"><div class="label">Positions</div><div class="value">${fmt(stats.total_positions)}</div><div class="sub">${fmt(stats.unique_positions)} unique</div></div>`;
+  html += `<div class="stat-card"><div class="label">Transposition Hubs</div><div class="value">${data.total_transposition_hubs || '—'}</div><div class="sub">positions reached by 2+ openings</div></div>`;
+  const openingCount = data.openings ? data.openings.length : 0;
+  html += `<div class="stat-card"><div class="label">Openings Analyzed</div><div class="value">${openingCount}</div><div class="sub">with 50+ games each</div></div>`;
+  html += '</div>';
+
+  // ── Elo Distribution ──
+  if (data.brackets) {
+    html += '<div class="section"><div class="section-header">Elo Distribution <span class="badge">foundation data</span></div>';
+    html += '<div class="card"><h3>Games by Elo Bracket</h3><div class="bar-chart">';
+    const maxGames = Math.max(...data.brackets.map(b => b.games));
+    for (const b of data.brackets) {
+      if (b.games === 0) continue;
+      const pct = (b.games / maxGames * 100).toFixed(0);
+      const hue = 260 + (b.low / 3200) * 60;
+      html += `<div class="bar-row">
+        <span class="bar-label">${b.label}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:hsl(${hue},60%,60%)">${b.games > maxGames*0.1 ? fmt(b.games) : ''}</div></div>
+        <span class="bar-value">${fmt(b.games)}</span>
+      </div>`;
+    }
+    html += '</div></div></div>';
+  }
+
+  // ── Two-column: Openings + Transpositions ──
+  html += '<div class="grid-2">';
+
+  // Openings table
+  if (data.openings) {
+    html += '<div class="section"><div class="section-header">Top Openings</div>';
+    html += '<div class="card" style="max-height:500px;overflow-y:auto"><table class="table"><thead><tr>';
+    html += '<th>ECO</th><th>Opening</th><th>Games</th><th>W / D / B</th>';
+    html += '</tr></thead><tbody>';
+    for (const o of data.openings.slice(0, 25)) {
+      const w = (o.white_win_rate * 100).toFixed(0);
+      const d = (o.draw_rate * 100).toFixed(0);
+      const b = (o.black_win_rate * 100).toFixed(0);
+      html += `<tr>
+        <td style="color:var(--accent);font-weight:600">${o.eco}</td>
+        <td>${o.name.length > 30 ? o.name.slice(0,30)+'…' : o.name}</td>
+        <td>${fmt(o.games)}</td>
+        <td>
+          <div class="win-bar"><div class="w" style="width:${w}%"></div><div class="d" style="width:${d}%"></div><div class="b" style="width:${b}%"></div></div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:2px">${w}% / ${d}% / ${b}%</div>
+        </td>
+      </tr>`;
+    }
+    html += '</tbody></table></div></div>';
+  }
+
+  // Transposition hubs
+  if (data.hubs) {
+    html += '<div class="section"><div class="section-header">Transposition Hubs <span class="badge">novel insight</span></div>';
+    html += '<div class="card" style="max-height:500px;overflow-y:auto">';
+    for (const h of data.hubs.slice(0, 10)) {
+      html += `<div class="hub-card">
+        ${renderMiniBoard(h.fen)}
+        <div class="hub-info">
+          <div class="title">${fmt(h.games)} games · ${h.openings} openings converge</div>
+          <div class="meta">
+            Avg reached at move ${h.avg_move_number}<br>
+            ${h.opening_ecos.map(e => `<span class="eco-tag">${e}</span>`).join(' ')}
+          </div>
+        </div>
+      </div>`;
+    }
+    html += '</div></div>';
+  }
+
+  html += '</div>'; // close grid-2
+
+  // ── Pareto Positions ──
+  if (data.pareto_positions) {
+    html += '<div class="section"><div class="section-header">Pareto Positions <span class="badge">master these first</span></div>';
+    html += '<div class="grid-3">';
+    for (const pp of data.pareto_positions.slice(0, 9)) {
+      const topMove = pp.top_moves[0] || {san:'?', freq:0};
+      html += `<div class="card" style="text-align:center">
+        ${renderMiniBoard(pp.fen)}
+        <div style="margin-top:10px;font-size:13px;font-weight:600">${fmt(pp.total_visits)} visits</div>
+        <div style="font-size:12px;color:var(--text-dim)">
+          Move ${pp.avg_move_number} avg · ${pp.unique_games} games<br>
+          Top: <strong>${topMove.san}</strong> (${(topMove.freq*100).toFixed(0)}%)
+        </div>
+      </div>`;
+    }
+    html += '</div></div>';
+  }
+
+  // ── Move Diversity by Elo ──
+  if (data.move_diversity && data.move_diversity.length > 0) {
+    html += '<div class="section"><div class="section-header">Move Diversity by Elo <span class="badge">behavioral insight</span></div>';
+    html += '<div class="card"><h3>How concentrated is play? (top position)</h3>';
+    const sample = data.move_diversity[0];
+    html += '<div class="bar-chart">';
+    const elos = Object.keys(sample.by_elo).sort();
+    for (const elo of elos) {
+      const d = sample.by_elo[elo];
+      const concPct = (d.concentration * 100).toFixed(0);
+      const entColor = d.entropy > 2 ? 'var(--orange)' : d.entropy > 1 ? 'var(--blue)' : 'var(--green)';
+      html += `<div class="bar-row">
+        <span class="bar-label">${elo}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${concPct}%;background:${entColor}">${concPct}%</div></div>
+        <span class="bar-value">H=${d.entropy.toFixed(1)} · ${d.unique_moves} moves</span>
+      </div>`;
+    }
+    html += '</div>';
+    html += '<div style="font-size:12px;color:var(--text-dim);margin-top:12px">Bar = top move concentration (higher = more agreement). H = Shannon entropy (higher = more diverse play).</div>';
+    html += '</div></div>';
+  }
+
+  // ── Game Lengths ──
+  if (data.game_lengths) {
+    html += '<div class="section"><div class="section-header">Game Length Distribution</div>';
+    html += '<div class="grid-2">';
+    for (const [tc, d] of Object.entries(data.game_lengths)) {
+      html += `<div class="card"><h3>${tc} (${fmt(d.count)} games)</h3>`;
+      html += `<div style="font-size:13px;margin-bottom:12px">Avg: <strong>${d.avg}</strong> half-moves · Median: <strong>${d.median}</strong></div>`;
+      html += '<div class="bar-chart">';
+      const buckets = Object.entries(d.histogram).sort((a,b) => parseInt(a[0]) - parseInt(b[0]));
+      const maxCount = Math.max(...buckets.map(b => b[1]));
+      for (const [bucket, count] of buckets.slice(0, 15)) {
+        const pct = (count / maxCount * 100).toFixed(0);
+        html += `<div class="bar-row">
+          <span class="bar-label">${bucket}-${parseInt(bucket)+9}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:var(--blue)">${count > maxCount*0.15 ? fmt(count) : ''}</div></div>
+          <span class="bar-value">${fmt(count)}</span>
+        </div>`;
+      }
+      html += '</div></div>';
+    }
+    html += '</div></div>';
+  }
+
+  app.innerHTML = html;
+}
+
+// ── File loading ──
+const uploadArea = document.getElementById('upload-area');
+const fileInput = document.getElementById('file-input');
+if (uploadArea) {
+  uploadArea.addEventListener('click', () => fileInput.click());
+  uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); });
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) readFile(file);
+  });
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files[0]) readFile(e.target.files[0]);
+  });
+}
+
+function readFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      renderDashboard(JSON.parse(e.target.result));
+    } catch (err) { alert('Parse error: ' + err.message); }
+  };
+  reader.readAsText(file);
+}
+
+// Auto-load
+async function tryAutoLoad() {
+  for (const path of ['data/analysis.json', '../frontend/data/analysis.json']) {
+    try {
+      const resp = await fetch(path);
+      if (resp.ok) { renderDashboard(await resp.json()); return; }
+    } catch {}
+  }
+}
+tryAutoLoad();
+</script>
+</body>
+</html>

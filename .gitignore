@@ -1,0 +1,7 @@
+cassandra.db
+*.pyc
+__pycache__/
+.env
+*.zst
+*.pgn
+node_modules/

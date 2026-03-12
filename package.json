@@ -1,0 +1,12 @@
+{
+  "name": "cassandra",
+  "version": "0.1.0",
+  "description": "Chess analytics and puzzle viewer",
+  "scripts": {
+    "dev": "serve frontend",
+    "start": "serve frontend"
+  },
+  "keywords": ["chess", "analytics", "puzzles"],
+  "author": "",
+  "license": "ISC"
+}

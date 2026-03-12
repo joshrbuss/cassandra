@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cassandra — Chess Analytics Highlight Reel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f0f0f;
+            color: #f5f5f5;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+
+        section {
+            margin-bottom: 120px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 60px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .hero h1 {
+            font-size: 72px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #c084fc 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .tagline {
+            font-size: 24px;
+            font-weight: 300;
+            color: #a0a0a0;
+            margin-bottom: 48px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stat-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .stat-card {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #c084fc;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .label {
+            font-size: 14px;
+            color: #808080;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .section-header h2 {
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .section-badge {
+            display: inline-block;
+            background-color: #c084fc;
+            color: #0f0f0f;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Insight Callout */
+        .insight-callout {
+            background: linear-gradient(135deg, rgba(192, 132, 252, 0.1) 0%, rgba(167, 139, 250, 0.05) 100%);
+            border-left: 3px solid #c084fc;
+            border-radius: 10px;
+            padding: 24px;
+            margin: 32px 0;
+            font-size: 18px;
+            font-weight: 500;
+            color: #e8e8e8;
+        }
+
+        /* Elo Distribution Section */
+        .elo-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .elo-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .elo-label {
+            min-width: 100px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #a0a0a0;
+            text-align: right;
+        }
+
+        .elo-bar-container {
+            flex: 1;
+            height: 40px;
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #333;
+        }
+
+        .elo-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #c084fc 0%, #a78bfa 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 16px;
+            position: relative;
+        }
+
+        .elo-bar.highlight {
+            box-shadow: 0 0 20px rgba(192, 132, 252, 0.3);
+        }
+
+        .elo-count {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* Openings Table */
+        .openings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+        }
+
+        .openings-table thead {
+            background-color: #1a1a1a;
+            border-bottom: 1px solid #333;
+        }
+
+        .openings-table th {
+            padding: 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .openings-table td {
+            padding: 16px;
+            border-bottom: 1px solid #2a2a2a;
+            font-size: 14px;
+        }
+
+        .openings-table tr:hover {
+            background-color: #1a1a1a;
+        }
+
+        .opening-name {
+            font-weight: 600;
+            color: #c084fc;
+        }
+
+        .opening-code {
+            font-size: 12px;
+            color: #808080;
+        }
+
+        .wdb-bars {
+            display: flex;
+            gap: 2px;
+            height: 24px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .wdb-bar {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .wdb-win {
+            background-color: #4ade80;
+        }
+
+        .wdb-draw {
+            background-color: #6b7280;
+        }
+
+        .wdb-loss {
+            background-color: #f87171;
+        }
+
+        /* Positions Grid */
+        .positions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin: 32px 0;
+        }
+
+        .position-card {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .position-card:hover {
+            border-color: #c084fc;
+            box-shadow: 0 8px 32px rgba(192, 132, 252, 0.15);
+        }
+
+        .mini-board {
+            width: 160px;
+            height: 160px;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 0;
+            margin: 12px auto;
+        }
+
+        .square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            user-select: none;
+        }
+
+        .square.light {
+            background-color: #e8d5b5;
+        }
+
+        .square.dark {
+            background-color: #b58863;
+        }
+
+        .position-info {
+            padding: 16px;
+            text-align: center;
+        }
+
+        .position-info .metric {
+            margin: 8px 0;
+            font-size: 13px;
+        }
+
+        .position-info .metric-label {
+            color: #808080;
+            font-weight: 500;
+        }
+
+        .position-info .metric-value {
+            color: #c084fc;
+            font-weight: 600;
+        }
+
+        .top-move {
+            font-size: 14px;
+            color: #e8e8e8;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #333;
+        }
+
+        /* Entropy/Diversity Visualization */
+        .diversity-visualization {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 32px 0;
+            align-items: center;
+        }
+
+        .diversity-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .diversity-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .diversity-label {
+            min-width: 120px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #a0a0a0;
+        }
+
+        .diversity-bars {
+            flex: 1;
+            display: flex;
+            gap: 8px;
+            height: 32px;
+        }
+
+        .diversity-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #c084fc 0%, #a78bfa 100%);
+            border-radius: 6px;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .diversity-value {
+            font-size: 11px;
+            font-weight: 600;
+            color: #fff;
+            padding-bottom: 6px;
+        }
+
+        .diversity-metric {
+            background: linear-gradient(135deg, rgba(192, 132, 252, 0.1) 0%, rgba(167, 139, 250, 0.05) 100%);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+
+        .diversity-metric h4 {
+            color: #c084fc;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .diversity-metric p {
+            font-size: 13px;
+            color: #a0a0a0;
+            line-height: 1.5;
+        }
+
+        /* Hub Grid */
+        .hubs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin: 32px 0;
+        }
+
+        .hub-card {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .hub-card:hover {
+            border-color: #c084fc;
+            box-shadow: 0 8px 32px rgba(192, 132, 252, 0.15);
+        }
+
+        .hub-board {
+            width: 160px;
+            height: 160px;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 0;
+            margin: 12px auto;
+        }
+
+        .hub-info {
+            margin-top: 16px;
+        }
+
+        .hub-info .metric {
+            font-size: 13px;
+            margin: 8px 0;
+        }
+
+        .hub-openings {
+            font-size: 24px;
+            font-weight: 700;
+            color: #c084fc;
+            margin: 12px 0;
+        }
+
+        .hub-label {
+            font-size: 12px;
+            color: #808080;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Game Length Histograms */
+        .game-length-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 32px 0;
+        }
+
+        .histogram {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 24px;
+        }
+
+        .histogram h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #e8e8e8;
+        }
+
+        .histogram-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 240px;
+        }
+
+        .histogram-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #c084fc 0%, #a78bfa 100%);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            min-height: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .histogram-bar:hover {
+            opacity: 0.8;
+        }
+
+        .histogram-label {
+            font-size: 10px;
+            color: #808080;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 48px;
+            }
+
+            .hero .tagline {
+                font-size: 18px;
+            }
+
+            .stat-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .section-header h2 {
+                font-size: 28px;
+            }
+
+            .diversity-visualization {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .game-length-container {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .elo-bar-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .elo-label {
+                min-width: auto;
+                text-align: left;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .positions-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+
+            .hubs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Data loading state */
+        .loading-indicator {
+            text-align: center;
+            padding: 40px;
+            color: #808080;
+        }
+
+        .file-picker-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .file-picker-overlay.active {
+            display: flex;
+        }
+
+        .file-picker-dialog {
+            background-color: #1a1a1a;
+            border: 2px solid #c084fc;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .file-picker-dialog h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: #c084fc;
+        }
+
+        .file-picker-dialog p {
+            color: #a0a0a0;
+            margin-bottom: 24px;
+        }
+
+        .file-picker-dialog input[type="file"] {
+            margin-bottom: 16px;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            background-color: #c084fc;
+            color: #0f0f0f;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            background-color: #a78bfa;
+        }
+
+        #fileInput {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Cassandra</h1>
+            <p class="tagline">What 102,336 chess games reveal about how humans really play</p>
+            <div class="stat-cards">
+                <div class="stat-card">
+                    <div class="number">102K</div>
+                    <div class="label">Games Analyzed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">7M</div>
+                    <div class="label">Positions Explored</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">6M</div>
+                    <div class="label">Unique Positions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">100</div>
+                    <div class="label">Transposition Hubs</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Elo Distribution Section -->
+        <section>
+            <div class="section-header">
+                <h2>Who's Playing?</h2>
+                <span class="section-badge">Elo Distribution</span>
+            </div>
+            <div class="elo-chart" id="eloChart">
+                <div class="loading-indicator">Loading data...</div>
+            </div>
+            <div class="insight-callout" id="eloInsight">
+                The sweet spot is 1600–1800 — that's where the most games are played.
+            </div>
+        </section>
+
+        <!-- Openings Section -->
+        <section>
+            <div class="section-header">
+                <h2>The Opening Illusion</h2>
+                <span class="section-badge">Top Openings</span>
+            </div>
+            <p style="color: #a0a0a0; margin-bottom: 24px;">
+                The 15 most popular openings and their win/draw/loss ratios across all games.
+            </p>
+            <table class="openings-table" id="openingsTable">
+                <thead>
+                    <tr>
+                        <th>Opening</th>
+                        <th>Code</th>
+                        <th>Games</th>
+                        <th>Outcome Distribution</th>
+                    </tr>
+                </thead>
+                <tbody id="openingsTableBody">
+                    <tr><td colspan="4" style="text-align: center; padding: 40px;">Loading data...</td></tr>
+                </tbody>
+            </table>
+            <div class="insight-callout" id="caroKannInsight">
+                But here's the thing — these positions transpose into each other more than you'd think.
+            </div>
+        </section>
+
+        <!-- Top Positions Section -->
+        <section>
+            <div class="section-header">
+                <h2>The Positions That Matter</h2>
+                <span class="section-badge">Pareto Analysis</span>
+            </div>
+            <div class="positions-grid" id="positionsGrid">
+                <div class="loading-indicator" style="grid-column: 1/-1;">Loading data...</div>
+            </div>
+            <div class="insight-callout" id="paretoInsight">
+                Master just 6 positions and you've covered a significant portion of all games played.
+            </div>
+        </section>
+
+        <!-- Diversity/Entropy Section -->
+        <section>
+            <div class="section-header">
+                <h2>How Elo Changes Your Brain</h2>
+                <span class="section-badge">Move Diversity</span>
+            </div>
+            <p style="color: #a0a0a0; margin-bottom: 24px;">
+                How player rating affects move selection in the starting position. Lower-rated players are more random overall but less diverse in their top choice.
+            </p>
+            <div class="diversity-visualization" id="diversityViz">
+                <div class="loading-indicator" style="grid-column: 1/-1;">Loading data...</div>
+            </div>
+            <div class="insight-callout" id="diversityInsight">
+                GMs have converged on what's right. They play with lower overall entropy (1.81) because 49% of their moves are concentrated in just their top choices.
+            </div>
+        </section>
+
+        <!-- Transposition Hubs Section -->
+        <section>
+            <div class="section-header">
+                <h2>Where Openings Collide</h2>
+                <span class="section-badge">Transposition Hubs</span>
+            </div>
+            <p style="color: #a0a0a0; margin-bottom: 24px;">
+                The positions where the most openings converge. Master these and you cover openings you've never studied.
+            </p>
+            <div class="hubs-grid" id="hubsGrid">
+                <div class="loading-indicator" style="grid-column: 1/-1;">Loading data...</div>
+            </div>
+        </section>
+
+        <!-- Game Length Section -->
+        <section>
+            <div class="section-header">
+                <h2>How Long Do Games Last?</h2>
+                <span class="section-badge">Game Length Distribution</span>
+            </div>
+            <div class="game-length-container" id="gameLengthContainer">
+                <div class="loading-indicator" style="grid-column: 1/-1;">Loading data...</div>
+            </div>
+        </section>
+    </div>
+
+    <!-- File picker overlay -->
+    <div class="file-picker-overlay" id="filePickerOverlay">
+        <div class="file-picker-dialog">
+            <h3>Load Analysis Data</h3>
+            <p>Please select the <code>data/analysis.json</code> file from your Cassandra project.</p>
+            <label for="fileInput" class="file-input-label">📁 Choose File</label>
+            <input type="file" id="fileInput" accept=".json">
+            <p style="margin-top: 24px; font-size: 12px; color: #666;">
+                Or drag and drop the file onto this window.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const PIECES = {
+            'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+            'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+        };
+
+        let analysisData = null;
+
+        // Parse FEN to board array
+        function parseFEN(fen) {
+            const board = [];
+            for (const row of fen.split(' ')[0].split('/')) {
+                const r = [];
+                for (const ch of row) {
+                    if (ch >= '1' && ch <= '8') {
+                        for (let i = 0; i < parseInt(ch); i++) r.push(null);
+                    } else {
+                        r.push(ch);
+                    }
+                }
+                board.push(r);
+            }
+            return board;
+        }
+
+        // Create mini board HTML
+        function createMiniBoard(fen, width = 160) {
+            const board = parseFEN(fen);
+            let html = '<div class="mini-board" style="width: ' + width + 'px; height: ' + width + 'px;">';
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const isLight = (r + c) % 2 === 0;
+                    const piece = board[r][c];
+                    const squareClass = isLight ? 'light' : 'dark';
+                    const pieceHtml = piece ? PIECES[piece] : '';
+                    html += '<div class="square ' + squareClass + '">' + pieceHtml + '</div>';
+                }
+            }
+            html += '</div>';
+            return html;
+        }
+
+        // Render Elo distribution
+        function renderEloDistribution() {
+            if (!analysisData || !analysisData.brackets) return;
+
+            const container = document.getElementById('eloChart');
+            const data = analysisData.brackets.filter(b => b.games > 0);
+            const maxCount = Math.max(...data.map(b => b.games));
+
+            let html = '';
+            for (const b of data) {
+                const percentage = (b.games / maxCount) * 100;
+                const isHighlight = b.label === '1600-1800';
+                html += `
+                    <div class="elo-bar-row">
+                        <div class="elo-label">${b.label}</div>
+                        <div class="elo-bar-container">
+                            <div class="elo-bar ${isHighlight ? 'highlight' : ''}" style="width: ${percentage}%">
+                                <span class="elo-count">${b.games.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        // Render openings table
+        function renderOpenings() {
+            if (!analysisData || !analysisData.openings) return;
+
+            const tbody = document.getElementById('openingsTableBody');
+            const data = analysisData.openings;
+
+            let html = '';
+            for (const o of data.slice(0, 15)) {
+                const wPct = (o.white_win_rate * 100).toFixed(1);
+                const dPct = (o.draw_rate * 100).toFixed(1);
+                const bPct = (o.black_win_rate * 100).toFixed(1);
+                const name = o.name.length > 35 ? o.name.slice(0, 35) + '…' : o.name;
+
+                html += `
+                    <tr>
+                        <td><span class="opening-name">${name}</span></td>
+                        <td><span class="opening-code">${o.eco}</span></td>
+                        <td>${o.games.toLocaleString()}</td>
+                        <td>
+                            <div class="wdb-bars">
+                                <div class="wdb-bar wdb-win" style="width: ${wPct}%;" title="W: ${wPct}%"></div>
+                                <div class="wdb-bar wdb-draw" style="width: ${dPct}%;" title="D: ${dPct}%"></div>
+                                <div class="wdb-bar wdb-loss" style="width: ${bPct}%;" title="L: ${bPct}%"></div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+            tbody.innerHTML = html;
+        }
+
+        // Render top positions
+        function renderPositions() {
+            if (!analysisData || !analysisData.pareto_positions) return;
+
+            const container = document.getElementById('positionsGrid');
+            const data = analysisData.pareto_positions;
+            const totalPositions = analysisData.db_stats?.total_positions || 1;
+
+            let html = '';
+            for (const pos of data.slice(0, 6)) {
+                const boardHtml = createMiniBoard(pos.fen, 160);
+                const topMove = pos.top_moves[0] || { san: '?', freq: 0 };
+                html += `
+                    <div class="position-card">
+                        ${boardHtml}
+                        <div class="position-info">
+                            <div class="metric">
+                                <div class="metric-label">Visits</div>
+                                <div class="metric-value">${pos.total_visits.toLocaleString()}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Top Move</div>
+                                <div class="metric-value">${topMove.san} (${(topMove.freq * 100).toFixed(0)}%)</div>
+                            </div>
+                            <div class="top-move" style="margin-top:8px;font-size:12px;color:#888;">
+                                Move ${pos.avg_move_number} avg · ${pos.unique_games.toLocaleString()} games
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+
+            // Update pareto insight
+            const top6visits = data.slice(0, 6).reduce((s, p) => s + p.total_visits, 0);
+            const coverage = ((top6visits / totalPositions) * 100).toFixed(1);
+            const insightEl = document.getElementById('paretoInsight');
+            if (insightEl) insightEl.textContent = `Master just 6 positions and you've covered ${coverage}% of all position visits in the database.`;
+        }
+
+        // Render diversity visualization
+        function renderDiversityViz() {
+            if (!analysisData || !analysisData.move_diversity || !analysisData.move_diversity.length) return;
+
+            const container = document.getElementById('diversityViz');
+            // Use the first position (starting position) for the diversity comparison
+            const byElo = analysisData.move_diversity[0].by_elo;
+
+            // Sort brackets by elo range
+            const bracketOrder = ['0-800','800-1000','1000-1200','1200-1400','1400-1600','1600-1800','1800-2000','2000-2200','2200-2500','2500+'];
+            const brackets = bracketOrder.filter(b => byElo[b]);
+
+            let html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">';
+
+            // Entropy chart
+            html += '<div class="card" style="background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:20px;">';
+            html += '<h4 style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:16px;">Shannon Entropy (Move Randomness)</h4>';
+            const maxEntropy = Math.max(...brackets.map(b => byElo[b].entropy));
+            for (const b of brackets) {
+                const d = byElo[b];
+                const pct = (d.entropy / maxEntropy * 100).toFixed(0);
+                const color = d.entropy > 1.9 ? '#fb923c' : d.entropy > 1.7 ? '#60a5fa' : '#4ade80';
+                html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                    <span style="font-size:12px;color:#888;width:70px;text-align:right;flex-shrink:0;">${b}</span>
+                    <div style="flex:1;height:20px;background:#242424;border-radius:4px;overflow:hidden;">
+                        <div style="height:100%;width:${pct}%;background:${color};border-radius:4px;display:flex;align-items:center;padding-left:8px;">
+                            <span style="font-size:11px;font-weight:600;color:white;">${d.entropy.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    <span style="font-size:11px;color:#888;width:40px;text-align:right;">${d.unique_moves}m</span>
+                </div>`;
+            }
+            html += '</div>';
+
+            // Concentration chart
+            html += '<div class="card" style="background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:20px;">';
+            html += '<h4 style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:16px;">Top Move Concentration (Agreement)</h4>';
+            for (const b of brackets) {
+                const d = byElo[b];
+                const concPct = (d.concentration * 100).toFixed(0);
+                const color = d.concentration > 0.6 ? '#f87171' : d.concentration > 0.55 ? '#fb923c' : '#4ade80';
+                html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                    <span style="font-size:12px;color:#888;width:70px;text-align:right;flex-shrink:0;">${b}</span>
+                    <div style="flex:1;height:20px;background:#242424;border-radius:4px;overflow:hidden;">
+                        <div style="height:100%;width:${concPct}%;background:${color};border-radius:4px;display:flex;align-items:center;padding-left:8px;">
+                            <span style="font-size:11px;font-weight:600;color:white;">${concPct}%</span>
+                        </div>
+                    </div>
+                    <span style="font-size:11px;color:#888;width:60px;text-align:right;">${d.total_observations.toLocaleString()}</span>
+                </div>`;
+            }
+            html += '</div>';
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Render transposition hubs
+        function renderHubs() {
+            if (!analysisData || !analysisData.hubs) return;
+
+            const container = document.getElementById('hubsGrid');
+            const data = analysisData.hubs;
+
+            let html = '';
+            for (const hub of data.slice(0, 5)) {
+                const boardHtml = createMiniBoard(hub.fen, 160);
+                const ecoTags = (hub.opening_ecos || []).slice(0, 6).map(e =>
+                    `<span style="display:inline-block;font-size:10px;padding:2px 6px;margin:2px;background:#2e2e2e;border-radius:4px;color:#c084fc;">${e}</span>`
+                ).join('');
+                html += `
+                    <div class="hub-card">
+                        ${boardHtml}
+                        <div class="hub-info">
+                            <div class="hub-openings">${hub.openings}</div>
+                            <div class="hub-label">Openings Converge Here</div>
+                            <div class="metric" style="margin-top: 8px; color: #a0a0a0; font-size: 12px;">
+                                ${hub.games.toLocaleString()} games · avg move ${hub.avg_move_number}
+                            </div>
+                            <div style="margin-top:6px;">${ecoTags}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        // Render game length histograms
+        function renderGameLengths() {
+            if (!analysisData || !analysisData.game_lengths) return;
+
+            const container = document.getElementById('gameLengthContainer');
+            let html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">';
+
+            for (const [tc, d] of Object.entries(analysisData.game_lengths)) {
+                html += `<div class="card" style="background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:20px;">`;
+                html += `<h4 style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">${tc} (${d.count.toLocaleString()} games)</h4>`;
+                html += `<div style="font-size:13px;margin-bottom:16px;color:#a0a0a0;">Avg: <strong style="color:#f5f5f5;">${d.avg}</strong> half-moves · Median: <strong style="color:#f5f5f5;">${d.median}</strong></div>`;
+
+                const buckets = Object.entries(d.histogram).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+                const maxCount = Math.max(...buckets.map(b => b[1]));
+
+                for (const [bucket, count] of buckets.slice(0, 12)) {
+                    const pct = (count / maxCount * 100).toFixed(0);
+                    html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                        <span style="font-size:11px;color:#888;width:55px;text-align:right;flex-shrink:0;">${bucket}-${parseInt(bucket)+9}</span>
+                        <div style="flex:1;height:16px;background:#242424;border-radius:3px;overflow:hidden;">
+                            <div style="height:100%;width:${pct}%;background:#60a5fa;border-radius:3px;"></div>
+                        </div>
+                        <span style="font-size:11px;color:#888;width:50px;text-align:right;">${count.toLocaleString()}</span>
+                    </div>`;
+                }
+                html += '</div>';
+            }
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Load and render data
+        async function loadAndRender() {
+            try {
+                const response = await fetch('data/analysis.json');
+                if (!response.ok) throw new Error('Network response was not ok');
+                analysisData = await response.json();
+                renderAll();
+            } catch (error) {
+                console.log('Could not fetch data, showing file picker');
+                document.getElementById('filePickerOverlay').classList.add('active');
+            }
+        }
+
+        function renderAll() {
+            renderEloDistribution();
+            renderOpenings();
+            renderPositions();
+            renderDiversityViz();
+            renderHubs();
+            renderGameLengths();
+            document.getElementById('filePickerOverlay').classList.remove('active');
+        }
+
+        // File picker
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        analysisData = JSON.parse(event.target.result);
+                        renderAll();
+                    } catch (error) {
+                        alert('Error parsing JSON: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Drag and drop
+        document.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        document.addEventListener('drop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        analysisData = JSON.parse(event.target.result);
+                        renderAll();
+                    } catch (error) {
+                        alert('Error parsing JSON: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Load on page load
+        window.addEventListener('load', loadAndRender);
+    </script>
+</body>
+</html>
