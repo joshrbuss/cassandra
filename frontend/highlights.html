@@ -284,16 +284,22 @@
             height: 160px;
             display: grid;
             grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
             gap: 0;
             margin: 12px auto;
+            overflow: hidden;
+            border-radius: 3px;
+            flex-shrink: 0;
         }
 
         .square {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 16px;
+            line-height: 1;
             user-select: none;
+            overflow: hidden;
         }
 
         .square.light {
@@ -420,6 +426,7 @@
             padding: 24px;
             text-align: center;
             transition: all 0.3s ease;
+            overflow: hidden;
         }
 
         .hub-card:hover {
@@ -736,7 +743,7 @@
                 <span class="section-badge">Transposition Hubs</span>
             </div>
             <p style="color: #a0a0a0; margin-bottom: 24px;">
-                The positions where the most openings converge. Master these and you cover openings you've never studied.
+                These mid-game positions are reached through dozens of different opening lines. Master these and you cover openings you've never studied.
             </p>
             <div class="hubs-grid" id="hubsGrid">
                 <div class="loading-indicator" style="grid-column: 1/-1;">Loading data...</div>
@@ -970,7 +977,8 @@
             if (!analysisData || !analysisData.hubs) return;
 
             const container = document.getElementById('hubsGrid');
-            const data = analysisData.hubs;
+            // Filter out trivial early positions — real transpositions happen at move 4+
+            const data = analysisData.hubs.filter(h => h.avg_move_number >= 4);
 
             let html = '';
             for (const hub of data.slice(0, 5)) {
