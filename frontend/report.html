@@ -1406,9 +1406,13 @@
         let sfResolve = null;
 
         function initStockfish() {
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 try {
-                    sfWorker = new Worker('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');
+                    // Fetch stockfish.js as blob to avoid CORS Worker restriction
+                    const resp = await fetch('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');
+                    const blob = await resp.blob();
+                    const blobUrl = URL.createObjectURL(blob);
+                    sfWorker = new Worker(blobUrl);
                     sfWorker.onmessage = function(e) {
                         const line = e.data;
                         if (line === 'uciok') {
