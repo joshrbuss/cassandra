@@ -468,6 +468,121 @@
             text-decoration: none;
         }
 
+        /* ===== REVIEW PANEL ===== */
+        .review-panel {
+            max-width: 520px;
+            margin: 24px auto 0;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 16px;
+            padding: 24px;
+            display: none;
+        }
+
+        .review-panel.has-reviews { display: block; }
+
+        .review-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .review-stat {
+            text-align: center;
+            padding: 12px 8px;
+            background: #111;
+            border-radius: 10px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .review-stat .stat-num {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .review-stat .stat-label {
+            font-size: 11px;
+            color: #808080;
+            margin-top: 4px;
+        }
+
+        .review-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #c084fc, #818cf8);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        .review-btn:hover { opacity: 0.9; }
+
+        .mastery-bars {
+            margin-top: 16px;
+        }
+
+        .mastery-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .mastery-row .theme-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .mastery-row .theme-name {
+            font-size: 12px;
+            color: #aaa;
+            width: 90px;
+            flex-shrink: 0;
+        }
+
+        .mastery-track {
+            flex: 1;
+            height: 8px;
+            background: #2a2a2a;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .mastery-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .mastery-pct {
+            font-size: 12px;
+            font-weight: 700;
+            width: 36px;
+            text-align: right;
+        }
+
+        .streak-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(251, 146, 60, 0.15);
+            border: 1px solid rgba(251, 146, 60, 0.3);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #fb923c;
+            margin-bottom: 16px;
+        }
+
         /* ===== NAV ===== */
         .top-nav {
             display: flex;
@@ -536,6 +651,28 @@
                     <button class="go-btn" id="goBtn" onclick="startAnalysis()">Generate</button>
                 </div>
                 <p class="input-hint">Free. Runs entirely in your browser. Takes ~30 seconds.</p>
+            </div>
+
+            <!-- Review Panel (shown when user has saved puzzles) -->
+            <div class="review-panel" id="reviewPanel">
+                <div id="streakBadge" class="streak-badge" style="display:none;"></div>
+                <div class="review-stats">
+                    <div class="review-stat">
+                        <div class="stat-num" id="statDue" style="color:#c084fc;">0</div>
+                        <div class="stat-label">Due Today</div>
+                    </div>
+                    <div class="review-stat">
+                        <div class="stat-num" id="statBank" style="color:#818cf8;">0</div>
+                        <div class="stat-label">In Your Bank</div>
+                    </div>
+                    <div class="review-stat">
+                        <div class="stat-num" id="statMastered" style="color:#4ade80;">0</div>
+                        <div class="stat-label">Mastered</div>
+                    </div>
+                </div>
+                <button class="review-btn" id="reviewBtn" onclick="startReview()">Practice Due Puzzles</button>
+                <div style="font-size:12px;color:#555;text-align:center;margin-bottom:16px;">Puzzles come back based on how well you know them</div>
+                <div class="mastery-bars" id="masteryBars"></div>
             </div>
         </div>
 
@@ -629,10 +766,259 @@
         let sfResolve = null;
         let playerUsername = '';
 
+        let reviewMode = false; // true when playing review puzzles
+
         const PIECE_CHARS = {
             'K': '\u2654', 'Q': '\u2655', 'R': '\u2656', 'B': '\u2657', 'N': '\u2658', 'P': '\u2659',
             'k': '\u265A', 'q': '\u265B', 'r': '\u265C', 'b': '\u265D', 'n': '\u265E', 'p': '\u265F'
         };
+
+        // ===== PUZZLE BANK (localStorage spaced repetition) =====
+        const BANK_KEY = 'cassandra_puzzle_bank';
+        const STATS_KEY = 'cassandra_stats';
+
+        function loadBank() {
+            try {
+                return JSON.parse(localStorage.getItem(BANK_KEY)) || [];
+            } catch { return []; }
+        }
+
+        function saveBank(bank) {
+            localStorage.setItem(BANK_KEY, JSON.stringify(bank));
+        }
+
+        function loadStats() {
+            try {
+                return JSON.parse(localStorage.getItem(STATS_KEY)) || {
+                    totalSolved: 0,
+                    totalAttempted: 0,
+                    lastPlayDate: null,
+                    streak: 0,
+                    dailyHistory: {} // { '2026-03-13': { solved: 5, attempted: 8 } }
+                };
+            } catch {
+                return { totalSolved: 0, totalAttempted: 0, lastPlayDate: null, streak: 0, dailyHistory: {} };
+            }
+        }
+
+        function saveStats(stats) {
+            localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+        }
+
+        function todayStr() {
+            return new Date().toISOString().slice(0, 10);
+        }
+
+        // Simplified SM-2 intervals
+        function getNextReviewDate(puzzle) {
+            const correctStreak = puzzle.correctStreak || 0;
+            const intervals = [1, 1, 2, 4, 7, 14, 30]; // days
+            const intervalDays = intervals[Math.min(correctStreak, intervals.length - 1)];
+            const next = new Date();
+            next.setDate(next.getDate() + intervalDays);
+            return next.toISOString().slice(0, 10);
+        }
+
+        function puzzleKey(p) {
+            // Unique key based on FEN (position defines the puzzle)
+            return p.fen;
+        }
+
+        function savePuzzlesToBank(newPuzzles, results) {
+            const bank = loadBank();
+            const existingKeys = new Set(bank.map(b => b.fen));
+
+            for (let i = 0; i < newPuzzles.length; i++) {
+                const p = newPuzzles[i];
+                if (existingKeys.has(p.fen)) {
+                    // Update existing puzzle
+                    const existing = bank.find(b => b.fen === p.fen);
+                    if (existing) {
+                        existing.attempts = (existing.attempts || 0) + 1;
+                        if (results[i] === 'correct') {
+                            existing.correctStreak = (existing.correctStreak || 0) + 1;
+                            existing.totalCorrect = (existing.totalCorrect || 0) + 1;
+                        } else {
+                            existing.correctStreak = 0;
+                        }
+                        existing.lastAttempt = todayStr();
+                        existing.nextReview = getNextReviewDate(existing);
+                    }
+                } else {
+                    // New puzzle
+                    bank.push({
+                        ...p,
+                        attempts: 1,
+                        correctStreak: results[i] === 'correct' ? 1 : 0,
+                        totalCorrect: results[i] === 'correct' ? 1 : 0,
+                        firstSeen: todayStr(),
+                        lastAttempt: todayStr(),
+                        nextReview: results[i] === 'correct'
+                            ? (() => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().slice(0, 10); })()
+                            : todayStr(), // Wrong = review today
+                        mastered: false
+                    });
+                }
+            }
+
+            // Mark mastered (5+ correct streak)
+            bank.forEach(p => {
+                p.mastered = (p.correctStreak || 0) >= 5;
+            });
+
+            saveBank(bank);
+        }
+
+        function updateReviewResult(fen, correct) {
+            const bank = loadBank();
+            const p = bank.find(b => b.fen === fen);
+            if (p) {
+                p.attempts = (p.attempts || 0) + 1;
+                if (correct) {
+                    p.correctStreak = (p.correctStreak || 0) + 1;
+                    p.totalCorrect = (p.totalCorrect || 0) + 1;
+                } else {
+                    p.correctStreak = 0;
+                }
+                p.lastAttempt = todayStr();
+                p.nextReview = getNextReviewDate(p);
+                p.mastered = (p.correctStreak || 0) >= 5;
+            }
+            saveBank(bank);
+        }
+
+        function getDuePuzzles() {
+            const bank = loadBank();
+            const today = todayStr();
+            return bank.filter(p => !p.mastered && p.nextReview <= today);
+        }
+
+        function updateStreak() {
+            const stats = loadStats();
+            const today = todayStr();
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = yesterday.toISOString().slice(0, 10);
+
+            if (stats.lastPlayDate === today) {
+                // Already played today, streak is current
+            } else if (stats.lastPlayDate === yesterdayStr) {
+                stats.streak++;
+            } else if (stats.lastPlayDate !== today) {
+                stats.streak = 1;
+            }
+            stats.lastPlayDate = today;
+
+            if (!stats.dailyHistory[today]) {
+                stats.dailyHistory[today] = { solved: 0, attempted: 0 };
+            }
+
+            saveStats(stats);
+            return stats;
+        }
+
+        function recordDailyStats(solved, attempted) {
+            const stats = loadStats();
+            const today = todayStr();
+            if (!stats.dailyHistory[today]) stats.dailyHistory[today] = { solved: 0, attempted: 0 };
+            stats.dailyHistory[today].solved += solved;
+            stats.dailyHistory[today].attempted += attempted;
+            stats.totalSolved += solved;
+            stats.totalAttempted += attempted;
+            saveStats(stats);
+        }
+
+        // ===== INIT REVIEW PANEL =====
+        function initReviewPanel() {
+            const bank = loadBank();
+            const due = getDuePuzzles();
+            const mastered = bank.filter(p => p.mastered).length;
+            const stats = loadStats();
+
+            if (bank.length === 0) return;
+
+            document.getElementById('reviewPanel').classList.add('has-reviews');
+            document.getElementById('statDue').textContent = due.length;
+            document.getElementById('statBank').textContent = bank.length;
+            document.getElementById('statMastered').textContent = mastered;
+
+            // Streak
+            if (stats.streak > 1) {
+                const badge = document.getElementById('streakBadge');
+                badge.style.display = 'inline-flex';
+                badge.innerHTML = `\uD83D\uDD25 ${stats.streak} day streak`;
+            }
+
+            // Review button
+            const btn = document.getElementById('reviewBtn');
+            if (due.length === 0) {
+                btn.textContent = 'All caught up! Generate new puzzles above.';
+                btn.style.background = '#333';
+                btn.style.cursor = 'default';
+                btn.onclick = null;
+            } else {
+                btn.textContent = `Practice ${due.length} Due Puzzle${due.length !== 1 ? 's' : ''}`;
+            }
+
+            // Mastery bars per theme
+            renderMasteryBars(bank);
+        }
+
+        function renderMasteryBars(bank) {
+            const container = document.getElementById('masteryBars');
+            const themes = {};
+
+            bank.forEach(p => {
+                const t = p.theme || 'tactic';
+                if (!themes[t]) themes[t] = { total: 0, mastered: 0, totalCorrect: 0, totalAttempts: 0 };
+                themes[t].total++;
+                if (p.mastered) themes[t].mastered++;
+                themes[t].totalCorrect += (p.totalCorrect || 0);
+                themes[t].totalAttempts += (p.attempts || 0);
+            });
+
+            let html = '';
+            for (const [theme, data] of Object.entries(themes)) {
+                const info = THEME_INFO[theme] || THEME_INFO['tactic'];
+                const masteryPct = data.totalAttempts > 0 ? Math.round((data.totalCorrect / data.totalAttempts) * 100) : 0;
+                const color = masteryPct >= 70 ? '#4ade80' : masteryPct >= 45 ? '#facc15' : '#f87171';
+
+                html += `
+                    <div class="mastery-row">
+                        <span class="theme-icon">${info.icon}</span>
+                        <span class="theme-name">${info.label}</span>
+                        <div class="mastery-track">
+                            <div class="mastery-fill" style="width:${masteryPct}%;background:${color};"></div>
+                        </div>
+                        <span class="mastery-pct" style="color:${color};">${masteryPct}%</span>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // ===== START REVIEW MODE =====
+        function startReview() {
+            const due = getDuePuzzles();
+            if (due.length === 0) return;
+
+            reviewMode = true;
+            puzzles = due.slice(0, 20); // Cap at 20 per session
+            currentIdx = 0;
+            score = 0;
+            results = new Array(puzzles.length).fill(null);
+            puzzleSolved = false;
+            puzzleAttempted = false;
+
+            document.getElementById('heroSection').style.display = 'none';
+            document.getElementById('puzzleArea').style.display = 'block';
+            initScoreBar();
+            loadPuzzle(0);
+        }
+
+        // Init on page load
+        document.addEventListener('DOMContentLoaded', initReviewPanel);
 
         // ===== PLATFORM TOGGLE =====
         function setPlatform(p) {
@@ -1349,6 +1735,20 @@
                 `;
             }
             document.getElementById('themeBreakdown').innerHTML = breakdownHtml;
+
+            // Save to puzzle bank
+            if (reviewMode) {
+                // Update each puzzle's review status individually
+                puzzles.forEach((p, i) => {
+                    updateReviewResult(p.fen, results[i] === 'correct');
+                });
+            } else {
+                savePuzzlesToBank(puzzles, results);
+            }
+
+            // Update streak & daily stats
+            updateStreak();
+            recordDailyStats(score, puzzles.length);
 
             // Populate share card
             populateShareCard(grade, gradeColor, gradeDesc, pct);
