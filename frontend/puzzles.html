@@ -535,7 +535,7 @@
                     <input type="text" class="username-input" id="usernameInput" placeholder="Enter your username" onkeydown="if(event.key==='Enter') startAnalysis()">
                     <button class="go-btn" id="goBtn" onclick="startAnalysis()">Generate</button>
                 </div>
-                <p class="input-hint">Free. Runs entirely in your browser. No account needed.</p>
+                <p class="input-hint">Free. Runs entirely in your browser. Takes ~30 seconds.</p>
             </div>
         </div>
 
@@ -578,10 +578,21 @@
             <div class="score-bar" id="endScoreBar" style="margin-bottom:32px;"></div>
             <div class="grade" id="endGrade"></div>
             <div class="grade-desc" id="endGradeDesc"></div>
+
+            <!-- Theme breakdown -->
+            <div id="themeBreakdown" style="max-width:400px;margin:0 auto 32px;text-align:left;"></div>
+
             <div class="end-actions">
                 <button class="share-x" onclick="shareToTwitter()">Share on X</button>
                 <button class="share-copy" onclick="downloadScorecard()">Download Scorecard</button>
                 <button class="try-again" onclick="location.reload()">Try Again</button>
+            </div>
+
+            <!-- Coming soon teaser -->
+            <div style="margin-top:40px;padding:24px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;text-align:center;">
+                <div style="font-size:13px;font-weight:700;color:#c084fc;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Coming Soon</div>
+                <div style="font-size:16px;font-weight:600;color:#e8e8e8;margin-bottom:4px;">Puzzles from players at your elo</div>
+                <div style="font-size:13px;color:#808080;">Common blunders from our 102K game dataset, matched to your rating range. See what mistakes players like you make most.</div>
             </div>
         </div>
     </div>
@@ -595,6 +606,7 @@
             <div class="sc-dots" id="scDots"></div>
             <div class="sc-grade" id="scGrade"></div>
             <div class="sc-grade-desc" id="scGradeDesc"></div>
+            <div id="scThemes" style="margin-bottom:20px;"></div>
             <div class="sc-footer">
                 Can you beat my score? <a href="https://cassandrachess.vercel.app/puzzles">cassandrachess.vercel.app/puzzles</a>
             </div>
@@ -664,10 +676,10 @@
                 sfWorker.postMessage('setoption name Skill Level value 20');
 
                 // Step 3: Analyze for puzzles
-                setProgress(50, 'Finding your blunders...', 'This takes 15-30 seconds');
-                const gamesWithPGN = games.filter(g => g.pgn && g.pgn.length > 50).slice(-10);
+                setProgress(50, 'Finding your blunders...', 'This takes 20-40 seconds');
+                const gamesWithPGN = games.filter(g => g.pgn && g.pgn.length > 50).slice(-15);
                 puzzles = [];
-                const TARGET = 8;
+                const TARGET = 20;
 
                 for (let gi = 0; gi < gamesWithPGN.length; gi++) {
                     if (puzzles.length >= TARGET) break;
@@ -686,8 +698,14 @@
                     await new Promise(r => setTimeout(r, 10));
                 }
 
-                // Sort by eval loss
-                puzzles.sort((a, b) => b.evalLoss - a.evalLoss);
+                // Sort: group by theme, then by eval loss within each theme
+                const themeOrder = ['mate', 'fork', 'pin', 'hanging', 'free_piece', 'tactic'];
+                puzzles.sort((a, b) => {
+                    const ta = themeOrder.indexOf(a.theme);
+                    const tb = themeOrder.indexOf(b.theme);
+                    if (ta !== tb) return ta - tb;
+                    return b.evalLoss - a.evalLoss;
+                });
 
                 if (puzzles.length === 0) {
                     setProgress(100, 'No significant blunders found!', 'You played well in your recent games. Try again with more games.');
@@ -863,10 +881,10 @@
 
             const chess = new Chess();
             const found = [];
-            const MAX_PER_GAME = 2;
+            const MAX_PER_GAME = 3;
             const DEPTH = 8;
-            const SKIP_FIRST_N = 8;
-            const MAX_MOVE = 60;
+            const SKIP_FIRST_N = 6; // Start a bit earlier to catch opening blunders
+            const MAX_MOVE = 70;
 
             // Phase 1: collect candidate positions
             const candidates = [];
@@ -894,13 +912,16 @@
                     if (!moveResult) continue;
 
                     const playerMoveUCI = moveResult.from + moveResult.to;
-                    if (playerMoveUCI === bestMoveUCI) continue; // No blunder
+                    if (playerMoveUCI === bestMoveUCI) continue;
 
                     const evalAfter = await sfEval(tempChess.fen(), DEPTH);
                     const scoreAfter = evalAfter.score.type === 'cp' ? -evalAfter.score.value : (evalAfter.score.value > 0 ? -9999 : 9999);
                     const evalLoss = scoreBefore - scoreAfter;
 
-                    if (evalLoss > 150) {
+                    if (evalLoss > 120) {
+                        // Classify the tactical theme
+                        const theme = classifyTactic(pos.fen, bestMoveUCI, moveResult, evalResult, evalLoss);
+
                         found.push({
                             fen: pos.fen,
                             playedMove: moveResult.san,
@@ -912,12 +933,177 @@
                             moveNumber: Math.ceil((pos.moveIdx + 1) / 2),
                             opponent: game.opponent,
                             opening: game.opening,
-                            isWhite: game.isWhite
+                            isWhite: game.isWhite,
+                            theme: theme
                         });
                     }
                 } catch (e) {}
             }
             return found;
+        }
+
+        // ===== TACTICAL THEME CLASSIFICATION =====
+        const THEME_INFO = {
+            'mate':         { icon: '\u2654', label: 'Missed Mate',      color: '#ef4444', desc: 'You missed a checkmate' },
+            'fork':         { icon: '\u2658', label: 'Missed Fork',      color: '#f59e0b', desc: 'A piece could attack two targets' },
+            'pin':          { icon: '\u2657', label: 'Missed Pin',       color: '#8b5cf6', desc: 'A piece could pin an opponent\'s piece' },
+            'hanging':      { icon: '\u2659', label: 'Hanging Piece',    color: '#f87171', desc: 'You left a piece undefended' },
+            'free_piece':   { icon: '\u265F', label: 'Free Piece',       color: '#4ade80', desc: 'You could have captured a free piece' },
+            'tactic':       { icon: '\u2656', label: 'Tactic',           color: '#60a5fa', desc: 'A tactical opportunity was missed' }
+        };
+
+        function classifyTactic(fen, bestMoveUCI, playedMoveResult, evalResult, evalLoss) {
+            try {
+                const chess = new Chess(fen);
+                const playerColor = chess.turn(); // 'w' or 'b'
+                const opponentColor = playerColor === 'w' ? 'b' : 'w';
+
+                // Check for missed mate
+                if (evalResult.score.type === 'mate' && evalResult.score.value > 0) {
+                    return 'mate';
+                }
+
+                // Try the best move to analyze the resulting position
+                const bestChess = new Chess(fen);
+                const bestMove = bestChess.move({
+                    from: bestMoveUCI.slice(0, 2),
+                    to: bestMoveUCI.slice(2, 4),
+                    promotion: bestMoveUCI[4] || undefined
+                });
+
+                if (!bestMove) return 'tactic';
+
+                // Check for free piece capture: best move is a capture
+                if (bestMove.captured) {
+                    // Check if the capturing square was defended
+                    // If we capture and our eval is still good, it was likely free
+                    const capturedValue = pieceValue(bestMove.captured);
+
+                    // Was it a recapture situation or truly free?
+                    // If the best move captures something worth > pawn, likely a free piece
+                    if (capturedValue >= 3) return 'free_piece';
+
+                    // If it captures a pawn and we gain a lot, still a free piece
+                    if (capturedValue >= 1 && evalLoss >= 200) return 'free_piece';
+                }
+
+                // Check for fork: after best move, the moved piece attacks 2+ opponent pieces
+                const afterBestFen = bestChess.fen();
+                const attackedPieces = getAttackedPieces(afterBestFen, bestMove.to, playerColor);
+                if (attackedPieces >= 2) return 'fork';
+
+                // Check for pin: best move creates a pin (piece between attacker and king/queen)
+                if (detectPin(afterBestFen, bestMove, playerColor)) return 'pin';
+
+                // Check for hanging piece: player's move left a piece en prise
+                // After the player's move, does the opponent have a winning capture?
+                const afterPlayedChess = new Chess(fen);
+                afterPlayedChess.move(playedMoveResult.san, { sloppy: true });
+                const opponentMoves = afterPlayedChess.moves({ verbose: true });
+                const hangingCapture = opponentMoves.find(m =>
+                    m.captured && pieceValue(m.captured) >= 3
+                );
+                if (hangingCapture && evalLoss >= 250) return 'hanging';
+
+                // Default
+                return 'tactic';
+
+            } catch (e) {
+                return 'tactic';
+            }
+        }
+
+        function pieceValue(piece) {
+            const values = { 'p': 1, 'n': 3, 'b': 3, 'r': 5, 'q': 9, 'k': 0 };
+            return values[piece.toLowerCase()] || 0;
+        }
+
+        function getAttackedPieces(fen, square, attackerColor) {
+            // Use chess.js to check how many opponent pieces are attacked from this square
+            try {
+                const chess = new Chess(fen);
+                const board = chess.board();
+                const opponentColor = attackerColor === 'w' ? 'b' : 'w';
+
+                // Get the piece on the square
+                const piece = chess.get(square);
+                if (!piece) return 0;
+
+                // Get all possible moves for this piece (captures only matter)
+                const allMoves = chess.moves({ square: square, verbose: true });
+                let attackedCount = 0;
+
+                for (const move of allMoves) {
+                    if (move.captured) {
+                        attackedCount++;
+                    }
+                }
+
+                // Also check if the piece attacks squares occupied by opponents even if not legal captures
+                // (e.g., piece defends against king, but we count attacks on valuable pieces)
+                return attackedCount;
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        function detectPin(fen, move, playerColor) {
+            // Simple pin detection: if the moved piece is a bishop, rook, or queen
+            // and it's on the same rank/file/diagonal as the opponent's king with one piece between
+            try {
+                const piece = move.piece.toLowerCase();
+                if (!['b', 'r', 'q'].includes(piece)) return false;
+
+                const chess = new Chess(fen);
+                const board = chess.board();
+                const opponentColor = playerColor === 'w' ? 'b' : 'w';
+
+                // Find opponent king
+                let kingSquare = null;
+                for (let r = 0; r < 8; r++) {
+                    for (let c = 0; c < 8; c++) {
+                        const p = board[r][c];
+                        if (p && p.type === 'k' && p.color === opponentColor) {
+                            kingSquare = { row: r, col: c };
+                        }
+                    }
+                }
+                if (!kingSquare) return false;
+
+                // Convert move.to to row/col
+                const toCol = move.to.charCodeAt(0) - 97;
+                const toRow = 8 - parseInt(move.to[1]);
+
+                // Check if piece is on same line as king
+                const dr = Math.sign(kingSquare.row - toRow);
+                const dc = Math.sign(kingSquare.col - toCol);
+
+                // Must be on same rank, file, or diagonal
+                if (dr === 0 && dc === 0) return false;
+                if (dr !== 0 && dc !== 0 && Math.abs(kingSquare.row - toRow) !== Math.abs(kingSquare.col - toCol)) return false;
+
+                // Bishop can only pin on diagonals
+                if (piece === 'b' && (dr === 0 || dc === 0)) return false;
+                // Rook can only pin on ranks/files
+                if (piece === 'r' && (dr !== 0 && dc !== 0)) return false;
+
+                // Count pieces between move.to and king
+                let between = 0;
+                let r = toRow + dr, c = toCol + dc;
+                while (r !== kingSquare.row || c !== kingSquare.col) {
+                    if (r < 0 || r > 7 || c < 0 || c > 7) return false;
+                    if (board[r][c]) {
+                        if (board[r][c].color === opponentColor) between++;
+                        else return false; // Our own piece blocks
+                    }
+                    r += dr;
+                    c += dc;
+                }
+
+                return between === 1; // Exactly one piece between = pin
+            } catch (e) {
+                return false;
+            }
         }
 
         function uciToSAN(fen, uci) {
@@ -982,12 +1168,13 @@
 
             // Status
             const statusBar = document.getElementById('statusBar');
-            statusBar.textContent = `Find the best move! (${p.isWhite ? 'White' : 'Black'} to play)`;
+            const themeData = THEME_INFO[p.theme] || THEME_INFO['tactic'];
+            statusBar.innerHTML = `<span style="color:${themeData.color};margin-right:6px;">${themeData.icon}</span> Find the best move! <span style="font-size:12px;color:${themeData.color};margin-left:8px;padding:3px 10px;border:1px solid ${themeData.color}44;border-radius:12px;background:${themeData.color}15;">${themeData.label}</span>`;
             statusBar.style.color = '#c084fc';
 
             // Context
-            document.getElementById('puzzleContext').textContent =
-                `Move ${p.moveNumber} vs ${p.opponent} · ${p.opening || 'Unknown'} · You played ${p.playedMove} (-${p.evalLoss}cp)`;
+            document.getElementById('puzzleContext').innerHTML =
+                `Move ${p.moveNumber} vs ${p.opponent} · ${p.opening || 'Unknown'}<br><span style="color:#808080;">You played <strong style="color:#f87171;">${p.playedMove}</strong> (-${p.evalLoss}cp) · ${themeData.desc}</span>`;
 
             // Board
             const board = parseFenToBoard(p.fen);
@@ -1137,6 +1324,32 @@
             ).join('');
             document.getElementById('endScoreBar').innerHTML = barHtml;
 
+            // Theme breakdown
+            const themeStats = {};
+            puzzles.forEach((p, i) => {
+                const t = p.theme || 'tactic';
+                if (!themeStats[t]) themeStats[t] = { total: 0, correct: 0 };
+                themeStats[t].total++;
+                if (results[i] === 'correct') themeStats[t].correct++;
+            });
+
+            let breakdownHtml = '<div style="font-size:13px;font-weight:700;color:#808080;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;text-align:center;">Your Tactical Breakdown</div>';
+            for (const [theme, stats] of Object.entries(themeStats)) {
+                const info = THEME_INFO[theme] || THEME_INFO['tactic'];
+                const themePct = Math.round((stats.correct / stats.total) * 100);
+                breakdownHtml += `
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;background:#1a1a1a;border-radius:10px;margin-bottom:6px;border:1px solid #2a2a2a;">
+                        <span style="font-size:22px;">${info.icon}</span>
+                        <div style="flex:1;">
+                            <div style="font-size:14px;font-weight:600;color:#e8e8e8;">${info.label}</div>
+                            <div style="font-size:12px;color:#666;">${stats.correct}/${stats.total} solved</div>
+                        </div>
+                        <div style="font-size:18px;font-weight:800;color:${themePct >= 60 ? '#4ade80' : themePct >= 40 ? '#facc15' : '#f87171'};">${themePct}%</div>
+                    </div>
+                `;
+            }
+            document.getElementById('themeBreakdown').innerHTML = breakdownHtml;
+
             // Populate share card
             populateShareCard(grade, gradeColor, gradeDesc, pct);
         }
@@ -1154,6 +1367,21 @@
                 `<div class="sc-dot" style="background:${r === 'correct' ? '#4ade80' : '#f87171'}"></div>`
             ).join('');
             document.getElementById('scDots').innerHTML = dotsHtml;
+
+            // Theme summary for share card
+            const themeStats = {};
+            puzzles.forEach((p, i) => {
+                const t = p.theme || 'tactic';
+                if (!themeStats[t]) themeStats[t] = { total: 0, correct: 0 };
+                themeStats[t].total++;
+                if (results[i] === 'correct') themeStats[t].correct++;
+            });
+            let themesHtml = '';
+            for (const [theme, stats] of Object.entries(themeStats)) {
+                const info = THEME_INFO[theme] || THEME_INFO['tactic'];
+                themesHtml += `<span style="display:inline-block;margin:3px 4px;padding:4px 12px;background:#1a1a1a;border:1px solid #333;border-radius:8px;font-size:12px;color:${info.color};">${info.icon} ${info.label} ${stats.correct}/${stats.total}</span>`;
+            }
+            document.getElementById('scThemes').innerHTML = themesHtml;
         }
 
         async function captureShareCard() {
