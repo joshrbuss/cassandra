@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cassandra — Puzzles From Your Blunders</title>
+    <meta property="og:title" content="Cassandra — Puzzles From Your Blunders">
+    <meta property="og:description" content="We analyze your Chess.com or Lichess games with Stockfish to find your worst blunders — then turn them into puzzles. Free, runs in your browser.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://cassandrachess.vercel.app/puzzles">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Cassandra — Puzzles From Your Blunders">
+    <meta name="twitter:description" content="We analyze your games with Stockfish to find your worst blunders — then turn them into puzzles. Free.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f0f0f;
+            color: #f5f5f5;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            text-align: center;
+            padding: 60px 0 48px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #c084fc;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            padding: 6px 16px;
+            border: 1px solid rgba(192,132,252,0.3);
+            border-radius: 20px;
+            background: rgba(192,132,252,0.08);
+        }
+
+        .hero h1 {
+            font-size: 44px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, #c084fc 0%, #818cf8 50%, #60a5fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: 17px;
+            color: #808080;
+            max-width: 480px;
+            margin: 0 auto 40px;
+        }
+
+        /* ===== INPUT ===== */
+        .input-card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .platform-toggle {
+            display: flex;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .platform-btn {
+            flex: 1;
+            padding: 12px 18px;
+            background: none;
+            border: none;
+            color: #808080;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .platform-btn.active {
+            background: #c084fc;
+            color: #0f0f0f;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .username-input {
+            flex: 1;
+            padding: 14px 20px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 10px;
+            color: #f5f5f5;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .username-input:focus { border-color: #c084fc; }
+        .username-input::placeholder { color: #555; }
+
+        .go-btn {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #c084fc, #818cf8);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+
+        .go-btn:hover { opacity: 0.9; }
+        .go-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .input-hint {
+            font-size: 12px;
+            color: #555;
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        /* ===== LOADING ===== */
+        .loading-section {
+            display: none;
+            text-align: center;
+            padding: 48px 0;
+        }
+
+        .loading-section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            max-width: 400px;
+            height: 6px;
+            background: #2a2a2a;
+            border-radius: 3px;
+            margin: 0 auto 12px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #c084fc, #818cf8);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .loading-status {
+            font-size: 13px;
+            color: #808080;
+        }
+
+        .loading-sub {
+            font-size: 12px;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        /* ===== PUZZLE AREA ===== */
+        .puzzle-area {
+            display: none;
+        }
+
+        .puzzle-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .puzzle-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .puzzle-counter {
+            font-size: 14px;
+            color: #808080;
+            margin-top: 4px;
+        }
+
+        .score-bar {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .score-dot {
+            width: 32px;
+            height: 6px;
+            border-radius: 3px;
+            background: #2a2a2a;
+            transition: background 0.3s;
+        }
+
+        .score-dot.correct { background: #4ade80; }
+        .score-dot.wrong { background: #f87171; }
+        .score-dot.current { background: #c084fc; box-shadow: 0 0 8px rgba(192,132,252,0.5); }
+
+        /* Board */
+        .board-container {
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .puzzle-status-bar {
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 12px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+        }
+
+        .puzzle-board {
+            width: 100%;
+            aspect-ratio: 1;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            gap: 0;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+        }
+
+        .puzzle-board .sq {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: min(5vw, 42px);
+            line-height: 1;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+
+        .puzzle-board .sq.light { background-color: #e8d5b5; }
+        .puzzle-board .sq.dark { background-color: #b58863; }
+        .puzzle-board .sq.selected { background-color: #829769 !important; }
+        .puzzle-board .sq.hint { background-color: rgba(192, 132, 252, 0.5) !important; }
+        .puzzle-board .sq.correct { background-color: rgba(74, 222, 128, 0.45) !important; }
+        .puzzle-board .sq.wrong { background-color: rgba(248, 113, 113, 0.45) !important; }
+        .puzzle-board .sq.last-move { background-color: rgba(255, 255, 100, 0.25) !important; }
+
+        .puzzle-info {
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .puzzle-context {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .puzzle-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .puzzle-actions button {
+            padding: 10px 24px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            color: #e8e8e8;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .puzzle-actions button:hover { border-color: #c084fc; background: #222; }
+
+        .puzzle-actions button.primary {
+            background: linear-gradient(135deg, #c084fc, #818cf8);
+            border: none;
+            color: #fff;
+        }
+
+        .puzzle-actions button.primary:hover { opacity: 0.9; }
+
+        /* ===== END SCREEN ===== */
+        .end-screen {
+            display: none;
+            text-align: center;
+            padding: 48px 0;
+        }
+
+        .end-screen .big-score {
+            font-size: 72px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .end-screen .score-label {
+            font-size: 18px;
+            color: #808080;
+            margin-bottom: 32px;
+        }
+
+        .end-screen .grade {
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+
+        .end-screen .grade-desc {
+            font-size: 15px;
+            color: #808080;
+            margin-bottom: 32px;
+        }
+
+        .end-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .end-actions button {
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #333;
+        }
+
+        .end-actions .share-x {
+            background: #000;
+            color: #fff;
+            border: 1px solid #333;
+        }
+
+        .end-actions .share-copy {
+            background: linear-gradient(135deg, #c084fc, #818cf8);
+            border: none;
+            color: #fff;
+        }
+
+        .end-actions .try-again {
+            background: #1a1a1a;
+            color: #f5f5f5;
+        }
+
+        /* ===== SHARE CARD (hidden, for screenshot) ===== */
+        .share-card-wrapper {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            z-index: -1;
+        }
+
+        .share-card {
+            width: 600px;
+            padding: 48px 40px;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1020 50%, #0f0f0f 100%);
+            border-radius: 20px;
+            font-family: 'Inter', sans-serif;
+            color: #f5f5f5;
+            text-align: center;
+        }
+
+        .share-card .brand {
+            font-size: 13px;
+            font-weight: 700;
+            color: #c084fc;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .share-card .sc-score {
+            font-size: 80px;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .share-card .sc-label {
+            font-size: 16px;
+            color: #808080;
+            margin-bottom: 24px;
+        }
+
+        .share-card .sc-dots {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+
+        .share-card .sc-dot {
+            width: 36px;
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        .share-card .sc-grade {
+            font-size: 56px;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .share-card .sc-grade-desc {
+            font-size: 14px;
+            color: #808080;
+            margin-bottom: 28px;
+        }
+
+        .share-card .sc-footer {
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .share-card .sc-footer a {
+            color: #c084fc;
+            text-decoration: none;
+        }
+
+        /* ===== NAV ===== */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .top-nav .logo {
+            font-size: 18px;
+            font-weight: 800;
+            color: #c084fc;
+            text-decoration: none;
+        }
+
+        .top-nav .nav-links a {
+            color: #808080;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            margin-left: 24px;
+            transition: color 0.2s;
+        }
+
+        .top-nav .nav-links a:hover { color: #f5f5f5; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 32px; }
+            .hero .subtitle { font-size: 15px; }
+            .input-card { padding: 24px 20px; }
+            .input-row { flex-direction: column; }
+            .go-btn { width: 100%; }
+            .puzzle-board .sq { font-size: 7vw; }
+            .end-screen .big-score { font-size: 56px; }
+            .end-actions { flex-direction: column; }
+            .end-actions button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <a href="/" class="logo">Cassandra</a>
+        <div class="nav-links">
+            <a href="/">Analytics</a>
+            <a href="/report">Report Card</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- HERO + INPUT -->
+        <div class="hero" id="heroSection">
+            <div class="hero-badge">Powered by Stockfish</div>
+            <h1>Puzzles From<br><span class="gradient">Your Blunders</span></h1>
+            <p class="subtitle">We analyze your recent games to find positions where you missed the best move — then turn them into puzzles you can actually learn from.</p>
+
+            <div class="input-card">
+                <div class="platform-toggle">
+                    <button class="platform-btn active" id="btnChesscom" onclick="setPlatform('chesscom')">Chess.com</button>
+                    <button class="platform-btn" id="btnLichess" onclick="setPlatform('lichess')">Lichess</button>
+                </div>
+                <div class="input-row">
+                    <input type="text" class="username-input" id="usernameInput" placeholder="Enter your username" onkeydown="if(event.key==='Enter') startAnalysis()">
+                    <button class="go-btn" id="goBtn" onclick="startAnalysis()">Generate</button>
+                </div>
+                <p class="input-hint">Free. Runs entirely in your browser. No account needed.</p>
+            </div>
+        </div>
+
+        <!-- LOADING -->
+        <div class="loading-section" id="loadingSection">
+            <h2 id="loadingTitle">Fetching your games...</h2>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <p class="loading-status" id="loadingStatus">Connecting...</p>
+            <p class="loading-sub" id="loadingSub"></p>
+        </div>
+
+        <!-- PUZZLE PLAY AREA -->
+        <div class="puzzle-area" id="puzzleArea">
+            <div class="puzzle-header">
+                <h2 id="puzzleTitle">Puzzle <span id="puzzleNum">1</span> of <span id="puzzleTotal">8</span></h2>
+                <div class="puzzle-counter" id="puzzleScoreText">Score: 0/0</div>
+                <div class="score-bar" id="scoreBar"></div>
+            </div>
+
+            <div class="board-container">
+                <div class="puzzle-status-bar" id="statusBar" style="color:#c084fc;">Find the best move!</div>
+                <div class="puzzle-board" id="board"></div>
+                <div class="puzzle-info">
+                    <div class="puzzle-context" id="puzzleContext"></div>
+                    <div class="puzzle-actions" id="puzzleActions">
+                        <button onclick="showHint()">Hint</button>
+                        <button onclick="showAnswer()">Show Answer</button>
+                        <button class="primary" onclick="nextPuzzle()" id="nextBtn" style="display:none;">Next Puzzle</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- END SCREEN -->
+        <div class="end-screen" id="endScreen">
+            <div class="big-score" id="endScore"></div>
+            <div class="score-label" id="endScoreLabel"></div>
+            <div class="score-bar" id="endScoreBar" style="margin-bottom:32px;"></div>
+            <div class="grade" id="endGrade"></div>
+            <div class="grade-desc" id="endGradeDesc"></div>
+            <div class="end-actions">
+                <button class="share-x" onclick="shareToTwitter()">Share on X</button>
+                <button class="share-copy" onclick="downloadScorecard()">Download Scorecard</button>
+                <button class="try-again" onclick="location.reload()">Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden share card for screenshot -->
+    <div class="share-card-wrapper" id="shareCardWrapper">
+        <div class="share-card" id="shareCardInner">
+            <div class="brand">Cassandra Puzzle Challenge</div>
+            <div class="sc-score" id="scScore"></div>
+            <div class="sc-label" id="scLabel"></div>
+            <div class="sc-dots" id="scDots"></div>
+            <div class="sc-grade" id="scGrade"></div>
+            <div class="sc-grade-desc" id="scGradeDesc"></div>
+            <div class="sc-footer">
+                Can you beat my score? <a href="https://cassandrachess.vercel.app/puzzles">cassandrachess.vercel.app/puzzles</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== STATE =====
+        let platform = 'chesscom';
+        let puzzles = [];
+        let currentIdx = 0;
+        let score = 0;
+        let attempts = 0;
+        let results = []; // 'correct' | 'wrong' per puzzle
+        let selectedSquare = null;
+        let puzzleSolved = false;
+        let puzzleAttempted = false;
+        let sfWorker = null;
+        let sfReady = false;
+        let sfResolve = null;
+        let playerUsername = '';
+
+        const PIECE_CHARS = {
+            'K': '\u2654', 'Q': '\u2655', 'R': '\u2656', 'B': '\u2657', 'N': '\u2658', 'P': '\u2659',
+            'k': '\u265A', 'q': '\u265B', 'r': '\u265C', 'b': '\u265D', 'n': '\u265E', 'p': '\u265F'
+        };
+
+        // ===== PLATFORM TOGGLE =====
+        function setPlatform(p) {
+            platform = p;
+            document.getElementById('btnChesscom').classList.toggle('active', p === 'chesscom');
+            document.getElementById('btnLichess').classList.toggle('active', p === 'lichess');
+            document.getElementById('usernameInput').placeholder = p === 'chesscom' ? 'Enter your Chess.com username' : 'Enter your Lichess username';
+        }
+
+        // ===== PROGRESS =====
+        function setProgress(pct, text, sub) {
+            document.getElementById('progressBar').style.width = pct + '%';
+            if (text) document.getElementById('loadingStatus').textContent = text;
+            if (sub !== undefined) document.getElementById('loadingSub').textContent = sub;
+        }
+
+        // ===== START =====
+        async function startAnalysis() {
+            const username = document.getElementById('usernameInput').value.trim();
+            if (!username) return;
+            playerUsername = username;
+
+            document.getElementById('heroSection').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'block';
+
+            const goBtn = document.getElementById('goBtn');
+            goBtn.disabled = true;
+
+            try {
+                // Step 1: Fetch games
+                setProgress(5, 'Fetching your games...', '');
+                const games = platform === 'chesscom'
+                    ? await fetchChesscomGames(username)
+                    : await fetchLichessGames(username);
+
+                if (games.length === 0) throw new Error('No games found for this username.');
+
+                // Step 2: Init Stockfish
+                setProgress(40, 'Loading Stockfish engine...', `${games.length} games loaded`);
+                await initStockfish();
+                sfWorker.postMessage('setoption name Skill Level value 20');
+
+                // Step 3: Analyze for puzzles
+                setProgress(50, 'Finding your blunders...', 'This takes 15-30 seconds');
+                const gamesWithPGN = games.filter(g => g.pgn && g.pgn.length > 50).slice(-10);
+                puzzles = [];
+                const TARGET = 8;
+
+                for (let gi = 0; gi < gamesWithPGN.length; gi++) {
+                    if (puzzles.length >= TARGET) break;
+
+                    const game = gamesWithPGN[gi];
+                    const pct = 50 + (gi / gamesWithPGN.length) * 45;
+                    setProgress(pct, `Analyzing game ${gi + 1}/${gamesWithPGN.length}... (${puzzles.length} puzzles found)`, `vs ${game.opponent} (${game.opening || 'Unknown'})`);
+
+                    try {
+                        const found = await analyzeGameForPuzzles(game);
+                        puzzles = puzzles.concat(found);
+                    } catch (e) {
+                        console.log('Error analyzing game:', e);
+                    }
+
+                    await new Promise(r => setTimeout(r, 10));
+                }
+
+                // Sort by eval loss
+                puzzles.sort((a, b) => b.evalLoss - a.evalLoss);
+
+                if (puzzles.length === 0) {
+                    setProgress(100, 'No significant blunders found!', 'You played well in your recent games. Try again with more games.');
+                    return;
+                }
+
+                setProgress(100, `Found ${puzzles.length} puzzles!`, '');
+                results = new Array(puzzles.length).fill(null);
+
+                setTimeout(() => {
+                    document.getElementById('loadingSection').style.display = 'none';
+                    document.getElementById('puzzleArea').style.display = 'block';
+                    initScoreBar();
+                    loadPuzzle(0);
+                }, 600);
+
+            } catch (e) {
+                setProgress(0, 'Error: ' + e.message, '');
+                console.error(e);
+                goBtn.disabled = false;
+            }
+        }
+
+        // ===== GAME FETCHING =====
+        async function fetchChesscomGames(username) {
+            setProgress(10, 'Fetching game archives...', '');
+
+            const archiveResp = await fetch(`https://api.chess.com/pub/player/${username}/games/archives`);
+            if (!archiveResp.ok) throw new Error('Player not found on Chess.com');
+            const archiveData = await archiveResp.json();
+            const archives = archiveData.archives || [];
+            if (archives.length === 0) throw new Error('No games found');
+
+            const recentArchives = archives.slice(-3); // 3 months is plenty for puzzles
+            let allGames = [];
+
+            for (let i = 0; i < recentArchives.length; i++) {
+                setProgress(10 + (i / recentArchives.length) * 25, `Fetching games (${i + 1}/${recentArchives.length})...`, '');
+                try {
+                    const resp = await fetch(recentArchives[i]);
+                    const data = await resp.json();
+                    allGames = allGames.concat(data.games || []);
+                } catch (e) {
+                    console.log('Error fetching archive:', e);
+                }
+            }
+
+            return allGames.slice(-200).map(g => {
+                const isWhite = g.white.username.toLowerCase() === username.toLowerCase();
+                const player = isWhite ? g.white : g.black;
+                const opponent = isWhite ? g.black : g.white;
+
+                let result = 'loss';
+                if (player.result === 'win') result = 'win';
+                else if (['agreed', 'repetition', 'stalemate', 'insufficient', '50move', 'timevsinsufficient'].includes(player.result)) result = 'draw';
+
+                let openingName = '';
+                if (g.eco) {
+                    const parts = g.eco.split('/');
+                    openingName = (parts[parts.length - 1] || '').replace(/-/g, ' ');
+                }
+
+                return {
+                    isWhite, result,
+                    playerRating: player.rating,
+                    opponentRating: opponent.rating,
+                    opening: openingName,
+                    pgn: g.pgn || '',
+                    opponent: opponent.username || '?'
+                };
+            });
+        }
+
+        async function fetchLichessGames(username) {
+            setProgress(10, 'Fetching games from Lichess...', '');
+
+            const resp = await fetch(`https://lichess.org/api/games/user/${username}?max=200&opening=true&pgnInJson=true`, {
+                headers: { 'Accept': 'application/x-ndjson' }
+            });
+            if (!resp.ok) throw new Error('Player not found on Lichess');
+
+            const text = await resp.text();
+            const lines = text.trim().split('\n').filter(l => l);
+
+            setProgress(35, `Processing ${lines.length} games...`, '');
+
+            return lines.map(line => {
+                const g = JSON.parse(line);
+                const isWhite = (g.players?.white?.user?.name || '').toLowerCase() === username.toLowerCase();
+                const player = isWhite ? g.players.white : g.players.black;
+                const opponent = isWhite ? g.players.black : g.players.white;
+
+                let result = 'loss';
+                if (g.winner === 'white' && isWhite) result = 'win';
+                else if (g.winner === 'black' && !isWhite) result = 'win';
+                else if (!g.winner) result = 'draw';
+
+                return {
+                    isWhite, result,
+                    playerRating: player?.rating || 0,
+                    opponentRating: opponent?.rating || 0,
+                    opening: g.opening?.name || '',
+                    pgn: g.pgn || '',
+                    opponent: (isWhite ? g.players?.black?.user?.name : g.players?.white?.user?.name) || '?'
+                };
+            });
+        }
+
+        // ===== STOCKFISH =====
+        function initStockfish() {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const resp = await fetch('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');
+                    const blob = await resp.blob();
+                    const blobUrl = URL.createObjectURL(blob);
+                    sfWorker = new Worker(blobUrl);
+                    sfWorker.onmessage = function(e) {
+                        const line = e.data;
+                        if (line === 'uciok') sfWorker.postMessage('isready');
+                        else if (line === 'readyok') { sfReady = true; resolve(); }
+                        else if (sfResolve && typeof line === 'string' && line.startsWith('bestmove')) {
+                            const parts = line.split(' ');
+                            sfResolve({ bestmove: parts[1] });
+                            sfResolve = null;
+                        }
+                    };
+                    sfWorker.onerror = (e) => reject(e);
+                    sfWorker.postMessage('uci');
+                } catch (e) { reject(e); }
+            });
+        }
+
+        function sfEval(fen, depth = 8) {
+            return new Promise((resolve) => {
+                let lastScore = null;
+                const origHandler = sfWorker.onmessage;
+                sfWorker.onmessage = function(e) {
+                    const line = e.data;
+                    if (typeof line === 'string') {
+                        const scoreMatch = line.match(/score (cp|mate) (-?\d+)/);
+                        if (scoreMatch) {
+                            if (scoreMatch[1] === 'cp') lastScore = { type: 'cp', value: parseInt(scoreMatch[2]) };
+                            else lastScore = { type: 'mate', value: parseInt(scoreMatch[2]) };
+                        }
+                        if (line.startsWith('bestmove')) {
+                            const parts = line.split(' ');
+                            sfWorker.onmessage = origHandler;
+                            resolve({ bestmove: parts[1], score: lastScore || { type: 'cp', value: 0 } });
+                        }
+                    }
+                };
+                sfWorker.postMessage('position fen ' + fen);
+                sfWorker.postMessage('go depth ' + depth);
+            });
+        }
+
+        // ===== PUZZLE ANALYSIS =====
+        function extractMovesFromPGN(pgn) {
+            if (!pgn) return [];
+            const moveText = pgn.replace(/\[.*?\]\s*/g, '').replace(/\{.*?\}/g, '').trim();
+            const tokens = moveText.split(/\s+/);
+            const moves = [];
+            for (const t of tokens) {
+                if (t.match(/^\d+\.+$/) || t.match(/^(1-0|0-1|1\/2|½|\*)$/) || !t.trim()) continue;
+                moves.push(t);
+            }
+            return moves;
+        }
+
+        async function analyzeGameForPuzzles(game) {
+            const moves = extractMovesFromPGN(game.pgn);
+            if (moves.length < 10) return [];
+
+            const chess = new Chess();
+            const found = [];
+            const MAX_PER_GAME = 2;
+            const DEPTH = 8;
+            const SKIP_FIRST_N = 8;
+            const MAX_MOVE = 60;
+
+            // Phase 1: collect candidate positions
+            const candidates = [];
+            for (let i = 0; i < moves.length && i < MAX_MOVE; i++) {
+                const fen = chess.fen();
+                const isPlayerTurn = (chess.turn() === 'w' && game.isWhite) || (chess.turn() === 'b' && !game.isWhite);
+                if (isPlayerTurn && i >= SKIP_FIRST_N) {
+                    candidates.push({ fen, moveIdx: i, playedMoveStr: moves[i] });
+                }
+                const m = chess.move(moves[i], { sloppy: true });
+                if (!m) break;
+            }
+
+            // Phase 2: eval candidates
+            for (const pos of candidates) {
+                if (found.length >= MAX_PER_GAME) break;
+
+                try {
+                    const evalResult = await sfEval(pos.fen, DEPTH);
+                    const bestMoveUCI = evalResult.bestmove;
+                    const scoreBefore = evalResult.score.type === 'cp' ? evalResult.score.value : (evalResult.score.value > 0 ? 9999 : -9999);
+
+                    const tempChess = new Chess(pos.fen);
+                    const moveResult = tempChess.move(pos.playedMoveStr, { sloppy: true });
+                    if (!moveResult) continue;
+
+                    const playerMoveUCI = moveResult.from + moveResult.to;
+                    if (playerMoveUCI === bestMoveUCI) continue; // No blunder
+
+                    const evalAfter = await sfEval(tempChess.fen(), DEPTH);
+                    const scoreAfter = evalAfter.score.type === 'cp' ? -evalAfter.score.value : (evalAfter.score.value > 0 ? -9999 : 9999);
+                    const evalLoss = scoreBefore - scoreAfter;
+
+                    if (evalLoss > 150) {
+                        found.push({
+                            fen: pos.fen,
+                            playedMove: moveResult.san,
+                            playedMoveUCI: playerMoveUCI,
+                            bestMove: bestMoveUCI,
+                            bestMoveSAN: uciToSAN(pos.fen, bestMoveUCI),
+                            evalLoss,
+                            evalBefore: scoreBefore,
+                            moveNumber: Math.ceil((pos.moveIdx + 1) / 2),
+                            opponent: game.opponent,
+                            opening: game.opening,
+                            isWhite: game.isWhite
+                        });
+                    }
+                } catch (e) {}
+            }
+            return found;
+        }
+
+        function uciToSAN(fen, uci) {
+            if (!uci || uci.length < 4) return uci;
+            try {
+                const c = new Chess(fen);
+                const move = c.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] || undefined });
+                return move ? move.san : uci;
+            } catch (e) { return uci; }
+        }
+
+        function parseFenToBoard(fen) {
+            const rows = fen.split(' ')[0].split('/');
+            const board = [];
+            for (const row of rows) {
+                const r = [];
+                for (const ch of row) {
+                    if (ch >= '1' && ch <= '8') { for (let i = 0; i < parseInt(ch); i++) r.push(null); }
+                    else r.push(ch);
+                }
+                board.push(r);
+            }
+            return board;
+        }
+
+        // ===== SCORE BAR =====
+        function initScoreBar() {
+            const bar = document.getElementById('scoreBar');
+            bar.innerHTML = puzzles.map((_, i) =>
+                `<div class="score-dot ${i === 0 ? 'current' : ''}" id="dot${i}"></div>`
+            ).join('');
+            updateScoreText();
+        }
+
+        function updateScoreBar() {
+            results.forEach((r, i) => {
+                const dot = document.getElementById('dot' + i);
+                if (!dot) return;
+                dot.className = 'score-dot';
+                if (r === 'correct') dot.classList.add('correct');
+                else if (r === 'wrong') dot.classList.add('wrong');
+                if (i === currentIdx && !puzzleSolved) dot.classList.add('current');
+            });
+            updateScoreText();
+        }
+
+        function updateScoreText() {
+            const attempted = results.filter(r => r !== null).length;
+            document.getElementById('puzzleScoreText').textContent = `Score: ${score}/${attempted}`;
+        }
+
+        // ===== LOAD PUZZLE =====
+        function loadPuzzle(idx) {
+            currentIdx = idx;
+            puzzleSolved = false;
+            puzzleAttempted = false;
+            selectedSquare = null;
+
+            const p = puzzles[idx];
+            document.getElementById('puzzleNum').textContent = idx + 1;
+            document.getElementById('puzzleTotal').textContent = puzzles.length;
+
+            // Status
+            const statusBar = document.getElementById('statusBar');
+            statusBar.textContent = `Find the best move! (${p.isWhite ? 'White' : 'Black'} to play)`;
+            statusBar.style.color = '#c084fc';
+
+            // Context
+            document.getElementById('puzzleContext').textContent =
+                `Move ${p.moveNumber} vs ${p.opponent} · ${p.opening || 'Unknown'} · You played ${p.playedMove} (-${p.evalLoss}cp)`;
+
+            // Board
+            const board = parseFenToBoard(p.fen);
+            const flipped = !p.isWhite;
+            const boardEl = document.getElementById('board');
+            let html = '';
+
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const row = flipped ? 7 - r : r;
+                    const col = flipped ? 7 - c : c;
+                    const isLight = (row + col) % 2 === 0;
+                    const piece = board[row][col];
+                    const sq = String.fromCharCode(97 + col) + (8 - row);
+                    const pieceHtml = piece ? PIECE_CHARS[piece] : '';
+                    html += `<div class="sq ${isLight ? 'light' : 'dark'}" data-sq="${sq}" onclick="clickSquare('${sq}')">${pieceHtml}</div>`;
+                }
+            }
+            boardEl.innerHTML = html;
+
+            // Actions
+            document.getElementById('nextBtn').style.display = 'none';
+
+            // Score bar
+            updateScoreBar();
+        }
+
+        // ===== CLICK SQUARE =====
+        function clickSquare(sq) {
+            if (puzzleSolved) return;
+            const p = puzzles[currentIdx];
+
+            if (selectedSquare) {
+                const moveUCI = selectedSquare + sq;
+                const bestUCI = p.bestMove;
+
+                const allSq = document.querySelectorAll('#board .sq');
+                allSq.forEach(s => s.classList.remove('selected', 'correct', 'wrong', 'hint'));
+
+                if (moveUCI === bestUCI || moveUCI === bestUCI.slice(0, 4)) {
+                    // CORRECT
+                    document.querySelector(`[data-sq="${selectedSquare}"]`)?.classList.add('correct');
+                    document.querySelector(`[data-sq="${sq}"]`)?.classList.add('correct');
+
+                    const statusBar = document.getElementById('statusBar');
+                    statusBar.textContent = `Correct! ${p.bestMoveSAN} was the best move.`;
+                    statusBar.style.color = '#4ade80';
+
+                    puzzleSolved = true;
+                    if (!puzzleAttempted) {
+                        // First try = correct
+                        score++;
+                        results[currentIdx] = 'correct';
+                    } else {
+                        results[currentIdx] = 'wrong'; // Got it but not on first try
+                    }
+                    document.getElementById('nextBtn').style.display = 'inline-block';
+                    updateScoreBar();
+                } else {
+                    // WRONG
+                    document.querySelector(`[data-sq="${selectedSquare}"]`)?.classList.add('wrong');
+                    document.querySelector(`[data-sq="${sq}"]`)?.classList.add('wrong');
+
+                    const statusBar = document.getElementById('statusBar');
+                    statusBar.textContent = 'Not quite. Try again or see the answer.';
+                    statusBar.style.color = '#f87171';
+
+                    puzzleAttempted = true;
+                    setTimeout(() => {
+                        document.querySelectorAll('#board .sq').forEach(s => s.classList.remove('wrong'));
+                    }, 800);
+                }
+                selectedSquare = null;
+            } else {
+                const allSq = document.querySelectorAll('#board .sq');
+                allSq.forEach(s => s.classList.remove('selected'));
+                document.querySelector(`[data-sq="${sq}"]`)?.classList.add('selected');
+                selectedSquare = sq;
+            }
+        }
+
+        // ===== HINT / ANSWER =====
+        function showHint() {
+            if (puzzleSolved) return;
+            const p = puzzles[currentIdx];
+            const fromSq = p.bestMove.slice(0, 2);
+            document.querySelectorAll('#board .sq').forEach(s => s.classList.remove('hint', 'selected'));
+            document.querySelector(`[data-sq="${fromSq}"]`)?.classList.add('hint');
+            document.getElementById('statusBar').textContent = 'Hint: Try moving the highlighted piece.';
+            document.getElementById('statusBar').style.color = '#c084fc';
+            selectedSquare = null;
+            puzzleAttempted = true; // Hint counts as attempt
+        }
+
+        function showAnswer() {
+            const p = puzzles[currentIdx];
+            const fromSq = p.bestMove.slice(0, 2);
+            const toSq = p.bestMove.slice(2, 4);
+            document.querySelectorAll('#board .sq').forEach(s => s.classList.remove('hint', 'selected', 'correct', 'wrong'));
+            document.querySelector(`[data-sq="${fromSq}"]`)?.classList.add('correct');
+            document.querySelector(`[data-sq="${toSq}"]`)?.classList.add('correct');
+
+            document.getElementById('statusBar').textContent = `Answer: ${p.bestMoveSAN} (you played ${p.playedMove})`;
+            document.getElementById('statusBar').style.color = '#4ade80';
+
+            puzzleSolved = true;
+            if (results[currentIdx] === null) results[currentIdx] = 'wrong';
+            document.getElementById('nextBtn').style.display = 'inline-block';
+            updateScoreBar();
+        }
+
+        // ===== NEXT PUZZLE =====
+        function nextPuzzle() {
+            if (currentIdx + 1 >= puzzles.length) {
+                showEndScreen();
+            } else {
+                loadPuzzle(currentIdx + 1);
+            }
+        }
+
+        // ===== END SCREEN =====
+        function showEndScreen() {
+            document.getElementById('puzzleArea').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+
+            const total = puzzles.length;
+            const pct = Math.round((score / total) * 100);
+
+            let grade, gradeColor, gradeDesc;
+            if (pct >= 90) { grade = 'A+'; gradeColor = '#4ade80'; gradeDesc = 'Tactical genius. Your opponents fear you.'; }
+            else if (pct >= 75) { grade = 'A'; gradeColor = '#4ade80'; gradeDesc = 'Sharp eye. You spot most of your mistakes.'; }
+            else if (pct >= 60) { grade = 'B'; gradeColor = '#facc15'; gradeDesc = 'Solid. You found the key moves more often than not.'; }
+            else if (pct >= 40) { grade = 'C'; gradeColor = '#fb923c'; gradeDesc = 'Room to grow. These positions need more practice.'; }
+            else { grade = 'D'; gradeColor = '#f87171'; gradeDesc = 'Tough puzzles. Time to study these patterns!'; }
+
+            document.getElementById('endScore').textContent = `${score}/${total}`;
+            document.getElementById('endScore').style.color = gradeColor;
+            document.getElementById('endScoreLabel').textContent = `You solved ${pct}% of your blunder puzzles`;
+
+            document.getElementById('endGrade').textContent = grade;
+            document.getElementById('endGrade').style.color = gradeColor;
+            document.getElementById('endGradeDesc').textContent = gradeDesc;
+
+            // Score dots
+            const barHtml = results.map(r =>
+                `<div class="score-dot ${r === 'correct' ? 'correct' : 'wrong'}"></div>`
+            ).join('');
+            document.getElementById('endScoreBar').innerHTML = barHtml;
+
+            // Populate share card
+            populateShareCard(grade, gradeColor, gradeDesc, pct);
+        }
+
+        // ===== SHARE =====
+        function populateShareCard(grade, gradeColor, gradeDesc, pct) {
+            document.getElementById('scScore').textContent = `${score}/${puzzles.length}`;
+            document.getElementById('scScore').style.color = gradeColor;
+            document.getElementById('scLabel').textContent = `Solved ${pct}% of blunder puzzles`;
+            document.getElementById('scGrade').textContent = grade;
+            document.getElementById('scGrade').style.color = gradeColor;
+            document.getElementById('scGradeDesc').textContent = gradeDesc;
+
+            const dotsHtml = results.map(r =>
+                `<div class="sc-dot" style="background:${r === 'correct' ? '#4ade80' : '#f87171'}"></div>`
+            ).join('');
+            document.getElementById('scDots').innerHTML = dotsHtml;
+        }
+
+        async function captureShareCard() {
+            const wrapper = document.getElementById('shareCardWrapper');
+            wrapper.style.position = 'fixed';
+            wrapper.style.left = '0';
+            wrapper.style.top = '0';
+            wrapper.style.zIndex = '9999';
+
+            await new Promise(r => setTimeout(r, 100));
+
+            const canvas = await html2canvas(document.getElementById('shareCardInner'), {
+                backgroundColor: '#0f0f0f',
+                scale: 2,
+                useCORS: true,
+                logging: false
+            });
+
+            wrapper.style.position = 'absolute';
+            wrapper.style.left = '-9999px';
+            wrapper.style.zIndex = '-1';
+
+            return canvas;
+        }
+
+        async function shareToTwitter() {
+            const btn = event.target;
+            btn.textContent = 'Generating image...';
+            btn.disabled = true;
+
+            try {
+                const canvas = await captureShareCard();
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `cassandra-puzzles-${playerUsername}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                    const pct = Math.round((score / puzzles.length) * 100);
+                    const text = `I scored ${score}/${puzzles.length} (${pct}%) on my Cassandra Blunder Puzzles\n\nThese are puzzles made from my actual chess blunders. Can you do better?\n\nTry yours:`;
+                    const shareUrl = 'https://cassandrachess.vercel.app/puzzles';
+                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+
+                    btn.textContent = 'Image downloaded — attach to tweet!';
+                    btn.disabled = false;
+                    setTimeout(() => { btn.textContent = 'Share on X'; }, 5000);
+                }, 'image/png');
+            } catch (e) {
+                console.error('Screenshot failed:', e);
+                const pct = Math.round((score / puzzles.length) * 100);
+                const text = `I scored ${score}/${puzzles.length} (${pct}%) on my Cassandra Blunder Puzzles. Can you beat me?`;
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent('https://cassandrachess.vercel.app/puzzles')}`, '_blank');
+                btn.textContent = 'Share on X';
+                btn.disabled = false;
+            }
+        }
+
+        async function downloadScorecard() {
+            const btn = event.target;
+            btn.textContent = 'Generating...';
+            btn.disabled = true;
+
+            try {
+                const canvas = await captureShareCard();
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `cassandra-puzzles-${playerUsername}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    btn.textContent = 'Downloaded!';
+                    btn.disabled = false;
+                    setTimeout(() => { btn.textContent = 'Download Scorecard'; }, 2000);
+                }, 'image/png');
+            } catch (e) {
+                console.error(e);
+                btn.textContent = 'Download Scorecard';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

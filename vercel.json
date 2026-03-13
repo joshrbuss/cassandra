@@ -3,7 +3,8 @@
   "rewrites": [
     { "source": "/report", "destination": "/report.html" },
     { "source": "/dashboard", "destination": "/dashboard.html" },
-    { "source": "/puzzles", "destination": "/puzzle-viewer.html" },
+    { "source": "/puzzles", "destination": "/puzzles.html" },
+    { "source": "/puzzle-viewer", "destination": "/puzzle-viewer.html" },
     { "source": "/explorer", "destination": "/explorer.html" },
     { "source": "/", "destination": "/highlights.html" }
   ]
