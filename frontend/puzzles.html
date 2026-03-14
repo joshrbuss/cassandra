@@ -14,6 +14,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Vercel Analytics -->
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -219,21 +224,25 @@
 
         .score-bar {
             display: flex;
-            gap: 6px;
+            gap: 4px;
             justify-content: center;
             margin-top: 16px;
+            flex-wrap: wrap;
+            max-width: 100%;
         }
 
         .score-dot {
-            width: 32px;
+            width: 24px;
             height: 6px;
             border-radius: 3px;
             background: #2a2a2a;
             transition: background 0.3s;
+            flex-shrink: 0;
         }
 
         .score-dot.correct { background: #4ade80; }
         .score-dot.wrong { background: #f87171; }
+        .score-dot.skipped { background: #555; }
         .score-dot.current { background: #c084fc; box-shadow: 0 0 8px rgba(192,132,252,0.5); }
 
         /* Board */
@@ -255,6 +264,8 @@
 
         .puzzle-board {
             width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
             aspect-ratio: 1;
             display: grid;
             grid-template-columns: repeat(8, 1fr);
@@ -283,6 +294,39 @@
         .puzzle-board .sq.correct { background-color: rgba(74, 222, 128, 0.45) !important; }
         .puzzle-board .sq.wrong { background-color: rgba(248, 113, 113, 0.45) !important; }
         .puzzle-board .sq.last-move { background-color: rgba(255, 255, 100, 0.25) !important; }
+
+        /* Correct/wrong pulse animation */
+        @keyframes correctPulse {
+            0% { box-shadow: inset 0 0 0 0 rgba(74,222,128,0.6); }
+            50% { box-shadow: inset 0 0 20px 4px rgba(74,222,128,0.4); }
+            100% { box-shadow: inset 0 0 0 0 rgba(74,222,128,0.1); }
+        }
+        @keyframes wrongPulse {
+            0% { box-shadow: inset 0 0 0 0 rgba(248,113,113,0.6); }
+            50% { box-shadow: inset 0 0 20px 4px rgba(248,113,113,0.4); }
+            100% { box-shadow: inset 0 0 0 0 rgba(248,113,113,0.1); }
+        }
+        .puzzle-board .sq.correct { animation: correctPulse 0.6s ease; }
+        .puzzle-board .sq.wrong { animation: wrongPulse 0.6s ease; }
+
+        /* Turn indicator */
+        .turn-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #808080;
+        }
+        .turn-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #555;
+        }
+        .turn-dot.white { background: #f5f5f5; }
+        .turn-dot.black { background: #1a1a1a; }
 
         .puzzle-info {
             margin-top: 16px;
@@ -331,28 +375,119 @@
             padding: 48px 0;
         }
 
+        .end-screen.visible .score-hero-card {
+            animation: slideUp 0.5s ease-out both;
+        }
+        .end-screen.visible .grade-reveal {
+            animation: gradeReveal 0.6s ease-out 0.3s both;
+        }
+        .end-screen.visible #themeBreakdown {
+            animation: slideUp 0.4s ease-out 0.5s both;
+        }
+        .end-screen.visible #insightCard {
+            animation: slideUp 0.4s ease-out 0.65s both;
+        }
+        .end-screen.visible .end-actions {
+            animation: slideUp 0.4s ease-out 0.8s both;
+        }
+        .end-screen.visible .coming-soon-card {
+            animation: slideUp 0.4s ease-out 0.95s both;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes gradeReveal {
+            0% { opacity: 0; transform: scale(0.3); }
+            60% { transform: scale(1.15); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .score-hero-card {
+            background: linear-gradient(135deg, rgba(192,132,252,0.12) 0%, rgba(129,140,248,0.08) 50%, rgba(96,165,250,0.05) 100%);
+            border: 1px solid rgba(192,132,252,0.25);
+            border-radius: 20px;
+            padding: 36px 24px 28px;
+            max-width: 400px;
+            margin: 0 auto 32px;
+        }
+
         .end-screen .big-score {
             font-size: 72px;
             font-weight: 900;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
+            line-height: 1;
         }
 
         .end-screen .score-label {
-            font-size: 18px;
+            font-size: 16px;
             color: #808080;
+            margin-bottom: 16px;
+        }
+
+        .grade-reveal {
             margin-bottom: 32px;
         }
 
         .end-screen .grade {
-            font-size: 48px;
+            font-size: 56px;
             font-weight: 900;
             margin-bottom: 4px;
+            line-height: 1;
+            text-shadow: 0 0 40px currentColor;
         }
 
         .end-screen .grade-desc {
             font-size: 15px;
-            color: #808080;
-            margin-bottom: 32px;
+            color: #a0a0a0;
+            margin-bottom: 0;
+        }
+
+        .insight-card {
+            max-width: 400px;
+            margin: 0 auto 28px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 14px;
+            padding: 20px 24px;
+            text-align: left;
+        }
+
+        .insight-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+        }
+
+        .insight-row + .insight-row {
+            border-top: 1px solid #222;
+        }
+
+        .insight-icon {
+            font-size: 24px;
+            width: 36px;
+            text-align: center;
+        }
+
+        .insight-text {
+            flex: 1;
+        }
+
+        .insight-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+        }
+
+        .insight-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e8e8e8;
         }
 
         .end-actions {
@@ -360,17 +495,22 @@
             gap: 12px;
             justify-content: center;
             flex-wrap: wrap;
+            margin-bottom: 8px;
         }
 
         .end-actions button {
             padding: 14px 28px;
-            border-radius: 10px;
+            border-radius: 12px;
             font-family: 'Inter', sans-serif;
             font-size: 15px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
             border: 1px solid #333;
+        }
+
+        .end-actions button:hover {
+            transform: translateY(-1px);
         }
 
         .end-actions .share-x {
@@ -388,6 +528,61 @@
         .end-actions .try-again {
             background: #1a1a1a;
             color: #f5f5f5;
+        }
+
+        .end-actions .review-btn {
+            background: linear-gradient(135deg, #4ade80, #22d3ee);
+            border: none;
+            color: #0f0f0f;
+        }
+
+        .coming-soon-card {
+            margin-top: 32px;
+            padding: 24px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        /* Confetti container */
+        .confetti-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            overflow: hidden;
+        }
+
+        kbd {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-family: 'Inter', sans-serif;
+            color: #888;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            margin-right: 2px;
+        }
+
+        @media (hover: hover) {
+            .kbd-hints { display: block !important; }
+        }
+
+        .confetti-piece {
+            position: absolute;
+            top: -20px;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
 
         /* ===== SHARE CARD (hidden, for screenshot) ===== */
@@ -613,15 +808,24 @@
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 600px) {
+            .container { padding: 24px 16px; }
+            .hero { padding: 40px 0 32px; }
             .hero h1 { font-size: 32px; }
             .hero .subtitle { font-size: 15px; }
             .input-card { padding: 24px 20px; }
             .input-row { flex-direction: column; }
             .go-btn { width: 100%; }
+            .puzzle-board { max-width: 92vw; margin: 0 auto; }
             .puzzle-board .sq { font-size: 7vw; }
+            .puzzle-actions button { padding: 10px 16px; font-size: 13px; }
             .end-screen .big-score { font-size: 56px; }
+            .score-hero-card { padding: 28px 16px 24px; }
             .end-actions { flex-direction: column; }
-            .end-actions button { width: 100%; }
+            .end-actions button { width: 100%; padding: 16px 28px; }
+            .insight-card { margin: 0 auto 24px; padding: 16px; }
+            .review-panel { padding: 20px 16px; }
+            .review-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .top-nav { padding: 14px 16px; }
         }
     </style>
 </head>
@@ -696,13 +900,18 @@
 
             <div class="board-container">
                 <div class="puzzle-status-bar" id="statusBar" style="color:#c084fc;">Find the best move!</div>
+                <div class="turn-indicator" id="turnIndicator"></div>
                 <div class="puzzle-board" id="board"></div>
                 <div class="puzzle-info">
                     <div class="puzzle-context" id="puzzleContext"></div>
                     <div class="puzzle-actions" id="puzzleActions">
-                        <button onclick="showHint()">Hint</button>
-                        <button onclick="showAnswer()">Show Answer</button>
+                        <button onclick="showHint()" id="hintBtn">Hint</button>
+                        <button onclick="showAnswer()" id="answerBtn">Show Answer</button>
+                        <button onclick="skipPuzzle()" id="skipBtn" style="opacity:0.6;">Skip</button>
                         <button class="primary" onclick="nextPuzzle()" id="nextBtn" style="display:none;">Next Puzzle</button>
+                    </div>
+                    <div class="kbd-hints" style="text-align:center;margin-top:12px;font-size:11px;color:#555;display:none;" id="kbdHints">
+                        <kbd>H</kbd> Hint &nbsp; <kbd>A</kbd> Answer &nbsp; <kbd>S</kbd> Skip &nbsp; <kbd>N</kbd> Next
                     </div>
                 </div>
             </div>
@@ -710,23 +919,32 @@
 
         <!-- END SCREEN -->
         <div class="end-screen" id="endScreen">
-            <div class="big-score" id="endScore"></div>
-            <div class="score-label" id="endScoreLabel"></div>
-            <div class="score-bar" id="endScoreBar" style="margin-bottom:32px;"></div>
-            <div class="grade" id="endGrade"></div>
-            <div class="grade-desc" id="endGradeDesc"></div>
+            <div class="score-hero-card">
+                <div class="big-score" id="endScore"></div>
+                <div class="score-label" id="endScoreLabel"></div>
+                <div class="score-bar" id="endScoreBar" style="margin-bottom:0;"></div>
+            </div>
+
+            <div class="grade-reveal">
+                <div class="grade" id="endGrade"></div>
+                <div class="grade-desc" id="endGradeDesc"></div>
+            </div>
 
             <!-- Theme breakdown -->
-            <div id="themeBreakdown" style="max-width:400px;margin:0 auto 32px;text-align:left;"></div>
+            <div id="themeBreakdown" style="max-width:400px;margin:0 auto 28px;text-align:left;"></div>
+
+            <!-- Performance insight -->
+            <div class="insight-card" id="insightCard"></div>
 
             <div class="end-actions">
-                <button class="share-x" onclick="shareToTwitter()">Share on X</button>
                 <button class="share-copy" onclick="downloadScorecard()">Download Scorecard</button>
-                <button class="try-again" onclick="location.reload()">Try Again</button>
+                <button class="share-x" onclick="shareToTwitter()">Share on X</button>
+                <button class="try-again" onclick="resetToHero()">New Puzzles</button>
+                <button class="review-btn" id="endReviewBtn" style="display:none;" onclick="startReviewFromEnd()">Review Due Puzzles</button>
             </div>
 
             <!-- Coming soon teaser -->
-            <div style="margin-top:40px;padding:24px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;text-align:center;">
+            <div class="coming-soon-card">
                 <div style="font-size:13px;font-weight:700;color:#c084fc;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Coming Soon</div>
                 <div style="font-size:16px;font-weight:600;color:#e8e8e8;margin-bottom:4px;">Puzzles from players at your elo</div>
                 <div style="font-size:13px;color:#808080;">Common blunders from our 102K game dataset, matched to your rating range. See what mistakes players like you make most.</div>
@@ -830,6 +1048,7 @@
 
             for (let i = 0; i < newPuzzles.length; i++) {
                 const p = newPuzzles[i];
+                if (results[i] === 'skipped') continue; // Don't save skipped puzzles
                 if (existingKeys.has(p.fen)) {
                     // Update existing puzzle
                     const existing = bank.find(b => b.fen === p.fen);
@@ -1017,8 +1236,31 @@
             loadPuzzle(0);
         }
 
+        // ===== PLAYER PERSISTENCE =====
+        const PLAYER_KEY = 'cassandra_player';
+
+        function loadPlayer() {
+            try { return JSON.parse(localStorage.getItem(PLAYER_KEY)) || null; }
+            catch { return null; }
+        }
+
+        function savePlayer(username, plat) {
+            localStorage.setItem(PLAYER_KEY, JSON.stringify({
+                username, platform: plat, lastVisit: todayStr()
+            }));
+        }
+
         // Init on page load
-        document.addEventListener('DOMContentLoaded', initReviewPanel);
+        document.addEventListener('DOMContentLoaded', () => {
+            initReviewPanel();
+
+            // Pre-fill saved username
+            const saved = loadPlayer();
+            if (saved) {
+                document.getElementById('usernameInput').value = saved.username;
+                if (saved.platform) setPlatform(saved.platform);
+            }
+        });
 
         // ===== PLATFORM TOGGLE =====
         function setPlatform(p) {
@@ -1029,17 +1271,63 @@
         }
 
         // ===== PROGRESS =====
+        const CHESS_FACTS = [
+            'The number of possible chess games exceeds the number of atoms in the observable universe.',
+            'The word "checkmate" comes from the Persian phrase "Shah Mat" — the king is dead.',
+            'The longest chess game theoretically possible is 5,949 moves.',
+            'A knight can visit every square on the board exactly once (the Knight\'s Tour).',
+            'The shortest possible game ending in checkmate is just 2 moves (Fool\'s Mate).',
+            'In our 102K game dataset, games decided in under 15 moves have a 62% win rate for white.',
+            'The most common first move in our dataset is 1.e4, played in 47% of games.',
+            'Players who stick to 3-5 openings score 2.1% higher than those who play 10+ different openings.',
+            'The average game in our dataset lasts 41 moves.',
+            'Forks are the most common tactical pattern missed by players rated 1000-1500.',
+        ];
+        let factInterval = null;
+
         function setProgress(pct, text, sub) {
             document.getElementById('progressBar').style.width = pct + '%';
             if (text) document.getElementById('loadingStatus').textContent = text;
             if (sub !== undefined) document.getElementById('loadingSub').textContent = sub;
         }
 
+        function startLoadingFacts() {
+            showRandomFact();
+            factInterval = setInterval(showRandomFact, 4000);
+        }
+
+        function stopLoadingFacts() {
+            if (factInterval) clearInterval(factInterval);
+        }
+
+        function showRandomFact() {
+            const title = document.getElementById('loadingTitle');
+            if (title) {
+                const fact = CHESS_FACTS[Math.floor(Math.random() * CHESS_FACTS.length)];
+                title.textContent = fact;
+                title.style.fontSize = '15px';
+                title.style.color = '#808080';
+                title.style.fontWeight = '400';
+                title.style.maxWidth = '500px';
+                title.style.margin = '0 auto 16px';
+            }
+        }
+
         // ===== START =====
         async function startAnalysis() {
             const username = document.getElementById('usernameInput').value.trim();
-            if (!username) return;
+            if (!username) {
+                document.getElementById('usernameInput').style.borderColor = '#f87171';
+                document.getElementById('usernameInput').placeholder = 'Please enter a username';
+                setTimeout(() => {
+                    document.getElementById('usernameInput').style.borderColor = '#333';
+                    document.getElementById('usernameInput').placeholder = 'Enter your username';
+                }, 2000);
+                return;
+            }
             playerUsername = username;
+            reviewMode = false;
+            savePlayer(username, platform);
 
             document.getElementById('heroSection').style.display = 'none';
             document.getElementById('loadingSection').style.display = 'block';
@@ -1063,6 +1351,7 @@
 
                 // Step 3: Analyze for puzzles
                 setProgress(50, 'Finding your blunders...', 'This takes 20-40 seconds');
+                startLoadingFacts();
                 const gamesWithPGN = games.filter(g => g.pgn && g.pgn.length > 50).slice(-15);
                 puzzles = [];
                 const TARGET = 20;
@@ -1098,7 +1387,12 @@
                     return;
                 }
 
+                stopLoadingFacts();
                 setProgress(100, `Found ${puzzles.length} puzzles!`, '');
+                document.getElementById('loadingTitle').textContent = `Found ${puzzles.length} puzzles!`;
+                document.getElementById('loadingTitle').style.fontSize = '20px';
+                document.getElementById('loadingTitle').style.color = '#f5f5f5';
+                document.getElementById('loadingTitle').style.fontWeight = '600';
                 results = new Array(puzzles.length).fill(null);
 
                 setTimeout(() => {
@@ -1110,9 +1404,30 @@
 
             } catch (e) {
                 setProgress(0, 'Error: ' + e.message, '');
+                document.getElementById('loadingSub').innerHTML = '<button onclick="backToHero()" style="margin-top:12px;padding:10px 24px;background:#1a1a1a;border:1px solid #333;border-radius:10px;color:#f5f5f5;font-family:Inter,sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Go Back</button>';
                 console.error(e);
                 goBtn.disabled = false;
             }
+        }
+
+        function backToHero() {
+            document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('heroSection').style.display = 'block';
+            document.getElementById('goBtn').disabled = false;
+        }
+
+        function resetToHero() {
+            document.getElementById('endScreen').style.display = 'none';
+            document.getElementById('endScreen').classList.remove('visible');
+            document.getElementById('puzzleArea').style.display = 'none';
+            document.getElementById('heroSection').style.display = 'block';
+            document.getElementById('goBtn').disabled = false;
+            puzzles = [];
+            currentIdx = 0;
+            score = 0;
+            results = [];
+            reviewMode = false;
+            initReviewPanel(); // Refresh review panel with updated bank
         }
 
         // ===== GAME FETCHING =====
@@ -1558,9 +1873,14 @@
             statusBar.innerHTML = `<span style="color:${themeData.color};margin-right:6px;">${themeData.icon}</span> Find the best move! <span style="font-size:12px;color:${themeData.color};margin-left:8px;padding:3px 10px;border:1px solid ${themeData.color}44;border-radius:12px;background:${themeData.color}15;">${themeData.label}</span>`;
             statusBar.style.color = '#c084fc';
 
-            // Context
+            // Context — don't reveal what you played yet (avoid spoiling)
             document.getElementById('puzzleContext').innerHTML =
-                `Move ${p.moveNumber} vs ${p.opponent} · ${p.opening || 'Unknown'}<br><span style="color:#808080;">You played <strong style="color:#f87171;">${p.playedMove}</strong> (-${p.evalLoss}cp) · ${themeData.desc}</span>`;
+                `Move ${p.moveNumber} vs ${p.opponent} · ${p.opening || 'Unknown'}`;
+
+            // Turn indicator
+            document.getElementById('turnIndicator').innerHTML =
+                `<div class="turn-dot ${p.isWhite ? 'white' : 'black'}"></div>
+                 <span>${p.isWhite ? 'White' : 'Black'} to move</span>`;
 
             // Board
             const board = parseFenToBoard(p.fen);
@@ -1581,8 +1901,11 @@
             }
             boardEl.innerHTML = html;
 
-            // Actions
+            // Actions — reset button visibility
             document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('hintBtn').style.display = '';
+            document.getElementById('answerBtn').style.display = '';
+            document.getElementById('skipBtn').style.display = '';
 
             // Score bar
             updateScoreBar();
@@ -1594,31 +1917,39 @@
             const p = puzzles[currentIdx];
 
             if (selectedSquare) {
+                // Clicking same square = deselect
+                if (selectedSquare === sq) {
+                    document.querySelector(`[data-sq="${sq}"]`)?.classList.remove('selected');
+                    selectedSquare = null;
+                    return;
+                }
+
                 const moveUCI = selectedSquare + sq;
                 const bestUCI = p.bestMove;
 
                 const allSq = document.querySelectorAll('#board .sq');
                 allSq.forEach(s => s.classList.remove('selected', 'correct', 'wrong', 'hint'));
 
-                if (moveUCI === bestUCI || moveUCI === bestUCI.slice(0, 4)) {
+                // Check match (handle promotion: bestMove might be e7e8q)
+                const isCorrect = moveUCI === bestUCI || moveUCI === bestUCI.slice(0, 4);
+
+                if (isCorrect) {
                     // CORRECT
                     document.querySelector(`[data-sq="${selectedSquare}"]`)?.classList.add('correct');
                     document.querySelector(`[data-sq="${sq}"]`)?.classList.add('correct');
 
                     const statusBar = document.getElementById('statusBar');
-                    statusBar.textContent = `Correct! ${p.bestMoveSAN} was the best move.`;
+                    statusBar.textContent = `\u2705 Correct! ${p.bestMoveSAN} was the best move.`;
                     statusBar.style.color = '#4ade80';
 
                     puzzleSolved = true;
                     if (!puzzleAttempted) {
-                        // First try = correct
                         score++;
                         results[currentIdx] = 'correct';
                     } else {
-                        results[currentIdx] = 'wrong'; // Got it but not on first try
+                        results[currentIdx] = 'wrong';
                     }
-                    document.getElementById('nextBtn').style.display = 'inline-block';
-                    updateScoreBar();
+                    onPuzzleSolved();
                 } else {
                     // WRONG
                     document.querySelector(`[data-sq="${selectedSquare}"]`)?.classList.add('wrong');
@@ -1635,11 +1966,28 @@
                 }
                 selectedSquare = null;
             } else {
+                // Select a square — only if it has a piece on it
+                const sqEl = document.querySelector(`[data-sq="${sq}"]`);
+                if (!sqEl || !sqEl.textContent.trim()) return; // empty square, ignore
+
                 const allSq = document.querySelectorAll('#board .sq');
                 allSq.forEach(s => s.classList.remove('selected'));
-                document.querySelector(`[data-sq="${sq}"]`)?.classList.add('selected');
+                sqEl.classList.add('selected');
                 selectedSquare = sq;
             }
+        }
+
+        function onPuzzleSolved() {
+            document.getElementById('nextBtn').style.display = 'inline-block';
+            document.getElementById('hintBtn').style.display = 'none';
+            document.getElementById('answerBtn').style.display = 'none';
+            document.getElementById('skipBtn').style.display = 'none';
+            // Reveal what you played
+            const p = puzzles[currentIdx];
+            const themeData = THEME_INFO[p.theme] || THEME_INFO['tactic'];
+            document.getElementById('puzzleContext').innerHTML =
+                `Move ${p.moveNumber} vs ${p.opponent} · ${p.opening || 'Unknown'}<br><span style="color:#808080;">You played <strong style="color:#f87171;">${p.playedMove}</strong> (-${p.evalLoss}cp) · ${themeData.desc}</span>`;
+            updateScoreBar();
         }
 
         // ===== HINT / ANSWER =====
@@ -1668,8 +2016,14 @@
 
             puzzleSolved = true;
             if (results[currentIdx] === null) results[currentIdx] = 'wrong';
-            document.getElementById('nextBtn').style.display = 'inline-block';
-            updateScoreBar();
+            onPuzzleSolved();
+        }
+
+        function skipPuzzle() {
+            results[currentIdx] = 'skipped';
+            const dot = document.getElementById('dot' + currentIdx);
+            if (dot) { dot.className = 'score-dot skipped'; }
+            nextPuzzle();
         }
 
         // ===== NEXT PUZZLE =====
@@ -1681,12 +2035,53 @@
             }
         }
 
+        // ===== KEYBOARD SHORTCUTS =====
+        document.addEventListener('keydown', function(e) {
+            // Only handle shortcuts when puzzle area is visible
+            const puzzleArea = document.getElementById('puzzleArea');
+            if (!puzzleArea || puzzleArea.style.display === 'none') return;
+
+            switch(e.key) {
+                case 'h':
+                case 'H':
+                    if (!puzzleSolved) showHint();
+                    break;
+                case 's':
+                case 'S':
+                    if (!puzzleSolved) skipPuzzle();
+                    break;
+                case 'a':
+                case 'A':
+                    if (!puzzleSolved) showAnswer();
+                    break;
+                case 'Enter':
+                case ' ':
+                case 'n':
+                case 'N':
+                    if (puzzleSolved) {
+                        e.preventDefault();
+                        nextPuzzle();
+                    }
+                    break;
+                case 'Escape':
+                    // Deselect piece
+                    if (selectedSquare) {
+                        document.querySelector(`[data-sq="${selectedSquare}"]`)?.classList.remove('selected');
+                        selectedSquare = null;
+                    }
+                    break;
+            }
+        });
+
         // ===== END SCREEN =====
         function showEndScreen() {
             document.getElementById('puzzleArea').style.display = 'none';
-            document.getElementById('endScreen').style.display = 'block';
+            const endEl = document.getElementById('endScreen');
+            endEl.style.display = 'block';
 
-            const total = puzzles.length;
+            const answered = results.filter(r => r === 'correct' || r === 'wrong').length;
+            const skipped = results.filter(r => r === 'skipped').length;
+            const total = answered || 1; // avoid divide by zero
             const pct = Math.round((score / total) * 100);
 
             let grade, gradeColor, gradeDesc;
@@ -1696,9 +2091,10 @@
             else if (pct >= 40) { grade = 'C'; gradeColor = '#fb923c'; gradeDesc = 'Room to grow. These positions need more practice.'; }
             else { grade = 'D'; gradeColor = '#f87171'; gradeDesc = 'Tough puzzles. Time to study these patterns!'; }
 
-            document.getElementById('endScore').textContent = `${score}/${total}`;
+            document.getElementById('endScore').textContent = `${score}/${answered}`;
             document.getElementById('endScore').style.color = gradeColor;
-            document.getElementById('endScoreLabel').textContent = `You solved ${pct}% of your blunder puzzles`;
+            const skipText = skipped > 0 ? ` (${skipped} skipped)` : '';
+            document.getElementById('endScoreLabel').textContent = `You solved ${pct}% of your blunder puzzles${skipText}`;
 
             document.getElementById('endGrade').textContent = grade;
             document.getElementById('endGrade').style.color = gradeColor;
@@ -1706,39 +2102,56 @@
 
             // Score dots
             const barHtml = results.map(r =>
-                `<div class="score-dot ${r === 'correct' ? 'correct' : 'wrong'}"></div>`
+                `<div class="score-dot ${r === 'correct' ? 'correct' : r === 'skipped' ? 'skipped' : 'wrong'}"></div>`
             ).join('');
             document.getElementById('endScoreBar').innerHTML = barHtml;
 
-            // Theme breakdown
+            // Theme breakdown (exclude skipped)
             const themeStats = {};
             puzzles.forEach((p, i) => {
+                if (results[i] === 'skipped') return;
                 const t = p.theme || 'tactic';
                 if (!themeStats[t]) themeStats[t] = { total: 0, correct: 0 };
                 themeStats[t].total++;
                 if (results[i] === 'correct') themeStats[t].correct++;
             });
 
-            let breakdownHtml = '<div style="font-size:13px;font-weight:700;color:#808080;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;text-align:center;">Your Tactical Breakdown</div>';
+            let breakdownHtml = '<div style="font-size:12px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;text-align:center;">Tactical Breakdown</div>';
             for (const [theme, stats] of Object.entries(themeStats)) {
                 const info = THEME_INFO[theme] || THEME_INFO['tactic'];
                 const themePct = Math.round((stats.correct / stats.total) * 100);
+                const barWidth = Math.max(themePct, 5);
                 breakdownHtml += `
                     <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;background:#1a1a1a;border-radius:10px;margin-bottom:6px;border:1px solid #2a2a2a;">
                         <span style="font-size:22px;">${info.icon}</span>
                         <div style="flex:1;">
-                            <div style="font-size:14px;font-weight:600;color:#e8e8e8;">${info.label}</div>
-                            <div style="font-size:12px;color:#666;">${stats.correct}/${stats.total} solved</div>
+                            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+                                <span style="font-size:14px;font-weight:600;color:#e8e8e8;">${info.label}</span>
+                                <span style="font-size:12px;color:#666;">${stats.correct}/${stats.total}</span>
+                            </div>
+                            <div style="height:4px;background:#222;border-radius:2px;overflow:hidden;">
+                                <div style="height:100%;width:${barWidth}%;background:${themePct >= 60 ? '#4ade80' : themePct >= 40 ? '#facc15' : '#f87171'};border-radius:2px;transition:width 1s ease;"></div>
+                            </div>
                         </div>
-                        <div style="font-size:18px;font-weight:800;color:${themePct >= 60 ? '#4ade80' : themePct >= 40 ? '#facc15' : '#f87171'};">${themePct}%</div>
+                        <div style="font-size:18px;font-weight:800;min-width:40px;text-align:right;color:${themePct >= 60 ? '#4ade80' : themePct >= 40 ? '#facc15' : '#f87171'};">${themePct}%</div>
                     </div>
                 `;
             }
             document.getElementById('themeBreakdown').innerHTML = breakdownHtml;
 
+            // Performance insights
+            buildInsights(themeStats);
+
+            // Check for review puzzles
+            const duePuzzles = getDuePuzzles();
+            const reviewBtn = document.getElementById('endReviewBtn');
+            if (duePuzzles.length > 0) {
+                reviewBtn.style.display = '';
+                reviewBtn.textContent = `Review ${duePuzzles.length} Due Puzzle${duePuzzles.length > 1 ? 's' : ''}`;
+            }
+
             // Save to puzzle bank
             if (reviewMode) {
-                // Update each puzzle's review status individually
                 puzzles.forEach((p, i) => {
                     updateReviewResult(p.fen, results[i] === 'correct');
                 });
@@ -1752,6 +2165,101 @@
 
             // Populate share card
             populateShareCard(grade, gradeColor, gradeDesc, pct);
+
+            // Trigger entrance animation
+            requestAnimationFrame(() => {
+                endEl.classList.add('visible');
+            });
+
+            // Confetti for good scores
+            if (pct >= 70) {
+                launchConfetti(pct >= 90 ? 60 : 30);
+            }
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function buildInsights(themeStats) {
+            const entries = Object.entries(themeStats).filter(([, s]) => s.total > 0);
+            if (entries.length < 1) {
+                document.getElementById('insightCard').style.display = 'none';
+                return;
+            }
+
+            let insightHtml = '';
+
+            // Strongest theme
+            const sorted = [...entries].sort((a, b) => (b[1].correct / b[1].total) - (a[1].correct / a[1].total));
+            const strongest = sorted[0];
+            const weakest = sorted[sorted.length - 1];
+
+            if (strongest) {
+                const info = THEME_INFO[strongest[0]] || THEME_INFO['tactic'];
+                const pct = Math.round((strongest[1].correct / strongest[1].total) * 100);
+                insightHtml += `
+                    <div class="insight-row">
+                        <div class="insight-icon">${info.icon}</div>
+                        <div class="insight-text">
+                            <div class="insight-label" style="color:#4ade80;">Strongest</div>
+                            <div class="insight-value">${info.label} — ${pct}% solved</div>
+                        </div>
+                    </div>`;
+            }
+
+            if (weakest && weakest[0] !== strongest[0]) {
+                const info = THEME_INFO[weakest[0]] || THEME_INFO['tactic'];
+                const pct = Math.round((weakest[1].correct / weakest[1].total) * 100);
+                insightHtml += `
+                    <div class="insight-row">
+                        <div class="insight-icon">${info.icon}</div>
+                        <div class="insight-text">
+                            <div class="insight-label" style="color:#f87171;">Needs Work</div>
+                            <div class="insight-value">${info.label} — ${pct}% solved</div>
+                        </div>
+                    </div>`;
+            }
+
+            // Lifetime stats
+            const stats = loadStats();
+            if (stats.streak > 0) {
+                insightHtml += `
+                    <div class="insight-row">
+                        <div class="insight-icon" style="font-size:20px;">&#x1F525;</div>
+                        <div class="insight-text">
+                            <div class="insight-label" style="color:#fb923c;">Streak</div>
+                            <div class="insight-value">${stats.streak} day${stats.streak > 1 ? 's' : ''} in a row</div>
+                        </div>
+                    </div>`;
+            }
+
+            document.getElementById('insightCard').innerHTML = insightHtml;
+            if (!insightHtml) document.getElementById('insightCard').style.display = 'none';
+        }
+
+        function startReviewFromEnd() {
+            document.getElementById('endScreen').style.display = 'none';
+            document.getElementById('endScreen').classList.remove('visible');
+            startReview();
+        }
+
+        function launchConfetti(count) {
+            const container = document.createElement('div');
+            container.className = 'confetti-container';
+            document.body.appendChild(container);
+            const colors = ['#c084fc', '#818cf8', '#60a5fa', '#4ade80', '#facc15', '#f87171', '#fb923c'];
+            for (let i = 0; i < count; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.width = (6 + Math.random() * 8) + 'px';
+                piece.style.height = (6 + Math.random() * 8) + 'px';
+                piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+                piece.style.animationDelay = (Math.random() * 1.5) + 's';
+                container.appendChild(piece);
+            }
+            setTimeout(() => container.remove(), 5000);
         }
 
         // ===== SHARE =====
