@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
 import { percentileToBucket, type PercentileBucket } from "@/lib/benchmarks";
 import { primaryTactic } from "@/lib/tactics";
 import { getGlobalAvgForTactic } from "@/lib/queries/weakTimeTactics";
@@ -39,12 +40,26 @@ export async function POST(
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
+  // Prefer real session userId for proper streak + stats tracking.
+  // Fall back to anon ID from body for unauthenticated users.
+  const session = await auth();
+  const resolvedUserId = session?.userId ?? body.userId ?? null;
+
+  // Look up puzzle — check both personal Puzzle and LibraryPuzzle tables
+  let themes = "tactics";
   const puzzle = await prisma.puzzle.findUnique({ where: { id }, select: { id: true, themes: true } });
-  if (!puzzle) {
-    return NextResponse.json({ error: "Puzzle not found" }, { status: 404 });
+  if (puzzle) {
+    themes = puzzle.themes;
+  } else {
+    const libPuzzle = await prisma.libraryPuzzle.findUnique({ where: { id }, select: { id: true, themes: true } });
+    if (!libPuzzle) {
+      console.warn(`[attempt] puzzle not found: ${id}`);
+      return NextResponse.json({ error: "Puzzle not found" }, { status: 404 });
+    }
+    themes = libPuzzle.themes;
   }
 
-  const tacticType = primaryTactic(puzzle.themes);
+  const tacticType = primaryTactic(themes);
 
   // Timeout blunder: if solve time > 2× global avg for this tactic, mark as failure
   const globalAvg = await getGlobalAvgForTactic(tacticType);
@@ -53,10 +68,11 @@ export async function POST(
   const recordedSuccess = isTimeoutBlunder ? false : body.success;
 
   // Record the attempt
+  console.log(`[attempt] puzzleId=${id} userId=${resolvedUserId} success=${recordedSuccess} tactic=${tacticType}`);
   await prisma.puzzleAttempt.create({
     data: {
       puzzleId: id,
-      userId: body.userId ?? null,
+      userId: resolvedUserId,
       solveTimeMs: body.solveTimeMs,
       success: recordedSuccess,
       tacticType,
@@ -64,8 +80,8 @@ export async function POST(
   });
 
   // Update streak for authenticated users on successful solve
-  if (recordedSuccess && body.userId) {
-    await updateStreak(body.userId);
+  if (recordedSuccess && resolvedUserId) {
+    await updateStreak(resolvedUserId);
   }
 
   // Increment site-wide counter on recorded success

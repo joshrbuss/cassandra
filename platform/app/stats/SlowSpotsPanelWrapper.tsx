@@ -1,17 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getAnonId } from "@/lib/anonymous-id";
 import SlowSpotsPanel from "@/components/stats/SlowSpotsPanel";
 
-export default function SlowSpotsPanelWrapper() {
-  const [userId, setUserId] = useState<string | null>(null);
+interface Props {
+  userId: string | null;
+}
 
-  useEffect(() => {
-    setUserId(getAnonId());
-  }, []);
-
+export default function SlowSpotsPanelWrapper({ userId }: Props) {
   if (!userId) return null;
-
   return <SlowSpotsPanel userId={userId} />;
 }

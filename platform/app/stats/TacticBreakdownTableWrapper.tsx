@@ -1,17 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getAnonId } from "@/lib/anonymous-id";
 import TacticBreakdownTable from "@/components/stats/TacticBreakdownTable";
 
-export default function TacticBreakdownTableWrapper() {
-  const [userId, setUserId] = useState<string | null>(null);
+interface Props {
+  userId: string | null;
+}
 
-  useEffect(() => {
-    setUserId(getAnonId());
-  }, []);
-
-  if (!userId) return null;
-
+export default function TacticBreakdownTableWrapper({ userId }: Props) {
+  if (!userId) return (
+    <p className="text-sm text-gray-500 text-center py-8">
+      Sign in to see your stats.
+    </p>
+  );
   return <TacticBreakdownTable userId={userId} />;
 }

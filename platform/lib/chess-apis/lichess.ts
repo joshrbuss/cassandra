@@ -12,6 +12,7 @@ interface LichessGame {
   pgn?: string;
   moves?: string;
   id?: string;
+  url?: string;
 }
 
 /**
@@ -54,7 +55,13 @@ export async function fetchRecentGames(
     try {
       const game: LichessGame = JSON.parse(trimmed);
       if (game.pgn) {
-        pgns.push(game.pgn);
+        let pgn = game.pgn;
+        // Ensure [Site] header is present so extractGameUrl() can pick up the URL.
+        // The NDJSON response includes game.id reliably even if the PGN header is missing.
+        if (game.id && !pgn.includes("[Site ")) {
+          pgn = `[Site "https://lichess.org/${game.id}"]\n${pgn}`;
+        }
+        pgns.push(pgn);
       }
     } catch {
       // Skip malformed lines

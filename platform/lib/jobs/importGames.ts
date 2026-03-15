@@ -71,6 +71,7 @@ export async function importGamesForUser(userId: string): Promise<ImportResult> 
       });
       if (existing) continue;
 
+      console.log(`[import] inserting puzzle ${candidate.id} gameUrl=${candidate.gameUrl ?? "null"}`);
       await prisma.puzzle.create({
         data: {
           id: candidate.id,

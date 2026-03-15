@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { auth } from "@/auth";
 import TacticBreakdownTableWrapper from "./TacticBreakdownTableWrapper";
 import SlowSpotsPanelWrapper from "./SlowSpotsPanelWrapper";
 
@@ -9,7 +10,12 @@ export const metadata: Metadata = {
   description: "See your tactic accuracy and solve time breakdown.",
 };
 
-export default function StatsPage() {
+export default async function StatsPage() {
+  const session = await auth();
+  // Real userId for authenticated users — ensures attempts recorded by the
+  // attempt route (which also uses session auth) are queryable here.
+  const userId = session?.userId ?? null;
+
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-10">
       <div className="max-w-2xl mx-auto">
@@ -32,12 +38,12 @@ export default function StatsPage() {
             </div>
           }
         >
-          <TacticBreakdownTableWrapper />
+          <TacticBreakdownTableWrapper userId={userId} />
         </Suspense>
 
         <Suspense fallback={<div className="h-32 rounded-xl border border-orange-200 bg-orange-50 animate-pulse mt-6" />}>
           <div className="mt-6">
-            <SlowSpotsPanelWrapper />
+            <SlowSpotsPanelWrapper userId={userId} />
           </div>
         </Suspense>
 
