@@ -114,8 +114,13 @@ export async function connectLichessUsername(
   }
 
   if (!session?.userId) {
-    // Create a new session — throws a redirect internally
-    await signIn("credentials", { userId, redirectTo: callbackUrl });
+    try {
+      await signIn("credentials", { userId, redirectTo: callbackUrl });
+    } catch (e) {
+      // next-auth signals a redirect by throwing — re-throw it so Next.js handles it
+      if ((e as { digest?: string })?.digest?.startsWith("NEXT_REDIRECT")) throw e;
+      return { error: "Sign-in failed. Please try again or contact support." };
+    }
   }
 
   redirect(callbackUrl);
@@ -223,7 +228,12 @@ export async function connectChessComUsername(
   }
 
   if (!session?.userId) {
-    await signIn("credentials", { userId, redirectTo: callbackUrl });
+    try {
+      await signIn("credentials", { userId, redirectTo: callbackUrl });
+    } catch (e) {
+      if ((e as { digest?: string })?.digest?.startsWith("NEXT_REDIRECT")) throw e;
+      return { error: "Sign-in failed. Please try again or contact support." };
+    }
   }
 
   redirect(callbackUrl);
