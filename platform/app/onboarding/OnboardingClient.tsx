@@ -1,11 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
-import {
-  connectLichessUsername,
-  connectChessComUsername,
-  type ConnectState,
-} from "@/app/actions/auth";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
 
 interface Props {
   lichessUsername: string | null;
@@ -13,16 +9,70 @@ interface Props {
 }
 
 export default function OnboardingClient({ lichessUsername, chessComUsername }: Props) {
-  const [lichessState, lichessAction, lichessPending] = useActionState<ConnectState, FormData>(
-    connectLichessUsername,
-    null
-  );
-  const [ccState, ccAction, ccPending] = useActionState<ConnectState, FormData>(
-    connectChessComUsername,
-    null
-  );
+  const [lichessError, setLichessError] = useState<string | null>(null);
+  const [ccError, setCcError] = useState<string | null>(null);
+  const [lichessPending, setLichessPending] = useState(false);
+  const [ccPending, setCcPending] = useState(false);
 
   const hasLinked = !!(lichessUsername || chessComUsername);
+
+  async function handleLichessSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLichessError(null);
+    setLichessPending(true);
+    try {
+      const form = e.currentTarget;
+      const username = (form.elements.namedItem("username") as HTMLInputElement).value.trim();
+
+      const res = await fetch("/api/auth/lichess-username", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username }),
+      });
+      const data = (await res.json()) as { userId?: string; error?: string };
+
+      if (!res.ok || !data.userId) {
+        setLichessError(data.error ?? "Something went wrong. Please try again.");
+        setLichessPending(false);
+        return;
+      }
+
+      await signIn("credentials", { userId: data.userId, callbackUrl: "/dashboard" });
+      // signIn redirects — we won't reach here on success
+    } catch {
+      setLichessError("Something went wrong. Please try again.");
+      setLichessPending(false);
+    }
+  }
+
+  async function handleCcSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setCcError(null);
+    setCcPending(true);
+    try {
+      const form = e.currentTarget;
+      const username = (form.elements.namedItem("username") as HTMLInputElement).value.trim();
+
+      const res = await fetch("/api/auth/chesscom", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username }),
+      });
+      const data = (await res.json()) as { userId?: string; error?: string };
+
+      if (!res.ok || !data.userId) {
+        setCcError(data.error ?? "Something went wrong. Please try again.");
+        setCcPending(false);
+        return;
+      }
+
+      await signIn("credentials", { userId: data.userId, callbackUrl: "/dashboard" });
+      // signIn redirects — we won't reach here on success
+    } catch {
+      setCcError("Something went wrong. Please try again.");
+      setCcPending(false);
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -58,13 +108,13 @@ export default function OnboardingClient({ lichessUsername, chessComUsername }: 
         </div>
 
         {!lichessUsername && (
-          <form action={lichessAction} className="flex gap-2">
-            <input type="hidden" name="callbackUrl" value="/onboarding" />
+          <form onSubmit={handleLichessSubmit} className="flex gap-2">
             <input
               type="text"
               name="username"
               placeholder="Your Lichess username"
               autoComplete="off"
+              required
               className="flex-1 text-sm text-gray-900 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
             />
             <button
@@ -77,8 +127,8 @@ export default function OnboardingClient({ lichessUsername, chessComUsername }: 
           </form>
         )}
 
-        {lichessState?.error && (
-          <p className="text-xs text-red-600 mt-2">{lichessState.error}</p>
+        {lichessError && (
+          <p className="text-xs text-red-600 mt-2">{lichessError}</p>
         )}
       </div>
 
@@ -114,13 +164,13 @@ export default function OnboardingClient({ lichessUsername, chessComUsername }: 
         </div>
 
         {!chessComUsername && (
-          <form action={ccAction} className="flex gap-2">
-            <input type="hidden" name="callbackUrl" value="/onboarding" />
+          <form onSubmit={handleCcSubmit} className="flex gap-2">
             <input
               type="text"
               name="username"
               placeholder="Your Chess.com username"
               autoComplete="off"
+              required
               className="flex-1 text-sm text-gray-900 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
             />
             <button
@@ -133,8 +183,8 @@ export default function OnboardingClient({ lichessUsername, chessComUsername }: 
           </form>
         )}
 
-        {ccState?.error && (
-          <p className="text-xs text-red-600 mt-2">{ccState.error}</p>
+        {ccError && (
+          <p className="text-xs text-red-600 mt-2">{ccError}</p>
         )}
       </div>
 
