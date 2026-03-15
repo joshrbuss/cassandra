@@ -86,18 +86,33 @@ export async function connectLichessUsername(
       where: { id: session.userId },
       select: { eloPlatform: true },
     });
-    await prisma.user.update({
-      where: { id: session.userId },
-      data: {
-        lichessUsername: actualUsername,
-        lichessLinkedAt: new Date(),
-        // Only set ELO fields if the user has no primary platform yet
-        ...(rawElo != null && !currentUser?.eloPlatform
-          ? { rawElo, normalizedElo: rawElo, elo: rawElo, eloPlatform: "lichess" }
-          : {}),
-      },
-    });
-    userId = session.userId;
+    if (!currentUser) {
+      // Stale session — user record was deleted. Create a fresh record.
+      const newUser = await prisma.user.create({
+        data: {
+          lichessUsername: actualUsername,
+          lichessLinkedAt: new Date(),
+          rawElo: rawElo ?? undefined,
+          normalizedElo: rawElo ?? undefined,
+          elo: rawElo ?? undefined,
+          eloPlatform: rawElo != null ? "lichess" : undefined,
+        },
+      });
+      userId = newUser.id;
+    } else {
+      await prisma.user.update({
+        where: { id: session.userId },
+        data: {
+          lichessUsername: actualUsername,
+          lichessLinkedAt: new Date(),
+          // Only set ELO fields if the user has no primary platform yet
+          ...(rawElo != null && !currentUser.eloPlatform
+            ? { rawElo, normalizedElo: rawElo, elo: rawElo, eloPlatform: "lichess" }
+            : {}),
+        },
+      });
+      userId = session.userId;
+    }
   } else {
     // New user — create record
     const user = await prisma.user.create({
@@ -202,17 +217,32 @@ export async function connectChessComUsername(
       where: { id: session.userId },
       select: { eloPlatform: true },
     });
-    await prisma.user.update({
-      where: { id: session.userId },
-      data: {
-        chessComUsername: username,
-        chessComLinkedAt: new Date(),
-        ...(rawElo != null && !currentUser?.eloPlatform
-          ? { rawElo, normalizedElo, elo: rawElo, eloPlatform: "chess_com" }
-          : {}),
-      },
-    });
-    userId = session.userId;
+    if (!currentUser) {
+      // Stale session — user record was deleted. Create a fresh record.
+      const newUser = await prisma.user.create({
+        data: {
+          chessComUsername: username,
+          chessComLinkedAt: new Date(),
+          rawElo: rawElo ?? undefined,
+          normalizedElo: normalizedElo ?? undefined,
+          elo: rawElo ?? undefined,
+          eloPlatform: rawElo != null ? "chess_com" : undefined,
+        },
+      });
+      userId = newUser.id;
+    } else {
+      await prisma.user.update({
+        where: { id: session.userId },
+        data: {
+          chessComUsername: username,
+          chessComLinkedAt: new Date(),
+          ...(rawElo != null && !currentUser.eloPlatform
+            ? { rawElo, normalizedElo, elo: rawElo, eloPlatform: "chess_com" }
+            : {}),
+        },
+      });
+      userId = session.userId;
+    }
   } else {
     const user = await prisma.user.create({
       data: {

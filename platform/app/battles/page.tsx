@@ -7,8 +7,8 @@ import { playerDisplayName } from "@/lib/battles/types";
 import CreateBattleButton from "./CreateBattleButton";
 
 export const metadata: Metadata = {
-  title: "Puzzle Battles",
-  description: "Challenge another player to a head-to-head puzzle battle.",
+  title: "Puzzle Duels",
+  description: "Challenge another player to a head-to-head puzzle duel.",
 };
 
 export default async function BattlesPage() {
@@ -27,7 +27,7 @@ export default async function BattlesPage() {
           <Link href="/" className="text-sm text-blue-600 hover:underline">
             ← Home
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 mt-3">Puzzle Battles</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mt-3">Puzzle Duels</h1>
           <p className="text-sm text-gray-500 mt-1">
             Race a friend through 5 puzzles — fastest correct solver wins each round.
           </p>
@@ -37,11 +37,11 @@ export default async function BattlesPage() {
         <div className="flex gap-6 mb-6 text-sm text-gray-500">
           <span>
             <span className="font-semibold text-gray-900">{activeBattleCount}</span> active{" "}
-            {activeBattleCount === 1 ? "battle" : "battles"}
+            {activeBattleCount === 1 ? "duel" : "duels"}
           </span>
           <span>
             <span className="font-semibold text-gray-900">{openBattles.length}</span> open{" "}
-            {openBattles.length === 1 ? "challenge" : "challenges"}
+            {openBattles.length === 1 ? "open challenge" : "open challenges"}
           </span>
         </div>
 
@@ -67,7 +67,7 @@ export default async function BattlesPage() {
         <div>
           <h2 className="font-semibold text-gray-900 mb-3">Open challenges</h2>
           {openBattles.length === 0 ? (
-            <p className="text-sm text-gray-400 italic">No open battles right now — create one above!</p>
+            <p className="text-sm text-gray-400 italic">No open challenges right now — create one above!</p>
           ) : (
             <ol className="space-y-2">
               {openBattles.map((b) => (

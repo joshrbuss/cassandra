@@ -27,7 +27,7 @@ export default async function BattlePage({ params }: Props) {
       <div className="max-w-lg mx-auto">
         <div className="mb-4 flex items-center justify-between">
           <Link href="/battles" className="text-sm text-blue-600 hover:underline">
-            ← Battles
+            ← Duels
           </Link>
           <span className="text-xs text-gray-400 font-mono">{id.slice(0, 8)}</span>
         </div>

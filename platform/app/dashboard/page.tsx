@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getTotalImportedCount } from "@/lib/jobs/importGames";
+import LockedFeature from "@/components/LockedFeature";
 
 export const metadata = {
   title: "Dashboard — Cassandra Chess",
@@ -186,7 +187,7 @@ export default async function DashboardPage() {
             className="flex items-center justify-between bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:border-blue-400 transition-colors"
           >
             <div>
-              <p className="font-semibold text-gray-800">⚔️ Battles</p>
+              <p className="font-semibold text-gray-800">⚔️ Duels</p>
               <p className="text-xs text-gray-400 mt-0.5">
                 Race a friend through 5 puzzles
               </p>
@@ -206,6 +207,37 @@ export default async function DashboardPage() {
             </div>
             <span className="text-gray-400 text-lg">→</span>
           </Link>
+        </div>
+
+        {/* Coming soon */}
+        <div className="mt-6">
+          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Coming soon</h2>
+          <div className="grid grid-cols-1 gap-3">
+            <LockedFeature
+              emoji="⏪"
+              name="Rewind"
+              description="Replay any position from your game history and explore alternatives"
+              source="dashboard-rewind"
+            />
+            <LockedFeature
+              emoji="🎯"
+              name="Rank It"
+              description="Guess what rating played each move — train your intuition"
+              source="dashboard-rankit"
+            />
+            <LockedFeature
+              emoji="📖"
+              name="Opening Trainer"
+              description="Master your opening repertoire with targeted drills"
+              source="dashboard-openings"
+            />
+            <LockedFeature
+              emoji="⚔️"
+              name="Duels v2"
+              description="Real-time rated puzzle races with leaderboards and ELO"
+              source="dashboard-duels"
+            />
+          </div>
         </div>
 
         {/* Sign out */}

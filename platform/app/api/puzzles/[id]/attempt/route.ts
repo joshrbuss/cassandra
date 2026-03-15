@@ -142,27 +142,33 @@ export async function POST(
 }
 
 async function updateStreak(userId: string): Promise<void> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { currentStreak: true, longestStreak: true, lastPuzzleDate: true },
-  });
-  if (!user) return;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { currentStreak: true, longestStreak: true, lastPuzzleDate: true },
+    });
+    if (!user) return;
 
-  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD UTC
-  if (user.lastPuzzleDate === today) return; // already solved today
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD UTC
+    if (user.lastPuzzleDate === today) return; // already solved today
 
-  const yesterday = new Date(Date.now() - 86_400_000).toISOString().split("T")[0];
-  const isConsecutive = user.lastPuzzleDate === yesterday;
+    const yesterday = new Date(Date.now() - 86_400_000).toISOString().split("T")[0];
+    const isConsecutive = user.lastPuzzleDate === yesterday;
 
-  const newStreak = isConsecutive ? user.currentStreak + 1 : 1;
-  const newLongest = Math.max(newStreak, user.longestStreak);
+    const newStreak = isConsecutive ? user.currentStreak + 1 : 1;
+    const newLongest = Math.max(newStreak, user.longestStreak);
 
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      currentStreak: newStreak,
-      longestStreak: newLongest,
-      lastPuzzleDate: today,
-    },
-  });
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        currentStreak: newStreak,
+        longestStreak: newLongest,
+        lastPuzzleDate: today,
+      },
+    });
+  } catch (e: unknown) {
+    // P2025 = record not found — stale session cookie after user deletion, ignore
+    if ((e as { code?: string })?.code === "P2025") return;
+    throw e;
+  }
 }
