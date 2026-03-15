@@ -133,6 +133,12 @@ export async function importGamesForUser(userId: string): Promise<ImportResult> 
     }
   }
 
+  // Update lastSyncedAt regardless of result so the button shows correct time
+  await prisma.user.update({
+    where: { id: userId },
+    data: { lastSyncedAt: new Date() },
+  }).catch(() => { /* ignore if user deleted */ });
+
   return { userId, gamesProcessed, puzzlesImported, errors };
 }
 

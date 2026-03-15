@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getTotalImportedCount } from "@/lib/jobs/importGames";
 import LockedFeature from "@/components/LockedFeature";
+import SyncButton from "@/components/SyncButton";
 
 export const metadata = {
   title: "Dashboard — Cassandra Chess",
@@ -28,6 +29,7 @@ export default async function DashboardPage() {
       eloPlatform: true,
       elo: true,
       currentStreak: true,
+      lastSyncedAt: true,
     },
   });
 
@@ -39,7 +41,22 @@ export default async function DashboardPage() {
   const displayName =
     user?.lichessUsername ?? user?.chessComUsername ?? "Player";
   const displayElo = user?.rawElo ?? user?.elo;
-  const totalImported = user ? await getTotalImportedCount(user.id) : 0;
+
+  const [totalImported, userAttempts] = await Promise.all([
+    user ? getTotalImportedCount(user.id) : Promise.resolve(0),
+    user
+      ? prisma.puzzleAttempt.findMany({
+          where: { userId: user.id },
+          select: { success: true },
+        })
+      : Promise.resolve([]),
+  ]);
+
+  const totalSolved = userAttempts.filter((a) => a.success).length;
+  const accuracy =
+    userAttempts.length > 0
+      ? Math.round((totalSolved / userAttempts.length) * 100)
+      : null;
 
   const stripeLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
 
@@ -128,27 +145,27 @@ export default async function DashboardPage() {
 
         {/* Puzzle stats */}
         <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm mb-4">
-          <h2 className="text-sm font-semibold text-gray-700 mb-1">Your puzzles</h2>
-          {totalImported > 0 ? (
-            <p className="text-3xl font-extrabold text-blue-600 tabular-nums">
-              {totalImported}
-              <span className="text-base font-normal text-gray-500 ml-2">
-                from your games
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold text-gray-700">Your puzzles</h2>
+            {user?.currentStreak > 0 && (
+              <span className="text-sm text-orange-600 font-medium">
+                🔥 {user.currentStreak}-day streak
               </span>
-            </p>
-          ) : (
-            <p className="text-sm text-gray-500">
-              No personal puzzles yet.{" "}
-              <Link href="/train" className="text-blue-600 hover:underline">
-                Start analysis →
-              </Link>
-            </p>
-          )}
-          {user?.currentStreak > 0 && (
-            <p className="text-sm text-orange-600 mt-2 font-medium">
-              🔥 {user.currentStreak}-day streak
-            </p>
-          )}
+            )}
+          </div>
+          <div className="flex gap-6 mb-3">
+            <div>
+              <p className="text-2xl font-extrabold text-blue-600 tabular-nums">{totalImported}</p>
+              <p className="text-xs text-gray-400 mt-0.5">personal puzzles</p>
+            </div>
+            {accuracy !== null && (
+              <div>
+                <p className="text-2xl font-extrabold text-green-600 tabular-nums">{accuracy}%</p>
+                <p className="text-xs text-gray-400 mt-0.5">accuracy ({userAttempts.length} attempts)</p>
+              </div>
+            )}
+          </div>
+          <SyncButton lastSyncedAt={user?.lastSyncedAt?.toISOString() ?? null} />
         </div>
 
         {/* Play now */}
@@ -177,19 +194,6 @@ export default async function DashboardPage() {
               <p className="font-semibold text-gray-800">Browse all puzzles</p>
               <p className="text-xs text-gray-400 mt-0.5">
                 Curated puzzles matched to your rating
-              </p>
-            </div>
-            <span className="text-gray-400 text-lg">→</span>
-          </Link>
-
-          <Link
-            href="/battles"
-            className="flex items-center justify-between bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:border-blue-400 transition-colors"
-          >
-            <div>
-              <p className="font-semibold text-gray-800">⚔️ Duels</p>
-              <p className="text-xs text-gray-400 mt-0.5">
-                Race a friend through 5 puzzles
               </p>
             </div>
             <span className="text-gray-400 text-lg">→</span>
