@@ -52,11 +52,26 @@ export default async function Home() {
   const locale = resolveLocale(cookieStore.get("preferred_locale")?.value);
   const t = getT(locale);
 
+  // Redirect logged-in users straight to their dashboard
+  const { auth } = await import("@/auth");
+  const session = await auth();
+  if (session?.userId) {
+    const { redirect } = await import("next/navigation");
+    redirect("/dashboard");
+  }
+
+  // Fetch stats — gracefully fall back to zeros if DB isn't reachable yet
   const [{ puzzlesSolved, registeredPlayers, totalPuzzles, activeBattles, longestCurrentStreak }, topStreaks, sample] =
     await Promise.all([
-      getSiteStats(),
-      getTopStreaks(),
-      prisma.puzzle.findFirst({ orderBy: { createdAt: "asc" } }),
+      getSiteStats().catch(() => ({
+        puzzlesSolved: 0,
+        registeredPlayers: 0,
+        totalPuzzles: 0,
+        activeBattles: 0,
+        longestCurrentStreak: 0,
+      })),
+      getTopStreaks().catch(() => []),
+      prisma.puzzle.findFirst({ orderBy: { createdAt: "asc" } }).catch(() => null),
     ]);
 
   return (
