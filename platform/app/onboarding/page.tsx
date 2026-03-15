@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
 import OnboardingClient from "./OnboardingClient";
 
 export const metadata = {
@@ -19,6 +20,11 @@ export default async function OnboardingPage() {
     });
     lichessUsername = user?.lichessUsername ?? null;
     chessComUsername = user?.chessComUsername ?? null;
+
+    // Already fully set up — send them straight to their dashboard
+    if (lichessUsername || chessComUsername) {
+      redirect("/dashboard");
+    }
   }
 
   return (

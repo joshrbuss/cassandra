@@ -56,12 +56,7 @@ export async function POST(req: NextRequest) {
   let userId: string;
 
   if (existing) {
-    if (session?.userId && session.userId !== existing.id) {
-      return NextResponse.json(
-        { error: "This Lichess account is already linked to another profile." },
-        { status: 409 }
-      );
-    }
+    // Username already in DB — treat as login, update last-seen data
     await prisma.user.update({
       where: { id: existing.id },
       data: {
