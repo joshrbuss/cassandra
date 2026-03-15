@@ -47,8 +47,10 @@ export default function StandardPuzzle({
 
   const { elapsedMs, isRunning, start, stop } = useTimer();
   const [attemptResult, setAttemptResult] = useState<AttemptResponse | null>(null);
+  const [showHint, setShowHint] = useState(false);
   const userId = useRef(getAnonId());
   const submitLock = useRef(false);
+  const hadWrongMove = useRef(false);
 
   // Start timer when component mounts (board is ready)
   useEffect(() => {
@@ -82,7 +84,7 @@ export default function StandardPuzzle({
         // Puzzle complete — stop timer and record
         const finalMs = stop();
         setPhase("solved");
-        submitAttempt(finalMs, true);
+        submitAttempt(finalMs, !hadWrongMove.current);
         return;
       }
       setPhase("opponent");
@@ -101,7 +103,7 @@ export default function StandardPuzzle({
         if (nextIdx + 1 >= solution.length) {
           const finalMs = stop();
           setPhase("solved");
-          submitAttempt(finalMs, true);
+          submitAttempt(finalMs, !hadWrongMove.current);
         } else {
           setPhase("playing");
         }
@@ -125,7 +127,8 @@ export default function StandardPuzzle({
     const expected = solution[moveIndex];
 
     if (uci !== expected) {
-      // Wrong move — show briefly then revert
+      // Wrong move — mark as incorrect, show briefly then revert
+      hadWrongMove.current = true;
       setFen(chess.fen());
       setPhase("wrong");
       setTimeout(() => {
@@ -136,7 +139,8 @@ export default function StandardPuzzle({
       return true;
     }
 
-    // Correct player move
+    // Correct player move — clear any hint
+    setShowHint(false);
     setFen(chess.fen());
     setLastSquares({
       [sourceSquare]: { backgroundColor: "rgba(0,200,0,0.35)" },
@@ -166,15 +170,33 @@ export default function StandardPuzzle({
           interactive={phase === "playing"}
           onPieceDrop={handleDrop}
           boardOrientation={boardOrientation}
-          squareStyles={lastSquares}
+          squareStyles={{
+            ...lastSquares,
+            ...(showHint && phase === "playing" && solution[moveIndex]
+              ? {
+                  [solution[moveIndex].slice(0, 2)]: {
+                    backgroundColor: "rgba(255, 200, 0, 0.7)",
+                    borderRadius: "50%",
+                  },
+                }
+              : {}),
+          }}
         />
       </div>
 
       {/* Status messages */}
       {phase === "playing" && (
-        <p className="text-sm text-gray-600 font-medium">
-          Find the best move for {boardOrientation}.
-        </p>
+        <div className="flex items-center justify-between w-full">
+          <p className="text-sm text-gray-600 font-medium">
+            Find the best move for {boardOrientation}.
+          </p>
+          <button
+            onClick={() => { setShowHint(true); hadWrongMove.current = true; }}
+            className="text-xs text-gray-400 hover:text-gray-600 underline"
+          >
+            Hint
+          </button>
+        </div>
       )}
       {phase === "opponent" && (
         <p className="text-sm text-blue-600 font-medium animate-pulse">

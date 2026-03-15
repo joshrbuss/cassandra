@@ -38,6 +38,7 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
       solutionMoves: true,
       themes: true,
       rating: true,
+      source: true,
     },
   });
 
@@ -76,7 +77,11 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
             Find the best move
           </h1>
           <p className="text-xs text-gray-400 mt-0.5">
-            This position came from one of your own games.
+            {puzzle.source === "chesscom"
+              ? "From your Chess.com games"
+              : puzzle.source === "user_import"
+              ? "From your Lichess games"
+              : "From one of your own games"}
           </p>
         </div>
 

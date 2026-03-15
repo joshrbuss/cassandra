@@ -6,8 +6,6 @@ import ShareButton from "@/components/marketing/ShareButton";
 import {
   formatTime,
   BENCHMARKS,
-  BUCKET_LABELS,
-  BUCKET_COLORS,
   TIME_CONTROL_LABELS,
   type TimeControl,
   type PercentileBucket,
@@ -63,7 +61,6 @@ export default function SolveResultCard({
   }, [puzzleId, userId]);
 
   const benchmark = timeControl ? BENCHMARKS[timeControl] : null;
-  const bucketColor = BUCKET_COLORS[bucket];
 
   return (
     <div className="w-full rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
@@ -76,13 +73,8 @@ export default function SolveResultCard({
             <span className="font-mono font-bold">{formatTime(solveTimeMs)}</span>
           </p>
         </div>
-        <div className="flex flex-col items-end gap-1">
-          <div className={`text-right ${bucketColor}`}>
-            <p className="font-bold text-lg">{BUCKET_LABELS[bucket]}</p>
-            <p className="text-xs opacity-75">faster than {percentile}%</p>
-          </div>
           <ShareButton
-            text={`I just solved a chess puzzle faster than ${percentile}% of players on Cassandra Chess!`}
+            text="I just solved a chess puzzle on Cassandra Chess!"
             className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
           >
             <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
@@ -90,7 +82,6 @@ export default function SolveResultCard({
             </svg>
             Share
           </ShareButton>
-        </div>
       </div>
 
       {/* Stats row */}
