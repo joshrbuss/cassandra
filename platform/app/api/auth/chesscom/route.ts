@@ -27,7 +27,9 @@ export async function POST(req: NextRequest) {
   const body = (await req.json()) as { username?: unknown };
   const username = (typeof body.username === "string" ? body.username : "").trim();
 
-  if (!username || username.length < 2 || username.length > 50) {
+  const normalizedUsername = username.toLowerCase();
+
+  if (!normalizedUsername || normalizedUsername.length < 2 || normalizedUsername.length > 50) {
     return NextResponse.json({ error: "Enter a valid Chess.com username." }, { status: 400 });
   }
 
@@ -35,11 +37,11 @@ export async function POST(req: NextRequest) {
   let rawElo: number | null = null;
   try {
     const [profileRes, statsRes] = await Promise.all([
-      fetch(`https://api.chess.com/pub/player/${encodeURIComponent(username)}`, {
+      fetch(`https://api.chess.com/pub/player/${encodeURIComponent(normalizedUsername)}`, {
         headers: { "User-Agent": "CassandraChess/1.0" },
         cache: "no-store",
       }),
-      fetch(`https://api.chess.com/pub/player/${encodeURIComponent(username)}/stats`, {
+      fetch(`https://api.chess.com/pub/player/${encodeURIComponent(normalizedUsername)}/stats`, {
         headers: { "User-Agent": "CassandraChess/1.0" },
         cache: "no-store",
       }),
@@ -67,8 +69,8 @@ export async function POST(req: NextRequest) {
   const normalizedElo = rawElo != null ? normalizeElo(rawElo, "chess_com") : null;
   const session = await auth();
 
-  const existing = await prisma.user.findUnique({
-    where: { chessComUsername: username },
+  const existing = await prisma.user.findFirst({
+    where: { chessComUsername: { equals: normalizedUsername, mode: "insensitive" } },
     select: { id: true },
   });
 
@@ -98,7 +100,7 @@ export async function POST(req: NextRequest) {
       // Stale session — create a fresh record
       const newUser = await prisma.user.create({
         data: {
-          chessComUsername: username,
+          chessComUsername: normalizedUsername,
           chessComLinkedAt: new Date(),
           rawElo: rawElo ?? undefined,
           normalizedElo: normalizedElo ?? undefined,
@@ -111,7 +113,7 @@ export async function POST(req: NextRequest) {
       await prisma.user.update({
         where: { id: session.userId },
         data: {
-          chessComUsername: username,
+          chessComUsername: normalizedUsername,
           chessComLinkedAt: new Date(),
           ...(rawElo != null && !currentUser.eloPlatform
             ? { rawElo, normalizedElo, elo: rawElo, eloPlatform: "chess_com" }

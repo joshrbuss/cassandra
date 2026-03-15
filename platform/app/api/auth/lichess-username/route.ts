@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Could not reach Lichess. Try again." }, { status: 502 });
   }
 
-  const actualUsername = profile.username;
+  const actualUsername = profile.username.toLowerCase();
   const rawElo =
     profile.perfs?.blitz?.rating ??
     profile.perfs?.rapid?.rating ??
@@ -48,8 +48,8 @@ export async function POST(req: NextRequest) {
   const session = await auth();
 
   // Check if this Lichess username is already in DB
-  const existing = await prisma.user.findUnique({
-    where: { lichessUsername: actualUsername },
+  const existing = await prisma.user.findFirst({
+    where: { lichessUsername: { equals: actualUsername, mode: "insensitive" } },
     select: { id: true },
   });
 
