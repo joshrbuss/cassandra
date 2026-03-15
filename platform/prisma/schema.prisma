@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Puzzle {
+  id            String   @id // Lichess puzzle ID
+  /// FEN before opponent's last move (the pre-puzzle position)
+  fen           String
+  /// FEN after opponent's last move (the position the user sees)
+  solvingFen    String
+  /// Opponent's last move in UCI notation (e.g. "e2e4")
+  lastMove      String
+  /// Space-separated UCI solution moves (excluding the last move)
+  solutionMoves String
+  rating        Int
+  /// Space-separated Lichess theme tags
+  themes        String   @default("")
+  /// "standard" | "retrograde" | "opponent_prediction" | "move_ranking" | "weakness_spot"
+  type          String   @default("standard")
+  /// JSON: CandidateMove[] — populated for move_ranking puzzles
+  candidateMoves    String?
+  /// JSON: string[] of algebraic squares, e.g. ["d5","f7"] — for weakness_spot puzzles
+  weaknessSquares   String?
+  /// Explanation text revealed after submitting a weakness_spot puzzle
+  weaknessExplanation String?
+  /// ECO opening code, e.g. "B90"
+  ecoCode       String?
+  /// Human-readable opening name, e.g. "Sicilian Najdorf"
+  openingName   String?
+  /// Lower bound of the ELO band this puzzle belongs to
+  eloRangeMin   Int?
+  /// Upper bound of the ELO band this puzzle belongs to
+  eloRangeMax   Int?
+  /// "out_of_book" | "standard" | "brilliant"
+  subtype       String?
+  /// "user_import" | "lichess" | "chesscom" — populated for auto-generated puzzles
+  source        String?
+  /// User.id of the player whose game generated this puzzle
+  sourceUserId  String?
+  /// false for puzzles generated from a specific user's private games
+  isPublic      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  attempts   PuzzleAttempt[]
+  sourceUser User?           @relation(fields: [sourceUserId], references: [id])
+
+  @@index([ecoCode])
+  @@index([eloRangeMin, eloRangeMax])
+  @@index([sourceUserId])
+  @@index([source])
+}
+
+model PuzzleAttempt {
+  id          String   @id @default(cuid())
+  userId      String?
+  puzzleId    String
+  solveTimeMs Int?
+  success     Boolean
+  /// First Lichess theme tag of the puzzle (e.g. "fork", "pin")
+  tacticType  String?
+  createdAt   DateTime @default(now())
+
+  puzzle Puzzle @relation(fields: [puzzleId], references: [id])
+
+  @@index([puzzleId])
+  @@index([userId])
+  @@index([userId, tacticType])
+}
+
+model SiteStats {
+  id                 Int      @id @default(1)
+  totalPuzzlesSolved BigInt   @default(0)
+  updatedAt          DateTime @updatedAt
+}
+
+model User {
+  id                String    @id @default(cuid())
+  chessComUsername  String?   @unique
+  lichessUsername   String?   @unique
+  chessComLinkedAt  DateTime?
+  lichessLinkedAt   DateTime?
+  elo               Int?
+  /// Raw ELO as reported by the connected platform (shown to user)
+  rawElo            Int?
+  /// ELO normalized to Lichess scale for internal puzzle matching
+  normalizedElo     Int?
+  /// "lichess" | "chess_com" — which platform rawElo came from
+  eloPlatform       String?
+  avatarUrl         String?
+  battleRating      Int       @default(1200)
+  currentStreak     Int       @default(0)
+  longestStreak     Int       @default(0)
+  /// Last date the user solved a puzzle (YYYY-MM-DD UTC)
+  lastPuzzleDate    String?
+  createdAt         DateTime  @default(now())
+
+  puzzles          Puzzle[]
+  battlesAsPlayer1 Battle[]  @relation("BattlePlayer1")
+  battlesAsPlayer2 Battle[]  @relation("BattlePlayer2")
+  battlesWon       Battle[]  @relation("BattleWinner")
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  confirmed Boolean  @default(false)
+  /// "homepage" | "post_solve" | "event"
+  source    String
+  createdAt DateTime @default(now())
+}
+
+model Battle {
+  id          String    @id @default(cuid())
+  player1Id   String
+  player2Id   String?
+  winnerId    String?
+  /// JSON: RoundResult[]
+  rounds      String    @default("[]")
+  /// "waiting" | "active" | "completed"
+  status      String    @default("waiting")
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  player1 User  @relation("BattlePlayer1", fields: [player1Id], references: [id])
+  player2 User? @relation("BattlePlayer2", fields: [player2Id], references: [id])
+  winner  User? @relation("BattleWinner", fields: [winnerId], references: [id])
+
+  @@index([status])
+}

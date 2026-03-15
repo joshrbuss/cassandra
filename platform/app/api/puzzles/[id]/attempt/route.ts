@@ -1,0 +1,152 @@
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { percentileToBucket, type PercentileBucket } from "@/lib/benchmarks";
+import { primaryTactic } from "@/lib/tactics";
+import { getGlobalAvgForTactic } from "@/lib/queries/weakTimeTactics";
+
+export interface AttemptRequest {
+  userId?: string; // anonymous ID from localStorage
+  solveTimeMs: number;
+  success: boolean;
+}
+
+export interface AttemptResponse {
+  recorded: true;
+  solveTimeMs: number;
+  percentile: number; // 0–100, where 100 = faster than everyone
+  bucket: PercentileBucket;
+  avgSolveMs: number | null; // null if fewer than 3 prior attempts
+  top10PctMs: number | null; // threshold to be in top 10%
+  totalAttempts: number;
+  /** True when solve time exceeded 2× the global average for this tactic */
+  timeout_blunder?: boolean;
+}
+
+/**
+ * POST /api/puzzles/[id]/attempt
+ *
+ * Records a puzzle attempt and returns percentile stats.
+ * Body: { userId?: string; solveTimeMs: number; success: boolean }
+ */
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+
+  const body: AttemptRequest = await req.json().catch(() => null);
+  if (!body || typeof body.solveTimeMs !== "number" || typeof body.success !== "boolean") {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+
+  const puzzle = await prisma.puzzle.findUnique({ where: { id }, select: { id: true, themes: true } });
+  if (!puzzle) {
+    return NextResponse.json({ error: "Puzzle not found" }, { status: 404 });
+  }
+
+  const tacticType = primaryTactic(puzzle.themes);
+
+  // Timeout blunder: if solve time > 2× global avg for this tactic, mark as failure
+  const globalAvg = await getGlobalAvgForTactic(tacticType);
+  const isTimeoutBlunder =
+    globalAvg !== null && body.solveTimeMs > 2 * globalAvg && body.success;
+  const recordedSuccess = isTimeoutBlunder ? false : body.success;
+
+  // Record the attempt
+  await prisma.puzzleAttempt.create({
+    data: {
+      puzzleId: id,
+      userId: body.userId ?? null,
+      solveTimeMs: body.solveTimeMs,
+      success: recordedSuccess,
+      tacticType,
+    },
+  });
+
+  // Update streak for authenticated users on successful solve
+  if (recordedSuccess && body.userId) {
+    await updateStreak(body.userId);
+  }
+
+  // Increment site-wide counter on recorded success
+  if (recordedSuccess) {
+    await prisma.siteStats.upsert({
+      where: { id: 1 },
+      create: { id: 1, totalPuzzlesSolved: BigInt(1) },
+      update: { totalPuzzlesSolved: { increment: BigInt(1) } },
+    });
+  }
+
+  // Compute percentile from all successful attempts for this puzzle
+  const priorAttempts = await prisma.puzzleAttempt.findMany({
+    where: {
+      puzzleId: id,
+      success: true,
+      solveTimeMs: { not: null },
+    },
+    select: { solveTimeMs: true },
+    orderBy: { solveTimeMs: "asc" },
+  });
+
+  const times = priorAttempts
+    .map((a) => a.solveTimeMs as number)
+    .filter((t) => t > 0)
+    .sort((a, b) => a - b);
+
+  const totalAttempts = times.length;
+
+  let percentile = 50;
+  let avgSolveMs: number | null = null;
+  let top10PctMs: number | null = null;
+
+  if (totalAttempts >= 3) {
+    // Percentile = fraction of times that are WORSE (slower) than the user's
+    const betterThan = times.filter((t) => t > body.solveTimeMs).length;
+    percentile = Math.round((betterThan / totalAttempts) * 100);
+
+    avgSolveMs = Math.round(times.reduce((a, b) => a + b, 0) / totalAttempts);
+
+    // Top 10% threshold = the time at the 10th percentile (fastest 10%)
+    const top10Idx = Math.max(0, Math.floor(totalAttempts * 0.1) - 1);
+    top10PctMs = times[top10Idx] ?? times[0];
+  }
+
+  const response: AttemptResponse = {
+    recorded: true,
+    solveTimeMs: body.solveTimeMs,
+    percentile,
+    bucket: percentileToBucket(percentile),
+    avgSolveMs,
+    top10PctMs,
+    totalAttempts,
+    ...(isTimeoutBlunder ? { timeout_blunder: true } : {}),
+  };
+
+  return NextResponse.json(response);
+}
+
+async function updateStreak(userId: string): Promise<void> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { currentStreak: true, longestStreak: true, lastPuzzleDate: true },
+  });
+  if (!user) return;
+
+  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD UTC
+  if (user.lastPuzzleDate === today) return; // already solved today
+
+  const yesterday = new Date(Date.now() - 86_400_000).toISOString().split("T")[0];
+  const isConsecutive = user.lastPuzzleDate === yesterday;
+
+  const newStreak = isConsecutive ? user.currentStreak + 1 : 1;
+  const newLongest = Math.max(newStreak, user.longestStreak);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      currentStreak: newStreak,
+      longestStreak: newLongest,
+      lastPuzzleDate: today,
+    },
+  });
+}
