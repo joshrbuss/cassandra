@@ -2,9 +2,10 @@
  * /train — Training mode home.
  *
  * If the user has personal puzzles: redirects to a random one.
- * If no puzzles yet: shows import triggers for each connected platform.
+ * If no personal puzzles: shows import triggers for each connected platform.
  *   - Lichess: fast server-side import (eval annotations, no engine needed)
  *   - Chess.com: client-side WASM analysis (Stockfish depth 8 in the browser)
+ * If no platforms connected at all: redirects straight to library puzzles.
  * Requires auth — redirects to /onboarding if not signed in.
  */
 
@@ -37,81 +38,78 @@ export default async function TrainPage() {
     if (puzzle) redirect(`/train/${puzzle.id}`);
   }
 
-  // Fetch user profile (platforms + ELO for library fallback)
+  // Fetch user profile (platforms connected)
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { lichessUsername: true, chessComUsername: true, normalizedElo: true },
+    select: { lichessUsername: true, chessComUsername: true },
   });
-
-  // No personal puzzles — try library puzzles filtered to user's ELO ± 150
-  const userElo = user?.normalizedElo ?? 1000;
-  const eloMin = userElo - 150;
-  const eloMax = userElo + 150;
-
-  const libraryCount = await prisma.libraryPuzzle.count({
-    where: { rating: { gte: eloMin, lte: eloMax } },
-  });
-
-  if (libraryCount > 0) {
-    const skip = Math.floor(Math.random() * libraryCount);
-    const libraryPuzzle = await prisma.libraryPuzzle.findFirst({
-      where: { rating: { gte: eloMin, lte: eloMax } },
-      select: { id: true },
-      skip,
-    });
-    if (libraryPuzzle) redirect(`/train/library/${libraryPuzzle.id}`);
-  }
 
   const hasLichess = !!user?.lichessUsername;
   const hasChessCom = !!user?.chessComUsername;
+
+  // No platforms connected — go straight to library puzzles
+  if (!hasLichess && !hasChessCom) {
+    redirect("/train/library");
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-16">
       <div className="max-w-md w-full text-center">
         <div className="text-5xl mb-4">♟</div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Getting your puzzles ready
+          Analyse your games
         </h1>
-        <p className="text-gray-500 mb-4">
-          We&apos;ll analyse your recent games to find the positions where you
-          need practice most.
-        </p>
-        <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-8 text-left">
-          We&apos;re analysing your games — check back in a few minutes. In the
-          meantime, connect more accounts or try importing again below.
+        <p className="text-gray-500 mb-8">
+          We&apos;ll find positions where you missed the best move and turn them
+          into puzzles.
         </p>
 
-        <div className="space-y-4">
+        <div className="space-y-4 text-left">
           {hasLichess && (
-            <div className="text-left">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">
-                Lichess — fast (uses saved evals)
-              </p>
+            <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center text-white text-xs font-bold">
+                  L
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">Lichess</p>
+                  <p className="text-xs text-gray-400">
+                    Fast — uses saved engine evals
+                  </p>
+                </div>
+              </div>
               <TrainImportTrigger />
             </div>
           )}
 
           {hasChessCom && (
-            <div className="text-left">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">
-                Chess.com — runs engine in browser (~2–4 min)
-              </p>
+            <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white text-xs font-bold">
+                  C
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">
+                    Chess.com
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Runs engine in browser (~2–4 min)
+                  </p>
+                </div>
+              </div>
               <ChessComImporter chessComUsername={user!.chessComUsername!} />
             </div>
           )}
-
-          {!hasLichess && !hasChessCom && (
-            <p className="text-sm text-gray-500">
-              No accounts connected.{" "}
-              <Link href="/settings" className="text-blue-600 hover:underline">
-                Add an account →
-              </Link>
-            </p>
-          )}
         </div>
 
-        <div className="mt-8">
-          <Link href="/dashboard" className="text-sm text-gray-400 hover:underline">
+        <div className="mt-8 space-y-2">
+          <Link
+            href="/train/library"
+            className="block text-sm text-blue-600 hover:underline"
+          >
+            Skip — try a curated puzzle instead →
+          </Link>
+          <Link href="/dashboard" className="block text-sm text-gray-400 hover:underline">
             ← Back to dashboard
           </Link>
         </div>

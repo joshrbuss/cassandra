@@ -108,6 +108,9 @@ export default function ChessComImporter({ chessComUsername }: Props) {
 
       if (totalImported > 0) {
         setTimeout(() => router.refresh(), 1200);
+      } else {
+        // No puzzles found — fall back to curated library puzzles
+        setTimeout(() => router.push("/train/library"), 1500);
       }
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Analysis failed");
@@ -161,9 +164,9 @@ export default function ChessComImporter({ chessComUsername }: Props) {
   if (state === "done") {
     if (puzzleCount === 0) {
       return (
-        <p className="text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm">
-          No blunders found in recent Chess.com games. The engine needs a clear
-          mistake (≥ 1.5 pawns) to create a puzzle.
+        <p className="text-blue-700 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-sm">
+          No blunders found in recent games — loading a curated puzzle for your
+          level…
         </p>
       );
     }

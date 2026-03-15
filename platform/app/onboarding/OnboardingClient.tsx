@@ -103,7 +103,7 @@ export default function OnboardingClient({ lichessUsername, chessComUsername }: 
                 </a>
               </p>
             ) : (
-              <p className="text-xs text-gray-400">Optional — enter your username</p>
+              <p className="text-xs text-gray-400">Enter your username</p>
             )}
           </div>
           {chessComUsername && (

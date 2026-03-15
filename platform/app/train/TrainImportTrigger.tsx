@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 type State = "idle" | "loading" | "done" | "error";
 
@@ -22,6 +21,9 @@ export default function TrainImportTrigger() {
       // If puzzles were imported, reload the page to redirect to the first one
       if ((data.puzzlesImported ?? 0) > 0) {
         setTimeout(() => router.refresh(), 1000);
+      } else {
+        // No puzzles found — fall back to curated library puzzles
+        setTimeout(() => router.push("/train/library"), 1500);
       }
     } catch {
       setState("error");
@@ -56,16 +58,10 @@ export default function TrainImportTrigger() {
 
   if (state === "done" && count === 0) {
     return (
-      <div className="space-y-4">
-        <p className="text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm">
-          No puzzles found yet. This can happen if your Lichess games don&apos;t have
-          computer analysis. Play a few rated games on Lichess — they&apos;re annotated
-          automatically.
-        </p>
-        <Link href="/settings" className="text-sm text-blue-600 hover:underline">
-          Manage connected accounts →
-        </Link>
-      </div>
+      <p className="text-blue-700 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-sm">
+        No puzzles found in recent games — loading a curated puzzle for your
+        level…
+      </p>
     );
   }
 

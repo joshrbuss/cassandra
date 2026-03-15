@@ -99,7 +99,7 @@ export default async function LibraryPuzzlePage({ params }: PageProps) {
         {/* Navigation */}
         <div className="mt-6 flex items-center justify-between">
           <Link
-            href="/train"
+            href="/train/library"
             className="inline-flex items-center gap-1 bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors"
           >
             Next puzzle →
