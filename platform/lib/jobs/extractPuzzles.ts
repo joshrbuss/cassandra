@@ -31,6 +31,7 @@ export interface PuzzleCandidate {
   source: "user_import";
   sourceUserId: string;
   isPublic: false;
+  gameUrl?: string;
 }
 
 /** Rough puzzle rating derived from engine score after the blunder */
@@ -139,6 +140,15 @@ function getPositionSequence(pgn: string): { fen: string; uci: string }[] {
   return positions;
 }
 
+/** Extract the game URL from PGN headers (Lichess or Chess.com). */
+function extractGameUrl(pgn: string): string | undefined {
+  const link = pgn.match(/\[Link\s+"([^"]+)"\]/)?.[1];
+  if (link) return link;
+  const site = pgn.match(/\[Site\s+"([^"]+)"\]/)?.[1];
+  if (site?.startsWith("http")) return site;
+  return undefined;
+}
+
 /**
  * Extracts puzzle candidates from one PGN game.
  * Uses Stockfish to identify blunder positions.
@@ -147,6 +157,7 @@ export async function extractPuzzlesFromGame(
   pgn: string,
   userId: string
 ): Promise<PuzzleCandidate[]> {
+  const gameUrl = extractGameUrl(pgn);
   const positions = getPositionSequence(pgn);
   if (positions.length < 5) return []; // Too short to be interesting
 
@@ -212,6 +223,7 @@ export async function extractPuzzlesFromGame(
           source: "user_import",
           sourceUserId: userId,
           isPublic: false,
+          gameUrl,
         });
       }
     }

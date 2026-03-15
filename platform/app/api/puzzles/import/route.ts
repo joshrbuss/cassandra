@@ -22,6 +22,7 @@ interface PuzzleInput {
   solutionMoves: string;
   rating?: number;
   themes?: string;
+  gameUrl?: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -79,6 +80,7 @@ export async function POST(req: NextRequest) {
           source: "user_import",
           sourceUserId: userId,
           isPublic: false,
+          gameUrl: puzzle.gameUrl,
         },
       });
       imported++;

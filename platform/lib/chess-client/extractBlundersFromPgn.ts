@@ -28,6 +28,16 @@ export interface ClientPuzzle {
   solutionMoves: string;
   rating: number;
   themes: string;
+  gameUrl?: string;
+}
+
+/** Extract the game URL from PGN headers (Chess.com uses [Link], Lichess uses [Site]). */
+function extractGameUrl(pgn: string): string | undefined {
+  const link = pgn.match(/\[Link\s+"([^"]+)"\]/)?.[1];
+  if (link) return link;
+  const site = pgn.match(/\[Site\s+"([^"]+)"\]/)?.[1];
+  if (site?.startsWith("http")) return site;
+  return undefined;
 }
 
 function estimateRating(swingCp: number): number {
@@ -66,6 +76,7 @@ function clientId(): string {
  * Runs asynchronously — each position evaluation awaits the engine.
  */
 export async function extractBlundersFromPgn(pgn: string): Promise<ClientPuzzle[]> {
+  const gameUrl = extractGameUrl(pgn);
   const positions = getPositionSequence(pgn);
   if (positions.length < 10) return [];
 
@@ -116,6 +127,7 @@ export async function extractBlundersFromPgn(pgn: string): Promise<ClientPuzzle[
           solutionMoves: result.move,
           rating: estimateRating(swing),
           themes: "tactics",
+          gameUrl,
         });
       }
     }

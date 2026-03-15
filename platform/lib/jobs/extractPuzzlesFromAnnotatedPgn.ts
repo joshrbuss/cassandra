@@ -86,6 +86,15 @@ function parseMoves(pgn: string): ParsedMove[] {
   return moves;
 }
 
+/** Extract the game URL from PGN headers (Lichess or Chess.com). */
+function extractGameUrl(pgn: string): string | undefined {
+  const link = pgn.match(/\[Link\s+"([^"]+)"\]/)?.[1];
+  if (link) return link;
+  const site = pgn.match(/\[Site\s+"([^"]+)"\]/)?.[1];
+  if (site?.startsWith("http")) return site;
+  return undefined;
+}
+
 /**
  * Extracts puzzle candidates from an eval-annotated PGN.
  * Synchronous — no Stockfish required.
@@ -95,6 +104,7 @@ export function extractPuzzlesFromAnnotatedPgn(
   pgn: string,
   userId: string
 ): PuzzleCandidate[] {
+  const gameUrl = extractGameUrl(pgn);
   const evals = extractEvals(pgn);
   if (evals.length === 0) return []; // no annotations → caller should try Stockfish fallback
 
@@ -158,6 +168,7 @@ export function extractPuzzlesFromAnnotatedPgn(
       source: "user_import",
       sourceUserId: userId,
       isPublic: false,
+      gameUrl,
     });
   }
 

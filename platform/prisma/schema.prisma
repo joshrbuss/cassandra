@@ -45,6 +45,8 @@ model Puzzle {
   sourceUserId  String?
   /// false for puzzles generated from a specific user's private games
   isPublic      Boolean  @default(true)
+  /// URL of the original game this puzzle was extracted from
+  gameUrl       String?
   createdAt     DateTime @default(now())
 
   attempts   PuzzleAttempt[]
@@ -132,4 +134,28 @@ model Battle {
   winner  User? @relation("BattleWinner", fields: [winnerId], references: [id])
 
   @@index([status])
+}
+
+model LibraryPuzzle {
+  id            String   @id @default(cuid())
+  /// Lichess puzzle ID — unique identifier from Lichess database
+  lichessId     String   @unique
+  /// FEN before opponent's last move
+  fen           String
+  /// FEN after opponent's last move (position shown to solver)
+  solvingFen    String
+  /// Opponent's last move in UCI notation
+  lastMove      String
+  /// Space-separated UCI solution moves
+  solutionMoves String
+  rating        Int
+  /// Space-separated Lichess theme tags
+  themes        String   @default("")
+  /// Lichess puzzle popularity score (0–100)
+  popularity    Int      @default(0)
+  /// URL of the original Lichess game
+  gameUrl       String?
+  createdAt     DateTime @default(now())
+
+  @@index([rating])
 }

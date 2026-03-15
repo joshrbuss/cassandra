@@ -84,6 +84,7 @@ export async function importGamesForUser(userId: string): Promise<ImportResult> 
           source: candidate.source,
           sourceUserId: candidate.sourceUserId,
           isPublic: candidate.isPublic,
+          gameUrl: candidate.gameUrl,
         },
       });
       puzzlesImported++;

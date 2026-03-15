@@ -1,16 +1,16 @@
 /**
- * /train/[id] — Personal puzzle training page.
+ * /train/library/[id] — Library puzzle training page.
  *
- * Shows one of the user's own imported puzzles in standard solve mode.
- * After solving, the user clicks "Next puzzle →" to load another.
- * Requires auth — only shows the current user's private puzzles.
+ * Serves a curated Lichess puzzle filtered to the user's ELO band.
+ * Shown when the user has no personal puzzles yet.
+ * Requires auth — redirects to /onboarding if not signed in.
  */
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
-import TrainPuzzleClient from "./TrainPuzzleClient";
+import TrainPuzzleClient from "../../[id]/TrainPuzzleClient";
 
 export const metadata = {
   title: "Train — Cassandra Chess",
@@ -20,25 +20,20 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function TrainPuzzlePage({ params }: PageProps) {
+export default async function LibraryPuzzlePage({ params }: PageProps) {
   const session = await auth();
   if (!session?.userId) redirect("/onboarding");
 
   const { id } = await params;
 
-  const puzzle = await prisma.puzzle.findFirst({
-    where: {
-      id,
-      sourceUserId: session.userId,
-      source: "user_import",
-    },
+  const puzzle = await prisma.libraryPuzzle.findUnique({
+    where: { id },
     select: {
       id: true,
       solvingFen: true,
       solutionMoves: true,
-      themes: true,
       rating: true,
-      source: true,
+      themes: true,
       gameUrl: true,
     },
   });
@@ -72,7 +67,7 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
 
         <div className="mb-4">
           <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
-            From your games
+            Curated for your level
           </p>
           <h1 className="text-lg font-bold text-gray-900 mt-0.5">
             Find the best move
@@ -88,14 +83,12 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
             </a>
           ) : (
             <p className="text-xs text-gray-400 mt-0.5">
-              {puzzle.source === "chesscom"
-                ? "From your Chess.com games"
-                : "From your Lichess games"}
+              From the Lichess puzzle library
             </p>
           )}
         </div>
 
-        {/* Board + solve logic (client component) */}
+        {/* Board + solve logic */}
         <TrainPuzzleClient
           puzzleId={puzzle.id}
           solvingFen={puzzle.solvingFen}
@@ -103,7 +96,7 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
           boardOrientation={boardOrientation}
         />
 
-        {/* Navigation — always visible below the board */}
+        {/* Navigation */}
         <div className="mt-6 flex items-center justify-between">
           <Link
             href="/train"
@@ -111,10 +104,7 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
           >
             Next puzzle →
           </Link>
-          <Link
-            href="/dashboard"
-            className="text-sm text-gray-400 hover:underline"
-          >
+          <Link href="/dashboard" className="text-sm text-gray-400 hover:underline">
             Done for now
           </Link>
         </div>

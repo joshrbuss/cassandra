@@ -37,11 +37,30 @@ export default async function TrainPage() {
     if (puzzle) redirect(`/train/${puzzle.id}`);
   }
 
-  // Fetch which platforms the user has connected
+  // Fetch user profile (platforms + ELO for library fallback)
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { lichessUsername: true, chessComUsername: true },
+    select: { lichessUsername: true, chessComUsername: true, normalizedElo: true },
   });
+
+  // No personal puzzles — try library puzzles filtered to user's ELO ± 150
+  const userElo = user?.normalizedElo ?? 1000;
+  const eloMin = userElo - 150;
+  const eloMax = userElo + 150;
+
+  const libraryCount = await prisma.libraryPuzzle.count({
+    where: { rating: { gte: eloMin, lte: eloMax } },
+  });
+
+  if (libraryCount > 0) {
+    const skip = Math.floor(Math.random() * libraryCount);
+    const libraryPuzzle = await prisma.libraryPuzzle.findFirst({
+      where: { rating: { gte: eloMin, lte: eloMax } },
+      select: { id: true },
+      skip,
+    });
+    if (libraryPuzzle) redirect(`/train/library/${libraryPuzzle.id}`);
+  }
 
   const hasLichess = !!user?.lichessUsername;
   const hasChessCom = !!user?.chessComUsername;
@@ -53,9 +72,13 @@ export default async function TrainPage() {
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
           Getting your puzzles ready
         </h1>
-        <p className="text-gray-500 mb-8">
+        <p className="text-gray-500 mb-4">
           We&apos;ll analyse your recent games to find the positions where you
           need practice most.
+        </p>
+        <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-8 text-left">
+          We&apos;re analysing your games — check back in a few minutes. In the
+          meantime, connect more accounts or try importing again below.
         </p>
 
         <div className="space-y-4">
