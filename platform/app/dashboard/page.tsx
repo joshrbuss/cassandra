@@ -312,6 +312,12 @@ export default async function DashboardPage() {
           <h2 className="text-xs font-semibold text-[#999] uppercase tracking-wide mb-3">{t("dashboard.comingSoon")}</h2>
           <div className="grid grid-cols-1 gap-3">
             <LockedFeature
+              emoji="🧠"
+              name="Smart Review"
+              description="Puzzles you struggle with resurface at the perfect moment. Powered by spaced repetition."
+              source="teaser_smart_review"
+            />
+            <LockedFeature
               emoji="⏪"
               name="Rewind"
               description="Replay any position from your game history and explore alternatives"
