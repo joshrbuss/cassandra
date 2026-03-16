@@ -119,6 +119,16 @@ export async function extractBlundersFromPgn(pgn: string, playerUsername?: strin
   const positions = getPositionSequence(pgn);
   if (positions.length < 10) return [];
 
+  // Determine which color the player was — only extract THEIR blunders
+  const white = parsePgnHeader(pgn, "White");
+  const black = parsePgnHeader(pgn, "Black");
+  let playerTurn: "w" | "b" | null = null;
+  if (playerUsername && white && black) {
+    const lc = playerUsername.toLowerCase();
+    if (white.toLowerCase() === lc) playerTurn = "w";
+    else if (black.toLowerCase() === lc) playerTurn = "b";
+  }
+
   const candidates: ClientPuzzle[] = [];
   let prevCp: number | null = null;
   let prevBestMove: string | null = null;
@@ -138,6 +148,16 @@ export async function extractBlundersFromPgn(pgn: string, playerUsername?: strin
     const currentCp = result.cp;
 
     if (prevCp !== null && prevBestMove !== null) {
+      // The blunder was made from positions[i-1] — check whose turn it was there
+      const blunderTurn = positions[i - 1].fen.split(" ")[1]; // "w" or "b"
+
+      // Only extract blunders from the PLAYER's moves, not the opponent's
+      if (playerTurn && blunderTurn !== playerTurn) {
+        prevCp = currentCp;
+        prevBestMove = result.move;
+        continue;
+      }
+
       // prevCp  = eval at positions[i-1].fen (from the side to move there)
       // currentCp = eval at positions[i].fen  (from the side to move there)
       // Swing = how much the previous player lost by making their move

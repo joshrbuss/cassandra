@@ -181,6 +181,12 @@ export async function extractPuzzlesFromAnnotatedPgn(
   const moves = parseMoves(pgn);
   if (moves.length < 5) return [];
 
+  // Determine which FEN turn corresponds to the player's moves
+  const playerTurn: "w" | "b" | null =
+    gameContext.playerColor === "white" ? "w"
+    : gameContext.playerColor === "black" ? "b"
+    : null;
+
   const candidates: PuzzleCandidate[] = [];
 
   for (let i = 1; i < moves.length; i++) {
@@ -193,6 +199,9 @@ export async function extractPuzzlesFromAnnotatedPgn(
     if (evalBefore === null || evalAfter === null) continue;
 
     const { sideToMove, uci: blunderUci, fenBefore } = moves[i];
+
+    // Only extract blunders from the PLAYER's moves, not the opponent's
+    if (playerTurn && sideToMove !== playerTurn) continue;
 
     // Swing against the side that made move[i]:
     //   White moved → white wants high eval → swing = evalBefore - evalAfter (positive = white lost)

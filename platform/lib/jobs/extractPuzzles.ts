@@ -237,6 +237,12 @@ export async function extractPuzzlesFromGame(
   const positions = getPositionSequence(pgn);
   if (positions.length < 5) return []; // Too short to be interesting
 
+  // Determine which FEN turn corresponds to the player's moves
+  const playerTurn: "w" | "b" | null =
+    gameContext.playerColor === "white" ? "w"
+    : gameContext.playerColor === "black" ? "b"
+    : null;
+
   const candidates: PuzzleCandidate[] = [];
   let prevCp: number | null = null;
   let prevBestMove: string | null = null;
@@ -258,6 +264,16 @@ export async function extractPuzzlesFromGame(
     const currentCp = result.cp;
 
     if (prevCp !== null && prevBestMove !== null) {
+      // The blunder was made from positions[i-1] — check whose turn it was there
+      const blunderTurn = positions[i - 1].fen.split(" ")[1]; // "w" or "b"
+
+      // Only extract blunders from the PLAYER's moves, not the opponent's
+      if (playerTurn && blunderTurn !== playerTurn) {
+        prevCp = currentCp;
+        prevBestMove = result.move;
+        continue;
+      }
+
       // prevCp  = eval at positions[i-1].fen (from the side to move there)
       // currentCp = eval at positions[i].fen  (from the side to move there)
       // If the move played from positions[i-1] was a blunder, currentCp will be high
