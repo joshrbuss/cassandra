@@ -59,8 +59,7 @@ export default function EmailPopup({ hasNoEmail, hasEnoughAttempts }: EmailPopup
       <div className="bg-[#0e0e0e] rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-[#2a2a2a]">
         {status === "done" ? (
           <div className="text-center py-4">
-            <p className="text-[#c8942a] font-bold text-lg">You&apos;re in!</p>
-            <p className="text-gray-400 text-sm mt-1">Check your inbox for a confirmation link.</p>
+            <p className="text-[#c8942a] font-bold text-lg">You&apos;re on the list. Chess On!</p>
           </div>
         ) : (
           <>

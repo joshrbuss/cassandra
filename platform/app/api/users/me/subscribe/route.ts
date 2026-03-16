@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
+import { sendWelcomeEmail } from "@/lib/email/sender";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -9,7 +10,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  *
  * Saves the user's email to both Subscriber (for digest) and User (so we
  * know they're subscribed and don't show the popup again).
- * Requires auth.
+ * Sends a welcome email via Resend. Requires auth.
  */
 export const POST = auth(async function POST(req) {
   const session = req.auth;
@@ -24,11 +25,11 @@ export const POST = auth(async function POST(req) {
     return NextResponse.json({ error: "Invalid email" }, { status: 400 });
   }
 
-  // Save to Subscriber table
+  // Save to Subscriber table — confirmed immediately
   await prisma.subscriber.upsert({
     where: { email },
-    update: { source: "in_app_popup" },
-    create: { email, source: "in_app_popup", confirmed: false },
+    update: { source: "in_app_popup", confirmed: true },
+    create: { email, source: "in_app_popup", confirmed: true },
   });
 
   // Store email on User record
@@ -36,6 +37,13 @@ export const POST = auth(async function POST(req) {
     where: { id: session.userId },
     data: { email },
   });
+
+  // Send welcome email
+  try {
+    await sendWelcomeEmail(email);
+  } catch (err) {
+    console.error("[subscribe/me] Failed to send welcome email:", err);
+  }
 
   return NextResponse.json({ success: true });
 }) as unknown as (req: Request) => Promise<Response>;

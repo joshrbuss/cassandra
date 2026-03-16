@@ -49,11 +49,8 @@ export default function EmailSignup({
 
   if (status === "success") {
     return (
-      <div className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-4 text-center">
-        <p className="text-blue-800 font-semibold text-sm">{t("email.success.title")}</p>
-        <p className="text-blue-600 text-xs mt-1">
-          {t("email.success.body", { email })}
-        </p>
+      <div className="rounded-xl border border-[#c8942a]/30 bg-[#c8942a]/10 px-4 py-4 text-center">
+        <p className="text-[#1a1a1a] font-semibold text-sm">You&apos;re on the list. Chess On!</p>
       </div>
     );
   }

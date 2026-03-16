@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { signConfirmToken } from "@/lib/email/token";
-import { sendConfirmationEmail } from "@/lib/email/sender";
+import { sendWelcomeEmail } from "@/lib/email/sender";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -21,25 +20,19 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // Upsert so re-subscribes don't throw a unique constraint error.
-    // Never expose whether the email already exists.
     await prisma.subscriber.upsert({
       where: { email },
-      update: { source }, // refresh source on re-subscribe
-      create: { email, source, confirmed: false },
+      update: { source, confirmed: true },
+      create: { email, source, confirmed: true },
     });
   } catch {
     // Swallow — never leak existence
   }
 
   try {
-    const token = await signConfirmToken(email);
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
-    const confirmUrl = `${baseUrl}/api/subscribe/confirm?token=${encodeURIComponent(token)}`;
-    await sendConfirmationEmail(email, confirmUrl);
+    await sendWelcomeEmail(email);
   } catch (err) {
-    console.error("[subscribe] Failed to send confirmation email:", err);
-    // Still return success — don't expose internal errors
+    console.error("[subscribe] Failed to send welcome email:", err);
   }
 
   return NextResponse.json({ success: true });
