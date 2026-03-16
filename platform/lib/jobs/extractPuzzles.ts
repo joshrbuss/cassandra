@@ -3,9 +3,10 @@
  *
  * Algorithm:
  *  1. Parse PGN moves with chess.js
- *  2. For every move: evaluate the position BEFORE the move and AFTER it
+ *  2. For every move: evaluate the position BEFORE the move with Stockfish
  *  3. If the eval swings >= BLUNDER_THRESHOLD cp against the moving side → blunder
- *  4. The puzzle is: FEN before blunder, find the winning response the opponent can play
+ *  4. The puzzle is: FEN BEFORE the blunder, solution = what the player SHOULD have played
+ *     (the engine's best move from that position, saved from the previous Stockfish call)
  *  5. Deduplicate by solvingFen against the existing DB (caller's responsibility)
  */
 
@@ -202,65 +203,53 @@ export async function extractPuzzlesFromGame(
 
   const candidates: PuzzleCandidate[] = [];
   let prevCp: number | null = null;
+  let prevBestMove: string | null = null;
 
   for (let i = 0; i < positions.length; i++) {
     if (candidates.length >= MAX_PER_GAME) break;
 
-    const { fen, uci } = positions[i];
-    const chess = new Chess(fen);
-    const sideToMove = chess.turn(); // "w" | "b"
+    const { fen } = positions[i];
 
-    // Evaluate the position before the move
+    // Evaluate the position BEFORE move i is played — this gives us the best move
+    // the player SHOULD play from this position, saved for blunder detection next iteration.
     const result = await getBestMove(fen);
     if (!result) {
       prevCp = null;
+      prevBestMove = null;
       continue;
     }
 
-    // cp is from the perspective of the side to move
-    // After the move, the position flips — so if the side to move had +200 before,
-    // and the next eval (from opponent's perspective) is also +200, then the
-    // played move was fine. But if the eval swings to -200, that's a 400cp swing.
     const currentCp = result.cp;
 
-    if (prevCp !== null) {
-      // The previous position was evaluated at prevCp (from previous side's POV)
-      // The current position is evaluated at currentCp (from current side's POV)
-      // A blunder by the previous side means currentCp is high (opponent is now up)
-      // Swing from previous side's perspective = -(currentCp) vs prevCp
-      // If -(currentCp) << prevCp → previous move was bad
-      const swing = prevCp - -currentCp; // how much the previous player lost
+    if (prevCp !== null && prevBestMove !== null) {
+      // prevCp  = eval at positions[i-1].fen (from the side to move there)
+      // currentCp = eval at positions[i].fen  (from the side to move there)
+      // If the move played from positions[i-1] was a blunder, currentCp will be high
+      // (the opponent is now winning), so the swing against the blunderer is large.
+      const swing = prevCp - -currentCp;
 
       if (swing >= BLUNDER_THRESHOLD) {
-        // The move at positions[i-1] was a blunder.
-        // Puzzle: position at positions[i-1].fen, last_move = positions[i-1].uci
-        // Solution: best response from current position (result.move)
-        const { fen: blunderFen, uci: blunderUci } = positions[i - 1];
+        // positions[i-1].uci was the blunder move played from positions[i-1].fen.
+        // Puzzle: show the player positions[i-1].fen and ask what they SHOULD have played.
+        // Solution: prevBestMove — Stockfish's best move from positions[i-1].fen.
+        const { fen: blunderFen } = positions[i - 1];
+        // lastMove: the move that led INTO the blunder position (for board highlighting)
+        const lastMove = i >= 2 ? positions[i - 2].uci : "";
 
-        // Apply the blunder to get solvingFen
         const solvingChess = new Chess(blunderFen);
-        solvingChess.move({
-          from: blunderUci.slice(0, 2),
-          to: blunderUci.slice(2, 4),
-          promotion: blunderUci[4] ?? undefined,
-        });
-        const solvingFen = solvingChess.fen();
-
-        // Get the best response move
-        const bestResponse = result.move;
-        const themes = guessThemes(solvingChess, bestResponse);
+        const themes = guessThemes(solvingChess, prevBestMove);
 
         // moveNumber: half-move index (i-1) → full move = floor((i-1)/2) + 1
         const moveNumber = Math.floor((i - 1) / 2) + 1;
-        // evalCp: currentCp is already from the solver's perspective
-        const evalCp = currentCp;
+        // evalCp: prevCp is already from the solver's (blunderer's) perspective at blunderFen
+        const evalCp = prevCp;
 
         candidates.push({
           id: cuid(),
           fen: blunderFen,
-          solvingFen,
-          lastMove: blunderUci,
-          solutionMoves: bestResponse,
+          solvingFen: blunderFen,
+          lastMove,
+          solutionMoves: prevBestMove,
           rating: estimateRating(swing),
           themes,
           type: "standard",
@@ -276,8 +265,7 @@ export async function extractPuzzlesFromGame(
     }
 
     prevCp = currentCp;
-    // Negate for next iteration (the next evaluation will be from the other side)
-    // But we already account for perspective in the swing calculation above
+    prevBestMove = result.move;
   }
 
   return candidates;

@@ -1,17 +1,19 @@
 /**
  * Extracts tactical puzzles from a PGN that contains Lichess eval annotations.
  *
- * Algorithm (no Stockfish required — Vercel-compatible):
+ * Algorithm:
  *  1. Parse %eval annotations from PGN text (e.g. { [%eval 0.44] })
  *  2. Replay moves with chess.js to collect FENs
  *  3. Find blunders: eval swings ≥ BLUNDER_THRESHOLD_PAWNS against the moving side
- *  4. Puzzle = FEN before the blunder, solution = next move played in game
+ *  4. Puzzle = FEN BEFORE the blunder, solution = Stockfish's best move from that position
+ *     (uses %eval annotations for fast blunder detection; Stockfish only for the solution move)
  *
  * Falls back to empty array if no eval annotations are found in the PGN.
  */
 
 import { Chess } from "chess.js";
 import { cuid } from "@/lib/cuid";
+import { getBestMove } from "./stockfish";
 import type { PuzzleCandidate } from "./extractPuzzles";
 
 /** 1.5 pawn swing qualifies a move as a blunder */
@@ -129,14 +131,14 @@ function extractGameContext(
 
 /**
  * Extracts puzzle candidates from an eval-annotated PGN.
- * Synchronous — no Stockfish required.
+ * Uses %eval annotations to detect blunders, Stockfish to find the correct solution move.
  * Returns [] if no eval annotations are present.
  */
-export function extractPuzzlesFromAnnotatedPgn(
+export async function extractPuzzlesFromAnnotatedPgn(
   pgn: string,
   userId: string,
   playerUsername?: string
-): PuzzleCandidate[] {
+): Promise<PuzzleCandidate[]> {
   const gameUrl = extractGameUrl(pgn);
   const gameContext = extractGameContext(pgn, playerUsername);
   const evals = extractEvals(pgn);
@@ -147,7 +149,7 @@ export function extractPuzzlesFromAnnotatedPgn(
 
   const candidates: PuzzleCandidate[] = [];
 
-  for (let i = 1; i < moves.length - 1; i++) {
+  for (let i = 1; i < moves.length; i++) {
     if (candidates.length >= MAX_PER_GAME) break;
 
     // evals[i-1] = eval AFTER move[i-1] = eval BEFORE move[i] (from white's perspective, in pawns)
@@ -156,7 +158,7 @@ export function extractPuzzlesFromAnnotatedPgn(
     const evalAfter = evals[i];
     if (evalBefore === null || evalAfter === null) continue;
 
-    const { sideToMove, uci: blunderUci, fenBefore, fenAfter } = moves[i];
+    const { sideToMove, uci: blunderUci, fenBefore } = moves[i];
 
     // Swing against the side that made move[i]:
     //   White moved → white wants high eval → swing = evalBefore - evalAfter (positive = white lost)
@@ -168,23 +170,12 @@ export function extractPuzzlesFromAnnotatedPgn(
 
     if (swing < BLUNDER_THRESHOLD_PAWNS) continue;
 
-    // The solution is the NEXT move played in the game (the winning response)
-    const response = moves[i + 1];
-    if (!response) continue;
+    // Ask Stockfish for the best move from fenBefore — what the player SHOULD have played.
+    const engineResult = await getBestMove(fenBefore);
+    if (!engineResult) continue;
 
-    // Validate the response move is legal from fenAfter
-    try {
-      const tmp = new Chess(fenAfter);
-      const promotion = response.uci[4] as "q" | "r" | "b" | "n" | undefined;
-      const legal = tmp.move({
-        from: response.uci.slice(0, 2),
-        to: response.uci.slice(2, 4),
-        ...(promotion ? { promotion } : {}),
-      });
-      if (!legal) continue;
-    } catch {
-      continue;
-    }
+    // Skip if Stockfish agrees the played move was fine (shouldn't happen given swing, but guard)
+    if (engineResult.move === blunderUci) continue;
 
     const swingCp = Math.round(swing * 100);
     const rating =
@@ -192,18 +183,21 @@ export function extractPuzzlesFromAnnotatedPgn(
 
     // moveNumber: half-move index i (0-based) → full move = floor(i/2) + 1
     const moveNumber = Math.floor(i / 2) + 1;
-    // evalCp from solver's perspective: solver is opposite of who blundered (sideToMove)
-    // evalAfter is from white's perspective (in pawns)
+    // evalCp from the blunderer's (solver's) perspective at fenBefore
+    // evalBefore is from white's perspective (in pawns)
     const evalCp = sideToMove === "w"
-      ? Math.round(-evalAfter * 100)  // white blundered → solver is black
-      : Math.round(evalAfter * 100);  // black blundered → solver is white
+      ? Math.round(evalBefore * 100)   // white is the solver, positive = white is up
+      : Math.round(-evalBefore * 100); // black is the solver, flip sign
+
+    // lastMove: the move that led INTO fenBefore (for board highlighting)
+    const lastMove = i >= 1 ? moves[i - 1].uci : "";
 
     candidates.push({
       id: cuid(),
       fen: fenBefore,
-      solvingFen: fenAfter,
-      lastMove: blunderUci,
-      solutionMoves: response.uci,
+      solvingFen: fenBefore,
+      lastMove,
+      solutionMoves: engineResult.move,
       rating,
       themes: "tactics",
       type: "standard",

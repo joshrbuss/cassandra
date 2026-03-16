@@ -3,7 +3,8 @@
  *
  * Uses browser Stockfish (depth 8) to find positions where a player made a
  * move that swings the evaluation by ≥ BLUNDER_THRESHOLD centipawns.
- * The resulting puzzle asks the opponent to find the best response.
+ * The resulting puzzle shows the position BEFORE the blunder and asks the player
+ * to find what they SHOULD have played (Stockfish's best move from that position).
  *
  * Import this only from "use client" components.
  */
@@ -120,6 +121,7 @@ export async function extractBlundersFromPgn(pgn: string, playerUsername?: strin
 
   const candidates: ClientPuzzle[] = [];
   let prevCp: number | null = null;
+  let prevBestMove: string | null = null;
 
   for (let i = SKIP_OPENING_PLIES; i < positions.length; i++) {
     if (candidates.length >= MAX_PER_GAME) break;
@@ -129,44 +131,33 @@ export async function extractBlundersFromPgn(pgn: string, playerUsername?: strin
 
     if (!result) {
       prevCp = null;
+      prevBestMove = null;
       continue;
     }
 
     const currentCp = result.cp;
 
-    if (prevCp !== null) {
-      // The previous position was evaluated at prevCp from the previous side's POV.
-      // The current position is at currentCp from the current side's POV.
-      // If the previous player blundered, the current eval should be high (opponent is winning).
-      // Swing = how much the previous player lost: prevCp - (-currentCp)
+    if (prevCp !== null && prevBestMove !== null) {
+      // prevCp  = eval at positions[i-1].fen (from the side to move there)
+      // currentCp = eval at positions[i].fen  (from the side to move there)
+      // Swing = how much the previous player lost by making their move
       const swing = prevCp - -currentCp;
 
       if (swing >= BLUNDER_THRESHOLD) {
-        const { fen: blunderFen, uci: blunderUci } = positions[i - 1];
-
-        // Apply the blunder to get solvingFen
-        const solvingChess = new Chess(blunderFen);
-        try {
-          solvingChess.move({
-            from: blunderUci.slice(0, 2),
-            to: blunderUci.slice(2, 4),
-            promotion: (blunderUci[4] as "q" | "r" | "b" | "n") ?? undefined,
-          });
-        } catch {
-          prevCp = currentCp;
-          continue;
-        }
+        const { fen: blunderFen } = positions[i - 1];
+        // lastMove: the move that led INTO the blunder position (for board highlighting)
+        const lastMove = i >= 2 ? positions[i - 2].uci : "";
 
         const moveNumber = Math.floor((i - 1) / 2) + 1;
-        // currentCp is from the solver's perspective (side to move at position i)
-        const evalCp = currentCp;
+        // prevCp is from the blunderer's (solver's) perspective at blunderFen
+        const evalCp = prevCp;
 
         candidates.push({
           id: clientId(),
           fen: blunderFen,
-          solvingFen: solvingChess.fen(),
-          lastMove: blunderUci,
-          solutionMoves: result.move,
+          solvingFen: blunderFen,
+          lastMove,
+          solutionMoves: prevBestMove,
           rating: estimateRating(swing),
           themes: "tactics",
           gameUrl,
@@ -178,6 +169,7 @@ export async function extractBlundersFromPgn(pgn: string, playerUsername?: strin
     }
 
     prevCp = currentCp;
+    prevBestMove = result.move;
   }
 
   return candidates;

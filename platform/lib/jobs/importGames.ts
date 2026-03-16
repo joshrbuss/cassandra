@@ -107,8 +107,8 @@ export async function importGamesForUser(userId: string): Promise<ImportResult> 
         if (puzzlesImported >= remaining) break;
         gamesProcessed++;
         try {
-          // Fast annotated extractor (uses %eval comments, no engine needed)
-          const candidates = extractPuzzlesFromAnnotatedPgn(pgn, userId, user.lichessUsername ?? undefined);
+          // Annotated extractor: uses %eval for blunder detection, Stockfish for solution moves
+          const candidates = await extractPuzzlesFromAnnotatedPgn(pgn, userId, user.lichessUsername ?? undefined);
           await insertCandidates(candidates);
         } catch (err) {
           errors.push(`Lichess extraction failed: ${String(err)}`);
