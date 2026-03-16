@@ -228,16 +228,15 @@ export default function StandardPuzzle({
           avgSolveMs={attemptResult.avgSolveMs}
           top10PctMs={attemptResult.top10PctMs}
           totalAttempts={attemptResult.totalAttempts}
-          timeControl={timeControl}
           userId={attemptResult.userId ?? ""}
         />
       )}
 
       {/* Solved but waiting for API response */}
       {phase === "solved" && !attemptResult && (
-        <div className="w-full rounded-xl border border-green-200 bg-green-50 p-4 text-center">
-          <p className="text-green-800 font-bold">{t("puzzle.solved")}</p>
-          <div className="mt-2 h-4 w-32 mx-auto bg-green-200 animate-pulse rounded" />
+        <div className="w-full bg-[#0e0e0e] rounded-xl p-4 text-center">
+          <p className="text-white font-bold">{t("puzzle.solved")}</p>
+          <div className="mt-2 h-4 w-32 mx-auto bg-gray-700 animate-pulse rounded" />
         </div>
       )}
     </div>

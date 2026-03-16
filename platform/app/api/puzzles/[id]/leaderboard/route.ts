@@ -39,12 +39,13 @@ export async function GET(
     }
   }
 
-  // Best time per user (avoid counting the same user multiple times)
+  // Best time per user — include all completed solves (not just "perfect" ones).
+  // success=false just means the user had wrong moves or took too long,
+  // but they still finished the puzzle with a valid solve time.
   const rawRows = await prisma.puzzleAttempt.findMany({
     where: {
       puzzleId: id,
-      success: true,
-      solveTimeMs: { not: null },
+      solveTimeMs: { not: null, gt: 0 },
     },
     orderBy: { solveTimeMs: "asc" },
     select: { userId: true, solveTimeMs: true },

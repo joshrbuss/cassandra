@@ -51,7 +51,6 @@ export default function TrainPuzzleShell({
 }: TrainPuzzleShellProps) {
   const { t } = useTranslation();
   const solution = solutionMoves.trim().split(/\s+/);
-  // Use stored playerColor from the game; fall back to FEN turn for library puzzles
   const boardOrientation: "white" | "black" =
     playerColor === "white" || playerColor === "black"
       ? playerColor
@@ -179,6 +178,61 @@ export default function TrainPuzzleShell({
           ? t("train.pawnsDown")
           : t("train.even");
 
+  // ── Solved state: result panel → board → leaderboard ──
+  if (phase === "solved") {
+    return (
+      <div className="bg-white w-full">
+        {/* Result panel + game pills + leaderboard */}
+        {attemptResult ? (
+          <SolveResultCard
+            puzzleId={puzzleId}
+            solveTimeMs={attemptResult.solveTimeMs}
+            percentile={attemptResult.percentile}
+            bucket={attemptResult.bucket}
+            avgSolveMs={attemptResult.avgSolveMs}
+            top10PctMs={attemptResult.top10PctMs}
+            totalAttempts={attemptResult.totalAttempts}
+            userId={attemptResult.userId ?? ""}
+            opponentUsername={opponentUsername}
+            gameDate={gameDate}
+            gameResult={gameResult}
+            gameUrl={gameUrl}
+          />
+        ) : (
+          <div className="bg-[#0e0e0e] rounded-xl px-5 py-5 text-center">
+            <p className="text-white font-bold">{t("train.puzzleSolved")}</p>
+            <div className="mt-2 h-4 w-32 mx-auto bg-gray-700 animate-pulse rounded" />
+          </div>
+        )}
+
+        {/* Board — non-interactive, no hints */}
+        <div className="w-full aspect-square mt-3">
+          <ChessBoardWrapper
+            position={fen}
+            interactive={false}
+            onPieceDrop={() => false}
+            boardOrientation={boardOrientation}
+            squareStyles={lastSquares}
+          />
+        </div>
+
+        {/* Navigation */}
+        <div className="mt-4 flex items-center justify-between">
+          <Link
+            href="/train"
+            className="inline-flex items-center gap-1 bg-[#0e0e0e] text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#1a1a1a] transition-colors"
+          >
+            {t("train.nextPuzzle")}
+          </Link>
+          <Link href="/dashboard" className="text-sm text-[#999] hover:text-[#666] hover:underline">
+            {t("train.doneForNow")}
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Playing state: header → stats → board → hints/nav ──
   return (
     <div className="bg-white w-full">
       {/* Header */}
@@ -269,71 +323,38 @@ export default function TrainPuzzleShell({
         )}
       </div>
 
-      {/* Footer */}
-      {phase !== "solved" && (
-        <div className="mt-4 flex items-end justify-between">
-          <div className="flex flex-col gap-1">
-            {hintLevel < 2 && (
-              <button
-                onClick={() => {
-                  setHintLevel((l) => (Math.min(l + 1, 2) as 0 | 1 | 2));
-                  hadWrongMove.current = true;
-                }}
-                className="text-sm text-gray-400 hover:text-gray-700 underline underline-offset-2 text-left"
-              >
-                {hintLevel === 0 ? t("train.hint") : t("train.showDestination")}
-              </button>
-            )}
-            {gameUrl && (
-              <a
-                href={gameUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-blue-500 hover:text-blue-700"
-              >
-                {t("train.viewOriginalGame")}
-              </a>
-            )}
-          </div>
-          <Link
-            href="/train"
-            className="inline-flex items-center gap-1 bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors"
-          >
-            {t("train.nextPuzzle")}
-          </Link>
+      {/* Footer — hint + game link + next puzzle */}
+      <div className="mt-4 flex items-end justify-between">
+        <div className="flex flex-col gap-1">
+          {hintLevel < 2 && (
+            <button
+              onClick={() => {
+                setHintLevel((l) => (Math.min(l + 1, 2) as 0 | 1 | 2));
+                hadWrongMove.current = true;
+              }}
+              className="text-sm text-gray-400 hover:text-gray-700 underline underline-offset-2 text-left"
+            >
+              {hintLevel === 0 ? t("train.hint") : t("train.showDestination")}
+            </button>
+          )}
+          {gameUrl && (
+            <a
+              href={gameUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-blue-500 hover:text-blue-700"
+            >
+              {t("train.viewOriginalGame")}
+            </a>
+          )}
         </div>
-      )}
-
-      {/* Post-solve result card */}
-      {phase === "solved" && attemptResult && (
-        <div className="mt-4">
-          <SolveResultCard
-            puzzleId={puzzleId}
-            solveTimeMs={attemptResult.solveTimeMs}
-            percentile={attemptResult.percentile}
-            bucket={attemptResult.bucket}
-            avgSolveMs={attemptResult.avgSolveMs}
-            top10PctMs={attemptResult.top10PctMs}
-            totalAttempts={attemptResult.totalAttempts}
-            userId={attemptResult.userId ?? ""}
-          />
-          <div className="mt-4 flex items-center justify-between">
-            <Link href="/train" className="inline-flex items-center gap-1 bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors">
-              {t("train.nextPuzzle")}
-            </Link>
-            <Link href="/dashboard" className="text-sm text-gray-400 hover:underline">
-              {t("train.doneForNow")}
-            </Link>
-          </div>
-        </div>
-      )}
-
-      {phase === "solved" && !attemptResult && (
-        <div className="mt-4 rounded-xl border border-green-200 bg-green-50 p-4 text-center">
-          <p className="text-green-800 font-bold">{t("train.puzzleSolved")}</p>
-          <div className="mt-2 h-4 w-32 mx-auto bg-green-200 animate-pulse rounded" />
-        </div>
-      )}
+        <Link
+          href="/train"
+          className="inline-flex items-center gap-1 bg-[#0e0e0e] text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#1a1a1a] transition-colors"
+        >
+          {t("train.nextPuzzle")}
+        </Link>
+      </div>
     </div>
   );
 }
