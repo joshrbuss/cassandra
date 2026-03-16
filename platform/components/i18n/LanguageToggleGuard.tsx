@@ -15,7 +15,8 @@ export default function LanguageToggleGuard() {
     pathname.startsWith("/train") ||
     pathname === "/" ||
     pathname === "/connect" ||
-    pathname === "/analysing"
+    pathname === "/analysing" ||
+    pathname === "/prophecy"
   ) return null;
 
   return <LanguageToggle />;

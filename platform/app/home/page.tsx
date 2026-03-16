@@ -222,6 +222,27 @@ export default async function DashboardPage() {
           </div>
         </div>
 
+        {/* ── Cassandra's Prophecy card ── */}
+        <Link
+          href="/prophecy"
+          className="flex items-center justify-between bg-[#0e0e0e] text-white rounded-xl p-5 mb-4 hover:bg-[#1a1a1a] transition-colors border border-[#2a2a2a]"
+        >
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <p className="font-semibold text-[#c8942a]">Cassandra&apos;s Prophecy</p>
+              <span className="text-[9px] font-bold text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-1.5 py-0.5 rounded-full uppercase">
+                Daily
+              </span>
+            </div>
+            <p className="text-xs text-gray-400">
+              Today&apos;s brilliant move — can you find what Cassandra saw?
+            </p>
+          </div>
+          <span className="text-[#c8942a] text-sm font-medium ml-3 whitespace-nowrap">
+            Accept the prophecy &rarr;
+          </span>
+        </Link>
+
         {/* MVP: hidden until library UX is improved
         <Link
           href="/puzzles"
