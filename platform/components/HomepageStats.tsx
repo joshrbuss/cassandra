@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/i18n/LocaleProvider";
+
 interface HomepageStatsProps {
   puzzlesSolved: number;
   fromRealGames: number;
@@ -13,13 +15,15 @@ export default function HomepageStats({
   totalPlayers,
   onlineNow,
 }: HomepageStatsProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto">
-      <StatCell label="Puzzles solved" value={puzzlesSolved.toLocaleString()} />
-      <StatCell label="Puzzles from real games" value={fromRealGames.toLocaleString()} />
-      <StatCell label="Total players" value={totalPlayers.toLocaleString()} />
+      <StatCell label={t("landing.stats.puzzlesSolved")} value={puzzlesSolved.toLocaleString()} />
+      <StatCell label={t("landing.stats.fromRealGames")} value={fromRealGames.toLocaleString()} />
+      <StatCell label={t("landing.stats.totalPlayers")} value={totalPlayers.toLocaleString()} />
       <StatCell
-        label="Online now"
+        label={t("landing.stats.onlineNow")}
         value={onlineNow.toLocaleString()}
         greenDot
       />

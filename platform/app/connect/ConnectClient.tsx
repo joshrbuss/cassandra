@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { useTranslation } from "@/components/i18n/LocaleProvider";
 
 interface Props {
   refCode: string | null;
 }
 
 export default function ConnectClient({ refCode }: Props) {
+  const { t } = useTranslation();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState<"chesscom" | "lichess" | null>(null);
 
@@ -26,7 +28,7 @@ export default function ConnectClient({ refCode }: Props) {
       const data = (await res.json()) as { userId?: string; error?: string };
 
       if (!res.ok || !data.userId) {
-        setError(data.error ?? "Something went wrong. Please try again.");
+        setError(data.error ?? t("connect.error"));
         setPending(null);
         return;
       }
@@ -34,7 +36,7 @@ export default function ConnectClient({ refCode }: Props) {
       // Sign in and redirect straight to /analysing
       await signIn("credentials", { userId: data.userId, callbackUrl: "/analysing" });
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(t("connect.error"));
       setPending(null);
     }
   }
@@ -51,10 +53,10 @@ export default function ConnectClient({ refCode }: Props) {
             <div className="flex items-center gap-2">
               <p className="text-sm font-semibold text-white">Chess.com</p>
               <span className="text-[9px] font-bold text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-1.5 py-0.5 rounded-full uppercase">
-                Most popular
+                {t("connect.mostPopular")}
               </span>
             </div>
-            <p className="text-xs text-gray-500 mt-0.5">Enter your Chess.com username</p>
+            <p className="text-xs text-gray-500 mt-0.5">{t("connect.chesscomSubtitle")}</p>
           </div>
         </div>
 
@@ -69,7 +71,7 @@ export default function ConnectClient({ refCode }: Props) {
           <input
             type="text"
             name="cc_username"
-            placeholder="Your Chess.com username"
+            placeholder={t("connect.chesscomPlaceholder")}
             autoComplete="off"
             required
             className="flex-1 text-sm text-white bg-[#0e0e0e] border border-[#333] rounded-lg px-3 py-2 placeholder-gray-600 focus:outline-none focus:border-[#c8942a] transition-colors"
@@ -79,7 +81,7 @@ export default function ConnectClient({ refCode }: Props) {
             disabled={pending !== null}
             className="text-sm font-semibold bg-[#c8942a] text-white px-5 py-2 rounded-lg hover:bg-[#b5852a] disabled:opacity-50 transition-colors"
           >
-            {pending === "chesscom" ? "Connecting..." : "Connect"}
+            {pending === "chesscom" ? t("connect.connecting") : t("connect.connect")}
           </button>
         </form>
       </div>
@@ -87,7 +89,7 @@ export default function ConnectClient({ refCode }: Props) {
       {/* Divider */}
       <div className="flex items-center gap-3 px-2">
         <div className="flex-1 h-px bg-[#2a2a2a]" />
-        <span className="text-xs text-gray-600">or</span>
+        <span className="text-xs text-gray-600">{t("connect.or")}</span>
         <div className="flex-1 h-px bg-[#2a2a2a]" />
       </div>
 
@@ -99,7 +101,7 @@ export default function ConnectClient({ refCode }: Props) {
           </div>
           <div>
             <p className="text-sm font-semibold text-white">Lichess</p>
-            <p className="text-xs text-gray-500 mt-0.5">Enter your Lichess username</p>
+            <p className="text-xs text-gray-500 mt-0.5">{t("connect.lichessSubtitle")}</p>
           </div>
         </div>
 
@@ -114,7 +116,7 @@ export default function ConnectClient({ refCode }: Props) {
           <input
             type="text"
             name="li_username"
-            placeholder="Your Lichess username"
+            placeholder={t("connect.lichessPlaceholder")}
             autoComplete="off"
             required
             className="flex-1 text-sm text-white bg-[#0e0e0e] border border-[#333] rounded-lg px-3 py-2 placeholder-gray-600 focus:outline-none focus:border-[#c8942a] transition-colors"
@@ -124,7 +126,7 @@ export default function ConnectClient({ refCode }: Props) {
             disabled={pending !== null}
             className="text-sm font-semibold bg-white text-black px-5 py-2 rounded-lg hover:bg-gray-200 disabled:opacity-50 transition-colors"
           >
-            {pending === "lichess" ? "Connecting..." : "Connect"}
+            {pending === "lichess" ? t("connect.connecting") : t("connect.connect")}
           </button>
         </form>
       </div>

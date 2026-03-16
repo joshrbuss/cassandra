@@ -1,6 +1,8 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
 import ConnectClient from "./ConnectClient";
 
 export const metadata = {
@@ -25,6 +27,9 @@ export default async function ConnectPage({
     }
   }
 
+  const cookieStore = await cookies();
+  const t = getT(resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value));
+
   return (
     <main className="min-h-screen bg-[#0e0e0e] flex flex-col items-center justify-center px-4 py-16">
       <div className="max-w-md w-full">
@@ -33,19 +38,19 @@ export default async function ConnectPage({
             C
           </span>
           <h1 className="text-2xl font-bold text-white mb-2">
-            Connect your chess account
+            {t("connect.title")}
           </h1>
           <p className="text-gray-400 text-sm">
-            We&apos;ll analyse your games and build personalised puzzles.
+            {t("connect.subtitle")}
           </p>
         </div>
 
         <ConnectClient refCode={ref ?? null} />
 
         <p className="text-center text-xs text-gray-600 mt-8">
-          Already set up?{" "}
+          {t("connect.alreadySetUp")}{" "}
           <a href="/home" className="text-[#c8942a] hover:underline">
-            Go to dashboard
+            {t("connect.goToDashboard")}
           </a>
         </p>
       </div>
