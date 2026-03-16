@@ -62,9 +62,10 @@ export default async function PrivacyPage() {
           <ul className="list-disc list-inside space-y-2 text-sm text-[#444] leading-relaxed">
             <li>{t("privacy.thirdParty.ga4")}</li>
             <li>{t("privacy.thirdParty.gsc")}</li>
+            <li>{t("privacy.thirdParty.bing")}</li>
             <li>{t("privacy.thirdParty.adsense")}</li>
             <li>{t("privacy.thirdParty.metaPixel")}</li>
-            <li>{t("privacy.thirdParty.vercel")}</li>
+            <li>{t("privacy.thirdParty.vercelFull")}</li>
             <li>{t("privacy.thirdParty.supabase")}</li>
             <li>{t("privacy.thirdParty.resend")}</li>
             <li>{t("privacy.thirdParty.stripe")}</li>
@@ -87,6 +88,14 @@ export default async function PrivacyPage() {
           <h2 className="text-lg font-bold text-[#1a1a1a] mb-3">{t("privacy.cookiesTitle")}</h2>
           <p className="text-sm text-[#444] leading-relaxed">
             {t("privacy.cookiesDesc")}
+          </p>
+        </section>
+
+        {/* What happens if you decline cookies */}
+        <section>
+          <h2 className="text-lg font-bold text-[#1a1a1a] mb-3">{t("privacy.declineTitle")}</h2>
+          <p className="text-sm text-[#444] leading-relaxed">
+            {t("privacy.declineDesc")}
           </p>
         </section>
 

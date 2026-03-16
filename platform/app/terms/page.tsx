@@ -36,6 +36,7 @@ export default async function TermsPage() {
         <section>
           <h2 className="text-lg font-bold text-[#1a1a1a] mb-3">{t("terms.accountsTitle")}</h2>
           <p className="text-sm text-[#444] leading-relaxed">{t("terms.accounts")}</p>
+          <p className="text-sm text-[#444] leading-relaxed mt-2">{t("terms.dataConsent")}</p>
         </section>
 
         <section>
