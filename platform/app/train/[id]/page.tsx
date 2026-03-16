@@ -9,8 +9,10 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import TrainPuzzleClient from "./TrainPuzzleClient";
+import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
 
 export const metadata = {
   title: "Train — Cassandra Chess",
@@ -51,6 +53,8 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
 
   if (!puzzle) notFound();
 
+  const cookieStore = await cookies();
+  const t = getT(resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value));
   const stripeLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
 
   return (
@@ -59,7 +63,7 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
         {/* Top nav */}
         <div className="flex items-center justify-between mb-8">
           <Link href="/dashboard" className="text-sm text-gray-400 hover:text-gray-700">
-            ← Dashboard
+            {t("train.dashboard")}
           </Link>
           {stripeLink && (
             <a
@@ -89,7 +93,7 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
         {/* Footer */}
         <footer className="mt-10 pt-6 border-t border-gray-100 text-center">
           <p className="text-xs text-gray-400">
-            Cassandra Chess · Puzzles sourced from the Lichess open database (CC0)
+            {t("dashboard.footer")}
           </p>
         </footer>
       </div>

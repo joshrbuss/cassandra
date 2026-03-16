@@ -1,22 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "@/components/i18n/LocaleProvider";
 
 interface Props {
   lastSyncedAt: string | null; // ISO string or null
 }
 
-function formatHoursAgo(isoString: string): string {
+function formatHoursAgo(isoString: string, t: (key: string, vars?: Record<string, string | number>) => string): string {
   const diffMs = Date.now() - new Date(isoString).getTime();
   const hours = Math.floor(diffMs / (1000 * 60 * 60));
   if (hours < 1) {
     const mins = Math.floor(diffMs / (1000 * 60));
-    return mins <= 1 ? "just now" : `${mins} minutes ago`;
+    return mins <= 1 ? t("sync.justNow") : t("sync.minutesAgo", { count: mins });
   }
-  return hours === 1 ? "1 hour ago" : `${hours} hours ago`;
+  return hours === 1 ? t("sync.oneHourAgo") : t("sync.hoursAgo", { count: hours });
 }
 
 export default function SyncButton({ lastSyncedAt }: Props) {
+  const { t } = useTranslation();
   const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
   const [message, setMessage] = useState<string | null>(null);
   const [syncedAt, setSyncedAt] = useState(lastSyncedAt);
@@ -28,7 +30,7 @@ export default function SyncButton({ lastSyncedAt }: Props) {
   if (recentlySynced && status === "idle") {
     return (
       <p className="text-xs text-gray-400">
-        Last synced {formatHoursAgo(syncedAt!)}
+        {t("sync.lastSynced", { time: formatHoursAgo(syncedAt!, t) })}
       </p>
     );
   }
@@ -45,20 +47,20 @@ export default function SyncButton({ lastSyncedAt }: Props) {
         error?: string;
       };
       if (!res.ok || !data.ok) {
-        setMessage(data.error ?? "Something went wrong. Try again.");
+        setMessage(data.error ?? t("sync.error"));
       } else {
         const { gamesProcessed = 0, puzzlesImported = 0 } = data;
         if (puzzlesImported > 0) {
           setMessage(
-            `${puzzlesImported} new puzzle${puzzlesImported !== 1 ? "s" : ""} found from ${gamesProcessed} new game${gamesProcessed !== 1 ? "s" : ""}`
+            t("sync.newPuzzles", { puzzles: puzzlesImported, games: gamesProcessed })
           );
         } else {
-          setMessage("You're up to date!");
+          setMessage(t("sync.upToDate"));
         }
         setSyncedAt(new Date().toISOString());
       }
     } catch {
-      setMessage("Something went wrong. Try again.");
+      setMessage(t("sync.error"));
     }
     setStatus("done");
   }
@@ -71,7 +73,7 @@ export default function SyncButton({ lastSyncedAt }: Props) {
           disabled={status === "loading"}
           className="text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 px-4 py-2 rounded-lg hover:bg-blue-100 disabled:opacity-50 transition-colors w-fit"
         >
-          {status === "loading" ? "Syncing your games…" : "Sync new games"}
+          {status === "loading" ? t("sync.syncing") : t("sync.syncNew")}
         </button>
       )}
       {message && (

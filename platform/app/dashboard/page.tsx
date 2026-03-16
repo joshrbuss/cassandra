@@ -1,12 +1,14 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { getTotalImportedCount } from "@/lib/jobs/importGames";
 import LockedFeature from "@/components/LockedFeature";
 import SyncButton from "@/components/SyncButton";
 import ReferralWidget from "@/components/ReferralWidget";
 import { ensureReferralCode } from "@/lib/referral";
+import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
 
 export const metadata = {
   title: "Dashboard — Cassandra Chess",
@@ -67,6 +69,9 @@ export default async function DashboardPage() {
 
   const stripeLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
 
+  const cookieStore = await cookies();
+  const t = getT(resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value));
+
   return (
     <main className="min-h-screen bg-stone-50 px-4 py-10">
       <div className="max-w-lg mx-auto">
@@ -77,7 +82,7 @@ export default async function DashboardPage() {
               <span className="text-amber-400 font-bold text-sm">C</span>
             </div>
             <span className="text-sm font-semibold text-stone-700 group-hover:text-stone-900 transition-colors">
-              Cassandra Chess
+              {t("dashboard.brand")}
             </span>
           </Link>
           {stripeLink && (
@@ -87,7 +92,7 @@ export default async function DashboardPage() {
               rel="noopener noreferrer"
               className="text-xs font-medium text-purple-700 bg-purple-50 border border-purple-200 px-3 py-1.5 rounded-full hover:bg-purple-100 transition-colors"
             >
-              Go ad-free
+              {t("dashboard.goAdFree")}
             </a>
           )}
         </div>
@@ -95,7 +100,7 @@ export default async function DashboardPage() {
         {/* Greeting + profile */}
         <div className="mb-8">
           <p className="text-sm text-stone-500 mb-1">
-            Chess On, {displayName}!
+            {t("dashboard.greeting", { name: displayName })}
           </p>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -121,7 +126,7 @@ export default async function DashboardPage() {
 
         {/* Connected accounts */}
         <div className="bg-white rounded-xl border border-stone-200 p-5 shadow-sm mb-4">
-          <h2 className="text-sm font-semibold text-stone-700 mb-3">Connected accounts</h2>
+          <h2 className="text-sm font-semibold text-stone-700 mb-3">{t("dashboard.connectedAccounts")}</h2>
           <div className="space-y-2">
             {user?.lichessUsername && (
               <div className="flex items-center gap-2 text-sm">
@@ -158,29 +163,29 @@ export default async function DashboardPage() {
             href="/settings"
             className="text-xs text-stone-400 hover:underline mt-3 inline-block"
           >
-            Manage accounts →
+            {t("dashboard.manageAccounts")}
           </Link>
         </div>
 
         {/* Puzzle stats */}
         <div className="bg-white rounded-xl border border-stone-200 p-5 shadow-sm mb-4">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-stone-700">Your puzzles</h2>
+            <h2 className="text-sm font-semibold text-stone-700">{t("dashboard.yourPuzzles")}</h2>
             {user?.currentStreak > 0 && (
               <span className="text-sm text-orange-600 font-medium">
-                {user.currentStreak}-day streak
+                {t("dashboard.streak", { count: user.currentStreak })}
               </span>
             )}
           </div>
           <div className="flex gap-6 mb-3">
             <div>
               <p className="text-2xl font-extrabold text-amber-700 tabular-nums">{totalImported}</p>
-              <p className="text-xs text-stone-400 mt-0.5">personal puzzles</p>
+              <p className="text-xs text-stone-400 mt-0.5">{t("dashboard.personalPuzzles")}</p>
             </div>
             {accuracy !== null && (
               <div>
                 <p className="text-2xl font-extrabold text-emerald-700 tabular-nums">{accuracy}%</p>
-                <p className="text-xs text-stone-400 mt-0.5">accuracy ({userAttempts.length} attempts)</p>
+                <p className="text-xs text-stone-400 mt-0.5">{t("dashboard.accuracy", { count: userAttempts.length })}</p>
               </div>
             )}
           </div>
@@ -203,11 +208,11 @@ export default async function DashboardPage() {
             className="flex items-center justify-between bg-emerald-800 text-white rounded-xl p-5 shadow-sm hover:bg-emerald-700 transition-colors"
           >
             <div>
-              <p className="font-semibold">Train on my games</p>
+              <p className="font-semibold">{t("dashboard.trainMyGames")}</p>
               <p className="text-xs text-emerald-300 mt-0.5">
                 {totalImported > 0
-                  ? `${totalImported} personal puzzles from your blunders`
-                  : "Analyse your games to generate personal puzzles"}
+                  ? t("dashboard.trainDesc.has", { count: totalImported })
+                  : t("dashboard.trainDesc.empty")}
               </p>
             </div>
             <span className="text-emerald-300 text-lg">→</span>
@@ -218,9 +223,9 @@ export default async function DashboardPage() {
             className="flex items-center justify-between bg-white border border-stone-200 rounded-xl p-5 shadow-sm hover:border-amber-400 transition-colors"
           >
             <div>
-              <p className="font-semibold text-stone-800">Browse all puzzles</p>
+              <p className="font-semibold text-stone-800">{t("dashboard.browseAll")}</p>
               <p className="text-xs text-stone-400 mt-0.5">
-                Curated puzzles matched to your rating
+                {t("dashboard.browseDesc")}
               </p>
             </div>
             <span className="text-stone-400 text-lg">→</span>
@@ -231,9 +236,9 @@ export default async function DashboardPage() {
             className="flex items-center justify-between bg-white border border-stone-200 rounded-xl p-5 shadow-sm hover:border-amber-400 transition-colors"
           >
             <div>
-              <p className="font-semibold text-stone-800">My stats</p>
+              <p className="font-semibold text-stone-800">{t("dashboard.myStats")}</p>
               <p className="text-xs text-stone-400 mt-0.5">
-                See your tactic weaknesses and slow spots
+                {t("dashboard.myStatsDesc")}
               </p>
             </div>
             <span className="text-stone-400 text-lg">→</span>
@@ -242,7 +247,7 @@ export default async function DashboardPage() {
 
         {/* Coming soon */}
         <div className="mt-6">
-          <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wide mb-3">Coming soon</h2>
+          <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wide mb-3">{t("dashboard.comingSoon")}</h2>
           <div className="grid grid-cols-1 gap-3">
             <LockedFeature
               emoji="⏪"
@@ -274,11 +279,11 @@ export default async function DashboardPage() {
         {/* Footer */}
         <footer className="mt-10 pt-6 border-t border-stone-200 text-center">
           <p className="text-xs text-stone-400">
-            Cassandra Chess · Puzzles sourced from the Lichess open database (CC0)
+            {t("dashboard.footer")}
           </p>
           <p className="text-xs text-stone-300 mt-2">
             <a href="/api/auth/signout" className="hover:underline hover:text-stone-500">
-              Sign out
+              {t("dashboard.signOut")}
             </a>
           </p>
         </footer>

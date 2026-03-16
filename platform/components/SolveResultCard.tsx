@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useTranslation } from "@/components/i18n/LocaleProvider";
 import EmailSignup from "@/components/marketing/EmailSignup";
 import ShareButton from "@/components/marketing/ShareButton";
 import {
@@ -35,6 +36,7 @@ export default function SolveResultCard({
   timeControl,
   userId,
 }: SolveResultCardProps) {
+  const { t } = useTranslation();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loadingBoard, setLoadingBoard] = useState(true);
   const [showSignup, setShowSignup] = useState(false);
@@ -67,10 +69,9 @@ export default function SolveResultCard({
       {/* Header */}
       <div className="bg-green-50 border-b border-green-100 px-4 py-3 flex items-center justify-between">
         <div>
-          <p className="text-green-800 font-bold text-base">Puzzle solved!</p>
+          <p className="text-green-800 font-bold text-base">{t("solve.puzzleSolved")}</p>
           <p className="text-green-700 text-sm">
-            You solved this in{" "}
-            <span className="font-mono font-bold">{formatTime(solveTimeMs)}</span>
+            {t("solve.solvedIn", { time: formatTime(solveTimeMs) })}
           </p>
         </div>
           <ShareButton
@@ -80,7 +81,7 @@ export default function SolveResultCard({
             <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.252 5.622 5.912-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
             </svg>
-            Share
+            {t("solve.share")}
           </ShareButton>
       </div>
 
@@ -89,7 +90,7 @@ export default function SolveResultCard({
         <div className="grid grid-cols-2 divide-x divide-gray-100 border-b border-gray-100">
           <div className="px-4 py-3 text-center">
             <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">
-              Average solve
+              {t("solve.avgSolve")}
             </p>
             <p className="font-mono font-bold text-gray-800">
               {avgSolveMs !== null ? formatTime(avgSolveMs) : "—"}
@@ -97,10 +98,10 @@ export default function SolveResultCard({
           </div>
           <div className="px-4 py-3 text-center">
             <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">
-              Top 10% solve in
+              {t("solve.top10")}
             </p>
             <p className="font-mono font-bold text-gray-800">
-              {top10PctMs !== null ? `under ${formatTime(top10PctMs)}` : "—"}
+              {top10PctMs !== null ? t("solve.under", { time: formatTime(top10PctMs) }) : "—"}
             </p>
           </div>
         </div>
@@ -119,7 +120,7 @@ export default function SolveResultCard({
       {/* Leaderboard */}
       <div className="px-4 py-3">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-          Top 10 fastest
+          {t("solve.top10Fastest")}
         </p>
         {loadingBoard ? (
           <div className="space-y-2">
@@ -133,7 +134,7 @@ export default function SolveResultCard({
           </div>
         ) : leaderboard.length === 0 ? (
           <p className="text-sm text-gray-400 italic">
-            No recorded solves yet — you&apos;re the first!
+            {t("solve.firstSolver")}
           </p>
         ) : (
           <ol className="space-y-1">
@@ -153,7 +154,7 @@ export default function SolveResultCard({
                   <span>{entry.displayName}</span>
                   {entry.isCurrentUser && (
                     <span className="text-xs bg-blue-200 text-blue-700 px-1 rounded">
-                      you
+                      {t("solve.you")}
                     </span>
                   )}
                 </span>

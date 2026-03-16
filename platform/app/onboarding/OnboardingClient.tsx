@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "@/components/i18n/LocaleProvider";
 import { signIn } from "next-auth/react";
 
 interface Props {
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export default function OnboardingClient({ lichessUsername, chessComUsername, refCode }: Props) {
+  const { t } = useTranslation();
   const [lichessError, setLichessError] = useState<string | null>(null);
   const [ccError, setCcError] = useState<string | null>(null);
   const [lichessPending, setLichessPending] = useState(false);
@@ -87,7 +89,7 @@ export default function OnboardingClient({ lichessUsername, chessComUsername, re
             <p className="text-sm font-semibold text-gray-800">Lichess</p>
             {lichessUsername ? (
               <p className="text-xs text-gray-500">
-                Connected as{" "}
+                {t("onboarding.connectedAs")}{" "}
                 <a
                   href={`https://lichess.org/@/${lichessUsername}`}
                   target="_blank"
@@ -98,12 +100,12 @@ export default function OnboardingClient({ lichessUsername, chessComUsername, re
                 </a>
               </p>
             ) : (
-              <p className="text-xs text-gray-400">Enter your username</p>
+              <p className="text-xs text-gray-400">{t("onboarding.enterUsername")}</p>
             )}
           </div>
           {lichessUsername && (
             <span className="ml-auto text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-full px-3 py-1">
-              Connected ✓
+              {t("onboarding.connected")}
             </span>
           )}
         </div>
@@ -113,7 +115,7 @@ export default function OnboardingClient({ lichessUsername, chessComUsername, re
             <input
               type="text"
               name="username"
-              placeholder="Your Lichess username"
+              placeholder={t("onboarding.lichessPlaceholder")}
               autoComplete="off"
               required
               className="flex-1 text-sm text-gray-900 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
@@ -123,7 +125,7 @@ export default function OnboardingClient({ lichessUsername, chessComUsername, re
               disabled={lichessPending}
               className="text-sm font-medium bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-700 disabled:opacity-50"
             >
-              {lichessPending ? "Checking…" : "Connect"}
+              {lichessPending ? t("onboarding.checking") : t("onboarding.connect")}
             </button>
           </form>
         )}
@@ -143,7 +145,7 @@ export default function OnboardingClient({ lichessUsername, chessComUsername, re
             <p className="text-sm font-semibold text-gray-800">Chess.com</p>
             {chessComUsername ? (
               <p className="text-xs text-gray-500">
-                Connected as{" "}
+                {t("onboarding.connectedAs")}{" "}
                 <a
                   href={`https://www.chess.com/member/${chessComUsername}`}
                   target="_blank"
@@ -154,12 +156,12 @@ export default function OnboardingClient({ lichessUsername, chessComUsername, re
                 </a>
               </p>
             ) : (
-              <p className="text-xs text-gray-400">Enter your username</p>
+              <p className="text-xs text-gray-400">{t("onboarding.enterUsername")}</p>
             )}
           </div>
           {chessComUsername && (
             <span className="ml-auto text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-full px-3 py-1">
-              Connected ✓
+              {t("onboarding.connected")}
             </span>
           )}
         </div>
@@ -169,7 +171,7 @@ export default function OnboardingClient({ lichessUsername, chessComUsername, re
             <input
               type="text"
               name="username"
-              placeholder="Your Chess.com username"
+              placeholder={t("onboarding.chesscomPlaceholder")}
               autoComplete="off"
               required
               className="flex-1 text-sm text-gray-900 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
@@ -179,7 +181,7 @@ export default function OnboardingClient({ lichessUsername, chessComUsername, re
               disabled={ccPending}
               className="text-sm font-medium bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50"
             >
-              {ccPending ? "Checking…" : "Connect"}
+              {ccPending ? t("onboarding.checking") : t("onboarding.connect")}
             </button>
           </form>
         )}
@@ -199,19 +201,19 @@ export default function OnboardingClient({ lichessUsername, chessComUsername, re
         }`}
         aria-disabled={!hasLinked}
       >
-        Continue to my puzzles →
+        {t("onboarding.continue")}
       </a>
 
       {!hasLinked && (
         <p className="text-center text-xs text-gray-400">
-          Connect at least one account to continue.
+          {t("onboarding.connectAtLeastOne")}
         </p>
       )}
 
       {hasLinked && (
         <p className="text-center text-xs text-gray-400 pt-2">
           <a href="/api/auth/signout" className="hover:underline">
-            Sign out
+            {t("dashboard.signOut")}
           </a>
         </p>
       )}

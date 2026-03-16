@@ -1,7 +1,9 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import OnboardingClient from "./OnboardingClient";
+import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
 
 export const metadata = {
   title: "Get Started — Cassandra Chess",
@@ -13,6 +15,8 @@ export default async function OnboardingPage({
   searchParams: Promise<{ ref?: string }>;
 }) {
   const { ref } = await searchParams;
+  const cookieStore = await cookies();
+  const t = getT(resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value));
   const session = await auth();
 
   let lichessUsername: string | null = null;
@@ -37,10 +41,10 @@ export default async function OnboardingPage({
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Connect your account
+            {t("onboarding.title")}
           </h1>
           <p className="text-gray-500">
-            Enter your Lichess or Chess.com username to get puzzles from your own games.
+            {t("onboarding.subtitle")}
           </p>
         </div>
 
@@ -51,9 +55,9 @@ export default async function OnboardingPage({
         />
 
         <p className="text-center text-xs text-gray-400 mt-8">
-          Already set up?{" "}
+          {t("onboarding.alreadySetUp")}{" "}
           <a href="/dashboard" className="text-blue-600 hover:underline">
-            Go to your dashboard →
+            {t("onboarding.goToDashboard")}
           </a>
         </p>
       </div>

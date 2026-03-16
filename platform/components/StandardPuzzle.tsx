@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import { useTranslation } from "@/components/i18n/LocaleProvider";
 import { Chess } from "chess.js";
 import dynamic from "next/dynamic";
 import { BoardSkeleton } from "./Skeleton";
@@ -38,6 +39,7 @@ export default function StandardPuzzle({
   timeControl,
   drillTargetMs,
 }: StandardPuzzleProps) {
+  const { t } = useTranslation();
   const solution = solutionMoves.trim().split(/\s+/);
   const [chess] = useState(() => new Chess(solvingFen));
   const [fen, setFen] = useState(solvingFen);
@@ -196,7 +198,7 @@ export default function StandardPuzzle({
       {phase === "playing" && (
         <div className="flex items-center justify-between w-full">
           <p className="text-sm text-gray-600 font-medium">
-            Find the best move for {boardOrientation}.
+            {t("puzzle.findBestMove", { color: boardOrientation })}
           </p>
           {hintLevel < 2 && (
             <button
@@ -206,19 +208,19 @@ export default function StandardPuzzle({
               }}
               className="text-xs text-gray-400 hover:text-gray-600 underline"
             >
-              {hintLevel === 0 ? "Hint" : "Show destination"}
+              {hintLevel === 0 ? t("puzzle.hint") : t("puzzle.showDestination")}
             </button>
           )}
         </div>
       )}
       {phase === "opponent" && (
         <p className="text-sm text-blue-600 font-medium animate-pulse">
-          Opponent is responding…
+          {t("puzzle.opponentResponding")}
         </p>
       )}
       {phase === "wrong" && (
         <p className="text-sm text-red-600 font-medium">
-          Not the best move. Try again.
+          {t("puzzle.wrongMove")}
         </p>
       )}
 
@@ -240,7 +242,7 @@ export default function StandardPuzzle({
       {/* Solved but waiting for API response */}
       {phase === "solved" && !attemptResult && (
         <div className="w-full rounded-xl border border-green-200 bg-green-50 p-4 text-center">
-          <p className="text-green-800 font-bold">Puzzle solved!</p>
+          <p className="text-green-800 font-bold">{t("puzzle.solved")}</p>
           <div className="mt-2 h-4 w-32 mx-auto bg-green-200 animate-pulse rounded" />
         </div>
       )}

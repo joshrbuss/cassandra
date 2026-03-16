@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import { useTranslation } from "@/components/i18n/LocaleProvider";
 import { Chess } from "chess.js";
 import dynamic from "next/dynamic";
 import { BoardSkeleton } from "@/components/Skeleton";
@@ -49,6 +50,7 @@ export default function TrainPuzzleShell({
   playerColor,
   gameUrl,
 }: TrainPuzzleShellProps) {
+  const { t } = useTranslation();
   const solution = solutionMoves.trim().split(/\s+/);
   // Use stored playerColor from the game; fall back to FEN turn for library puzzles
   const boardOrientation: "white" | "black" =
@@ -172,12 +174,12 @@ export default function TrainPuzzleShell({
 
   const evalSubLabel =
     evalCp === null || evalCp === undefined
-      ? "evaluation"
+      ? t("train.evaluation")
       : evalCp > 0
-        ? "pawns up"
+        ? t("train.pawnsUp")
         : evalCp < 0
-          ? "pawns down"
-          : "even";
+          ? t("train.pawnsDown")
+          : t("train.even");
 
   return (
     <div className="bg-white w-full">
@@ -185,14 +187,14 @@ export default function TrainPuzzleShell({
       <div className="flex items-start justify-between mb-5">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-1">
-            From your games
+            {t("train.fromYourGames")}
           </p>
           <h1 className="text-2xl font-bold text-gray-900 leading-tight">
-            {opponentUsername ? `vs ${opponentUsername}` : "Your game"}
+            {opponentUsername ? t("train.vsOpponent", { name: opponentUsername }) : t("train.yourGame")}
           </h1>
           <p className="text-sm text-gray-500 mt-0.5">
             {formattedDate && <span>{formattedDate} · </span>}
-            Find the best move for {solvingFen.split(" ")[1] === "b" ? "black" : "white"}
+            {t("train.findBestMove", { color: solvingFen.split(" ")[1] === "b" ? "black" : "white" })}
           </p>
         </div>
         {gameResult && (
@@ -205,7 +207,7 @@ export default function TrainPuzzleShell({
                   : "bg-gray-100 text-gray-500"
             }`}
           >
-            {gameResult === "win" ? "You won" : gameResult === "loss" ? "You lost" : "Draw"}
+            {gameResult === "win" ? t("train.youWon") : gameResult === "loss" ? t("train.youLost") : t("train.draw")}
           </span>
         )}
       </div>
@@ -214,7 +216,7 @@ export default function TrainPuzzleShell({
       <div className="grid grid-cols-3 gap-3 mb-5">
         <div className="border border-gray-100 rounded-xl p-3 text-center">
           <p className="text-xl font-bold text-gray-900">{moveNumber ?? "—"}</p>
-          <p className="text-[11px] text-gray-400 mt-0.5 uppercase tracking-wide">position</p>
+          <p className="text-[11px] text-gray-400 mt-0.5 uppercase tracking-wide">{t("train.position")}</p>
         </div>
         <div className="border border-gray-100 rounded-xl p-3 text-center">
           <p className="text-xl font-bold text-gray-900">{evalLabel}</p>
@@ -222,7 +224,7 @@ export default function TrainPuzzleShell({
         </div>
         <div className="border border-gray-100 rounded-xl p-3 text-center">
           <p className="text-xl font-bold text-gray-900">{elapsedSec}s</p>
-          <p className="text-[11px] text-gray-400 mt-0.5 uppercase tracking-wide">elapsed</p>
+          <p className="text-[11px] text-gray-400 mt-0.5 uppercase tracking-wide">{t("train.elapsed")}</p>
         </div>
       </div>
 
@@ -259,12 +261,12 @@ export default function TrainPuzzleShell({
       <div className="mt-3 min-h-[24px]">
         {phase === "opponent" && (
           <p className="text-sm text-blue-600 font-medium animate-pulse">
-            Opponent is responding…
+            {t("puzzle.opponentResponding")}
           </p>
         )}
         {phase === "wrong" && (
           <p className="text-sm text-red-500 font-medium">
-            Not the best move. Try again.
+            {t("puzzle.wrongMove")}
           </p>
         )}
       </div>
@@ -281,7 +283,7 @@ export default function TrainPuzzleShell({
                 }}
                 className="text-sm text-gray-400 hover:text-gray-700 underline underline-offset-2 text-left"
               >
-                {hintLevel === 0 ? "Hint" : "Show destination"}
+                {hintLevel === 0 ? t("train.hint") : t("train.showDestination")}
               </button>
             )}
             {gameUrl && (
@@ -291,7 +293,7 @@ export default function TrainPuzzleShell({
                 rel="noopener noreferrer"
                 className="text-sm text-blue-500 hover:text-blue-700"
               >
-                View original game →
+                {t("train.viewOriginalGame")}
               </a>
             )}
           </div>
@@ -299,7 +301,7 @@ export default function TrainPuzzleShell({
             href="/train"
             className="inline-flex items-center gap-1 bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors"
           >
-            Next puzzle →
+            {t("train.nextPuzzle")}
           </Link>
         </div>
       )}
@@ -319,10 +321,10 @@ export default function TrainPuzzleShell({
           />
           <div className="mt-4 flex items-center justify-between">
             <Link href="/train" className="inline-flex items-center gap-1 bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors">
-              Next puzzle →
+              {t("train.nextPuzzle")}
             </Link>
             <Link href="/dashboard" className="text-sm text-gray-400 hover:underline">
-              Done for now
+              {t("train.doneForNow")}
             </Link>
           </div>
         </div>
@@ -330,7 +332,7 @@ export default function TrainPuzzleShell({
 
       {phase === "solved" && !attemptResult && (
         <div className="mt-4 rounded-xl border border-green-200 bg-green-50 p-4 text-center">
-          <p className="text-green-800 font-bold">Puzzle solved!</p>
+          <p className="text-green-800 font-bold">{t("train.puzzleSolved")}</p>
           <div className="mt-2 h-4 w-32 mx-auto bg-green-200 animate-pulse rounded" />
         </div>
       )}
