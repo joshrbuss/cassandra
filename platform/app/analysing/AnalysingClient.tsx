@@ -26,6 +26,7 @@ export default function AnalysingClient({ platform }: Props) {
   const [gamesFound, setGamesFound] = useState<number | null>(null);
   const [puzzlesBuilt, setPuzzlesBuilt] = useState<number | null>(null);
   const [firstPuzzleReady, setFirstPuzzleReady] = useState(false);
+  const [firstPuzzleDest, setFirstPuzzleDest] = useState("/train");
   const [error, setError] = useState<string | null>(null);
 
   // Progress: 0-100
@@ -48,6 +49,7 @@ export default function AnalysingClient({ platform }: Props) {
         gamesProcessed?: number;
         puzzlesImported?: number;
         errors?: string[];
+        firstPuzzleId?: string | null;
       };
 
       if (!res.ok || !data.ok) {
@@ -87,11 +89,14 @@ export default function AnalysingClient({ platform }: Props) {
       ));
 
       await delay(500);
+
+      const dest = data.firstPuzzleId ? `/train/${data.firstPuzzleId}` : "/train";
+      setFirstPuzzleDest(dest);
       setFirstPuzzleReady(true);
 
       // Auto-redirect after a moment
       await delay(2000);
-      router.push("/train");
+      router.push(dest);
     } catch {
       setError("Something went wrong. Please try again.");
     }
@@ -140,7 +145,7 @@ export default function AnalysingClient({ platform }: Props) {
       {/* CTA when done */}
       {firstPuzzleReady && (
         <button
-          onClick={() => router.push("/train")}
+          onClick={() => router.push(firstPuzzleDest)}
           className="w-full h-12 rounded-full bg-[#c8942a] text-white font-semibold hover:bg-[#b5852a] transition-colors shadow-lg shadow-[#c8942a]/20 text-sm"
         >
           Your first puzzle is ready &rarr;
