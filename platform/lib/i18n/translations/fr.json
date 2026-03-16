@@ -258,6 +258,7 @@
   "privacy.thirdParty.metaPixel": "Meta Pixel — suivi de la performance publicitaire. Nous partageons l'e-mail haché et le pays avec Meta pour le ciblage d'audience.",
   "privacy.thirdParty.vercel": "Vercel Analytics — performance, pages vues, données d'appareil et de pays",
   "privacy.thirdParty.vercelFull": "Vercel — héberge l'application et fournit des analyses incluant les pages vues, le type d'appareil, le navigateur, le système d'exploitation, le pays et le site web référent. Ces données sont pseudonymes et ne sont pas liées aux comptes utilisateurs individuels. Vercel traite également les e-mails entrants envoyés à josh@cassandrachess.com.",
+  "privacy.thirdParty.speedInsights": "Vercel Speed Insights — collecte les Core Web Vitals et les métriques de performance incluant les temps de chargement des pages, le type d'appareil et le navigateur. Ces données sont pseudonymes et ne sont pas liées aux comptes utilisateurs individuels.",
   "privacy.thirdParty.supabase": "Supabase — base de données hébergée aux États-Unis",
   "privacy.thirdParty.resend": "Resend — livraison d'e-mails",
   "privacy.thirdParty.stripe": "Stripe — traitement des paiements",
@@ -296,7 +297,7 @@
   "cookie.privacyLink": "Politique de confidentialité →",
   "cookie.preferences": "Préférences de cookies",
 
-  "changelog.message": "🆕 Mise à jour Cassandra Chess — drapeaux de pays, analytiques, politique de confidentialité et bien plus. Chess On ! 🏆",
+  "changelog.message": "🆕 Cassandra Chess v1.2 — contrôles des cookies, politique de confidentialité, améliorations de vitesse et plus. Chess On ! 🏆",
   "changelog.seeMore": "Voir les nouveautés →",
 
   "landing.hero.sellingPoint": "Marre de payer pour les analyses de parties ? Nous analysons vos parties gratuitement et transformons vos erreurs en puzzles.",
