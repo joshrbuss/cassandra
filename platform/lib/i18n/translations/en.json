@@ -76,6 +76,11 @@
   "nav.home": "← Home",
   "nav.battles": "← Battles",
 
+  "learn.title": "Learn Chess Tactics",
+  "learn.subtitle": "Guides on patterns, techniques, and training methods — each with interactive puzzles.",
+  "learn.minRead": "min read",
+  "learn.cta": "Start training free →",
+
   "dashboard.title": "Dashboard — Cassandra Chess",
   "dashboard.brand": "Cassandra Chess",
   "dashboard.greeting": "Chess On, {name}!",

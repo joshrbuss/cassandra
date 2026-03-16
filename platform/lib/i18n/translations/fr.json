@@ -76,6 +76,11 @@
   "nav.home": "← Accueil",
   "nav.battles": "← Batailles",
 
+  "learn.title": "Apprendre les tactiques d'échecs",
+  "learn.subtitle": "Guides sur les motifs, techniques et méthodes d'entraînement — chacun avec des puzzles interactifs.",
+  "learn.minRead": "min de lecture",
+  "learn.cta": "Commencer l'entraînement gratuit →",
+
   "dashboard.title": "Tableau de bord — Cassandra Chess",
   "dashboard.brand": "Cassandra Chess",
   "dashboard.greeting": "En avant, {name} !",

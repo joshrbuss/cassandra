@@ -1,54 +1,99 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { ARTICLES } from "@/lib/articles";
+import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
+import SocialLinks from "@/components/SocialLinks";
+import CookiePreferencesLink from "@/components/CookiePreferencesLink";
 
 export const metadata: Metadata = {
-  title: "Learn Chess Tactics — Cassandra Chess Puzzles",
+  title: "Learn Chess Tactics — Cassandra Chess",
   description:
-    "Free chess tactic guides covering puzzles for beginners, tactics training, endgame puzzles, retrograde analysis, and more.",
+    "Free chess tactic guides covering puzzles, blunder training, personalised tactics, and more. Improve your game with real-game positions.",
   openGraph: {
-    title: "Learn Chess Tactics — Cassandra Chess Puzzles",
+    title: "Learn Chess Tactics — Cassandra Chess",
     description:
-      "Free guides on chess tactics, endgame puzzles, retrograde analysis, and opponent prediction training.",
+      "Free guides on chess tactics, personalised puzzles, and blunder training.",
     type: "website",
   },
 };
 
-export default function LearnPage() {
+function estimateReadTime(content: string): number {
+  const words = content.split(/\s+/).length;
+  return Math.max(1, Math.round(words / 220));
+}
+
+export default async function LearnPage() {
+  const cookieStore = await cookies();
+  const t = getT(resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value));
+
   return (
-    <main className="min-h-screen bg-gray-50 px-4 py-12">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-8">
-          <Link href="/" className="text-sm text-blue-600 hover:underline">
-            ← Back to puzzles
+    <main className="min-h-screen bg-white">
+      {/* Obsidian header */}
+      <header className="bg-[#0e0e0e] px-4 sm:px-6 py-12">
+        <div className="max-w-3xl mx-auto">
+          <Link href="/" className="text-[#c8942a] text-sm hover:underline">
+            {t("nav.home")}
           </Link>
+          <h1 className="text-3xl font-extrabold text-white mt-3">
+            {t("learn.title")}
+          </h1>
+          <p className="text-gray-400 mt-2 text-sm">
+            {t("learn.subtitle")}
+          </p>
         </div>
+      </header>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-3">
-          Learn Chess Tactics
-        </h1>
-        <p className="text-gray-500 mb-10">
-          Guides on patterns, techniques, and training methods — each with interactive puzzles.
-        </p>
-
-        <ol className="space-y-4">
-          {ARTICLES.map((article) => (
-            <li key={article.slug}>
+      {/* Articles list */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+        <div className="space-y-4">
+          {ARTICLES.map((article) => {
+            const readTime = estimateReadTime(article.content);
+            return (
               <Link
+                key={article.slug}
                 href={`/learn/${article.slug}`}
-                className="block bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:border-blue-300 hover:shadow-md transition-all"
+                className="block bg-[#f8f7f4] rounded-xl border border-[#eee] p-5 hover:border-[#c8942a] transition-colors"
               >
-                <h2 className="font-semibold text-gray-900 mb-1 group-hover:text-blue-600">
+                <h2 className="font-semibold text-[#1a1a1a] mb-1">
                   {article.title}
                 </h2>
-                <p className="text-sm text-gray-500 line-clamp-2">
+                <p className="text-xs text-[#666] leading-relaxed mb-2">
                   {article.metaDescription}
                 </p>
+                <span className="text-[10px] text-[#999] uppercase tracking-wider">
+                  {readTime} {t("learn.minRead")}
+                </span>
               </Link>
-            </li>
-          ))}
-        </ol>
+            );
+          })}
+        </div>
+
+        {/* CTA */}
+        <div className="mt-10 text-center">
+          <Link
+            href="/connect"
+            className="inline-flex items-center justify-center h-12 px-8 rounded-full bg-[#c8942a] text-white font-semibold hover:bg-[#b5852a] transition-colors shadow-lg shadow-[#c8942a]/20"
+          >
+            {t("learn.cta")}
+          </Link>
+        </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-[#0e0e0e] px-4 sm:px-6 py-6">
+        <div className="max-w-5xl mx-auto flex flex-col items-center gap-3">
+          <SocialLinks variant="dark" />
+          <div className="flex items-center justify-center gap-3 text-xs">
+            <Link href="/privacy" className="text-[#c8942a]/70 hover:text-[#c8942a] transition-colors">{t("legal.privacy")}</Link>
+            <span className="text-[#444]">·</span>
+            <Link href="/terms" className="text-[#c8942a]/70 hover:text-[#c8942a] transition-colors">{t("legal.terms")}</Link>
+            <span className="text-[#444]">·</span>
+            <CookiePreferencesLink />
+          </div>
+          <p className="text-xs text-[#666]">© 2026 Cassandra Chess</p>
+        </div>
+      </footer>
     </main>
   );
 }

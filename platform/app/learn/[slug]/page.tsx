@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: article.metaTitle,
       description: article.metaDescription,
       type: "article",
-      siteName: "Cassandra Chess Puzzles",
+      siteName: "Cassandra Chess",
     },
     twitter: {
       card: "summary",
@@ -34,33 +34,66 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+function estimateReadTime(content: string): number {
+  const words = content.split(/\s+/).length;
+  return Math.max(1, Math.round(words / 220));
+}
+
 /** Convert article content (markdown-ish headings + paragraphs) to JSX */
 function renderContent(content: string) {
   const sections = content.split(/\n\n+/);
   return sections.map((block, i) => {
     if (block.startsWith("## ")) {
       return (
-        <h2 key={i} className="text-xl font-bold text-gray-900 mt-8 mb-3">
+        <h2 key={i} className="text-xl font-bold text-[#1a1a1a] mt-8 mb-3">
           {block.slice(3)}
         </h2>
       );
     }
-    if (block.startsWith("**") && block.endsWith("**")) {
-      // Bold-only block — treat as subheading
-      const inner = block.slice(2, -2);
+    if (block.startsWith("- ")) {
+      const items = block.split("\n").filter((l) => l.startsWith("- "));
       return (
-        <h3 key={i} className="font-semibold text-gray-900 mt-4 mb-1">
-          {inner}
-        </h3>
+        <ul key={i} className="list-disc list-inside space-y-1 text-sm text-[#444] leading-relaxed">
+          {items.map((item, j) => {
+            const text = item.slice(2);
+            const parts = text.split(/(\*\*[^*]+\*\*)/g);
+            return (
+              <li key={j}>
+                {parts.map((part, k) =>
+                  part.startsWith("**") && part.endsWith("**")
+                    ? <strong key={k}>{part.slice(2, -2)}</strong>
+                    : part
+                )}
+              </li>
+            );
+          })}
+        </ul>
       );
     }
-    // Handle inline bold within paragraphs
-    const parts = block.split(/(\*\*[^*]+\*\*)/g);
+    // Handle inline bold, links within paragraphs
+    const parts = block.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g);
     return (
-      <p key={i} className="text-gray-700 leading-relaxed">
+      <p key={i} className="text-sm text-[#444] leading-relaxed">
         {parts.map((part, j) => {
           if (part.startsWith("**") && part.endsWith("**")) {
-            return <strong key={j}>{part.slice(2, -2)}</strong>;
+            return <strong key={j} className="text-[#1a1a1a]">{part.slice(2, -2)}</strong>;
+          }
+          const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+          if (linkMatch) {
+            return (
+              <Link key={j} href={linkMatch[2]} className="text-[#c8942a] hover:underline">
+                {linkMatch[1]}
+              </Link>
+            );
+          }
+          // Handle italic
+          const italicParts = part.split(/(\*[^*]+\*)/g);
+          if (italicParts.length > 1) {
+            return italicParts.map((ip, k) =>
+              ip.startsWith("*") && ip.endsWith("*") && !ip.startsWith("**")
+                ? <em key={`${j}-${k}`}>{ip.slice(1, -1)}</em>
+                : ip
+            );
           }
           return part;
         })}
@@ -74,35 +107,36 @@ export default async function ArticlePage({ params }: Props) {
   const article = getArticle(slug);
   if (!article) notFound();
 
-  // Pick up to 3 themes for embedded puzzles
+  const readTime = estimateReadTime(article.content);
   const embedThemes = article.themes.slice(0, 3);
 
   return (
-    <main className="min-h-screen bg-gray-50 px-4 py-12">
-      <article className="max-w-2xl mx-auto">
-        {/* Breadcrumb */}
-        <nav className="mb-8 flex items-center gap-2 text-sm text-gray-400">
-          <Link href="/" className="hover:text-blue-600 hover:underline">Home</Link>
-          <span>/</span>
-          <Link href="/learn" className="hover:text-blue-600 hover:underline">Learn</Link>
-          <span>/</span>
-          <span className="text-gray-600">{article.title}</span>
-        </nav>
+    <main className="min-h-screen bg-white">
+      {/* Obsidian header */}
+      <header className="bg-[#0e0e0e] px-4 sm:px-6 py-10">
+        <div className="max-w-3xl mx-auto">
+          <nav className="flex items-center gap-2 text-xs text-gray-500 mb-4">
+            <Link href="/" className="text-[#c8942a] hover:underline">Home</Link>
+            <span>/</span>
+            <Link href="/learn" className="text-[#c8942a] hover:underline">Learn</Link>
+          </nav>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white leading-snug">
+            {article.title}
+          </h1>
+          <p className="text-xs text-gray-500 mt-3">{readTime} min read</p>
+        </div>
+      </header>
 
-        {/* Title */}
-        <h1 className="text-3xl font-bold text-gray-900 mb-6 leading-snug">
-          {article.title}
-        </h1>
-
-        {/* Article body */}
-        <div className="prose-like space-y-4">
+      {/* Article body */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+        <div className="space-y-4">
           {renderContent(article.content)}
         </div>
 
         {/* Embedded interactive puzzles */}
         {embedThemes.length > 0 && (
-          <section className="mt-12">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
+          <section className="mt-12 bg-[#f8f7f4] rounded-xl border border-[#eee] p-6">
+            <h2 className="text-lg font-bold text-[#1a1a1a] mb-4">
               Try It — Interactive Puzzles
             </h2>
             <div className="space-y-3">
@@ -114,18 +148,18 @@ export default async function ArticlePage({ params }: Props) {
         )}
 
         {/* Footer nav */}
-        <div className="mt-12 pt-8 border-t border-gray-200 flex items-center justify-between text-sm">
-          <Link href="/learn" className="text-blue-600 hover:underline">
+        <div className="mt-12 pt-8 border-t border-[#eee] flex items-center justify-between text-sm">
+          <Link href="/learn" className="text-[#c8942a] hover:underline">
             ← All articles
           </Link>
           <Link
-            href="/"
-            className="inline-flex items-center justify-center h-9 px-5 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors text-sm"
+            href="/connect"
+            className="inline-flex items-center justify-center h-9 px-5 rounded-full bg-[#c8942a] text-white font-semibold hover:bg-[#b5852a] transition-colors text-sm"
           >
             Start training →
           </Link>
         </div>
-      </article>
+      </div>
     </main>
   );
 }

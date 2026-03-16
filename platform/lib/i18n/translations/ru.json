@@ -76,6 +76,11 @@
   "nav.home": "← Главная",
   "nav.battles": "← Дуэли",
 
+  "learn.title": "Изучение шахматных тактик",
+  "learn.subtitle": "Руководства по паттернам, техникам и методам тренировки — каждое с интерактивными задачами.",
+  "learn.minRead": "мин чтения",
+  "learn.cta": "Начать бесплатное обучение →",
+
   "dashboard.title": "Панель — Cassandra Chess",
   "dashboard.brand": "Cassandra Chess",
   "dashboard.greeting": "Вперёд, {name}!",

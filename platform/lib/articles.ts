@@ -262,6 +262,145 @@ After answering, the puzzle reveals the idea: "Your opponent was threatening a b
 
 Players who practice opponent prediction become harder to beat. They see threats coming, defend accurately, and avoid the panicked reactions that cause rating losses. Over time, this also improves their attacking play—because understanding threats from the opponent's perspective helps you construct more unstoppable ones yourself.`,
   },
+  {
+    slug: "learn-from-chess-blunders",
+    title: "How to Actually Learn From Your Chess Blunders (Not Just Review Them)",
+    metaTitle: "Learn From Chess Blunders — Turn Mistakes Into Improvement",
+    metaDescription:
+      "Reviewing blunders isn't enough. Here's how to turn your chess mistakes into lasting improvement using targeted puzzle training.",
+    themes: ["fork", "pin", "hangingPiece"],
+    content: `Every chess player reviews their blunders. You lose a game, open the analysis board, and click through the moves until Stockfish highlights the moment you went wrong. You stare at the position, nod, and close the tab. Three games later, you make the same mistake.
+
+## Why Passive Review Fails
+
+Reviewing a blunder after the fact is passive learning. You're consuming information, not producing it. Your brain registers "I shouldn't have done that" but doesn't build the neural pathway that would prevent it next time.
+
+Research on skill acquisition is clear: recognition is not the same as recall. You might recognise your blunder when someone points it out. But in a live game, with the clock ticking and your opponent staring at you, you need recall — the ability to see the danger before it happens, without a prompt.
+
+This is the gap between reviewing and training. Reviewing tells you what went wrong. Training makes sure it doesn't happen again.
+
+## Active Drilling vs Reviewing
+
+Active drilling means you're placed back into the exact position where you made the mistake — or a structurally similar one — and forced to find the correct move yourself. No analysis arrows. No engine suggestions. Just you and the board.
+
+When you solve a position actively, you're building the pattern into your long-term memory. Each repetition strengthens the connection. After five or six successful solves of the same motif, you start seeing it in your games without consciously looking for it.
+
+This is the difference between a player who "knows about back-rank mates" and a player who never gets back-rank mated. The first one reviewed. The second one drilled.
+
+## Spaced Repetition in Chess
+
+Spaced repetition is the most efficient memorisation technique known to cognitive science. Instead of practising a pattern once and moving on, you revisit it at increasing intervals — after one day, then three days, then a week.
+
+Each time you successfully recall the pattern, the interval grows. Each time you fail, it shrinks. Over time, the patterns that are hardest for you get the most practice, while easy ones fade into the background.
+
+Applied to chess: the blunders you keep making should resurface as puzzles more often than the ones you've already corrected. This is targeted training — not random puzzle solving.
+
+## How Cassandra Chess Automates This
+
+Cassandra analyses your actual games from Chess.com and Lichess. When you make a blunder — a move that drops 60+ centipawns — we extract that position and turn it into a puzzle. The puzzle shows you the position before your mistake and asks: what should you have played?
+
+This means every puzzle you solve on Cassandra is directly relevant to your weaknesses. You're not solving random positions from random games. You're drilling the exact patterns where you personally go wrong.
+
+Other platforms charge for game analysis. We run Stockfish on every game for free and turn the results into personalised training. Connect your account and stop reviewing your blunders — start training on them.
+
+**[Stop reviewing. Start training →](/connect)**`,
+  },
+  {
+    slug: "free-chess-puzzles",
+    title: "The Best Free Chess Puzzles in 2026 — And Why Personalised Ones Work Better",
+    metaTitle: "Free Chess Puzzles 2026 — Unlimited & Personalised",
+    metaDescription:
+      "Chess.com charges for more puzzles and game analysis. Here's how to get unlimited free chess puzzles — including ones built from your own games.",
+    themes: ["mateIn1", "mateIn2", "fork"],
+    content: `Chess puzzles are the backbone of tactical improvement. But in 2026, the puzzle landscape is split: some platforms lock their best content behind paywalls, while others offer millions of puzzles for free. Here's what you need to know.
+
+## The Lichess Open Database
+
+Lichess maintains the largest open-source chess puzzle database in the world — over 4 million puzzles, all free, all derived from real games. Every puzzle has a difficulty rating, themes, and a verified solution. The database is released under CC0, meaning anyone can use it for any purpose.
+
+This is genuinely remarkable. A decade ago, high-quality chess puzzles were locked inside expensive books. Today, millions of them are freely available to anyone with an internet connection.
+
+Cassandra Chess draws from this database for its general puzzle library. Every puzzle you solve in our library comes from a real game position, rated and themed by the Lichess community.
+
+## The Chess.com Paywall Problem
+
+Chess.com offers excellent puzzles, but free users are limited to a small number per day. Want more? That's a premium subscription. Want game analysis with engine evaluations? Premium again. Want to see where you blundered? You guessed it — premium.
+
+This creates a frustrating situation for improving players. The players who need the most practice — those making the most blunders — are the ones who can least afford unlimited access.
+
+## Why Generic Puzzles Have Limits
+
+Even with unlimited free puzzles, there's a fundamental problem: generic puzzles are generic. They're drawn from other people's games, featuring positions you may never encounter in your own play.
+
+A 1200-rated player who plays the Italian Game faces different tactical patterns than a 1200-rated player who plays the Sicilian. A player who struggles with endgame conversions needs different training than one who hangs pieces in the opening.
+
+Random puzzles improve your tactics generally. But targeted puzzles — ones that match your specific weaknesses — improve you faster.
+
+## The Personalised Puzzle Concept
+
+What if your puzzle training was built from your own games? Every blunder you make becomes a puzzle. Every position where you went wrong becomes a drill. Your training set is unique to you, targeting exactly the patterns where you lose rating points.
+
+This is what Cassandra Chess does. Connect your Chess.com or Lichess account, and we analyse your games with Stockfish — the same engine analysis that Chess.com charges for. We find your blunders and generate personalised puzzles from them.
+
+The result: a puzzle bank that's 100% relevant to your actual chess. No generic positions. No paying for analysis. Just targeted training on your real weaknesses.
+
+## Unlimited, Free, No Paywall
+
+Cassandra Chess is free. No puzzle limits. No subscription tiers. No paywalled game analysis. Connect your account, and your entire game history becomes your personal training ground.
+
+We believe chess improvement tools should be accessible to everyone — not locked behind a paywall that gates the players who need them most.
+
+**[Get your free personalised puzzles →](/connect)**`,
+  },
+  {
+    slug: "chess-tactics-trainer-personalised",
+    title: "Chess Tactics Trainer — Why Random Puzzles Are Holding You Back",
+    metaTitle: "Chess Tactics Trainer — Stop Solving Random Puzzles",
+    metaDescription:
+      "Most chess tactics trainers give you random positions. Here's why that doesn't work — and what to do instead.",
+    themes: ["pin", "skewer", "discoveredAttack"],
+    content: `You open your favourite chess tactics trainer. A position loads. You solve it — or you don't. Another position loads. Repeat for twenty minutes.
+
+This is how most chess players train tactics. And it works, to a point. Random puzzle solving will improve your pattern recognition and raise your rating. But there's a ceiling, and most players hit it without understanding why.
+
+## How Tactics Trainers Work
+
+A typical chess tactics trainer selects positions from a large database, filtered by your approximate difficulty level. As you solve puzzles, your puzzle rating adjusts — get one right and you see harder positions, get one wrong and you see easier ones.
+
+This adaptive difficulty is better than a fixed set. But the selection is still essentially random within your rating band. You might get a fork puzzle, then an endgame puzzle, then a back-rank mate, then another fork. There's no strategic logic to the sequence.
+
+## The Problem With Random Positions
+
+Random training treats every weakness equally. But your weaknesses aren't equal. You might be excellent at spotting forks but terrible at finding discovered attacks. A random trainer doesn't know this — it gives you roughly equal exposure to both motifs.
+
+The result: you spend significant training time on patterns you've already mastered, while undertraining the ones that actually cost you games. It's like a tennis player who practises serves and backhands equally when their backhand is fine and their serve is losing them matches.
+
+**Specificity matters.** The most efficient training targets your actual weaknesses, not a random sample of all possible weaknesses.
+
+## The Data Already Exists
+
+Here's the thing: your chess platforms already know your weaknesses. Every game you play on Chess.com or Lichess generates a complete record of your decisions. Every blunder is logged. Every pattern you missed is documented.
+
+The data to build a personalised training plan is sitting right there in your game history. The question is whether anyone is using it.
+
+## Training On Your Weaknesses
+
+Cassandra Chess connects to your Chess.com and Lichess accounts and analyses your actual games. We run Stockfish on every position and identify where you blundered — where your move was significantly worse than the best available move.
+
+Each blunder becomes a puzzle. The position before your mistake loads on the board. Your job: find what you should have played. No hints. No arrows. Just the position and the clock.
+
+Because these puzzles come from your own games, they target your specific blind spots. If you keep falling for the same knight fork pattern in the Sicilian, that's exactly what you'll be drilling. If your endgame technique falls apart under pressure, those are the positions you'll see.
+
+## Beyond the Random Ceiling
+
+Players who switch from random puzzle training to personalised training typically report faster improvement. The reason is simple: every minute of training is relevant. There's no wasted time on patterns you've already internalised.
+
+This doesn't mean random puzzles are useless — they're great for broadening your tactical vocabulary. But once you've built a foundation, the fastest path to improvement is targeted drilling on your documented weaknesses.
+
+**[Connect your account and start targeted training →](/connect)**
+
+*Want to try Cassandra's daily challenge? **[Cassandra's Prophecy →](/prophecy)** — a new brilliant puzzle every day.*`,
+  },
 ];
 
 export function getArticle(slug: string): Article | undefined {

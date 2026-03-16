@@ -76,6 +76,11 @@
   "nav.home": "← Início",
   "nav.battles": "← Batalhas",
 
+  "learn.title": "Aprender táticas de xadrez",
+  "learn.subtitle": "Guias sobre padrões, técnicas e métodos de treino — cada um com puzzles interativos.",
+  "learn.minRead": "min de leitura",
+  "learn.cta": "Comece a treinar grátis →",
+
   "dashboard.title": "Painel — Cassandra Chess",
   "dashboard.brand": "Cassandra Chess",
   "dashboard.greeting": "Bora jogar, {name}!",
