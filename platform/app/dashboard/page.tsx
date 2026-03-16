@@ -8,6 +8,7 @@ import LockedFeature from "@/components/LockedFeature";
 import SyncButton from "@/components/SyncButton";
 import ReferralBar from "@/components/ReferralBar";
 import { ensureReferralCode } from "@/lib/referral";
+import EmailPopup from "@/components/EmailPopup";
 import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
 
 export const metadata = {
@@ -36,6 +37,7 @@ export default async function DashboardPage() {
       lastSyncedAt: true,
       referralCode: true,
       referralCount: true,
+      email: true,
     },
   });
 
@@ -356,6 +358,12 @@ export default async function DashboardPage() {
           </p>
         </footer>
       </div>
+
+      {/* Email capture popup — shown once per session for users without email who have solved 3+ puzzles */}
+      <EmailPopup
+        hasNoEmail={!user?.email}
+        hasEnoughAttempts={userAttempts.length >= 3}
+      />
     </main>
   );
 }

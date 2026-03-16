@@ -122,6 +122,8 @@ model User {
   referralCount     Int       @default(0)
   /// True when user has earned paid status (via referrals or payment)
   isPaid            Boolean   @default(false)
+  /// Email address (set when user subscribes via in-app popup)
+  email             String?
   createdAt         DateTime  @default(now())
 
   puzzles          Puzzle[]
