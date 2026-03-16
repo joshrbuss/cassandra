@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "@/components/i18n/LocaleProvider";
 
 interface Props {
-  lastSyncedAt: string | null; // ISO string or null
+  lastSyncedAt: string | null;
 }
 
 function formatHoursAgo(isoString: string, t: (key: string, vars?: Record<string, string | number>) => string): string {
@@ -29,7 +29,7 @@ export default function SyncButton({ lastSyncedAt }: Props) {
 
   if (recentlySynced && status === "idle") {
     return (
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-[#666]">
         {t("sync.lastSynced", { time: formatHoursAgo(syncedAt!, t) })}
       </p>
     );
@@ -71,13 +71,13 @@ export default function SyncButton({ lastSyncedAt }: Props) {
         <button
           onClick={handleSync}
           disabled={status === "loading"}
-          className="text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 px-4 py-2 rounded-lg hover:bg-blue-100 disabled:opacity-50 transition-colors w-fit"
+          className="text-sm font-medium text-[#1a1a1a] bg-[#d8d4ce] px-4 py-2 rounded-lg hover:bg-[#ccc8c0] disabled:opacity-50 transition-colors w-fit"
         >
           {status === "loading" ? t("sync.syncing") : t("sync.syncNew")}
         </button>
       )}
       {message && (
-        <p className="text-xs text-gray-500">{message}</p>
+        <p className="text-xs text-[#c8942a] font-medium">{message}</p>
       )}
     </div>
   );

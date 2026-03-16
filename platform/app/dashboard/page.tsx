@@ -6,7 +6,7 @@ import Link from "next/link";
 import { getTotalImportedCount } from "@/lib/jobs/importGames";
 import LockedFeature from "@/components/LockedFeature";
 import SyncButton from "@/components/SyncButton";
-import ReferralWidget from "@/components/ReferralWidget";
+import ReferralBar from "@/components/ReferralBar";
 import { ensureReferralCode } from "@/lib/referral";
 import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
 
@@ -14,13 +14,13 @@ export const metadata = {
   title: "Dashboard — Cassandra Chess",
 };
 
+function displayName(u: { lichessUsername: string | null; chessComUsername: string | null }): string {
+  return u.lichessUsername ?? u.chessComUsername ?? "Anonymous";
+}
+
 export default async function DashboardPage() {
   const session = await auth();
-
-  // Must be signed in to see dashboard
-  if (!session?.userId) {
-    redirect("/onboarding");
-  }
+  if (!session?.userId) redirect("/onboarding");
 
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
@@ -39,16 +39,12 @@ export default async function DashboardPage() {
     },
   });
 
-  // No connected accounts → back to onboarding
-  if (!user?.lichessUsername && !user?.chessComUsername) {
-    redirect("/onboarding");
-  }
+  if (!user?.lichessUsername && !user?.chessComUsername) redirect("/onboarding");
 
-  const displayName =
-    user?.lichessUsername ?? user?.chessComUsername ?? "Player";
+  const name = user?.lichessUsername ?? user?.chessComUsername ?? "Player";
   const displayElo = user?.rawElo ?? user?.elo;
 
-  const [totalImported, userAttempts] = await Promise.all([
+  const [totalImported, userAttempts, streakLeaders, referralLeaders] = await Promise.all([
     user ? getTotalImportedCount(user.id) : Promise.resolve(0),
     user
       ? prisma.puzzleAttempt.findMany({
@@ -56,6 +52,28 @@ export default async function DashboardPage() {
           select: { success: true },
         })
       : Promise.resolve([]),
+    prisma.user.findMany({
+      where: { currentStreak: { gt: 0 } },
+      orderBy: { currentStreak: "desc" },
+      take: 10,
+      select: {
+        id: true,
+        lichessUsername: true,
+        chessComUsername: true,
+        currentStreak: true,
+      },
+    }),
+    prisma.user.findMany({
+      where: { referralCount: { gt: 0 } },
+      orderBy: { referralCount: "desc" },
+      take: 10,
+      select: {
+        id: true,
+        lichessUsername: true,
+        chessComUsername: true,
+        referralCount: true,
+      },
+    }),
   ]);
 
   const totalSolved = userAttempts.filter((a) => a.success).length;
@@ -64,190 +82,228 @@ export default async function DashboardPage() {
       ? Math.round((totalSolved / userAttempts.length) * 100)
       : null;
 
-  // Ensure referral code exists (generates lazily for existing users)
   const referralCode = user ? await ensureReferralCode(user.id) : "";
-
   const stripeLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
 
   const cookieStore = await cookies();
   const t = getT(resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value));
 
   return (
-    <main className="min-h-screen bg-stone-50 px-4 py-10">
-      <div className="max-w-lg mx-auto">
-        {/* Brand bar */}
-        <div className="flex items-center justify-between mb-6">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 bg-stone-900 rounded-md flex items-center justify-center">
-              <span className="text-amber-400 font-bold text-sm">C</span>
-            </div>
-            <span className="text-sm font-semibold text-stone-700 group-hover:text-stone-900 transition-colors">
-              {t("dashboard.brand")}
-            </span>
-          </Link>
-          {stripeLink && (
-            <a
-              href={stripeLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs font-medium text-purple-700 bg-purple-50 border border-purple-200 px-3 py-1.5 rounded-full hover:bg-purple-100 transition-colors"
-            >
-              {t("dashboard.goAdFree")}
-            </a>
-          )}
-        </div>
-
-        {/* Greeting + profile */}
-        <div className="mb-8">
-          <p className="text-sm text-stone-500 mb-1">
-            {t("dashboard.greeting", { name: displayName })}
-          </p>
+    <main className="min-h-screen bg-white">
+      {/* ── Obsidian header ── */}
+      <header className="bg-[#0e0e0e] px-4 py-5">
+        <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-stone-900 flex items-center justify-center text-amber-400 font-bold text-lg">
-                {displayName[0].toUpperCase()}
+            <div className="flex items-center gap-3.5">
+              {/* Avatar with gold border */}
+              <div className="w-12 h-12 rounded-full border-2 border-[#c8942a] bg-[#1a1a1a] flex items-center justify-center text-white font-bold text-lg shrink-0">
+                {name[0].toUpperCase()}
               </div>
               <div>
-                <h1 className="text-xl font-bold text-stone-900">{displayName}</h1>
-                {displayElo && (
-                  <p className="text-sm text-stone-500">
-                    Rating: <span className="font-semibold text-stone-700">{displayElo}</span>
-                    {user?.eloPlatform && (
-                      <span className="ml-1 text-stone-400">
-                        ({user.eloPlatform === "lichess" ? "Lichess" : "Chess.com"})
-                      </span>
-                    )}
-                  </p>
-                )}
+                <div className="flex items-center gap-2">
+                  <h1 className="text-white font-bold text-lg">{name}</h1>
+                  <span className="text-[10px] font-bold text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    {t("dashboard.owner")}
+                  </span>
+                  {displayElo && (
+                    <span className="text-xs text-gray-500">
+                      {displayElo} {user?.eloPlatform === "lichess" ? "Lichess" : user?.eloPlatform === "chesscom" ? "Chess.com" : ""}
+                    </span>
+                  )}
+                </div>
+                <p className="text-[#c8942a] text-sm font-medium mt-0.5">
+                  {t("dashboard.greeting", { name })}
+                </p>
+                {/* Connected accounts inline */}
+                <div className="flex items-center gap-3 mt-1">
+                  {user?.lichessUsername && (
+                    <a
+                      href={`https://lichess.org/@/${user.lichessUsername}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-gray-500 hover:text-white transition-colors"
+                    >
+                      Lichess: <span className="text-gray-400">{user.lichessUsername}</span>
+                    </a>
+                  )}
+                  {user?.chessComUsername && (
+                    <a
+                      href={`https://www.chess.com/member/${user.chessComUsername}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-gray-500 hover:text-white transition-colors"
+                    >
+                      Chess.com: <span className="text-gray-400">{user.chessComUsername}</span>
+                    </a>
+                  )}
+                  <Link href="/settings" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
+                    {t("dashboard.manageAccounts")}
+                  </Link>
+                </div>
               </div>
             </div>
+
+            {stripeLink && (
+              <a
+                href={stripeLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-medium text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-3 py-1.5 rounded-full hover:bg-[#c8942a]/20 transition-colors shrink-0"
+              >
+                {t("dashboard.goAdFree")}
+              </a>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* ── Body ── */}
+      <div className="max-w-2xl mx-auto px-4 py-6">
+        {/* ── 4-column stats ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+          <div className="bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4 text-center">
+            <p className="text-2xl font-extrabold text-[#c8942a] tabular-nums">{totalImported}</p>
+            <p className="text-xs text-[#666] mt-1">{t("dashboard.statPuzzles")}</p>
+          </div>
+          <div className="bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4 text-center">
+            <p className="text-2xl font-extrabold text-[#c8942a] tabular-nums">{user?.currentStreak ?? 0}</p>
+            <p className="text-xs text-[#666] mt-1">{t("dashboard.statStreak")}</p>
+          </div>
+          <div className="bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4 text-center">
+            <p className="text-2xl font-extrabold text-[#c8942a] tabular-nums">{accuracy ?? 0}%</p>
+            <p className="text-xs text-[#666] mt-1">
+              {t("dashboard.statAccuracy")}
+              {userAttempts.length > 0 && (
+                <span className="block text-[#777] mt-0.5">{totalSolved}/{userAttempts.length}</span>
+              )}
+            </p>
+          </div>
+          <div className="bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4 text-center">
+            <p className="text-2xl font-extrabold text-[#c8942a] tabular-nums">{user?.referralCount ?? 0}</p>
+            <p className="text-xs text-[#666] mt-1">{t("dashboard.statReferrals")}</p>
           </div>
         </div>
 
-        {/* Connected accounts */}
-        <div className="bg-white rounded-xl border border-stone-200 p-5 shadow-sm mb-4">
-          <h2 className="text-sm font-semibold text-stone-700 mb-3">{t("dashboard.connectedAccounts")}</h2>
-          <div className="space-y-2">
-            {user?.lichessUsername && (
-              <div className="flex items-center gap-2 text-sm">
-                <div className="w-6 h-6 rounded-full bg-stone-900 flex items-center justify-center text-white text-xs font-bold">L</div>
-                <span className="text-stone-600">Lichess:</span>
-                <a
-                  href={`https://lichess.org/@/${user.lichessUsername}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-amber-700 hover:underline"
-                >
-                  {user.lichessUsername}
-                </a>
-                <span className="text-emerald-600 text-xs">✓</span>
-              </div>
-            )}
-            {user?.chessComUsername && (
-              <div className="flex items-center gap-2 text-sm">
-                <div className="w-6 h-6 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold">C</div>
-                <span className="text-stone-600">Chess.com:</span>
-                <a
-                  href={`https://www.chess.com/member/${user.chessComUsername}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-amber-700 hover:underline"
-                >
-                  {user.chessComUsername}
-                </a>
-                <span className="text-emerald-600 text-xs">✓</span>
-              </div>
-            )}
-          </div>
-          <Link
-            href="/settings"
-            className="text-xs text-stone-400 hover:underline mt-3 inline-block"
-          >
-            {t("dashboard.manageAccounts")}
-          </Link>
-        </div>
-
-        {/* Puzzle stats */}
-        <div className="bg-white rounded-xl border border-stone-200 p-5 shadow-sm mb-4">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-stone-700">{t("dashboard.yourPuzzles")}</h2>
-            {user?.currentStreak > 0 && (
-              <span className="text-sm text-orange-600 font-medium">
-                {t("dashboard.streak", { count: user.currentStreak })}
-              </span>
-            )}
-          </div>
-          <div className="flex gap-6 mb-3">
-            <div>
-              <p className="text-2xl font-extrabold text-amber-700 tabular-nums">{totalImported}</p>
-              <p className="text-xs text-stone-400 mt-0.5">{t("dashboard.personalPuzzles")}</p>
-            </div>
-            {accuracy !== null && (
-              <div>
-                <p className="text-2xl font-extrabold text-emerald-700 tabular-nums">{accuracy}%</p>
-                <p className="text-xs text-stone-400 mt-0.5">{t("dashboard.accuracy", { count: userAttempts.length })}</p>
-              </div>
-            )}
-          </div>
-          <SyncButton lastSyncedAt={user?.lastSyncedAt?.toISOString() ?? null} />
-        </div>
-
-        {/* Referral widget */}
+        {/* ── Referral progress bar ── */}
         {referralCode && (
-          <ReferralWidget
+          <ReferralBar
             referralCode={referralCode}
             referralCount={user?.referralCount ?? 0}
           />
         )}
 
-        {/* Play now */}
-        <div className="grid grid-cols-1 gap-3 mb-4">
-          {/* Train on personal puzzles — primary CTA */}
+        {/* ── Actions: 2/3 Train + 1/3 Sync ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
           <Link
             href="/train"
-            className="flex items-center justify-between bg-emerald-800 text-white rounded-xl p-5 shadow-sm hover:bg-emerald-700 transition-colors"
+            className="sm:col-span-2 flex items-center justify-between bg-[#0e0e0e] text-white rounded-xl p-5 hover:bg-[#1a1a1a] transition-colors"
           >
             <div>
-              <p className="font-semibold">{t("dashboard.trainMyGames")}</p>
-              <p className="text-xs text-emerald-300 mt-0.5">
+              <p className="font-semibold text-white">{t("dashboard.trainMyGames")}</p>
+              <p className="text-xs text-[#c8942a] mt-1">
                 {totalImported > 0
                   ? t("dashboard.trainDesc.has", { count: totalImported })
                   : t("dashboard.trainDesc.empty")}
               </p>
             </div>
-            <span className="text-emerald-300 text-lg">→</span>
+            <span className="text-white/40 text-xl ml-3">&#8594;</span>
           </Link>
 
-          <Link
-            href="/puzzles"
-            className="flex items-center justify-between bg-white border border-stone-200 rounded-xl p-5 shadow-sm hover:border-amber-400 transition-colors"
-          >
-            <div>
-              <p className="font-semibold text-stone-800">{t("dashboard.browseAll")}</p>
-              <p className="text-xs text-stone-400 mt-0.5">
-                {t("dashboard.browseDesc")}
-              </p>
-            </div>
-            <span className="text-stone-400 text-lg">→</span>
-          </Link>
-
-          <Link
-            href="/stats"
-            className="flex items-center justify-between bg-white border border-stone-200 rounded-xl p-5 shadow-sm hover:border-amber-400 transition-colors"
-          >
-            <div>
-              <p className="font-semibold text-stone-800">{t("dashboard.myStats")}</p>
-              <p className="text-xs text-stone-400 mt-0.5">
-                {t("dashboard.myStatsDesc")}
-              </p>
-            </div>
-            <span className="text-stone-400 text-lg">→</span>
-          </Link>
+          <div className="sm:col-span-1 bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4 flex flex-col justify-center">
+            <SyncButton lastSyncedAt={user?.lastSyncedAt?.toISOString() ?? null} />
+          </div>
         </div>
 
-        {/* Coming soon */}
+        {/* ── Browse all puzzles — full width ── */}
+        <Link
+          href="/puzzles"
+          className="flex items-center justify-between bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-5 mb-6 hover:border-[#c8942a] transition-colors"
+        >
+          <div>
+            <p className="font-semibold text-[#1a1a1a]">{t("dashboard.browseAll")}</p>
+            <p className="text-xs text-[#777] mt-1">{t("dashboard.browseDesc")}</p>
+          </div>
+          <span className="text-[#999] text-xl ml-3">&#8594;</span>
+        </Link>
+
+        {/* ── Two leaderboard panels ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+          {/* Streak leaders */}
+          <div className="bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4">
+            <h3 className="text-sm font-semibold text-[#1a1a1a] mb-3">{t("dashboard.streakLeaders")}</h3>
+            {streakLeaders.length === 0 ? (
+              <p className="text-xs text-[#777] italic">{t("dashboard.noStreaksYet")}</p>
+            ) : (
+              <table className="w-full text-xs">
+                <tbody>
+                  {streakLeaders.map((entry, i) => {
+                    const isOwner = entry.id === session.userId;
+                    return (
+                      <tr key={entry.id} className={isOwner ? "bg-[#c8942a]/10" : ""}>
+                        <td className="py-1.5 pr-2 text-[#666] w-6">
+                          {i === 0 ? "\uD83D\uDC51" : `#${i + 1}`}
+                        </td>
+                        <td className="py-1.5 pr-2">
+                          <span className={`font-medium ${isOwner ? "text-[#1a1a1a]" : "text-[#1a1a1a]"}`}>
+                            {displayName(entry)}
+                          </span>
+                          {isOwner && (
+                            <span className="ml-1.5 text-[9px] font-bold text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-1.5 py-0.5 rounded-full uppercase">
+                              {t("dashboard.owner")}
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-1.5 text-right font-mono font-bold text-[#c8942a]">
+                          {entry.currentStreak}d
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          {/* Top referrers */}
+          <div className="bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4">
+            <h3 className="text-sm font-semibold text-[#1a1a1a] mb-3">{t("dashboard.topReferrers")}</h3>
+            {referralLeaders.length === 0 ? (
+              <p className="text-xs text-[#777] italic">{t("dashboard.noReferralsYet")}</p>
+            ) : (
+              <table className="w-full text-xs">
+                <tbody>
+                  {referralLeaders.map((entry, i) => {
+                    const isOwner = entry.id === session.userId;
+                    return (
+                      <tr key={entry.id} className={isOwner ? "bg-[#c8942a]/10" : ""}>
+                        <td className="py-1.5 pr-2 text-[#666] w-6">
+                          {i === 0 ? "\u2B50" : `#${i + 1}`}
+                        </td>
+                        <td className="py-1.5 pr-2">
+                          <span className="font-medium text-[#1a1a1a]">
+                            {displayName(entry)}
+                          </span>
+                          {isOwner && (
+                            <span className="ml-1.5 text-[9px] font-bold text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-1.5 py-0.5 rounded-full uppercase">
+                              {t("dashboard.owner")}
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-1.5 text-right font-mono font-bold text-[#c8942a]">
+                          {entry.referralCount}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+
+        {/* ── Coming soon ── */}
         <div className="mt-6">
-          <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wide mb-3">{t("dashboard.comingSoon")}</h2>
+          <h2 className="text-xs font-semibold text-[#999] uppercase tracking-wide mb-3">{t("dashboard.comingSoon")}</h2>
           <div className="grid grid-cols-1 gap-3">
             <LockedFeature
               emoji="⏪"
@@ -276,13 +332,13 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Footer */}
-        <footer className="mt-10 pt-6 border-t border-stone-200 text-center">
-          <p className="text-xs text-stone-400">
+        {/* ── Footer ── */}
+        <footer className="mt-10 pt-6 border-t border-[#d8d4ce] text-center">
+          <p className="text-xs text-[#999]">
             {t("dashboard.footer")}
           </p>
-          <p className="text-xs text-stone-300 mt-2">
-            <a href="/api/auth/signout" className="hover:underline hover:text-stone-500">
+          <p className="text-xs text-[#bbb] mt-2">
+            <a href="/api/auth/signout" className="hover:underline hover:text-[#666]">
               {t("dashboard.signOut")}
             </a>
           </p>
