@@ -16,7 +16,7 @@ export default function HomepageStats({
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto">
       <StatCell label="Puzzles solved" value={puzzlesSolved.toLocaleString()} />
-      <StatCell label="From real games" value={fromRealGames.toLocaleString()} />
+      <StatCell label="Puzzles from real games" value={fromRealGames.toLocaleString()} />
       <StatCell label="Total players" value={totalPlayers.toLocaleString()} />
       <StatCell
         label="Online now"
