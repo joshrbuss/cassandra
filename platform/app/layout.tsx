@@ -4,7 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { cookies } from "next/headers";
 import "./globals.css";
 import LocaleProvider from "@/components/i18n/LocaleProvider";
-import LanguageToggle from "@/components/i18n/LanguageToggle";
+import LanguageToggleGuard from "@/components/i18n/LanguageToggleGuard";
 import { resolveLocale } from "@/lib/i18n";
 import { LOCALES } from "@/lib/i18n/locales";
 
@@ -74,9 +74,9 @@ export default async function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <LocaleProvider initialLocale={locale}>
-          {/* Language toggle — fixed top-right, above page content */}
+          {/* Language toggle — fixed top-right, hidden on /train/* pages */}
           <div className="fixed top-3 right-3 z-40">
-            <LanguageToggle />
+            <LanguageToggleGuard />
           </div>
           {children}
           <Analytics />
