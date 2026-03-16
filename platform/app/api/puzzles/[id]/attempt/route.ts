@@ -68,16 +68,23 @@ export async function POST(
   const recordedSuccess = isTimeoutBlunder ? false : body.success;
 
   // Record the attempt
-  console.log(`[attempt] puzzleId=${id} userId=${resolvedUserId} success=${recordedSuccess} tactic=${tacticType}`);
-  await prisma.puzzleAttempt.create({
-    data: {
-      puzzleId: id,
-      userId: resolvedUserId,
-      solveTimeMs: body.solveTimeMs,
-      success: recordedSuccess,
-      tacticType,
-    },
-  });
+  console.log(`[attempt] puzzleId=${id} userId=${resolvedUserId} success=${recordedSuccess} solveTimeMs=${body.solveTimeMs} tactic=${tacticType}`);
+  let attempt;
+  try {
+    attempt = await prisma.puzzleAttempt.create({
+      data: {
+        puzzleId: id,
+        userId: resolvedUserId,
+        solveTimeMs: body.solveTimeMs,
+        success: recordedSuccess,
+        tacticType,
+      },
+    });
+    console.log(`[attempt] ✓ saved id=${attempt.id}`);
+  } catch (err) {
+    console.error(`[attempt] ✗ failed to save:`, err);
+    return NextResponse.json({ error: "Failed to record attempt" }, { status: 500 });
+  }
 
   // Update streak for authenticated users on successful solve
   if (recordedSuccess && resolvedUserId) {

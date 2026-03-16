@@ -59,7 +59,6 @@ model Puzzle {
   evalCp           Int?
   createdAt     DateTime @default(now())
 
-  attempts   PuzzleAttempt[]
   sourceUser User?           @relation(fields: [sourceUserId], references: [id])
 
   @@index([ecoCode])
@@ -78,8 +77,7 @@ model PuzzleAttempt {
   tacticType  String?
   createdAt   DateTime @default(now())
 
-  puzzle Puzzle @relation(fields: [puzzleId], references: [id])
-
+  // No FK relation — puzzleId may reference either Puzzle or LibraryPuzzle
   @@index([puzzleId])
   @@index([userId])
   @@index([userId, tacticType])
