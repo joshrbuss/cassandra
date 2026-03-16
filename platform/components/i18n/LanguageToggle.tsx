@@ -44,8 +44,9 @@ export default function LanguageToggle() {
               <button
                 key={l}
                 onClick={() => {
+                  if (l === locale) { setOpen(false); return; }
                   setLocale(l);
-                  setOpen(false);
+                  window.location.reload();
                 }}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${
                   l === locale ? "font-semibold text-blue-600 bg-blue-50" : "text-gray-700"
