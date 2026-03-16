@@ -155,7 +155,10 @@ export default function AnalysingClient({ platform }: Props) {
             </Link>
 
             {/* The Scales */}
-            <div className="flex items-center justify-between bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 opacity-60">
+            <Link
+              href="/scales"
+              className="flex items-center justify-between bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 hover:bg-[#222] transition-colors opacity-60"
+            >
               <div>
                 <p className="font-semibold text-white">The Scales</p>
                 <p className="text-xs text-gray-400 mt-0.5">Rank moves by strength — coming soon</p>
@@ -163,7 +166,7 @@ export default function AnalysingClient({ platform }: Props) {
               <span className="text-[9px] font-bold text-gray-500 bg-[#2a2a2a] px-2 py-0.5 rounded-full uppercase ml-3">
                 Soon
               </span>
-            </div>
+            </Link>
           </div>
 
           <Link
