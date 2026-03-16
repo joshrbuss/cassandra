@@ -288,6 +288,8 @@ async function upsertPuzzle(p: LichessPuzzle) {
 // CSV loader (for bulk import from Lichess DB)
 // ---------------------------------------------------------------------------
 
+const BATCH_SIZE = 500;
+
 async function loadFromCsv(csvPath: string, limit = 50_000) {
   console.log(`Loading puzzles from CSV: ${csvPath}`);
 
@@ -299,32 +301,56 @@ async function loadFromCsv(csvPath: string, limit = 50_000) {
 
   let lineNum = 0;
   let imported = 0;
+  let batch: Parameters<typeof prisma.puzzle.createMany>[0]["data"] = [];
+
+  async function flushBatch() {
+    if (batch.length === 0) return;
+    const result = await prisma.puzzle.createMany({ data: batch, skipDuplicates: true });
+    imported += result.count;
+    batch = [];
+    console.log(`  ${imported} puzzles loaded...`);
+  }
 
   for await (const line of rl) {
     lineNum++;
     if (lineNum === 1) continue; // Skip header
-    if (imported >= limit) break;
+    if (imported + batch.length >= limit) break;
 
     const cols = line.split(",");
     if (cols.length < 8) continue;
 
-    const [id, fen, moves, rating, , , , themes] = cols;
+    const [id, fen, moves, rating, , , , themes, gameUrl] = cols;
+    if (!id || !fen || !moves) continue;
 
-    try {
-      await upsertPuzzle({
-        id,
-        fen,
-        moves,
-        rating: parseInt(rating, 10) || 1500,
-        themes: themes ?? "",
-      });
-      imported++;
-      if (imported % 500 === 0) process.stdout.write(`  ${imported} puzzles loaded...\r`);
-    } catch {
-      // Skip malformed rows
+    const moveList = moves.trim().split(/\s+/);
+    if (moveList.length < 2) continue;
+
+    const lastMove = moveList[0];
+    const solutionMoves = moveList.slice(1).join(" ");
+    const solvingFen = buildSolvingFen(fen, lastMove);
+    if (!solvingFen) continue;
+
+    const type = classifyType(fen, lastMove, themes ?? "");
+
+    batch.push({
+      id,
+      fen,
+      solvingFen,
+      lastMove,
+      solutionMoves,
+      rating: parseInt(rating, 10) || 1500,
+      themes: themes ?? "",
+      type,
+      gameUrl: gameUrl?.startsWith("http") ? gameUrl : undefined,
+      isPublic: true,
+    });
+
+    if (batch.length >= BATCH_SIZE) {
+      await flushBatch();
     }
   }
 
+  await flushBatch();
   console.log(`\nImported ${imported} puzzles from CSV.`);
 }
 
