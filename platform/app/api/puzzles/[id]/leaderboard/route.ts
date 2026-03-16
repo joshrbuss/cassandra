@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { anonDisplayName } from "@/lib/anonymous-id";
+import { auth } from "@/auth";
 import { formatTime } from "@/lib/benchmarks";
 
 export interface LeaderboardEntry {
@@ -15,18 +15,28 @@ export interface LeaderboardEntry {
  * GET /api/puzzles/[id]/leaderboard
  *
  * Returns the top 10 fastest successful solves for a puzzle.
- * Query param: ?userId=anon_xxxx — used to highlight the current user's entry.
+ * Uses auth session to identify the current user (falls back to ?userId= query param).
  */
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const currentUserId = new URL(req.url).searchParams.get("userId") ?? "";
+
+  // Prefer session userId; fall back to query param for backwards compat
+  const session = await auth();
+  const currentUserId =
+    session?.userId ??
+    new URL(req.url).searchParams.get("userId") ??
+    "";
 
   const puzzle = await prisma.puzzle.findUnique({ where: { id }, select: { id: true } });
   if (!puzzle) {
-    return NextResponse.json({ error: "Puzzle not found" }, { status: 404 });
+    // Also check library puzzles
+    const libPuzzle = await prisma.libraryPuzzle.findUnique({ where: { id }, select: { id: true } });
+    if (!libPuzzle) {
+      return NextResponse.json({ error: "Puzzle not found" }, { status: 404 });
+    }
   }
 
   // Best time per user (avoid counting the same user multiple times)
@@ -50,13 +60,25 @@ export async function GET(
     }
   }
 
+  // Look up display names for real user IDs
+  const userIds = [...bestPerUser.keys()].filter((id) => !id.startsWith("anon_") && id !== "anonymous");
+  const users = userIds.length > 0
+    ? await prisma.user.findMany({
+        where: { id: { in: userIds } },
+        select: { id: true, lichessUsername: true, chessComUsername: true },
+      })
+    : [];
+  const userNameMap = new Map(
+    users.map((u) => [u.id, u.lichessUsername ?? u.chessComUsername ?? "Player"])
+  );
+
   const sorted = [...bestPerUser.entries()]
     .sort((a, b) => a[1] - b[1])
     .slice(0, 10);
 
   const entries: LeaderboardEntry[] = sorted.map(([userId, ms], idx) => ({
     rank: idx + 1,
-    displayName: anonDisplayName(userId),
+    displayName: userNameMap.get(userId) ?? `Guest #${userId.replace("anon_", "").slice(0, 4)}`,
     solveTimeMs: ms,
     formattedTime: formatTime(ms),
     isCurrentUser: userId === currentUserId,

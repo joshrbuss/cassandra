@@ -8,7 +8,6 @@ import { BoardSkeleton } from "@/components/Skeleton";
 import type { PieceDropHandlerArgs } from "@/components/ChessBoardWrapper";
 import { useTimer } from "@/hooks/useTimer";
 import SolveResultCard from "@/components/SolveResultCard";
-import { getAnonId } from "@/lib/anonymous-id";
 import type { AttemptResponse } from "@/app/api/puzzles/[id]/attempt/route";
 import Link from "next/link";
 
@@ -69,7 +68,6 @@ export default function TrainPuzzleShell({
 
   const { elapsedMs, start, stop } = useTimer();
   const [attemptResult, setAttemptResult] = useState<AttemptResponse | null>(null);
-  const userId = useRef(getAnonId());
   const submitLock = useRef(false);
   const hadWrongMove = useRef(false);
 
@@ -85,7 +83,7 @@ export default function TrainPuzzleShell({
       const res = await fetch(`/api/puzzles/${puzzleId}/attempt`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: userId.current, solveTimeMs, success }),
+        body: JSON.stringify({ solveTimeMs, success }),
       });
       const data: AttemptResponse = await res.json();
       setAttemptResult(data);
@@ -317,7 +315,7 @@ export default function TrainPuzzleShell({
             avgSolveMs={attemptResult.avgSolveMs}
             top10PctMs={attemptResult.top10PctMs}
             totalAttempts={attemptResult.totalAttempts}
-            userId={userId.current}
+            userId={attemptResult.userId ?? ""}
           />
           <div className="mt-4 flex items-center justify-between">
             <Link href="/train" className="inline-flex items-center gap-1 bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors">

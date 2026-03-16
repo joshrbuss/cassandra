@@ -9,7 +9,6 @@ import type { PieceDropHandlerArgs } from "./ChessBoardWrapper";
 import { useTimer } from "@/hooks/useTimer";
 import PuzzleTimer from "./PuzzleTimer";
 import SolveResultCard from "./SolveResultCard";
-import { getAnonId } from "@/lib/anonymous-id";
 import type { AttemptResponse } from "@/app/api/puzzles/[id]/attempt/route";
 import type { TimeControl } from "@/lib/benchmarks";
 
@@ -50,7 +49,6 @@ export default function StandardPuzzle({
   const { elapsedMs, isRunning, start, stop } = useTimer();
   const [attemptResult, setAttemptResult] = useState<AttemptResponse | null>(null);
   const [hintLevel, setHintLevel] = useState<0 | 1 | 2>(0);
-  const userId = useRef(getAnonId());
   const submitLock = useRef(false);
   const hadWrongMove = useRef(false);
 
@@ -67,11 +65,7 @@ export default function StandardPuzzle({
       const res = await fetch(`/api/puzzles/${puzzleId}/attempt`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: userId.current,
-          solveTimeMs,
-          success,
-        }),
+        body: JSON.stringify({ solveTimeMs, success }),
       });
       const data: AttemptResponse = await res.json();
       setAttemptResult(data);
@@ -235,7 +229,7 @@ export default function StandardPuzzle({
           top10PctMs={attemptResult.top10PctMs}
           totalAttempts={attemptResult.totalAttempts}
           timeControl={timeControl}
-          userId={userId.current}
+          userId={attemptResult.userId ?? ""}
         />
       )}
 

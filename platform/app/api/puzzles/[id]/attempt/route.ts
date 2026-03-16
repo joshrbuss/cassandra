@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { percentileToBucket, type PercentileBucket } from "@/lib/benchmarks";
@@ -6,7 +6,6 @@ import { primaryTactic } from "@/lib/tactics";
 import { getGlobalAvgForTactic } from "@/lib/queries/weakTimeTactics";
 
 export interface AttemptRequest {
-  userId?: string; // anonymous ID from localStorage
   solveTimeMs: number;
   success: boolean;
 }
@@ -19,6 +18,8 @@ export interface AttemptResponse {
   avgSolveMs: number | null; // null if fewer than 3 prior attempts
   top10PctMs: number | null; // threshold to be in top 10%
   totalAttempts: number;
+  /** The resolved userId from the session */
+  userId: string | null;
   /** True when solve time exceeded 2× the global average for this tactic */
   timeout_blunder?: boolean;
 }
@@ -27,23 +28,27 @@ export interface AttemptResponse {
  * POST /api/puzzles/[id]/attempt
  *
  * Records a puzzle attempt and returns percentile stats.
- * Body: { userId?: string; solveTimeMs: number; success: boolean }
+ * Uses the auth() wrapper pattern so the session is reliably available
+ * via req.auth — this works on Vercel where bare auth() can miss cookies.
+ *
+ * Body: { solveTimeMs: number; success: boolean }
  */
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
+export const POST = auth(async function POST(req, ctx) {
+  const { id } = await (ctx as { params: Promise<{ id: string }> }).params;
 
   const body: AttemptRequest = await req.json().catch(() => null);
   if (!body || typeof body.solveTimeMs !== "number" || typeof body.success !== "boolean") {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  // Prefer real session userId for proper streak + stats tracking.
-  // Fall back to anon ID from body for unauthenticated users.
-  const session = await auth();
-  const resolvedUserId = session?.userId ?? body.userId ?? null;
+  // Session is populated by the auth() wrapper — reliable on Vercel
+  const session = req.auth;
+  const resolvedUserId = session?.userId ?? null;
+
+  // Debug logging — helps diagnose auth issues on Vercel
+  console.log(
+    `[attempt:auth] hasSession=${!!session} userId=${resolvedUserId} cookie=${req.headers.get("cookie")?.slice(0, 120) ?? "none"}`
+  );
 
   // Look up puzzle — check both personal Puzzle and LibraryPuzzle tables
   let themes = "tactics";
@@ -143,11 +148,15 @@ export async function POST(
     avgSolveMs,
     top10PctMs,
     totalAttempts,
+    userId: resolvedUserId,
     ...(isTimeoutBlunder ? { timeout_blunder: true } : {}),
   };
 
   return NextResponse.json(response);
-}
+}) as unknown as (
+  req: Request,
+  ctx: { params: Promise<{ id: string }> }
+) => Promise<Response>;
 
 async function updateStreak(userId: string): Promise<void> {
   try {
