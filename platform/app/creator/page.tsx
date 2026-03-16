@@ -48,7 +48,7 @@ interface ChessComGamesResponse {
 // ── Data fetching ─────────────────────────────────────────────────────────────
 
 const CHESSCOM_HEADERS = {
-  "User-Agent": "Cassandra Chess Puzzles (https://cassandra-chess.vercel.app)",
+  "User-Agent": "Cassandra Chess Puzzles (https://cassandrachess.com)",
 };
 
 async function fetchChessComData(username: string) {
@@ -110,7 +110,7 @@ function timeClassLabel(tc: string) {
 export default async function CreatorPage() {
   const username = process.env.NEXT_PUBLIC_CREATOR_CHESSCOM_USERNAME ?? "";
   const twitterHandle = process.env.NEXT_PUBLIC_TWITTER_HANDLE ?? "@cassandrachess";
-  const siteUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://cassandra-chess.vercel.app";
+  const siteUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://cassandrachess.com";
   const pageUrl = `${siteUrl}/creator`;
 
   if (!username) {

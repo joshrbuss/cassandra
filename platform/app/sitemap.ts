@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { ARTICLES } from "@/lib/articles";
 import { LOCALES } from "@/lib/i18n/locales";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cassandra-chess.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cassandrachess.com";
 
 // Since locale is cookie-based (not URL-based), all locales share the same URL.
 // We emit one entry per URL with alternateRefs covering all locales.
