@@ -53,11 +53,11 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
   const stripeLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
 
   return (
-    <main className="min-h-screen bg-gray-50 px-4 py-8">
+    <main className="min-h-screen bg-white px-4 py-8">
       <div className="max-w-lg mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <Link href="/dashboard" className="text-sm text-blue-600 hover:underline">
+        {/* Top nav */}
+        <div className="flex items-center justify-between mb-8">
+          <Link href="/dashboard" className="text-sm text-gray-400 hover:text-gray-700">
             ← Dashboard
           </Link>
           {stripeLink && (
@@ -72,73 +72,17 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
           )}
         </div>
 
-        <div className="mb-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
-            From your games
-          </p>
-          {/* Opponent + date */}
-          {(puzzle.opponentUsername || puzzle.gameDate) && (
-            <p className="text-xs text-gray-500 mt-0.5">
-              {puzzle.opponentUsername && <>vs {puzzle.opponentUsername}</>}
-              {puzzle.opponentUsername && puzzle.gameDate && <span className="mx-1">·</span>}
-              {puzzle.gameDate && <>{new Date(puzzle.gameDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</>}
-            </p>
-          )}
-          <h1 className="text-lg font-bold text-gray-900 mt-1">
-            Find the best move
-          </h1>
-          {/* Contextual metadata row */}
-          <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1">
-            {puzzle.gameResult && (
-              <span className={`text-xs font-medium ${puzzle.gameResult === "win" ? "text-green-600" : puzzle.gameResult === "loss" ? "text-red-500" : "text-gray-500"}`}>
-                {puzzle.gameResult === "win" ? "You won this game" : puzzle.gameResult === "loss" ? "You lost this game" : "This game was drawn"}
-              </span>
-            )}
-            {puzzle.moveNumber && (
-              <span className="text-xs text-gray-400">Move {puzzle.moveNumber}</span>
-            )}
-            {puzzle.evalCp !== null && puzzle.evalCp !== undefined && (
-              <span className="text-xs text-gray-400">
-                {puzzle.evalCp >= 0
-                  ? `Up ${(puzzle.evalCp / 100).toFixed(1)} pawns`
-                  : `Down ${(Math.abs(puzzle.evalCp) / 100).toFixed(1)} pawns`}
-              </span>
-            )}
-          </div>
-          {puzzle.gameUrl && (
-            <a
-              href={puzzle.gameUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-blue-600 hover:underline mt-1 inline-block"
-            >
-              View original game →
-            </a>
-          )}
-        </div>
-
-        {/* Board + solve logic (client component) */}
         <TrainPuzzleClient
           puzzleId={puzzle.id}
           solvingFen={puzzle.solvingFen}
           solutionMoves={puzzle.solutionMoves}
+          opponentUsername={puzzle.opponentUsername}
+          gameDate={puzzle.gameDate}
+          gameResult={puzzle.gameResult}
+          moveNumber={puzzle.moveNumber}
+          evalCp={puzzle.evalCp}
+          gameUrl={puzzle.gameUrl}
         />
-
-        {/* Navigation — always visible below the board */}
-        <div className="mt-6 flex items-center justify-between">
-          <Link
-            href="/train"
-            className="inline-flex items-center gap-1 bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors"
-          >
-            Next puzzle →
-          </Link>
-          <Link
-            href="/dashboard"
-            className="text-sm text-gray-400 hover:underline"
-          >
-            Done for now
-          </Link>
-        </div>
       </div>
     </main>
   );
