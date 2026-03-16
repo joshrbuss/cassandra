@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { ARTICLES } from "@/lib/articles";
+import { getLocalizedArticles } from "@/lib/articles";
 import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
 import SocialLinks from "@/components/SocialLinks";
 import CookiePreferencesLink from "@/components/CookiePreferencesLink";
@@ -25,7 +25,9 @@ function estimateReadTime(content: string): number {
 
 export default async function LearnPage() {
   const cookieStore = await cookies();
-  const t = getT(resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value));
+  const locale = resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const t = getT(locale);
+  const articles = getLocalizedArticles(locale);
 
   return (
     <main className="min-h-screen bg-white">
@@ -47,7 +49,7 @@ export default async function LearnPage() {
       {/* Articles list */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
         <div className="space-y-4">
-          {ARTICLES.map((article) => {
+          {articles.map((article) => {
             const readTime = estimateReadTime(article.content);
             return (
               <Link

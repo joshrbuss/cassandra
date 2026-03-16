@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ARTICLES, getArticle } from "@/lib/articles";
+import { cookies } from "next/headers";
+import { ARTICLES, getArticle, getLocalizedArticle } from "@/lib/articles";
+import { resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
 import EmbeddedPuzzle from "@/components/EmbeddedPuzzle";
 
 interface Props {
@@ -104,7 +106,9 @@ function renderContent(content: string) {
 
 export default async function ArticlePage({ params }: Props) {
   const { slug } = await params;
-  const article = getArticle(slug);
+  const cookieStore = await cookies();
+  const locale = resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const article = getLocalizedArticle(slug, locale);
   if (!article) notFound();
 
   const readTime = estimateReadTime(article.content);

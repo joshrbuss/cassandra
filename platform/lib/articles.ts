@@ -406,3 +406,35 @@ This doesn't mean random puzzles are useless — they're great for broadening yo
 export function getArticle(slug: string): Article | undefined {
   return ARTICLES.find((a) => a.slug === slug);
 }
+
+/**
+ * Returns a localised copy of the article if a translation exists,
+ * otherwise falls back to the English original.
+ */
+export function getLocalizedArticle(slug: string, locale: string): Article | undefined {
+  const base = ARTICLES.find((a) => a.slug === slug);
+  if (!base || locale === "en") return base;
+
+  // Lazy-import to keep the main bundle small when locale is "en"
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { ARTICLE_TRANSLATIONS } = require("./articles-i18n") as typeof import("./articles-i18n");
+  const override = ARTICLE_TRANSLATIONS[`${locale}:${slug}`];
+  if (!override) return base;
+
+  return { ...base, ...override };
+}
+
+/**
+ * Returns all articles with localised overrides applied.
+ */
+export function getLocalizedArticles(locale: string): Article[] {
+  if (locale === "en") return ARTICLES;
+
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { ARTICLE_TRANSLATIONS } = require("./articles-i18n") as typeof import("./articles-i18n");
+
+  return ARTICLES.map((a) => {
+    const override = ARTICLE_TRANSLATIONS[`${locale}:${a.slug}`];
+    return override ? { ...a, ...override } : a;
+  });
+}
