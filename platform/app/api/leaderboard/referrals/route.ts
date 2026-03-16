@@ -7,6 +7,7 @@ export interface ReferralLeaderboardEntry {
   displayName: string;
   avatarUrl: string | null;
   referralCount: number;
+  country: string | null;
 }
 
 export interface ReferralLeaderboardResponse {
@@ -24,16 +25,28 @@ export async function GET() {
       chessComUsername: true,
       avatarUrl: true,
       referralCount: true,
+      country: true,
     },
   });
 
-  const entries: ReferralLeaderboardEntry[] = topReferrers.map((u, i) => ({
-    rank: i + 1,
-    userId: u.id,
-    displayName: u.lichessUsername ?? u.chessComUsername ?? "Anonymous",
-    avatarUrl: u.avatarUrl,
-    referralCount: u.referralCount,
-  }));
+  // Dense rank: tied values share the same rank
+  const entries: ReferralLeaderboardEntry[] = [];
+  let rank = 0;
+  let prevCount: number | null = null;
+  for (const u of topReferrers) {
+    if (u.referralCount !== prevCount) {
+      rank++;
+      prevCount = u.referralCount;
+    }
+    entries.push({
+      rank,
+      userId: u.id,
+      displayName: u.lichessUsername ?? u.chessComUsername ?? "Anonymous",
+      avatarUrl: u.avatarUrl,
+      referralCount: u.referralCount,
+      country: u.country,
+    });
+  }
 
   return NextResponse.json({ entries } satisfies ReferralLeaderboardResponse, {
     headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120" },

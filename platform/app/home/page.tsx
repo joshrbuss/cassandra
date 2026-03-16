@@ -112,7 +112,7 @@ export default async function DashboardPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-white font-bold text-lg">
-                    {countryToFlag(user?.country)}{countryToFlag(user?.country) ? " " : ""}{name}
+                    {name}{countryToFlag(user?.country) ? ` ${countryToFlag(user?.country)}` : ""}
                   </h1>
                   <span className="text-[10px] font-bold text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-2 py-0.5 rounded-full uppercase tracking-wider">
                     {t("dashboard.owner")}
@@ -151,6 +151,9 @@ export default async function DashboardPage() {
                   <Link href="/settings" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
                     {t("dashboard.manageAccounts")}
                   </Link>
+                  <a href="/api/auth/signout" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
+                    {t("dashboard.signOut")}
+                  </a>
                 </div>
               </div>
             </div>
@@ -276,20 +279,24 @@ export default async function DashboardPage() {
             ) : (
               <table className="w-full text-xs">
                 <tbody>
-                  {streakLeaders.map((entry, i) => {
+                  {(() => {
+                    let rank = 0;
+                    let prev: number | null = null;
+                    return streakLeaders.map((entry) => {
+                    if (entry.currentStreak !== prev) { rank++; prev = entry.currentStreak; }
                     const isOwner = entry.id === session.userId;
                     return (
                       <tr key={entry.id} className={isOwner ? "bg-[#c8942a]/10" : ""}>
                         <td className="py-1.5 pr-2 text-[#666] w-6">
-                          {i === 0 ? "\uD83D\uDC51" : `#${i + 1}`}
+                          {rank === 1 ? "\uD83D\uDC51" : `#${rank}`}
                         </td>
                         <td className="py-1.5 pr-2">
-                          {countryToFlag(entry.country) && (
-                            <span className="mr-1">{countryToFlag(entry.country)}</span>
-                          )}
                           <span className={`font-medium ${isOwner ? "text-[#1a1a1a]" : "text-[#1a1a1a]"}`}>
                             {displayName(entry)}
                           </span>
+                          {countryToFlag(entry.country) && (
+                            <span className="ml-1">{countryToFlag(entry.country)}</span>
+                          )}
                           {isOwner && (
                             <span className="ml-1.5 text-[9px] font-bold text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-1.5 py-0.5 rounded-full uppercase">
                               {t("dashboard.owner")}
@@ -301,7 +308,8 @@ export default async function DashboardPage() {
                         </td>
                       </tr>
                     );
-                  })}
+                  });
+                  })()}
                 </tbody>
               </table>
             )}
@@ -315,20 +323,24 @@ export default async function DashboardPage() {
             ) : (
               <table className="w-full text-xs">
                 <tbody>
-                  {referralLeaders.map((entry, i) => {
+                  {(() => {
+                    let rank = 0;
+                    let prev: number | null = null;
+                    return referralLeaders.map((entry) => {
+                    if (entry.referralCount !== prev) { rank++; prev = entry.referralCount; }
                     const isOwner = entry.id === session.userId;
                     return (
                       <tr key={entry.id} className={isOwner ? "bg-[#c8942a]/10" : ""}>
                         <td className="py-1.5 pr-2 text-[#666] w-6">
-                          {i === 0 ? "\u2B50" : `#${i + 1}`}
+                          {rank === 1 ? "\u2B50" : `#${rank}`}
                         </td>
                         <td className="py-1.5 pr-2">
-                          {countryToFlag(entry.country) && (
-                            <span className="mr-1">{countryToFlag(entry.country)}</span>
-                          )}
                           <span className="font-medium text-[#1a1a1a]">
                             {displayName(entry)}
                           </span>
+                          {countryToFlag(entry.country) && (
+                            <span className="ml-1">{countryToFlag(entry.country)}</span>
+                          )}
                           {isOwner && (
                             <span className="ml-1.5 text-[9px] font-bold text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-1.5 py-0.5 rounded-full uppercase">
                               {t("dashboard.owner")}
@@ -340,7 +352,8 @@ export default async function DashboardPage() {
                         </td>
                       </tr>
                     );
-                  })}
+                  });
+                  })()}
                 </tbody>
               </table>
             )}
@@ -385,15 +398,10 @@ export default async function DashboardPage() {
         </div>
 
         {/* ── Footer ── */}
-        <footer className="mt-10 pt-6 border-t border-[#d8d4ce] text-center space-y-3">
-          <SocialLinks variant="light" />
-          <p className="text-xs text-[#999]">
+        <footer className="mt-10 pt-6 border-t border-[#333] text-center space-y-3 bg-[#0e0e0e] rounded-xl p-6">
+          <SocialLinks variant="dark" />
+          <p className="text-xs text-[#666]">
             {t("dashboard.footer")}
-          </p>
-          <p className="text-xs text-[#bbb]">
-            <a href="/api/auth/signout" className="hover:underline hover:text-[#666]">
-              {t("dashboard.signOut")}
-            </a>
           </p>
         </footer>
       </div>

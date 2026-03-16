@@ -108,7 +108,7 @@
   "dashboard.noAttemptsYet": "Nenhuma tentativa ainda",
   "dashboard.comingSoon": "Em breve",
   "dashboard.signOut": "Sair",
-  "dashboard.footer": "Cassandra Chess · Puzzles do banco de dados aberto do Lichess (CC0)",
+  "dashboard.footer": "Puzzles de jogos reais dos utilizadores · e do banco de dados aberto do Lichess (CC0)",
 
   "train.fromYourGames": "Das suas partidas",
   "train.vsOpponent": "vs {name}",
@@ -208,7 +208,7 @@
   "landing.cta.button": "Comece grátis",
   "landing.cta.tagline": "Chess On.",
   "landing.footer.copy": "© 2026 Cassandra Chess",
-  "landing.footer.source": "Puzzles do banco de dados aberto do Lichess (CC0)",
+  "landing.footer.source": "Puzzles de jogos reais dos utilizadores · e do banco de dados aberto do Lichess (CC0)",
   "landing.stats.puzzlesSolved": "Puzzles resolvidos",
   "landing.stats.fromRealGames": "Puzzles de partidas reais",
   "landing.stats.totalPlayers": "Jogadores totais",

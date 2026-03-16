@@ -108,7 +108,7 @@
   "dashboard.noAttemptsYet": "Попыток пока нет",
   "dashboard.comingSoon": "Скоро",
   "dashboard.signOut": "Выйти",
-  "dashboard.footer": "Cassandra Chess · Задачи из открытой базы данных Lichess (CC0)",
+  "dashboard.footer": "Задачи из реальных партий пользователей · и открытой базы данных Lichess (CC0)",
 
   "train.fromYourGames": "Из ваших партий",
   "train.vsOpponent": "vs {name}",
@@ -208,7 +208,7 @@
   "landing.cta.button": "Начать бесплатно",
   "landing.cta.tagline": "Chess On.",
   "landing.footer.copy": "© 2026 Cassandra Chess",
-  "landing.footer.source": "Задачи из открытой базы данных Lichess (CC0)",
+  "landing.footer.source": "Задачи из реальных партий пользователей · и открытой базы данных Lichess (CC0)",
   "landing.stats.puzzlesSolved": "Задач решено",
   "landing.stats.fromRealGames": "Задач из реальных партий",
   "landing.stats.totalPlayers": "Всего игроков",

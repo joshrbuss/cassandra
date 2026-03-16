@@ -83,12 +83,12 @@ function LeaderboardTable({ entries, label }: { entries: LeaderboardEntry[]; lab
                         {entry.displayName[0]?.toUpperCase() ?? "?"}
                       </div>
                     )}
-                    {countryToFlag(entry.country) && (
-                      <span className="text-sm">{countryToFlag(entry.country)}</span>
-                    )}
                     <span className={`font-medium ${isTop3 ? "text-gray-900" : "text-gray-700"}`}>
                       {entry.displayName}
                     </span>
+                    {countryToFlag(entry.country) && (
+                      <span className="text-sm">{countryToFlag(entry.country)}</span>
+                    )}
                   </div>
                 </td>
                 <td className="py-3 pr-4 text-right font-mono font-bold text-blue-600">
@@ -110,7 +110,7 @@ function LeaderboardTable({ entries, label }: { entries: LeaderboardEntry[]; lab
   );
 }
 
-function ReferralTable({ entries }: { entries: ReferralLeaderboardEntry[] }) {
+function ReferralTable({ entries }: { entries: (ReferralLeaderboardEntry & { country?: string | null })[] }) {
   if (entries.length === 0) {
     return (
       <p className="text-sm text-gray-400 italic py-4">
@@ -151,6 +151,9 @@ function ReferralTable({ entries }: { entries: ReferralLeaderboardEntry[] }) {
                     <span className={`font-medium ${isTop3 ? "text-gray-900" : "text-gray-700"}`}>
                       {entry.displayName}
                     </span>
+                    {countryToFlag(entry.country) && (
+                      <span className="text-sm">{countryToFlag(entry.country)}</span>
+                    )}
                   </div>
                 </td>
                 <td className="py-3 text-right font-mono font-bold text-emerald-600">

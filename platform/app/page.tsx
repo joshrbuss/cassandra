@@ -228,10 +228,10 @@ export default async function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#f8f7f4] px-4 sm:px-6 py-6">
+      <footer className="bg-[#0e0e0e] px-4 sm:px-6 py-6">
         <div className="max-w-5xl mx-auto flex flex-col items-center gap-3">
-          <SocialLinks variant="light" />
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#999] w-full">
+          <SocialLinks variant="dark" />
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#666] w-full">
             <p>{t("landing.footer.copy")}</p>
             <p>{t("landing.footer.source")}</p>
           </div>

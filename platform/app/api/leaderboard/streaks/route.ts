@@ -52,8 +52,25 @@ export async function GET() {
     }),
   ]);
 
+  // Dense rank: tied values share the same rank
+  function denseRank<T>(items: T[], getValue: (item: T) => number): number[] {
+    const ranks: number[] = [];
+    let rank = 0;
+    let prevValue: number | null = null;
+    for (const item of items) {
+      const val = getValue(item);
+      if (val !== prevValue) {
+        rank++;
+        prevValue = val;
+      }
+      ranks.push(rank);
+    }
+    return ranks;
+  }
+
+  const currentRanks = denseRank(currentTop, (u) => u.currentStreak);
   const current: LeaderboardEntry[] = currentTop.map((u, i) => ({
-    rank: i + 1,
+    rank: currentRanks[i],
     userId: u.id,
     displayName: displayName(u),
     avatarUrl: u.avatarUrl,
@@ -61,8 +78,9 @@ export async function GET() {
     country: u.country,
   }));
 
+  const allTimeRanks = denseRank(allTimeTop, (u) => u.longestStreak);
   const allTime: LeaderboardEntry[] = allTimeTop.map((u, i) => ({
-    rank: i + 1,
+    rank: allTimeRanks[i],
     userId: u.id,
     displayName: displayName(u),
     avatarUrl: u.avatarUrl,
