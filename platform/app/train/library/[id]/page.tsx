@@ -93,7 +93,6 @@ export default async function LibraryPuzzlePage({ params }: PageProps) {
           puzzleId={puzzle.id}
           solvingFen={puzzle.solvingFen}
           solutionMoves={puzzle.solutionMoves}
-          boardOrientation={boardOrientation}
         />
 
         {/* Navigation */}

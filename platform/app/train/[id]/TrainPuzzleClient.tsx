@@ -12,15 +12,18 @@ interface TrainPuzzleClientProps {
   puzzleId: string;
   solvingFen: string;
   solutionMoves: string;
-  boardOrientation: "white" | "black";
 }
 
 export default function TrainPuzzleClient({
   puzzleId,
   solvingFen,
   solutionMoves,
-  boardOrientation,
 }: TrainPuzzleClientProps) {
+  // Derive orientation from the FEN's active-color field (second space-separated token).
+  // "b" → black to move → flip board; anything else → white.
+  const boardOrientation: "white" | "black" =
+    solvingFen.split(" ")[1] === "b" ? "black" : "white";
+
   return (
     <StandardPuzzle
       puzzleId={puzzleId}

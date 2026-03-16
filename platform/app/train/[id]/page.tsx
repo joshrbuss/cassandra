@@ -50,9 +50,6 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
 
   if (!puzzle) notFound();
 
-  const solvingTurn = puzzle.solvingFen.split(" ")[1];
-  const boardOrientation: "white" | "black" = solvingTurn === "w" ? "white" : "black";
-
   const stripeLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
 
   return (
@@ -125,7 +122,6 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
           puzzleId={puzzle.id}
           solvingFen={puzzle.solvingFen}
           solutionMoves={puzzle.solutionMoves}
-          boardOrientation={boardOrientation}
         />
 
         {/* Navigation — always visible below the board */}
