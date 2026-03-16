@@ -10,8 +10,8 @@ import LanguageToggle from "./LanguageToggle";
 export default function LanguageToggleGuard() {
   const pathname = usePathname();
 
-  // Hide on train pages — locale is inherited from the cookie
-  if (pathname.startsWith("/train")) return null;
+  // Hide on train pages and homepage — they have their own nav toggle
+  if (pathname.startsWith("/train") || pathname === "/") return null;
 
   return <LanguageToggle />;
 }
