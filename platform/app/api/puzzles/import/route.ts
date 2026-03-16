@@ -23,6 +23,11 @@ interface PuzzleInput {
   rating?: number;
   themes?: string;
   gameUrl?: string;
+  opponentUsername?: string;
+  gameDate?: string;
+  gameResult?: string;
+  moveNumber?: number;
+  evalCp?: number;
 }
 
 export async function POST(req: NextRequest) {
@@ -81,6 +86,11 @@ export async function POST(req: NextRequest) {
           sourceUserId: userId,
           isPublic: false,
           gameUrl: puzzle.gameUrl,
+          opponentUsername: puzzle.opponentUsername,
+          gameDate: puzzle.gameDate,
+          gameResult: puzzle.gameResult,
+          moveNumber: puzzle.moveNumber,
+          evalCp: puzzle.evalCp,
         },
       });
       imported++;

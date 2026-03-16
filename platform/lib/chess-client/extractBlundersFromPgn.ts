@@ -29,6 +29,11 @@ export interface ClientPuzzle {
   rating: number;
   themes: string;
   gameUrl?: string;
+  opponentUsername?: string;
+  gameDate?: string;
+  gameResult?: string;
+  moveNumber?: number;
+  evalCp?: number;
 }
 
 /** Extract the game URL from PGN headers (Chess.com uses [Link], Lichess uses [Site]). */
@@ -38,6 +43,38 @@ function extractGameUrl(pgn: string): string | undefined {
   const site = pgn.match(/\[Site\s+"([^"]+)"\]/)?.[1];
   if (site?.startsWith("http")) return site;
   return undefined;
+}
+
+function parsePgnHeader(pgn: string, tag: string): string | undefined {
+  return pgn.match(new RegExp(`\\[${tag}\\s+"([^"]+)"\\]`))?.[1];
+}
+
+function extractGameContext(
+  pgn: string,
+  playerUsername?: string
+): { opponentUsername?: string; gameResult?: string; gameDate?: string } {
+  const white = parsePgnHeader(pgn, "White");
+  const black = parsePgnHeader(pgn, "Black");
+  const result = parsePgnHeader(pgn, "Result");
+  const utcDate = parsePgnHeader(pgn, "UTCDate") ?? parsePgnHeader(pgn, "Date");
+  const gameDate = utcDate?.replace(/\./g, "-");
+
+  if (!playerUsername || !white || !black) return { gameDate };
+
+  const lc = playerUsername.toLowerCase();
+  let playerColor: "white" | "black" | undefined;
+  if (white.toLowerCase() === lc) playerColor = "white";
+  else if (black.toLowerCase() === lc) playerColor = "black";
+  if (!playerColor) return { gameDate };
+
+  const opponentUsername = playerColor === "white" ? black : white;
+
+  let gameResult: string | undefined;
+  if (result === "1-0") gameResult = playerColor === "white" ? "win" : "loss";
+  else if (result === "0-1") gameResult = playerColor === "black" ? "win" : "loss";
+  else if (result === "1/2-1/2") gameResult = "draw";
+
+  return { opponentUsername, gameResult, gameDate };
 }
 
 function estimateRating(swingCp: number): number {
@@ -75,8 +112,9 @@ function clientId(): string {
  * Analyses one PGN game with Stockfish and returns puzzle candidates.
  * Runs asynchronously — each position evaluation awaits the engine.
  */
-export async function extractBlundersFromPgn(pgn: string): Promise<ClientPuzzle[]> {
+export async function extractBlundersFromPgn(pgn: string, playerUsername?: string): Promise<ClientPuzzle[]> {
   const gameUrl = extractGameUrl(pgn);
+  const gameContext = extractGameContext(pgn, playerUsername);
   const positions = getPositionSequence(pgn);
   if (positions.length < 10) return [];
 
@@ -119,6 +157,10 @@ export async function extractBlundersFromPgn(pgn: string): Promise<ClientPuzzle[
           continue;
         }
 
+        const moveNumber = Math.floor((i - 1) / 2) + 1;
+        // currentCp is from the solver's perspective (side to move at position i)
+        const evalCp = currentCp;
+
         candidates.push({
           id: clientId(),
           fen: blunderFen,
@@ -128,6 +170,9 @@ export async function extractBlundersFromPgn(pgn: string): Promise<ClientPuzzle[
           rating: estimateRating(swing),
           themes: "tactics",
           gameUrl,
+          ...gameContext,
+          moveNumber,
+          evalCp,
         });
       }
     }

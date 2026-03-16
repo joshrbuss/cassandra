@@ -40,6 +40,11 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
       rating: true,
       source: true,
       gameUrl: true,
+      opponentUsername: true,
+      gameDate: true,
+      gameResult: true,
+      moveNumber: true,
+      evalCp: true,
     },
   });
 
@@ -74,24 +79,44 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
           <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
             From your games
           </p>
-          <h1 className="text-lg font-bold text-gray-900 mt-0.5">
+          {/* Opponent + date */}
+          {(puzzle.opponentUsername || puzzle.gameDate) && (
+            <p className="text-xs text-gray-500 mt-0.5">
+              {puzzle.opponentUsername && <>vs {puzzle.opponentUsername}</>}
+              {puzzle.opponentUsername && puzzle.gameDate && <span className="mx-1">·</span>}
+              {puzzle.gameDate && <>{new Date(puzzle.gameDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</>}
+            </p>
+          )}
+          <h1 className="text-lg font-bold text-gray-900 mt-1">
             Find the best move
           </h1>
-          {puzzle.gameUrl ? (
+          {/* Contextual metadata row */}
+          <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1">
+            {puzzle.gameResult && (
+              <span className={`text-xs font-medium ${puzzle.gameResult === "win" ? "text-green-600" : puzzle.gameResult === "loss" ? "text-red-500" : "text-gray-500"}`}>
+                {puzzle.gameResult === "win" ? "You won this game" : puzzle.gameResult === "loss" ? "You lost this game" : "This game was drawn"}
+              </span>
+            )}
+            {puzzle.moveNumber && (
+              <span className="text-xs text-gray-400">Move {puzzle.moveNumber}</span>
+            )}
+            {puzzle.evalCp !== null && puzzle.evalCp !== undefined && (
+              <span className="text-xs text-gray-400">
+                {puzzle.evalCp >= 0
+                  ? `Up ${(puzzle.evalCp / 100).toFixed(1)} pawns`
+                  : `Down ${(Math.abs(puzzle.evalCp) / 100).toFixed(1)} pawns`}
+              </span>
+            )}
+          </div>
+          {puzzle.gameUrl && (
             <a
               href={puzzle.gameUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-blue-600 hover:underline mt-0.5 inline-block"
+              className="text-xs text-blue-600 hover:underline mt-1 inline-block"
             >
               View original game →
             </a>
-          ) : (
-            <p className="text-xs text-gray-400 mt-0.5">
-              {puzzle.source === "chesscom"
-                ? "From your Chess.com games"
-                : "From your Lichess games"}
-            </p>
           )}
         </div>
 

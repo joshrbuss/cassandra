@@ -74,7 +74,7 @@ export default function ChessComImporter({ chessComUsername }: Props) {
         setProgress({ current: i + 1, total: pgns.length });
 
         try {
-          const puzzles = await extractBlundersFromPgn(pgns[i]);
+          const puzzles = await extractBlundersFromPgn(pgns[i], chessComUsername);
           batch.push(...puzzles);
         } catch {
           // skip failed games

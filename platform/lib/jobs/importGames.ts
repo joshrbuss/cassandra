@@ -86,6 +86,11 @@ export async function importGamesForUser(userId: string): Promise<ImportResult> 
           sourceUserId: candidate.sourceUserId,
           isPublic: candidate.isPublic,
           gameUrl: candidate.gameUrl,
+          opponentUsername: candidate.opponentUsername,
+          gameDate: candidate.gameDate,
+          gameResult: candidate.gameResult,
+          moveNumber: candidate.moveNumber,
+          evalCp: candidate.evalCp,
         },
       });
       puzzlesImported++;
@@ -103,7 +108,7 @@ export async function importGamesForUser(userId: string): Promise<ImportResult> 
         gamesProcessed++;
         try {
           // Fast annotated extractor (uses %eval comments, no engine needed)
-          const candidates = extractPuzzlesFromAnnotatedPgn(pgn, userId);
+          const candidates = extractPuzzlesFromAnnotatedPgn(pgn, userId, user.lichessUsername ?? undefined);
           await insertCandidates(candidates);
         } catch (err) {
           errors.push(`Lichess extraction failed: ${String(err)}`);
@@ -122,7 +127,7 @@ export async function importGamesForUser(userId: string): Promise<ImportResult> 
         if (puzzlesImported >= remaining) break;
         gamesProcessed++;
         try {
-          const candidates = await extractPuzzlesFromGame(pgn, userId);
+          const candidates = await extractPuzzlesFromGame(pgn, userId, user.chessComUsername ?? undefined);
           await insertCandidates(candidates);
         } catch (err) {
           errors.push(`Chess.com extraction failed: ${String(err)}`);

@@ -32,6 +32,11 @@ export interface PuzzleCandidate {
   sourceUserId: string;
   isPublic: false;
   gameUrl?: string;
+  opponentUsername?: string;
+  gameDate?: string;
+  gameResult?: string;
+  moveNumber?: number;
+  evalCp?: number;
 }
 
 /** Rough puzzle rating derived from engine score after the blunder */
@@ -149,15 +154,49 @@ function extractGameUrl(pgn: string): string | undefined {
   return undefined;
 }
 
+function parsePgnHeader(pgn: string, tag: string): string | undefined {
+  return pgn.match(new RegExp(`\\[${tag}\\s+"([^"]+)"\\]`))?.[1];
+}
+
+function extractGameContext(
+  pgn: string,
+  playerUsername?: string
+): { opponentUsername?: string; gameResult?: string; gameDate?: string } {
+  const white = parsePgnHeader(pgn, "White");
+  const black = parsePgnHeader(pgn, "Black");
+  const result = parsePgnHeader(pgn, "Result");
+  const utcDate = parsePgnHeader(pgn, "UTCDate") ?? parsePgnHeader(pgn, "Date");
+  const gameDate = utcDate?.replace(/\./g, "-");
+
+  if (!playerUsername || !white || !black) return { gameDate };
+
+  const lc = playerUsername.toLowerCase();
+  let playerColor: "white" | "black" | undefined;
+  if (white.toLowerCase() === lc) playerColor = "white";
+  else if (black.toLowerCase() === lc) playerColor = "black";
+  if (!playerColor) return { gameDate };
+
+  const opponentUsername = playerColor === "white" ? black : white;
+
+  let gameResult: string | undefined;
+  if (result === "1-0") gameResult = playerColor === "white" ? "win" : "loss";
+  else if (result === "0-1") gameResult = playerColor === "black" ? "win" : "loss";
+  else if (result === "1/2-1/2") gameResult = "draw";
+
+  return { opponentUsername, gameResult, gameDate };
+}
+
 /**
  * Extracts puzzle candidates from one PGN game.
  * Uses Stockfish to identify blunder positions.
  */
 export async function extractPuzzlesFromGame(
   pgn: string,
-  userId: string
+  userId: string,
+  playerUsername?: string
 ): Promise<PuzzleCandidate[]> {
   const gameUrl = extractGameUrl(pgn);
+  const gameContext = extractGameContext(pgn, playerUsername);
   const positions = getPositionSequence(pgn);
   if (positions.length < 5) return []; // Too short to be interesting
 
@@ -211,6 +250,11 @@ export async function extractPuzzlesFromGame(
         const bestResponse = result.move;
         const themes = guessThemes(solvingChess, bestResponse);
 
+        // moveNumber: half-move index (i-1) → full move = floor((i-1)/2) + 1
+        const moveNumber = Math.floor((i - 1) / 2) + 1;
+        // evalCp: currentCp is already from the solver's perspective
+        const evalCp = currentCp;
+
         candidates.push({
           id: cuid(),
           fen: blunderFen,
@@ -224,6 +268,9 @@ export async function extractPuzzlesFromGame(
           sourceUserId: userId,
           isPublic: false,
           gameUrl,
+          ...gameContext,
+          moveNumber,
+          evalCp,
         });
       }
     }

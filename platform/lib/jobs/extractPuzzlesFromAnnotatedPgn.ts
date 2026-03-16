@@ -95,6 +95,38 @@ function extractGameUrl(pgn: string): string | undefined {
   return undefined;
 }
 
+function parsePgnHeader(pgn: string, tag: string): string | undefined {
+  return pgn.match(new RegExp(`\\[${tag}\\s+"([^"]+)"\\]`))?.[1];
+}
+
+function extractGameContext(
+  pgn: string,
+  playerUsername?: string
+): { opponentUsername?: string; gameResult?: string; gameDate?: string } {
+  const white = parsePgnHeader(pgn, "White");
+  const black = parsePgnHeader(pgn, "Black");
+  const result = parsePgnHeader(pgn, "Result");
+  const utcDate = parsePgnHeader(pgn, "UTCDate") ?? parsePgnHeader(pgn, "Date");
+  const gameDate = utcDate?.replace(/\./g, "-");
+
+  if (!playerUsername || !white || !black) return { gameDate };
+
+  const lc = playerUsername.toLowerCase();
+  let playerColor: "white" | "black" | undefined;
+  if (white.toLowerCase() === lc) playerColor = "white";
+  else if (black.toLowerCase() === lc) playerColor = "black";
+  if (!playerColor) return { gameDate };
+
+  const opponentUsername = playerColor === "white" ? black : white;
+
+  let gameResult: string | undefined;
+  if (result === "1-0") gameResult = playerColor === "white" ? "win" : "loss";
+  else if (result === "0-1") gameResult = playerColor === "black" ? "win" : "loss";
+  else if (result === "1/2-1/2") gameResult = "draw";
+
+  return { opponentUsername, gameResult, gameDate };
+}
+
 /**
  * Extracts puzzle candidates from an eval-annotated PGN.
  * Synchronous — no Stockfish required.
@@ -102,9 +134,11 @@ function extractGameUrl(pgn: string): string | undefined {
  */
 export function extractPuzzlesFromAnnotatedPgn(
   pgn: string,
-  userId: string
+  userId: string,
+  playerUsername?: string
 ): PuzzleCandidate[] {
   const gameUrl = extractGameUrl(pgn);
+  const gameContext = extractGameContext(pgn, playerUsername);
   const evals = extractEvals(pgn);
   if (evals.length === 0) return []; // no annotations → caller should try Stockfish fallback
 
@@ -156,6 +190,14 @@ export function extractPuzzlesFromAnnotatedPgn(
     const rating =
       swingCp >= 600 ? 1200 : swingCp >= 400 ? 1000 : swingCp >= 250 ? 900 : 800;
 
+    // moveNumber: half-move index i (0-based) → full move = floor(i/2) + 1
+    const moveNumber = Math.floor(i / 2) + 1;
+    // evalCp from solver's perspective: solver is opposite of who blundered (sideToMove)
+    // evalAfter is from white's perspective (in pawns)
+    const evalCp = sideToMove === "w"
+      ? Math.round(-evalAfter * 100)  // white blundered → solver is black
+      : Math.round(evalAfter * 100);  // black blundered → solver is white
+
     candidates.push({
       id: cuid(),
       fen: fenBefore,
@@ -169,6 +211,9 @@ export function extractPuzzlesFromAnnotatedPgn(
       sourceUserId: userId,
       isPublic: false,
       gameUrl,
+      ...gameContext,
+      moveNumber,
+      evalCp,
     });
   }
 
