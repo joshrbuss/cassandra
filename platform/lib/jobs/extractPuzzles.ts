@@ -14,7 +14,7 @@ import { cuid } from "@/lib/cuid";
 import { getBestMove } from "./stockfish";
 
 /** Centipawn swing that qualifies a move as a blunder → puzzle candidate */
-const BLUNDER_THRESHOLD = 150;
+const BLUNDER_THRESHOLD = 80;
 
 /** Maximum puzzles extracted per game (avoid flooding from one bad game) */
 const MAX_PER_GAME = 3;

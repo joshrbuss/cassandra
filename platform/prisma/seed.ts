@@ -288,7 +288,7 @@ async function upsertPuzzle(p: LichessPuzzle) {
 // CSV loader (for bulk import from Lichess DB)
 // ---------------------------------------------------------------------------
 
-async function loadFromCsv(csvPath: string, limit = 10_000) {
+async function loadFromCsv(csvPath: string, limit = 50_000) {
   console.log(`Loading puzzles from CSV: ${csvPath}`);
 
   const stream = csvPath.endsWith(".zst")
