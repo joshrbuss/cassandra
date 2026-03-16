@@ -103,6 +103,8 @@
   "dashboard.copyLink": "Копировать ссылку",
   "dashboard.noStreaksYet": "Серий пока нет",
   "dashboard.noReferralsYet": "Приглашений пока нет",
+  "dashboard.correct": "верно",
+  "dashboard.noAttemptsYet": "Попыток пока нет",
   "dashboard.comingSoon": "Скоро",
   "dashboard.signOut": "Выйти",
   "dashboard.footer": "Cassandra Chess · Задачи из открытой базы данных Lichess (CC0)",

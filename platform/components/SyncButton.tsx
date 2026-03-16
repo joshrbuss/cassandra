@@ -35,6 +35,7 @@ export default function SyncButton({ lastSyncedAt }: Props) {
     );
   }
 
+
   async function handleSync() {
     setStatus("loading");
     setMessage(null);

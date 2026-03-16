@@ -103,6 +103,8 @@
   "dashboard.copyLink": "Link kopieren",
   "dashboard.noStreaksYet": "Noch keine Serien",
   "dashboard.noReferralsYet": "Noch keine Empfehlungen",
+  "dashboard.correct": "richtig",
+  "dashboard.noAttemptsYet": "Noch keine Versuche",
   "dashboard.comingSoon": "Demnächst verfügbar",
   "dashboard.signOut": "Abmelden",
   "dashboard.footer": "Cassandra Chess · Rätsel aus der offenen Lichess-Datenbank (CC0)",

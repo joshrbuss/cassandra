@@ -103,6 +103,8 @@
   "dashboard.copyLink": "Copiar link",
   "dashboard.noStreaksYet": "Nenhuma sequência ainda",
   "dashboard.noReferralsYet": "Nenhuma indicação ainda",
+  "dashboard.correct": "corretos",
+  "dashboard.noAttemptsYet": "Nenhuma tentativa ainda",
   "dashboard.comingSoon": "Em breve",
   "dashboard.signOut": "Sair",
   "dashboard.footer": "Cassandra Chess · Puzzles do banco de dados aberto do Lichess (CC0)",

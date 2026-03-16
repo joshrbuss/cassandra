@@ -103,6 +103,8 @@
   "dashboard.copyLink": "Copy link",
   "dashboard.noStreaksYet": "No streaks yet",
   "dashboard.noReferralsYet": "No referrals yet",
+  "dashboard.correct": "correct",
+  "dashboard.noAttemptsYet": "No attempts yet",
   "dashboard.comingSoon": "Coming soon",
   "dashboard.signOut": "Sign out",
   "dashboard.footer": "Cassandra Chess · Puzzles sourced from the Lichess open database (CC0)",

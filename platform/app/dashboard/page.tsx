@@ -170,13 +170,19 @@ export default async function DashboardPage() {
             <p className="text-xs text-[#666] mt-1">{t("dashboard.statStreak")}</p>
           </div>
           <div className="bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4 text-center">
-            <p className="text-2xl font-extrabold text-[#c8942a] tabular-nums">{accuracy ?? 0}%</p>
-            <p className="text-xs text-[#666] mt-1">
-              {t("dashboard.statAccuracy")}
-              {userAttempts.length > 0 && (
-                <span className="block text-[#777] mt-0.5">{totalSolved}/{userAttempts.length}</span>
-              )}
-            </p>
+            {userAttempts.length > 0 ? (
+              <>
+                <p className="text-2xl font-extrabold text-[#c8942a] tabular-nums">{accuracy}%</p>
+                <p className="text-xs text-[#666] mt-1">{t("dashboard.statAccuracy")}</p>
+                <p className="text-xs text-[#777] mt-0.5">{totalSolved} / {userAttempts.length} {t("dashboard.correct")}</p>
+              </>
+            ) : (
+              <>
+                <p className="text-2xl font-extrabold text-[#c8942a]">—</p>
+                <p className="text-xs text-[#666] mt-1">{t("dashboard.statAccuracy")}</p>
+                <p className="text-xs text-[#777] mt-0.5">{t("dashboard.noAttemptsYet")}</p>
+              </>
+            )}
           </div>
           <div className="bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4 text-center">
             <p className="text-2xl font-extrabold text-[#c8942a] tabular-nums">{user?.referralCount ?? 0}</p>
