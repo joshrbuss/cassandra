@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import ConnectButtons from "./ConnectButtons";
 import ImportedPuzzlesWidget from "./ImportedPuzzlesWidget";
+import CountrySelector from "./CountrySelector";
 import { getImportedPuzzleCount, getTotalImportedCount } from "@/lib/jobs/importGames";
 
 export const metadata = {
@@ -17,6 +18,7 @@ export default async function SettingsPage() {
     lichessUsername: string | null;
     chessComUsername: string | null;
     elo: number | null;
+    country: string | null;
   } | null = null;
 
   let thisWeek = 0;
@@ -26,7 +28,7 @@ export default async function SettingsPage() {
     [user, thisWeek, total] = await Promise.all([
       prisma.user.findUnique({
         where: { id: session.userId },
-        select: { id: true, lichessUsername: true, chessComUsername: true, elo: true },
+        select: { id: true, lichessUsername: true, chessComUsername: true, elo: true, country: true },
       }),
       getImportedPuzzleCount(session.userId),
       getTotalImportedCount(session.userId),
@@ -55,6 +57,12 @@ export default async function SettingsPage() {
           chessComUsername={user?.chessComUsername ?? null}
           elo={user?.elo ?? null}
         />
+
+        {user && (
+          <div className="mt-4">
+            <CountrySelector initialCountry={user.country} />
+          </div>
+        )}
 
         {user && (
           <div className="mt-4">

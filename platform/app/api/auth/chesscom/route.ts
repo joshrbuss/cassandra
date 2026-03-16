@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
   const body = (await req.json()) as { username?: unknown; ref?: unknown };
   const username = (typeof body.username === "string" ? body.username : "").trim();
   const refCode = typeof body.ref === "string" ? body.ref.trim() : undefined;
+  const country = req.headers.get("x-vercel-ip-country") ?? undefined;
 
   const normalizedUsername = username.toLowerCase();
 
@@ -85,6 +86,7 @@ export async function POST(req: NextRequest) {
       data: {
         chessComLinkedAt: new Date(),
         ...(rawElo != null ? { rawElo, normalizedElo, elo: rawElo, eloPlatform: "chess_com" } : {}),
+        ...(country ? { country } : {}),
       },
     });
     userId = existing.id;
@@ -105,6 +107,7 @@ export async function POST(req: NextRequest) {
           eloPlatform: rawElo != null ? "chess_com" : undefined,
           referralCode: generateReferralCode(),
           referredBy: refCode || undefined,
+          country,
         },
       });
       if (refCode) creditReferrer(refCode).catch(() => {});
@@ -118,6 +121,7 @@ export async function POST(req: NextRequest) {
           ...(rawElo != null && !currentUser.eloPlatform
             ? { rawElo, normalizedElo, elo: rawElo, eloPlatform: "chess_com" }
             : {}),
+          ...(country ? { country } : {}),
         },
       });
       userId = session.userId;
@@ -133,6 +137,7 @@ export async function POST(req: NextRequest) {
         eloPlatform: rawElo != null ? "chess_com" : undefined,
         referralCode: generateReferralCode(),
         referredBy: refCode || undefined,
+        country,
       },
     });
     if (refCode) creditReferrer(refCode).catch(() => {});

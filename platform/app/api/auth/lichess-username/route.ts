@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
   const body = (await req.json()) as { username?: unknown; ref?: unknown };
   const username = (typeof body.username === "string" ? body.username : "").trim();
   const refCode = typeof body.ref === "string" ? body.ref.trim() : undefined;
+  const country = req.headers.get("x-vercel-ip-country") ?? undefined;
 
   if (!username || username.length < 2 || username.length > 30) {
     return NextResponse.json({ error: "Enter a valid Lichess username." }, { status: 400 });
@@ -64,6 +65,7 @@ export async function POST(req: NextRequest) {
       data: {
         lichessLinkedAt: new Date(),
         ...(rawElo != null ? { rawElo, normalizedElo: rawElo, elo: rawElo, eloPlatform: "lichess" } : {}),
+        ...(country ? { country } : {}),
       },
     });
     userId = existing.id;
@@ -84,6 +86,7 @@ export async function POST(req: NextRequest) {
           eloPlatform: rawElo != null ? "lichess" : undefined,
           referralCode: generateReferralCode(),
           referredBy: refCode || undefined,
+          country,
         },
       });
       if (refCode) creditReferrer(refCode).catch(() => {});
@@ -97,6 +100,7 @@ export async function POST(req: NextRequest) {
           ...(rawElo != null && !currentUser.eloPlatform
             ? { rawElo, normalizedElo: rawElo, elo: rawElo, eloPlatform: "lichess" }
             : {}),
+          ...(country ? { country } : {}),
         },
       });
       userId = session.userId;
@@ -113,6 +117,7 @@ export async function POST(req: NextRequest) {
         eloPlatform: rawElo != null ? "lichess" : undefined,
         referralCode: generateReferralCode(),
         referredBy: refCode || undefined,
+        country,
       },
     });
     if (refCode) creditReferrer(refCode).catch(() => {});

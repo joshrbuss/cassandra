@@ -7,6 +7,7 @@ export interface LeaderboardEntry {
   displayName: string;
   avatarUrl: string | null;
   streak: number;
+  country: string | null;
 }
 
 export interface StreakLeaderboardResponse {
@@ -33,6 +34,7 @@ export async function GET() {
         chessComUsername: true,
         avatarUrl: true,
         currentStreak: true,
+        country: true,
       },
     }),
     prisma.user.findMany({
@@ -45,6 +47,7 @@ export async function GET() {
         chessComUsername: true,
         avatarUrl: true,
         longestStreak: true,
+        country: true,
       },
     }),
   ]);
@@ -55,6 +58,7 @@ export async function GET() {
     displayName: displayName(u),
     avatarUrl: u.avatarUrl,
     streak: u.currentStreak,
+    country: u.country,
   }));
 
   const allTime: LeaderboardEntry[] = allTimeTop.map((u, i) => ({
@@ -63,6 +67,7 @@ export async function GET() {
     displayName: displayName(u),
     avatarUrl: u.avatarUrl,
     streak: u.longestStreak,
+    country: u.country,
   }));
 
   return NextResponse.json({ current, allTime } satisfies StreakLeaderboardResponse, {

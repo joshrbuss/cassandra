@@ -11,6 +11,7 @@ import { ensureReferralCode } from "@/lib/referral";
 import EmailPopup from "@/components/EmailPopup";
 import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
 import SocialLinks from "@/components/SocialLinks";
+import { countryToFlag } from "@/lib/countryFlag";
 
 export const metadata = {
   title: "Home — Cassandra Chess",
@@ -42,6 +43,7 @@ export default async function DashboardPage() {
       referralCode: true,
       referralCount: true,
       email: true,
+      country: true,
     },
   });
 
@@ -67,6 +69,7 @@ export default async function DashboardPage() {
         lichessUsername: true,
         chessComUsername: true,
         currentStreak: true,
+        country: true,
       },
     }),
     prisma.user.findMany({
@@ -78,6 +81,7 @@ export default async function DashboardPage() {
         lichessUsername: true,
         chessComUsername: true,
         referralCount: true,
+        country: true,
       },
     }),
   ]);
@@ -107,7 +111,9 @@ export default async function DashboardPage() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-white font-bold text-lg">{name}</h1>
+                  <h1 className="text-white font-bold text-lg">
+                    {countryToFlag(user?.country)}{countryToFlag(user?.country) ? " " : ""}{name}
+                  </h1>
                   <span className="text-[10px] font-bold text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-2 py-0.5 rounded-full uppercase tracking-wider">
                     {t("dashboard.owner")}
                   </span>
@@ -278,6 +284,9 @@ export default async function DashboardPage() {
                           {i === 0 ? "\uD83D\uDC51" : `#${i + 1}`}
                         </td>
                         <td className="py-1.5 pr-2">
+                          {countryToFlag(entry.country) && (
+                            <span className="mr-1">{countryToFlag(entry.country)}</span>
+                          )}
                           <span className={`font-medium ${isOwner ? "text-[#1a1a1a]" : "text-[#1a1a1a]"}`}>
                             {displayName(entry)}
                           </span>
@@ -314,6 +323,9 @@ export default async function DashboardPage() {
                           {i === 0 ? "\u2B50" : `#${i + 1}`}
                         </td>
                         <td className="py-1.5 pr-2">
+                          {countryToFlag(entry.country) && (
+                            <span className="mr-1">{countryToFlag(entry.country)}</span>
+                          )}
                           <span className="font-medium text-[#1a1a1a]">
                             {displayName(entry)}
                           </span>

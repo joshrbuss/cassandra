@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { StreakLeaderboardResponse, LeaderboardEntry } from "@/app/api/leaderboard/streaks/route";
 import type { ReferralLeaderboardResponse, ReferralLeaderboardEntry } from "@/app/api/leaderboard/referrals/route";
+import { countryToFlag } from "@/lib/countryFlag";
 
 export const metadata: Metadata = {
   title: "Leaderboard — Cassandra Chess",
@@ -81,6 +82,9 @@ function LeaderboardTable({ entries, label }: { entries: LeaderboardEntry[]; lab
                       <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-500">
                         {entry.displayName[0]?.toUpperCase() ?? "?"}
                       </div>
+                    )}
+                    {countryToFlag(entry.country) && (
+                      <span className="text-sm">{countryToFlag(entry.country)}</span>
                     )}
                     <span className={`font-medium ${isTop3 ? "text-gray-900" : "text-gray-700"}`}>
                       {entry.displayName}
