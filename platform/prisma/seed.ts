@@ -15,7 +15,8 @@
  *   We detect captures/checks by applying the move with chess.js.
  */
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
+type PuzzleCreateManyInput = Prisma.PuzzleCreateManyInput;
 import { Chess } from "chess.js";
 import * as fs from "fs";
 import * as readline from "readline";
@@ -301,7 +302,7 @@ async function loadFromCsv(csvPath: string, limit = 50_000) {
 
   let lineNum = 0;
   let imported = 0;
-  let batch: Parameters<typeof prisma.puzzle.createMany>[0]["data"] = [];
+  let batch: PuzzleCreateManyInput[] = [];
 
   async function flushBatch() {
     if (batch.length === 0) return;
