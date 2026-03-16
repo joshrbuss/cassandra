@@ -85,6 +85,13 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
           playerColor={puzzle.playerColor}
           gameUrl={puzzle.gameUrl}
         />
+
+        {/* Footer */}
+        <footer className="mt-10 pt-6 border-t border-gray-100 text-center">
+          <p className="text-xs text-gray-400">
+            Cassandra Chess · Puzzles sourced from the Lichess open database (CC0)
+          </p>
+        </footer>
       </div>
     </main>
   );

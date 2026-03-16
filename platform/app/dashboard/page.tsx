@@ -60,11 +60,6 @@ export default async function DashboardPage() {
 
   const stripeLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
 
-  // Time-of-day greeting
-  const hour = new Date().getUTCHours();
-  const greeting =
-    hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-
   return (
     <main className="min-h-screen bg-stone-50 px-4 py-10">
       <div className="max-w-lg mx-auto">
@@ -93,7 +88,7 @@ export default async function DashboardPage() {
         {/* Greeting + profile */}
         <div className="mb-8">
           <p className="text-sm text-stone-500 mb-1">
-            {greeting} {displayName} — Chess On!
+            Chess On, {displayName}!
           </p>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -190,17 +185,17 @@ export default async function DashboardPage() {
           {/* Train on personal puzzles — primary CTA */}
           <Link
             href="/train"
-            className="flex items-center justify-between bg-stone-900 text-white rounded-xl p-5 shadow-sm hover:bg-stone-800 transition-colors"
+            className="flex items-center justify-between bg-emerald-800 text-white rounded-xl p-5 shadow-sm hover:bg-emerald-700 transition-colors"
           >
             <div>
               <p className="font-semibold">Train on my games</p>
-              <p className="text-xs text-stone-400 mt-0.5">
+              <p className="text-xs text-emerald-300 mt-0.5">
                 {totalImported > 0
                   ? `${totalImported} personal puzzles from your blunders`
                   : "Analyse your games to generate personal puzzles"}
               </p>
             </div>
-            <span className="text-amber-400 text-lg">→</span>
+            <span className="text-emerald-300 text-lg">→</span>
           </Link>
 
           <Link
@@ -264,7 +259,7 @@ export default async function DashboardPage() {
         {/* Footer */}
         <footer className="mt-10 pt-6 border-t border-stone-200 text-center">
           <p className="text-xs text-stone-400">
-            Cassandra Chess · Puzzles sourced from Lichess open database (CC0)
+            Cassandra Chess · Puzzles sourced from the Lichess open database (CC0)
           </p>
           <p className="text-xs text-stone-300 mt-2">
             <a href="/api/auth/signout" className="hover:underline hover:text-stone-500">
