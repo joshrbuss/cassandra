@@ -97,8 +97,11 @@ export default async function Home() {
             <span className="text-[#c8942a]">{t("landing.hero.titleAccent")}</span>
           </h1>
 
-          <p className="text-gray-400 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-gray-400 text-lg sm:text-xl max-w-2xl mx-auto mb-4 leading-relaxed">
             {t("landing.hero.subtitle")}
+          </p>
+          <p className="text-[#c8942a] text-sm font-medium max-w-xl mx-auto mb-10">
+            {t("landing.hero.sellingPoint")}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-14">

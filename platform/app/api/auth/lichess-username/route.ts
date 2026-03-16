@@ -92,6 +92,13 @@ export async function POST(req: NextRequest) {
       if (refCode) creditReferrer(refCode).catch(() => {});
       userId = newUser.id;
     } else {
+      // Check if this is the first chess account connection (referral credit opportunity)
+      const existingUser = await prisma.user.findUnique({
+        where: { id: session.userId },
+        select: { referredBy: true, chessComUsername: true, lichessUsername: true },
+      });
+      const isFirstConnect = !existingUser?.chessComUsername && !existingUser?.lichessUsername;
+
       await prisma.user.update({
         where: { id: session.userId },
         data: {
@@ -101,8 +108,11 @@ export async function POST(req: NextRequest) {
             ? { rawElo, normalizedElo: rawElo, elo: rawElo, eloPlatform: "lichess" }
             : {}),
           ...(country ? { country } : {}),
+          ...(refCode && !existingUser?.referredBy ? { referredBy: refCode } : {}),
         },
       });
+      // Credit referrer on first chess account connection
+      if (refCode && isFirstConnect) creditReferrer(refCode).catch(() => {});
       userId = session.userId;
     }
   } else {

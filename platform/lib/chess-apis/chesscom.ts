@@ -19,7 +19,7 @@ interface ChessComArchiveResponse {
 }
 
 /**
- * Fetches rated games for a Chess.com user from the last 3 months.
+ * Fetches rated games for a Chess.com user from the last 6 months.
  * Returns an array of PGN strings (one per game), capped at maxGames.
  */
 export async function fetchRecentGames(
@@ -29,8 +29,8 @@ export async function fetchRecentGames(
   const now = new Date();
   const months: { year: number; month: number }[] = [];
 
-  // Last 3 months
-  for (let i = 0; i < 3; i++) {
+  // Last 6 months
+  for (let i = 0; i < 6; i++) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
     months.push({ year: d.getFullYear(), month: d.getMonth() + 1 });
   }

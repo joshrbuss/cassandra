@@ -290,5 +290,21 @@
   "cookie.privacyLink": "Política de privacidad →",
 
   "changelog.message": "🆕 Actualización de Cassandra Chess — banderas de países, analíticas, política de privacidad y mucho más. ¡Chess On! 🏆",
-  "changelog.seeMore": "Ver novedades →"
+  "changelog.seeMore": "Ver novedades →",
+
+  "landing.hero.sellingPoint": "¿Cansado de pagar por análisis de partidas? Analizamos tus partidas gratis y convertimos tus errores en puzzles.",
+
+  "invite.title": "{name} te invitó a Cassandra Chess",
+  "invite.someone": "Un amigo",
+  "invite.statStreak": "Racha diaria",
+  "invite.statAccuracy": "Precisión",
+  "invite.statSolved": "Puzzles resueltos",
+  "invite.sellingPoint": "¿Cansado de pagar por análisis de partidas? Analizamos tus partidas gratis y convertimos tus errores en puzzles.",
+  "invite.acceptButton": "Aceptar la invitación de {name} →",
+  "invite.card1Title": "Puzzles de tus propias partidas",
+  "invite.card1Desc": "Conecta Chess.com o Lichess. Encontramos los errores en tus partidas recientes y los convertimos en puzzles dirigidos.",
+  "invite.card2Title": "Análisis de partidas gratis",
+  "invite.card2Desc": "Ejecutamos Stockfish en cada partida — el mismo análisis que otras plataformas cobran. Completamente gratis.",
+  "invite.card3Title": "Sin paywall, sin límites",
+  "invite.card3Desc": "Todas las funciones son gratuitas. Sin plan premium, sin límite de puzzles. Entrena todo lo que quieras."
 }

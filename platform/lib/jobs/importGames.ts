@@ -120,7 +120,7 @@ export async function importGamesForUser(userId: string): Promise<ImportResult> 
     }
   }
 
-  // 4. Chess.com — fetch 3 months, use Stockfish extractor (returns [] if engine unavailable)
+  // 4. Chess.com — fetch 6 months, run Stockfish on every game (returns [] if engine unavailable)
   if (user.chessComUsername && puzzlesImported < remaining) {
     try {
       const pgns = await chesscomGames(user.chessComUsername, 200);

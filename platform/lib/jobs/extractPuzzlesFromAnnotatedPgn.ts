@@ -16,8 +16,8 @@ import { cuid } from "@/lib/cuid";
 import { getBestMove } from "./stockfish";
 import type { PuzzleCandidate } from "./extractPuzzles";
 
-/** 1.5 pawn swing qualifies a move as a blunder */
-const BLUNDER_THRESHOLD_PAWNS = 1.5;
+/** 0.6 pawn swing (60 centipawns) qualifies a move as a blunder */
+const BLUNDER_THRESHOLD_PAWNS = 0.6;
 
 /** Maximum puzzles extracted per game */
 const MAX_PER_GAME = 3;

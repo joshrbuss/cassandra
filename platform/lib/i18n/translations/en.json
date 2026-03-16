@@ -290,5 +290,21 @@
   "cookie.privacyLink": "Privacy Policy →",
 
   "changelog.message": "🆕 Cassandra Chess update — country flags, analytics, privacy policy, and a lot more. Chess On! 🏆",
-  "changelog.seeMore": "See what's new →"
+  "changelog.seeMore": "See what's new →",
+
+  "landing.hero.sellingPoint": "Tired of paying for game reviews? We analyse your games for free and turn your mistakes into puzzles.",
+
+  "invite.title": "{name} invited you to Cassandra Chess",
+  "invite.someone": "A friend",
+  "invite.statStreak": "Day streak",
+  "invite.statAccuracy": "Accuracy",
+  "invite.statSolved": "Puzzles solved",
+  "invite.sellingPoint": "Tired of paying for game reviews? We analyse your games for free and turn your mistakes into puzzles.",
+  "invite.acceptButton": "Accept {name}'s invitation →",
+  "invite.card1Title": "Puzzles from your own games",
+  "invite.card1Desc": "Connect Chess.com or Lichess. We find the blunders in your recent games and turn them into targeted puzzles.",
+  "invite.card2Title": "Free game analysis",
+  "invite.card2Desc": "We run Stockfish on every game — the same analysis other platforms charge for. Completely free.",
+  "invite.card3Title": "No paywall, no limits",
+  "invite.card3Desc": "Every feature is free. No premium tier, no puzzle limits. Just train as much as you want."
 }

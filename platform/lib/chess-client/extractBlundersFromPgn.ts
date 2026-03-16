@@ -13,7 +13,7 @@ import { Chess } from "chess.js";
 import { analyzePosition } from "./stockfishBrowser";
 
 /** Centipawn swing that qualifies a move as a blunder */
-const BLUNDER_THRESHOLD = 80;
+const BLUNDER_THRESHOLD = 60;
 
 /** Max puzzles extracted per game */
 const MAX_PER_GAME = 3;

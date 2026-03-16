@@ -31,6 +31,10 @@ export async function fetchRecentGames(
   url.searchParams.set("clocks", "false");
   url.searchParams.set("evals", "true");  // include %eval annotations for blunder detection
   url.searchParams.set("rated", "true");
+  // Last 6 months — Lichess `since` is a Unix timestamp in milliseconds
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  url.searchParams.set("since", String(sixMonthsAgo.getTime()));
 
   const res = await fetch(url.toString(), {
     headers: {
