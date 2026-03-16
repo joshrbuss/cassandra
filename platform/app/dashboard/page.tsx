@@ -222,7 +222,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* ── Browse all puzzles — full width ── */}
+        {/* MVP: hidden until library UX is improved
         <Link
           href="/puzzles"
           className="flex items-center justify-between bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-5 mb-6 hover:border-[#c8942a] transition-colors"
@@ -233,6 +233,7 @@ export default async function DashboardPage() {
           </div>
           <span className="text-[#999] text-xl ml-3">&#8594;</span>
         </Link>
+        */}
 
         {/* ── Two leaderboard panels ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
