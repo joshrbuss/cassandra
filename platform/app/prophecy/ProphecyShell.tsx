@@ -297,7 +297,7 @@ export default function ProphecyShell({
               {/* Buttons */}
               <div className="flex gap-3 mt-4">
                 <Link
-                  href="/train"
+                  href="/unlearned"
                   className="flex-1 text-center bg-[#c8942a] text-white px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#b5852a] transition-colors"
                 >
                   Keep training

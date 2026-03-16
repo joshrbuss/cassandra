@@ -13,6 +13,7 @@ export default function LanguageToggleGuard() {
   // Hide on pages that have their own nav or don't need toggle
   if (
     pathname.startsWith("/train") ||
+    pathname.startsWith("/unlearned") ||
     pathname === "/" ||
     pathname === "/connect" ||
     pathname === "/analysing" ||

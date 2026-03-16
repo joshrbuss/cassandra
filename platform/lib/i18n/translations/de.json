@@ -86,6 +86,7 @@
   "dashboard.streak": "{count}-Tage-Serie",
   "dashboard.personalPuzzles": "persönliche Rätsel",
   "dashboard.accuracy": "Genauigkeit ({count} Versuche)",
+  "dashboard.theUnlearned": "The Unlearned",
   "dashboard.trainMyGames": "Mit meinen Partien trainieren",
   "dashboard.trainDesc.has": "{count} persönliche Rätsel aus deinen Fehlern",
   "dashboard.trainDesc.empty": "Analysiere deine Partien, um persönliche Rätsel zu erstellen",

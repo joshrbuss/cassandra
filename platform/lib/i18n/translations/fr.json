@@ -86,6 +86,7 @@
   "dashboard.streak": "Série de {count} jours",
   "dashboard.personalPuzzles": "puzzles personnels",
   "dashboard.accuracy": "précision ({count} tentatives)",
+  "dashboard.theUnlearned": "The Unlearned",
   "dashboard.trainMyGames": "S'entraîner sur mes parties",
   "dashboard.trainDesc.has": "{count} puzzles personnels tirés de vos erreurs",
   "dashboard.trainDesc.empty": "Analysez vos parties pour générer des puzzles personnels",

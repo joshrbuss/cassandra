@@ -23,7 +23,7 @@ export default function TrainImportTrigger() {
         setTimeout(() => router.refresh(), 1000);
       } else {
         // No puzzles found — fall back to curated library puzzles
-        setTimeout(() => router.push("/train/library"), 1500);
+        setTimeout(() => router.push("/unlearned/library"), 1500);
       }
     } catch {
       setState("error");

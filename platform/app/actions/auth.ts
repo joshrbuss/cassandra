@@ -7,7 +7,7 @@ import { normalizeElo } from "@/lib/elo/normalizeElo";
 
 export type ConnectState = { error: string } | null;
 
-const SAFE_CALLBACKS = ["/connect", "/onboarding", "/settings", "/home", "/dashboard", "/analysing"];
+const SAFE_CALLBACKS = ["/connect", "/onboarding", "/settings", "/home", "/dashboard", "/analysing", "/unlearned"];
 
 function safeCallback(url: string | null): string {
   return url && SAFE_CALLBACKS.includes(url) ? url : "/connect";

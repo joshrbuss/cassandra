@@ -86,6 +86,7 @@
   "dashboard.streak": "Серия {count} дней",
   "dashboard.personalPuzzles": "личных задач",
   "dashboard.accuracy": "точность ({count} попыток)",
+  "dashboard.theUnlearned": "The Unlearned",
   "dashboard.trainMyGames": "Тренироваться на моих партиях",
   "dashboard.trainDesc.has": "{count} личных задач из ваших ошибок",
   "dashboard.trainDesc.empty": "Проанализируйте свои партии, чтобы создать личные задачи",

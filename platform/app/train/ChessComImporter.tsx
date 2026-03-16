@@ -110,7 +110,7 @@ export default function ChessComImporter({ chessComUsername }: Props) {
         setTimeout(() => router.refresh(), 1200);
       } else {
         // No puzzles found — fall back to curated library puzzles
-        setTimeout(() => router.push("/train/library"), 1500);
+        setTimeout(() => router.push("/unlearned/library"), 1500);
       }
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Analysis failed");

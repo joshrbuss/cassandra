@@ -203,11 +203,11 @@ export default async function DashboardPage() {
         {/* ── Actions: 2/3 Train + 1/3 Sync ── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
           <Link
-            href="/train"
+            href="/unlearned"
             className="sm:col-span-2 flex items-center justify-between bg-[#0e0e0e] text-white rounded-xl p-5 hover:bg-[#1a1a1a] transition-colors"
           >
             <div>
-              <p className="font-semibold text-white">{t("dashboard.trainMyGames")}</p>
+              <p className="font-semibold text-white">{t("dashboard.theUnlearned")}</p>
               <p className="text-xs text-[#c8942a] mt-1">
                 {totalImported > 0
                   ? t("dashboard.trainDesc.has", { count: totalImported })
@@ -343,13 +343,13 @@ export default async function DashboardPage() {
             />
             <LockedFeature
               emoji="⏪"
-              name="Rewind"
+              name="The Echo"
               description="Replay any position from your game history and explore alternatives"
               source="dashboard-rewind"
             />
             <LockedFeature
               emoji="🎯"
-              name="Rank It"
+              name="The Scales"
               description="Guess what rating played each move — train your intuition"
               source="dashboard-rankit"
             />
