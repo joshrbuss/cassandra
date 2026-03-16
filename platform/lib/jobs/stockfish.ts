@@ -51,9 +51,21 @@ const ENGINE_TIMEOUT_MS = 10_000;
  * Runs Stockfish at the given FEN and returns the best move + centipawn score.
  * Returns null if no engine is available or on timeout.
  */
+let engineInitLogged = false;
+
 export async function getBestMove(fen: string): Promise<EngineResult | null> {
   const cmd = getEngineCommand();
-  if (!cmd) return null;
+  if (!cmd) {
+    if (!engineInitLogged) {
+      console.warn("[stockfish] No engine found — checked system paths and npm package");
+      engineInitLogged = true;
+    }
+    return null;
+  }
+  if (!engineInitLogged) {
+    console.log(`[stockfish] Engine found: ${cmd.join(" ")}`);
+    engineInitLogged = true;
+  }
 
   return new Promise((resolve) => {
     let proc: ReturnType<typeof spawn>;

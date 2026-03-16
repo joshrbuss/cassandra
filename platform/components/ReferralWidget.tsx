@@ -13,10 +13,10 @@ const THRESHOLD = 5;
 export default function ReferralWidget({ referralCode, referralCount }: ReferralWidgetProps) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
-  const referralLink = `https://cassandrachess.com?ref=${referralCode}`;
+  const referralLink = `https://cassandrachess.com/invite/${referralCode}`;
   const progress = Math.min(referralCount, THRESHOLD);
   const pct = (progress / THRESHOLD) * 100;
-  const shareText = `Join me on cassandrachess.com?ref=${referralCode} — Chess On!`;
+  const shareText = `Join me on Cassandra Chess — free game analysis and puzzles from your own blunders! ${referralLink}`;
 
   function handleCopy() {
     navigator.clipboard.writeText(referralLink).then(() => {

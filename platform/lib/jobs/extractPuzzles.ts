@@ -235,7 +235,13 @@ export async function extractPuzzlesFromGame(
   const gameUrl = extractGameUrl(pgn);
   const gameContext = extractGameContext(pgn, playerUsername);
   const positions = getPositionSequence(pgn);
-  if (positions.length < 5) return []; // Too short to be interesting
+
+  console.log(`[extract] Game: ${gameUrl ?? "unknown"} | positions=${positions.length} | player=${playerUsername ?? "?"} | color=${gameContext.playerColor ?? "unknown"}`);
+
+  if (positions.length < 5) {
+    console.log(`[extract] Skipped — too few positions (${positions.length})`);
+    return [];
+  }
 
   // Determine which FEN turn corresponds to the player's moves
   const playerTurn: "w" | "b" | null =
@@ -246,6 +252,10 @@ export async function extractPuzzlesFromGame(
   const candidates: PuzzleCandidate[] = [];
   let prevCp: number | null = null;
   let prevBestMove: string | null = null;
+  let positionsEvaluated = 0;
+  let engineFailures = 0;
+  let skippedOpponentMoves = 0;
+  let maxSwingSeen = 0;
 
   for (let i = 0; i < positions.length; i++) {
     if (candidates.length >= MAX_PER_GAME) break;
@@ -256,11 +266,13 @@ export async function extractPuzzlesFromGame(
     // the player SHOULD play from this position, saved for blunder detection next iteration.
     const result = await getBestMove(fen);
     if (!result) {
+      engineFailures++;
       prevCp = null;
       prevBestMove = null;
       continue;
     }
 
+    positionsEvaluated++;
     const currentCp = result.cp;
 
     if (prevCp !== null && prevBestMove !== null) {
@@ -269,6 +281,7 @@ export async function extractPuzzlesFromGame(
 
       // Only extract blunders from the PLAYER's moves, not the opponent's
       if (playerTurn && blunderTurn !== playerTurn) {
+        skippedOpponentMoves++;
         prevCp = currentCp;
         prevBestMove = result.move;
         continue;
@@ -279,6 +292,14 @@ export async function extractPuzzlesFromGame(
       // If the move played from positions[i-1] was a blunder, currentCp will be high
       // (the opponent is now winning), so the swing against the blunderer is large.
       const swing = prevCp - -currentCp;
+
+      if (Math.abs(swing) > Math.abs(maxSwingSeen)) maxSwingSeen = swing;
+
+      // Debug: log significant swings (> 30cp)
+      if (swing > 30) {
+        const moveNum = Math.floor(i / 2) + 1;
+        console.log(`[extract]   move ${moveNum} | prevCp=${prevCp} currentCp=${currentCp} swing=${swing}cp ${swing >= BLUNDER_THRESHOLD ? "→ BLUNDER" : "(below threshold)"}`);
+      }
 
       if (swing >= BLUNDER_THRESHOLD) {
         // positions[i-1].uci was the blunder move played from positions[i-1].fen.
@@ -322,6 +343,8 @@ export async function extractPuzzlesFromGame(
     prevCp = currentCp;
     prevBestMove = result.move;
   }
+
+  console.log(`[extract] Summary: evaluated=${positionsEvaluated} engineFails=${engineFailures} skippedOpponent=${skippedOpponentMoves} maxSwing=${maxSwingSeen}cp puzzlesFound=${candidates.length} threshold=${BLUNDER_THRESHOLD}cp`);
 
   return candidates;
 }

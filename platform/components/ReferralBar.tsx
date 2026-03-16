@@ -13,7 +13,7 @@ const THRESHOLD = 5;
 export default function ReferralBar({ referralCode, referralCount }: Props) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
-  const referralLink = `https://cassandrachess.com?ref=${referralCode}`;
+  const referralLink = `https://cassandrachess.com/invite/${referralCode}`;
   const progress = Math.min(referralCount, THRESHOLD);
   const pct = (progress / THRESHOLD) * 100;
 
