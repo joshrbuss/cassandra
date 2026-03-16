@@ -55,7 +55,7 @@ export default async function BattlesPage() {
             <CreateBattleButton />
           ) : (
             <div className="text-sm text-gray-500">
-              <Link href="/onboarding" className="text-blue-600 hover:underline font-medium">
+              <Link href="/connect" className="text-blue-600 hover:underline font-medium">
                 Connect your account
               </Link>{" "}
               to create a battle.

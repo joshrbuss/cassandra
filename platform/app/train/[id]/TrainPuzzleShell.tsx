@@ -218,7 +218,7 @@ export default function TrainPuzzleShell({
     <div className="w-full">
       {/* ━━ Nav bar ━━ obsidian, identical in both states */}
       <nav className="bg-[#0e0e0e] pl-4 pr-14 py-3 flex items-center justify-between">
-        <Link href="/dashboard" className="text-sm font-medium text-[#c8942a] hover:text-[#e0ad3a] transition-colors">
+        <Link href="/home" className="text-sm font-medium text-[#c8942a] hover:text-[#e0ad3a] transition-colors">
           {t("train.dashboard")}
         </Link>
         <span className="text-xs font-semibold uppercase tracking-widest text-gray-500">
@@ -322,7 +322,7 @@ export default function TrainPuzzleShell({
                   {t("train.nextPuzzle")}
                 </Link>
                 <Link
-                  href="/dashboard"
+                  href="/home"
                   className="flex-1 text-center bg-[#2a2a2a] text-gray-400 px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#333] hover:text-gray-300 transition-colors"
                 >
                   {t("train.doneForNow")}

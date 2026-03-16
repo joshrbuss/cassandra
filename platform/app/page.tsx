@@ -37,7 +37,7 @@ export default async function Home() {
   const session = await auth();
   if (session?.userId) {
     const { redirect } = await import("next/navigation");
-    redirect("/dashboard");
+    redirect("/home");
   }
 
   const stats = await getStats().catch(() => ({
@@ -66,13 +66,13 @@ export default async function Home() {
           <div className="flex items-center gap-3">
             <NavLanguageToggle />
             <Link
-              href="/onboarding"
+              href="/connect"
               className="text-gray-400 text-sm hover:text-white transition-colors hidden sm:inline"
             >
               Sign in
             </Link>
             <Link
-              href="/onboarding"
+              href="/connect"
               className="bg-[#c8942a] text-white text-sm font-semibold px-4 py-1.5 rounded-full hover:bg-[#b5852a] transition-colors"
             >
               Get started free
@@ -104,7 +104,7 @@ export default async function Home() {
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-14">
             <Link
-              href="/onboarding"
+              href="/connect"
               className="inline-flex items-center justify-center h-12 px-8 rounded-full bg-[#c8942a] text-white font-semibold hover:bg-[#b5852a] transition-colors shadow-lg shadow-[#c8942a]/20"
             >
               Get started — it&apos;s free
@@ -224,7 +224,7 @@ export default async function Home() {
             Ready to stop making the same mistakes?
           </h2>
           <Link
-            href="/onboarding"
+            href="/connect"
             className="inline-flex items-center justify-center h-12 px-8 rounded-full bg-[#c8942a] text-white font-semibold hover:bg-[#b5852a] transition-colors shadow-lg shadow-[#c8942a]/20 mb-6"
           >
             Get started free

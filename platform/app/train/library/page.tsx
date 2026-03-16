@@ -11,7 +11,7 @@ import { redirect, notFound } from "next/navigation";
 
 export default async function LibraryIndexPage() {
   const session = await auth();
-  if (!session?.userId) redirect("/onboarding");
+  if (!session?.userId) redirect("/connect");
 
   const user = await prisma.user.findUnique({
     where: { id: session.userId },

@@ -23,7 +23,7 @@ interface PageProps {
 
 export default async function TrainPuzzlePage({ params }: PageProps) {
   const session = await auth();
-  if (!session?.userId) redirect("/onboarding");
+  if (!session?.userId) redirect("/connect");
 
   const { id } = await params;
 

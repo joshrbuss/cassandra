@@ -10,8 +10,13 @@ import LanguageToggle from "./LanguageToggle";
 export default function LanguageToggleGuard() {
   const pathname = usePathname();
 
-  // Hide on train pages and homepage — they have their own nav toggle
-  if (pathname.startsWith("/train") || pathname === "/") return null;
+  // Hide on pages that have their own nav or don't need toggle
+  if (
+    pathname.startsWith("/train") ||
+    pathname === "/" ||
+    pathname === "/connect" ||
+    pathname === "/analysing"
+  ) return null;
 
   return <LanguageToggle />;
 }

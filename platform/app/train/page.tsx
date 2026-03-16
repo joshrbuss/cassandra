@@ -22,7 +22,7 @@ export const metadata = {
 
 export default async function TrainPage() {
   const session = await auth();
-  if (!session?.userId) redirect("/onboarding");
+  if (!session?.userId) redirect("/connect");
 
   const count = await prisma.puzzle.count({
     where: { sourceUserId: session.userId, source: "user_import" },
@@ -109,7 +109,7 @@ export default async function TrainPage() {
           >
             Skip — try a curated puzzle instead →
           </Link>
-          <Link href="/dashboard" className="block text-sm text-gray-400 hover:underline">
+          <Link href="/home" className="block text-sm text-gray-400 hover:underline">
             ← Back to dashboard
           </Link>
         </div>

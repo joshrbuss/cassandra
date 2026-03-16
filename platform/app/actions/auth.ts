@@ -7,10 +7,10 @@ import { normalizeElo } from "@/lib/elo/normalizeElo";
 
 export type ConnectState = { error: string } | null;
 
-const SAFE_CALLBACKS = ["/onboarding", "/settings", "/dashboard"];
+const SAFE_CALLBACKS = ["/connect", "/onboarding", "/settings", "/home", "/dashboard", "/analysing"];
 
 function safeCallback(url: string | null): string {
-  return url && SAFE_CALLBACKS.includes(url) ? url : "/onboarding";
+  return url && SAFE_CALLBACKS.includes(url) ? url : "/connect";
 }
 
 // ─── Lichess ────────────────────────────────────────────────────────────────

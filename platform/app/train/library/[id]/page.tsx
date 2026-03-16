@@ -22,7 +22,7 @@ interface PageProps {
 
 export default async function LibraryPuzzlePage({ params }: PageProps) {
   const session = await auth();
-  if (!session?.userId) redirect("/onboarding");
+  if (!session?.userId) redirect("/connect");
 
   const { id } = await params;
 
@@ -50,7 +50,7 @@ export default async function LibraryPuzzlePage({ params }: PageProps) {
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <Link href="/dashboard" className="text-sm text-blue-600 hover:underline">
+          <Link href="/home" className="text-sm text-blue-600 hover:underline">
             ← Dashboard
           </Link>
           {stripeLink && (
@@ -103,7 +103,7 @@ export default async function LibraryPuzzlePage({ params }: PageProps) {
           >
             Next puzzle →
           </Link>
-          <Link href="/dashboard" className="text-sm text-gray-400 hover:underline">
+          <Link href="/home" className="text-sm text-gray-400 hover:underline">
             Done for now
           </Link>
         </div>
