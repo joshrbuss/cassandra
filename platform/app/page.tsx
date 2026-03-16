@@ -7,6 +7,7 @@ import ConfirmedToast from "@/components/marketing/ConfirmedToast";
 import NavLanguageToggle from "@/components/NavLanguageToggle";
 import HomepageStats from "@/components/HomepageStats";
 import SocialLinks from "@/components/SocialLinks";
+import CookiePreferencesLink from "@/components/CookiePreferencesLink";
 
 async function getStats() {
   const fifteenMinAgo = new Date(Date.now() - 15 * 60 * 1000);
@@ -238,6 +239,8 @@ export default async function Home() {
             <Link href="/privacy" className="text-[#c8942a]/70 hover:text-[#c8942a] transition-colors">{t("legal.privacy")}</Link>
             <span className="text-[#444]">·</span>
             <Link href="/terms" className="text-[#c8942a]/70 hover:text-[#c8942a] transition-colors">{t("legal.terms")}</Link>
+            <span className="text-[#444]">·</span>
+            <CookiePreferencesLink />
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#666] w-full">
             <p>{t("landing.footer.copy")}</p>

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { cookies } from "next/headers";
@@ -7,10 +6,12 @@ import "./globals.css";
 import LocaleProvider from "@/components/i18n/LocaleProvider";
 import LanguageToggleGuard from "@/components/i18n/LanguageToggleGuard";
 import CookieConsentBanner from "@/components/CookieConsentBanner";
+import ConsentAwareScripts from "@/components/ConsentAwareScripts";
 import ChangelogBanner from "@/components/ChangelogBanner";
 import { resolveLocale } from "@/lib/i18n";
 import { LOCALES } from "@/lib/i18n/locales";
 import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -76,48 +77,25 @@ export default async function RootLayout({
   const locale = resolveLocale(cookieStore.get("preferred_locale")?.value);
   const session = await auth();
 
+  // Check if logged-in user is paid (skip AdSense for paid users)
+  let isPaid = false;
+  if (session?.userId) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { isPaid: true },
+    });
+    isPaid = user?.isPaid ?? false;
+  }
+
   return (
     <html lang={locale}>
-      <head>
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1008999288444187"
-          crossOrigin="anonymous"
-        />
-
-        {/* GA4 */}
-        {GA_ID && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="ga4-init" strategy="afterInteractive">
-              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`}
-            </Script>
-          </>
-        )}
-
-        {/* Meta Pixel */}
-        {META_PIXEL_ID && (
-          <>
-            <Script id="meta-pixel-init" strategy="afterInteractive">
-              {`!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${META_PIXEL_ID}');fbq('track','PageView');`}
-            </Script>
-            <noscript>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                height="1"
-                width="1"
-                style={{ display: "none" }}
-                src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
-                alt=""
-              />
-            </noscript>
-          </>
-        )}
-      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        {/* Consent-aware script loading — handles AdSense, GA4, Meta Pixel */}
+        <ConsentAwareScripts
+          gaId={GA_ID}
+          metaPixelId={META_PIXEL_ID}
+          isPaid={isPaid}
+        />
         <LocaleProvider initialLocale={locale}>
           {/* Language toggle — fixed top-right, hidden on /train/* pages */}
           <div className="fixed top-3 right-3 z-40">

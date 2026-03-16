@@ -4,21 +4,29 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/components/i18n/LocaleProvider";
 
-const STORAGE_KEY = "cookie_consent_accepted";
+export const CONSENT_KEY = "cookie_consent_accepted";
 
 export default function CookieConsentBanner() {
   const [visible, setVisible] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (!localStorage.getItem(STORAGE_KEY)) {
+    const val = localStorage.getItem(CONSENT_KEY);
+    if (val === null) {
       setVisible(true);
     }
   }, []);
 
   function accept() {
-    localStorage.setItem(STORAGE_KEY, "1");
+    localStorage.setItem(CONSENT_KEY, "true");
     setVisible(false);
+    window.location.reload();
+  }
+
+  function decline() {
+    localStorage.setItem(CONSENT_KEY, "false");
+    setVisible(false);
+    window.location.reload();
   }
 
   if (!visible) return null;
@@ -35,6 +43,12 @@ export default function CookieConsentBanner() {
             className="bg-[#c8942a] text-white text-sm font-semibold px-5 py-1.5 rounded-full hover:bg-[#b5852a] transition-colors"
           >
             {t("cookie.accept")}
+          </button>
+          <button
+            onClick={decline}
+            className="text-sm font-medium text-gray-400 px-4 py-1.5 rounded-full border border-[#444] hover:border-[#666] hover:text-gray-300 transition-colors"
+          >
+            {t("cookie.decline")}
           </button>
           <Link
             href="/privacy"

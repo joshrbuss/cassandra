@@ -12,6 +12,7 @@ import EmailPopup from "@/components/EmailPopup";
 import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
 import SocialLinks from "@/components/SocialLinks";
 import { countryToFlag } from "@/lib/countryFlag";
+import CookiePreferencesLink from "@/components/CookiePreferencesLink";
 
 export const metadata = {
   title: "Home — Cassandra Chess",
@@ -404,6 +405,8 @@ export default async function DashboardPage() {
             <Link href="/privacy" className="text-[#c8942a]/70 hover:text-[#c8942a] transition-colors">{t("legal.privacy")}</Link>
             <span className="text-[#444]">·</span>
             <Link href="/terms" className="text-[#c8942a]/70 hover:text-[#c8942a] transition-colors">{t("legal.terms")}</Link>
+            <span className="text-[#444]">·</span>
+            <CookiePreferencesLink />
           </div>
           <p className="text-xs text-[#666]">
             {t("dashboard.footer")}

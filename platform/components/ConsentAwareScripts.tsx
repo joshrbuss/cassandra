@@ -1,0 +1,85 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Script from "next/script";
+import { CONSENT_KEY } from "./CookieConsentBanner";
+
+interface Props {
+  gaId?: string;
+  metaPixelId?: string;
+  isPaid: boolean;
+}
+
+/**
+ * Conditionally loads analytics and advertising scripts based on cookie consent.
+ *
+ * Consent states:
+ * - "true"  → full mode: GA4 + AdSense + Meta Pixel
+ * - "false" → restricted: GA4 anonymous only, no AdSense, no Meta Pixel
+ * - null    → no choice yet: same as "false" until user decides
+ *
+ * Paid users never load AdSense regardless of consent.
+ */
+export default function ConsentAwareScripts({ gaId, metaPixelId, isPaid }: Props) {
+  const [consent, setConsent] = useState<"true" | "false" | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const val = localStorage.getItem(CONSENT_KEY);
+    setConsent(val === "true" ? "true" : val === "false" ? "false" : null);
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  const fullConsent = consent === "true";
+  const loadAdsense = fullConsent && !isPaid;
+  const loadMetaPixel = fullConsent && !!metaPixelId;
+
+  return (
+    <>
+      {/* AdSense — only with full consent and non-paid users */}
+      {loadAdsense && (
+        <Script
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1008999288444187"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      )}
+
+      {/* GA4 — always load but configure based on consent */}
+      {gaId && (
+        <>
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+            strategy="afterInteractive"
+          />
+          <Script id="ga4-init" strategy="afterInteractive">
+            {fullConsent
+              ? `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaId}');`
+              : `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('set',{'anonymize_ip':true,'allow_google_signals':false,'allow_ad_personalization_signals':false});gtag('config','${gaId}',{'anonymize_ip':true,'allow_google_signals':false,'allow_ad_personalization_signals':false});`}
+          </Script>
+        </>
+      )}
+
+      {/* Meta Pixel — only with full consent */}
+      {loadMetaPixel && (
+        <>
+          <Script id="meta-pixel-init" strategy="afterInteractive">
+            {`!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${metaPixelId}');fbq('track','PageView');`}
+          </Script>
+          <noscript>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              height="1"
+              width="1"
+              style={{ display: "none" }}
+              src={`https://www.facebook.com/tr?id=${metaPixelId}&ev=PageView&noscript=1`}
+              alt=""
+            />
+          </noscript>
+        </>
+      )}
+    </>
+  );
+}
