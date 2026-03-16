@@ -45,6 +45,7 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
       gameResult: true,
       moveNumber: true,
       evalCp: true,
+      playerColor: true,
     },
   });
 
@@ -81,6 +82,7 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
           gameResult={puzzle.gameResult}
           moveNumber={puzzle.moveNumber}
           evalCp={puzzle.evalCp}
+          playerColor={puzzle.playerColor}
           gameUrl={puzzle.gameUrl}
         />
       </div>

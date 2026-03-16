@@ -57,6 +57,8 @@ model Puzzle {
   moveNumber       Int?
   /// Centipawns at the puzzle position from the solver's perspective (positive = solver winning)
   evalCp           Int?
+  /// "white" | "black" — which side the user played in the source game
+  playerColor      String?
   createdAt     DateTime @default(now())
 
   sourceUser User?           @relation(fields: [sourceUserId], references: [id])

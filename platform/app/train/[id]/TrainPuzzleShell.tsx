@@ -25,6 +25,7 @@ interface TrainPuzzleShellProps {
   gameResult?: string | null;
   moveNumber?: number | null;
   evalCp?: number | null;
+  playerColor?: string | null;
   gameUrl?: string | null;
 }
 
@@ -45,11 +46,17 @@ export default function TrainPuzzleShell({
   gameResult,
   moveNumber,
   evalCp,
+  playerColor,
   gameUrl,
 }: TrainPuzzleShellProps) {
   const solution = solutionMoves.trim().split(/\s+/);
+  // Use stored playerColor from the game; fall back to FEN turn for library puzzles
   const boardOrientation: "white" | "black" =
-    solvingFen.split(" ")[1] === "b" ? "black" : "white";
+    playerColor === "white" || playerColor === "black"
+      ? playerColor
+      : solvingFen.split(" ")[1] === "b"
+        ? "black"
+        : "white";
 
   const [chess] = useState(() => new Chess(solvingFen));
   const [fen, setFen] = useState(solvingFen);
@@ -185,7 +192,7 @@ export default function TrainPuzzleShell({
           </h1>
           <p className="text-sm text-gray-500 mt-0.5">
             {formattedDate && <span>{formattedDate} · </span>}
-            Find the best move for {boardOrientation}
+            Find the best move for {solvingFen.split(" ")[1] === "b" ? "black" : "white"}
           </p>
         </div>
         {gameResult && (

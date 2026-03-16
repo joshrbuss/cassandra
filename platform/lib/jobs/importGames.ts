@@ -91,6 +91,7 @@ export async function importGamesForUser(userId: string): Promise<ImportResult> 
           gameResult: candidate.gameResult,
           moveNumber: candidate.moveNumber,
           evalCp: candidate.evalCp,
+          playerColor: candidate.playerColor,
         },
       });
       puzzlesImported++;

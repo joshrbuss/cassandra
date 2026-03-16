@@ -38,6 +38,7 @@ export interface PuzzleCandidate {
   gameResult?: string;
   moveNumber?: number;
   evalCp?: number;
+  playerColor?: string;
 }
 
 /** Rough puzzle rating derived from engine score after the blunder */
@@ -197,7 +198,7 @@ function parsePgnHeader(pgn: string, tag: string): string | undefined {
 function extractGameContext(
   pgn: string,
   playerUsername?: string
-): { opponentUsername?: string; gameResult?: string; gameDate?: string } {
+): { opponentUsername?: string; gameResult?: string; gameDate?: string; playerColor?: string } {
   const white = parsePgnHeader(pgn, "White");
   const black = parsePgnHeader(pgn, "Black");
   const result = parsePgnHeader(pgn, "Result");
@@ -219,7 +220,7 @@ function extractGameContext(
   else if (result === "0-1") gameResult = playerColor === "black" ? "win" : "loss";
   else if (result === "1/2-1/2") gameResult = "draw";
 
-  return { opponentUsername, gameResult, gameDate };
+  return { opponentUsername, gameResult, gameDate, playerColor };
 }
 
 /**

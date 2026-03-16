@@ -17,6 +17,7 @@ interface TrainPuzzleClientProps {
   gameResult?: string | null;
   moveNumber?: number | null;
   evalCp?: number | null;
+  playerColor?: string | null;
   gameUrl?: string | null;
 }
 
