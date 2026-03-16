@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { generateReferralCode, creditReferrer } from "@/lib/referral";
 
 interface LichessProfile {
   id: string;
@@ -13,8 +14,9 @@ interface LichessProfile {
 }
 
 export async function POST(req: NextRequest) {
-  const body = (await req.json()) as { username?: unknown };
+  const body = (await req.json()) as { username?: unknown; ref?: unknown };
   const username = (typeof body.username === "string" ? body.username : "").trim();
+  const refCode = typeof body.ref === "string" ? body.ref.trim() : undefined;
 
   if (!username || username.length < 2 || username.length > 30) {
     return NextResponse.json({ error: "Enter a valid Lichess username." }, { status: 400 });
@@ -80,8 +82,11 @@ export async function POST(req: NextRequest) {
           normalizedElo: rawElo ?? undefined,
           elo: rawElo ?? undefined,
           eloPlatform: rawElo != null ? "lichess" : undefined,
+          referralCode: generateReferralCode(),
+          referredBy: refCode || undefined,
         },
       });
+      if (refCode) creditReferrer(refCode).catch(() => {});
       userId = newUser.id;
     } else {
       await prisma.user.update({
@@ -106,8 +111,11 @@ export async function POST(req: NextRequest) {
         normalizedElo: rawElo ?? undefined,
         elo: rawElo ?? undefined,
         eloPlatform: rawElo != null ? "lichess" : undefined,
+        referralCode: generateReferralCode(),
+        referredBy: refCode || undefined,
       },
     });
+    if (refCode) creditReferrer(refCode).catch(() => {});
     userId = user.id;
   }
 

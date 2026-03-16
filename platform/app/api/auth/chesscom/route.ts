@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { normalizeElo } from "@/lib/elo/normalizeElo";
+import { generateReferralCode, creditReferrer } from "@/lib/referral";
 
 /**
  * GET — Initiates Chess.com OAuth sign-in (legacy redirect route).
@@ -24,8 +25,9 @@ interface ChessComStats {
  * Returns { userId } on success; the client then signs in via next-auth/react.
  */
 export async function POST(req: NextRequest) {
-  const body = (await req.json()) as { username?: unknown };
+  const body = (await req.json()) as { username?: unknown; ref?: unknown };
   const username = (typeof body.username === "string" ? body.username : "").trim();
+  const refCode = typeof body.ref === "string" ? body.ref.trim() : undefined;
 
   const normalizedUsername = username.toLowerCase();
 
@@ -101,8 +103,11 @@ export async function POST(req: NextRequest) {
           normalizedElo: normalizedElo ?? undefined,
           elo: rawElo ?? undefined,
           eloPlatform: rawElo != null ? "chess_com" : undefined,
+          referralCode: generateReferralCode(),
+          referredBy: refCode || undefined,
         },
       });
+      if (refCode) creditReferrer(refCode).catch(() => {});
       userId = newUser.id;
     } else {
       await prisma.user.update({
@@ -126,8 +131,11 @@ export async function POST(req: NextRequest) {
         normalizedElo: normalizedElo ?? undefined,
         elo: rawElo ?? undefined,
         eloPlatform: rawElo != null ? "chess_com" : undefined,
+        referralCode: generateReferralCode(),
+        referredBy: refCode || undefined,
       },
     });
+    if (refCode) creditReferrer(refCode).catch(() => {});
     userId = user.id;
   }
 

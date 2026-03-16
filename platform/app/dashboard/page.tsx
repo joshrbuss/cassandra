@@ -5,6 +5,8 @@ import Link from "next/link";
 import { getTotalImportedCount } from "@/lib/jobs/importGames";
 import LockedFeature from "@/components/LockedFeature";
 import SyncButton from "@/components/SyncButton";
+import ReferralWidget from "@/components/ReferralWidget";
+import { ensureReferralCode } from "@/lib/referral";
 
 export const metadata = {
   title: "Dashboard — Cassandra Chess",
@@ -30,6 +32,8 @@ export default async function DashboardPage() {
       elo: true,
       currentStreak: true,
       lastSyncedAt: true,
+      referralCode: true,
+      referralCount: true,
     },
   });
 
@@ -57,6 +61,9 @@ export default async function DashboardPage() {
     userAttempts.length > 0
       ? Math.round((totalSolved / userAttempts.length) * 100)
       : null;
+
+  // Ensure referral code exists (generates lazily for existing users)
+  const referralCode = user ? await ensureReferralCode(user.id) : "";
 
   const stripeLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
 
@@ -179,6 +186,14 @@ export default async function DashboardPage() {
           </div>
           <SyncButton lastSyncedAt={user?.lastSyncedAt?.toISOString() ?? null} />
         </div>
+
+        {/* Referral widget */}
+        {referralCode && (
+          <ReferralWidget
+            referralCode={referralCode}
+            referralCount={user?.referralCount ?? 0}
+          />
+        )}
 
         {/* Play now */}
         <div className="grid grid-cols-1 gap-3 mb-4">

@@ -6,9 +6,10 @@ import { signIn } from "next-auth/react";
 interface Props {
   lichessUsername: string | null;
   chessComUsername: string | null;
+  refCode: string | null;
 }
 
-export default function OnboardingClient({ lichessUsername, chessComUsername }: Props) {
+export default function OnboardingClient({ lichessUsername, chessComUsername, refCode }: Props) {
   const [lichessError, setLichessError] = useState<string | null>(null);
   const [ccError, setCcError] = useState<string | null>(null);
   const [lichessPending, setLichessPending] = useState(false);
@@ -27,7 +28,7 @@ export default function OnboardingClient({ lichessUsername, chessComUsername }: 
       const res = await fetch("/api/auth/lichess-username", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username }),
+        body: JSON.stringify({ username, ...(refCode ? { ref: refCode } : {}) }),
       });
       const data = (await res.json()) as { userId?: string; error?: string };
 
@@ -56,7 +57,7 @@ export default function OnboardingClient({ lichessUsername, chessComUsername }: 
       const res = await fetch("/api/auth/chesscom", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username }),
+        body: JSON.stringify({ username, ...(refCode ? { ref: refCode } : {}) }),
       });
       const data = (await res.json()) as { userId?: string; error?: string };
 

@@ -7,7 +7,12 @@ export const metadata = {
   title: "Get Started — Cassandra Chess",
 };
 
-export default async function OnboardingPage() {
+export default async function OnboardingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ ref?: string }>;
+}) {
+  const { ref } = await searchParams;
   const session = await auth();
 
   let lichessUsername: string | null = null;
@@ -42,6 +47,7 @@ export default async function OnboardingPage() {
         <OnboardingClient
           lichessUsername={lichessUsername}
           chessComUsername={chessComUsername}
+          refCode={ref ?? null}
         />
 
         <p className="text-center text-xs text-gray-400 mt-8">

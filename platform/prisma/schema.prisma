@@ -112,6 +112,14 @@ model User {
   lastPuzzleDate    String?
   /// Last time games were synced for this user
   lastSyncedAt      DateTime?
+  /// Unique 8-char referral code for sharing
+  referralCode      String?   @unique
+  /// Referral code of the user who referred this user
+  referredBy        String?
+  /// Number of referred users who have connected an account
+  referralCount     Int       @default(0)
+  /// True when user has earned paid status (via referrals or payment)
+  isPaid            Boolean   @default(false)
   createdAt         DateTime  @default(now())
 
   puzzles          Puzzle[]
