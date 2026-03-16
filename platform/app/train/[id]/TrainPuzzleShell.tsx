@@ -7,8 +7,10 @@ import dynamic from "next/dynamic";
 import { BoardSkeleton } from "@/components/Skeleton";
 import type { PieceDropHandlerArgs } from "@/components/ChessBoardWrapper";
 import { useTimer } from "@/hooks/useTimer";
-import SolveResultCard from "@/components/SolveResultCard";
 import type { AttemptResponse } from "@/app/api/puzzles/[id]/attempt/route";
+import type { LeaderboardEntry } from "@/app/api/puzzles/[id]/leaderboard/route";
+import { formatTime } from "@/lib/benchmarks";
+import ShareButton from "@/components/marketing/ShareButton";
 import Link from "next/link";
 
 const ChessBoardWrapper = dynamic(() => import("@/components/ChessBoardWrapper"), {
@@ -27,6 +29,8 @@ interface TrainPuzzleShellProps {
   evalCp?: number | null;
   playerColor?: string | null;
   gameUrl?: string | null;
+  stripeLink?: string | null;
+  footerText?: string;
 }
 
 type Phase = "playing" | "opponent" | "solved" | "wrong";
@@ -48,6 +52,8 @@ export default function TrainPuzzleShell({
   evalCp,
   playerColor,
   gameUrl,
+  stripeLink,
+  footerText,
 }: TrainPuzzleShellProps) {
   const { t } = useTranslation();
   const solution = solutionMoves.trim().split(/\s+/);
@@ -70,6 +76,18 @@ export default function TrainPuzzleShell({
   const submitLock = useRef(false);
   const hadWrongMove = useRef(false);
 
+  // Session accuracy tracking
+  const [sessionStats, setSessionStats] = useState({ solved: 0, total: 0 });
+  useEffect(() => {
+    const key = "cassandra_session_stats";
+    const prev = JSON.parse(sessionStorage.getItem(key) ?? '{"solved":0,"total":0}');
+    setSessionStats(prev);
+  }, []);
+
+  // Leaderboard (loaded after solve)
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [loadingBoard, setLoadingBoard] = useState(false);
+
   useEffect(() => {
     start();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -78,6 +96,14 @@ export default function TrainPuzzleShell({
   async function submitAttempt(solveTimeMs: number, success: boolean) {
     if (submitLock.current) return;
     submitLock.current = true;
+
+    // Update session stats
+    const key = "cassandra_session_stats";
+    const prev = JSON.parse(sessionStorage.getItem(key) ?? '{"solved":0,"total":0}');
+    const next = { solved: prev.solved + 1, total: prev.total + 1 };
+    sessionStorage.setItem(key, JSON.stringify(next));
+    setSessionStats(next);
+
     try {
       const res = await fetch(`/api/puzzles/${puzzleId}/attempt`, {
         method: "POST",
@@ -86,6 +112,15 @@ export default function TrainPuzzleShell({
       });
       const data: AttemptResponse = await res.json();
       setAttemptResult(data);
+
+      // Load leaderboard after attempt is saved
+      setLoadingBoard(true);
+      const userId = data.userId ?? "";
+      fetch(`/api/puzzles/${puzzleId}/leaderboard?userId=${encodeURIComponent(userId)}`)
+        .then((r) => r.json())
+        .then((d) => setLeaderboard(d.entries ?? []))
+        .catch(() => {})
+        .finally(() => setLoadingBoard(false));
     } catch {
       // Silently ignore
     }
@@ -158,17 +193,13 @@ export default function TrainPuzzleShell({
     return true;
   }
 
+  const isSolved = phase === "solved";
   const formattedDate = gameDate
     ? new Date(gameDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
     : null;
-
   const elapsedSec = Math.floor(elapsedMs / 1000);
-
   const evalLabel =
-    evalCp === null || evalCp === undefined
-      ? "—"
-      : formatEval(evalCp);
-
+    evalCp === null || evalCp === undefined ? "—" : formatEval(evalCp);
   const evalSubLabel =
     evalCp === null || evalCp === undefined
       ? t("train.evaluation")
@@ -178,182 +209,299 @@ export default function TrainPuzzleShell({
           ? t("train.pawnsDown")
           : t("train.even");
 
-  // ── Solved state: result panel → board → leaderboard ──
-  if (phase === "solved") {
-    return (
-      <div className="bg-white w-full">
-        {/* Result panel + game pills + leaderboard */}
-        {attemptResult ? (
-          <SolveResultCard
-            puzzleId={puzzleId}
-            solveTimeMs={attemptResult.solveTimeMs}
-            percentile={attemptResult.percentile}
-            bucket={attemptResult.bucket}
-            avgSolveMs={attemptResult.avgSolveMs}
-            top10PctMs={attemptResult.top10PctMs}
-            totalAttempts={attemptResult.totalAttempts}
-            userId={attemptResult.userId ?? ""}
-            opponentUsername={opponentUsername}
-            gameDate={gameDate}
-            gameResult={gameResult}
-            gameUrl={gameUrl}
-          />
-        ) : (
-          <div className="bg-[#0e0e0e] rounded-xl px-5 py-5 text-center">
-            <p className="text-white font-bold">{t("train.puzzleSolved")}</p>
-            <div className="mt-2 h-4 w-32 mx-auto bg-gray-700 animate-pulse rounded" />
-          </div>
-        )}
-
-        {/* Board — non-interactive, no hints */}
-        <div className="w-full aspect-square mt-3">
-          <ChessBoardWrapper
-            position={fen}
-            interactive={false}
-            onPieceDrop={() => false}
-            boardOrientation={boardOrientation}
-            squareStyles={lastSquares}
-          />
-        </div>
-
-        {/* Navigation */}
-        <div className="mt-4 flex items-center justify-between">
-          <Link
-            href="/train"
-            className="inline-flex items-center gap-1 bg-[#0e0e0e] text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#1a1a1a] transition-colors"
-          >
-            {t("train.nextPuzzle")}
-          </Link>
-          <Link href="/dashboard" className="text-sm text-[#999] hover:text-[#666] hover:underline">
-            {t("train.doneForNow")}
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Playing state: header → stats → board → hints/nav ──
   return (
-    <div className="bg-white w-full">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-5">
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-1">
-            {t("train.fromYourGames")}
-          </p>
-          <h1 className="text-2xl font-bold text-gray-900 leading-tight">
-            {opponentUsername ? t("train.vsOpponent", { name: opponentUsername }) : t("train.yourGame")}
-          </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {formattedDate && <span>{formattedDate} · </span>}
-            {t("train.findBestMove", { color: solvingFen.split(" ")[1] === "b" ? "black" : "white" })}
-          </p>
-        </div>
-        {gameResult && (
-          <span
-            className={`mt-1 flex-shrink-0 text-xs font-semibold px-3 py-1 rounded-full ${
-              gameResult === "win"
-                ? "bg-green-100 text-green-700"
-                : gameResult === "loss"
-                  ? "bg-red-100 text-red-600"
-                  : "bg-gray-100 text-gray-500"
-            }`}
+    <div className="w-full">
+      {/* ━━ Nav bar ━━ obsidian, identical in both states */}
+      <nav className="bg-[#0e0e0e] px-4 py-3 flex items-center justify-between">
+        <Link href="/dashboard" className="text-sm font-medium text-[#c8942a] hover:text-[#e0ad3a] transition-colors">
+          {t("train.dashboard")}
+        </Link>
+        <span className="text-xs font-semibold uppercase tracking-widest text-gray-500">
+          {t("train.fromYourGames")}
+        </span>
+        {stripeLink ? (
+          <a
+            href={stripeLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] font-medium text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-2.5 py-1 rounded-full hover:bg-[#c8942a]/20 transition-colors"
           >
+            ✨ Ad-free
+          </a>
+        ) : (
+          <span className="w-16" />
+        )}
+      </nav>
+
+      {/* ━━ Game context strip ━━ warm grey, identical in both states */}
+      <div className="bg-[#eeebe6] border-b border-[#e8e4de] px-4 py-2.5 flex flex-wrap items-center gap-2">
+        {gameResult && (
+          <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${
+            gameResult === "win"
+              ? "bg-green-100 text-green-700"
+              : gameResult === "loss"
+                ? "bg-red-100 text-red-600"
+                : "bg-gray-200 text-gray-500"
+          }`}>
             {gameResult === "win" ? t("train.youWon") : gameResult === "loss" ? t("train.youLost") : t("train.draw")}
           </span>
         )}
-      </div>
-
-      {/* Stats row */}
-      <div className="grid grid-cols-3 gap-3 mb-5">
-        <div className="border border-gray-100 rounded-xl p-3 text-center">
-          <p className="text-xl font-bold text-gray-900">{moveNumber ?? "—"}</p>
-          <p className="text-[11px] text-gray-400 mt-0.5 uppercase tracking-wide">{t("train.position")}</p>
-        </div>
-        <div className="border border-gray-100 rounded-xl p-3 text-center">
-          <p className="text-xl font-bold text-gray-900">{evalLabel}</p>
-          <p className="text-[11px] text-gray-400 mt-0.5 uppercase tracking-wide">{evalSubLabel}</p>
-        </div>
-        <div className="border border-gray-100 rounded-xl p-3 text-center">
-          <p className="text-xl font-bold text-gray-900">{elapsedSec}s</p>
-          <p className="text-[11px] text-gray-400 mt-0.5 uppercase tracking-wide">{t("train.elapsed")}</p>
-        </div>
-      </div>
-
-      {/* Board */}
-      <div className="w-full aspect-square">
-        <ChessBoardWrapper
-          position={fen}
-          interactive={phase === "playing"}
-          onPieceDrop={handleDrop}
-          boardOrientation={boardOrientation}
-          squareStyles={{
-            ...lastSquares,
-            ...(hintLevel >= 1 && phase === "playing" && solution[moveIndex]
-              ? {
-                  [solution[moveIndex].slice(0, 2)]: {
-                    backgroundColor: "rgba(255, 200, 0, 0.7)",
-                    borderRadius: "50%",
-                  },
-                }
-              : {}),
-            ...(hintLevel >= 2 && phase === "playing" && solution[moveIndex]
-              ? {
-                  [solution[moveIndex].slice(2, 4)]: {
-                    backgroundColor: "rgba(255, 140, 0, 0.65)",
-                    borderRadius: "50%",
-                  },
-                }
-              : {}),
-          }}
-        />
-      </div>
-
-      {/* Status bar */}
-      <div className="mt-3 min-h-[24px]">
-        {phase === "opponent" && (
-          <p className="text-sm text-blue-600 font-medium animate-pulse">
-            {t("puzzle.opponentResponding")}
-          </p>
+        {opponentUsername && (
+          <span className="text-[11px] text-[#1a1a1a] font-medium">
+            vs {opponentUsername}
+          </span>
         )}
-        {phase === "wrong" && (
-          <p className="text-sm text-red-500 font-medium">
-            {t("puzzle.wrongMove")}
-          </p>
+        {formattedDate && (
+          <span className="text-[11px] text-[#999]">{formattedDate}</span>
+        )}
+        <span className="flex-1" />
+        {gameUrl && (
+          <a
+            href={gameUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] font-medium text-[#c8942a] hover:text-[#a67720] transition-colors"
+          >
+            {t("train.viewOriginalGame")}
+          </a>
         )}
       </div>
 
-      {/* Footer — hint + game link + next puzzle */}
-      <div className="mt-4 flex items-end justify-between">
-        <div className="flex flex-col gap-1">
-          {hintLevel < 2 && (
-            <button
-              onClick={() => {
-                setHintLevel((l) => (Math.min(l + 1, 2) as 0 | 1 | 2));
-                hadWrongMove.current = true;
-              }}
-              className="text-sm text-gray-400 hover:text-gray-700 underline underline-offset-2 text-left"
-            >
-              {hintLevel === 0 ? t("train.hint") : t("train.showDestination")}
-            </button>
-          )}
-          {gameUrl && (
-            <a
-              href={gameUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-blue-500 hover:text-blue-700"
-            >
-              {t("train.viewOriginalGame")}
-            </a>
+      <div className="max-w-lg mx-auto px-4 pt-4 pb-6">
+        {/* ━━ Obsidian top panel ━━ content changes between states */}
+        <div className="bg-[#0e0e0e] rounded-xl px-5 py-4 mb-4">
+          {isSolved ? (
+            <>
+              {/* Solved heading */}
+              <p className="text-[#c8942a] font-bold text-lg">Puzzle solved! Chess On!</p>
+              <p className="text-gray-500 text-sm mt-0.5">
+                {attemptResult
+                  ? t("solve.solvedIn", { time: formatTime(attemptResult.solveTimeMs) })
+                  : "Calculating..."}
+              </p>
+
+              {/* Solved stats */}
+              <div className="grid grid-cols-3 gap-3 mt-4">
+                <div className="bg-[#1a1a1a] rounded-lg p-3 text-center">
+                  <p className="text-[#c8942a] font-mono font-bold text-lg">
+                    {attemptResult ? formatTime(attemptResult.solveTimeMs) : `${elapsedSec}s`}
+                  </p>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wide mt-0.5">Your time</p>
+                </div>
+                <div className="bg-[#1a1a1a] rounded-lg p-3 text-center">
+                  <p className="text-white font-mono font-bold text-lg">
+                    {attemptResult?.avgSolveMs != null && attemptResult.totalAttempts >= 3
+                      ? formatTime(attemptResult.avgSolveMs)
+                      : "—"}
+                  </p>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wide mt-0.5">{t("solve.avgSolve")}</p>
+                </div>
+                <div className="bg-[#1a1a1a] rounded-lg p-3 text-center">
+                  <p className="text-[#c8942a] font-bold text-lg">
+                    {sessionStats.total > 0
+                      ? `${Math.round((sessionStats.solved / sessionStats.total) * 100)}%`
+                      : "—"}
+                  </p>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wide mt-0.5">
+                    Session ({sessionStats.solved}/{sessionStats.total})
+                  </p>
+                </div>
+              </div>
+
+              {/* Solved buttons */}
+              <div className="flex gap-3 mt-4">
+                <Link
+                  href="/train"
+                  className="flex-1 text-center bg-[#c8942a] text-white px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#b5852a] transition-colors"
+                >
+                  {t("train.nextPuzzle")}
+                </Link>
+                <Link
+                  href="/dashboard"
+                  className="flex-1 text-center bg-[#2a2a2a] text-gray-400 px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#333] hover:text-gray-300 transition-colors"
+                >
+                  {t("train.doneForNow")}
+                </Link>
+              </div>
+
+              {/* Share link */}
+              <div className="mt-3 text-center">
+                <ShareButton
+                  text="I just solved a chess puzzle on Cassandra Chess!"
+                  className="inline-flex items-center gap-1.5 text-xs text-gray-600 hover:text-white transition-colors"
+                >
+                  Share on <span className="text-[#c8942a] font-bold">X</span>
+                </ShareButton>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Solving heading */}
+              <p className="text-[#c8942a] font-bold text-lg">
+                {t("train.findBestMove", { color: boardOrientation })}
+              </p>
+              <p className="text-gray-500 text-sm mt-0.5">
+                Playing as {boardOrientation}{moveNumber ? ` · Move ${moveNumber}` : ""}
+              </p>
+
+              {/* Solving stats */}
+              <div className="grid grid-cols-3 gap-3 mt-4">
+                <div className="bg-[#1a1a1a] rounded-lg p-3 text-center">
+                  <p className="text-[#c8942a] font-mono font-bold text-lg">{elapsedSec}s</p>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wide mt-0.5">{t("train.elapsed")}</p>
+                </div>
+                <div className="bg-[#1a1a1a] rounded-lg p-3 text-center">
+                  <p className="text-white font-bold text-lg">{evalLabel}</p>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wide mt-0.5">{evalSubLabel}</p>
+                </div>
+                <div className="bg-[#1a1a1a] rounded-lg p-3 text-center">
+                  <p className="text-[#c8942a] font-bold text-lg">
+                    {sessionStats.total > 0
+                      ? `${Math.round((sessionStats.solved / sessionStats.total) * 100)}%`
+                      : "—"}
+                  </p>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wide mt-0.5">
+                    Session ({sessionStats.solved}/{sessionStats.total})
+                  </p>
+                </div>
+              </div>
+
+              {/* Solving buttons */}
+              <div className="flex gap-3 mt-4">
+                {hintLevel < 2 ? (
+                  <button
+                    onClick={() => {
+                      setHintLevel((l) => (Math.min(l + 1, 2) as 0 | 1 | 2));
+                      hadWrongMove.current = true;
+                    }}
+                    className="flex-1 text-center bg-[#c8942a] text-white px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#b5852a] transition-colors"
+                  >
+                    {hintLevel === 0 ? t("train.hint") : t("train.showDestination")}
+                  </button>
+                ) : (
+                  <span className="flex-1" />
+                )}
+                <Link
+                  href="/train"
+                  className="flex-1 text-center bg-[#2a2a2a] text-gray-400 px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#333] hover:text-gray-300 transition-colors"
+                >
+                  Skip puzzle
+                </Link>
+              </div>
+            </>
           )}
         </div>
-        <Link
-          href="/train"
-          className="inline-flex items-center gap-1 bg-[#0e0e0e] text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#1a1a1a] transition-colors"
-        >
-          {t("train.nextPuzzle")}
-        </Link>
+
+        {/* ━━ Board label strip ━━ */}
+        <div className="mb-2">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#999]">
+            {isSolved ? "Position for reference" : "Drag or click to make your move"}
+          </p>
+        </div>
+
+        {/* ━━ Board ━━ unchanged component */}
+        <div className="w-full aspect-square">
+          <ChessBoardWrapper
+            position={fen}
+            interactive={phase === "playing"}
+            onPieceDrop={handleDrop}
+            boardOrientation={boardOrientation}
+            squareStyles={{
+              ...lastSquares,
+              ...(hintLevel >= 1 && phase === "playing" && solution[moveIndex]
+                ? {
+                    [solution[moveIndex].slice(0, 2)]: {
+                      backgroundColor: "rgba(255, 200, 0, 0.7)",
+                      borderRadius: "50%",
+                    },
+                  }
+                : {}),
+              ...(hintLevel >= 2 && phase === "playing" && solution[moveIndex]
+                ? {
+                    [solution[moveIndex].slice(2, 4)]: {
+                      backgroundColor: "rgba(255, 140, 0, 0.65)",
+                      borderRadius: "50%",
+                    },
+                  }
+                : {}),
+            }}
+          />
+        </div>
+
+        {/* ━━ Status bar (playing only) ━━ */}
+        {!isSolved && (
+          <div className="mt-3 min-h-[24px]">
+            {phase === "opponent" && (
+              <p className="text-sm text-[#c8942a] font-medium animate-pulse">
+                {t("puzzle.opponentResponding")}
+              </p>
+            )}
+            {phase === "wrong" && (
+              <p className="text-sm text-red-500 font-medium">
+                {t("puzzle.wrongMove")}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* ━━ Leaderboard (solved only) ━━ */}
+        {isSolved && (
+          <div className="bg-[#eeebe6] border border-[#e8e4de] rounded-xl p-4 mt-4">
+            <p className="text-xs font-semibold text-[#666] uppercase tracking-wide mb-2.5">
+              {t("solve.top10Fastest")}
+            </p>
+            {loadingBoard ? (
+              <div className="space-y-2">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-6 rounded bg-[#e8e4de] animate-pulse"
+                    style={{ animationDelay: `${i * 80}ms` }}
+                  />
+                ))}
+              </div>
+            ) : leaderboard.length === 0 ? (
+              <p className="text-sm text-[#777] italic">
+                {t("solve.firstSolver")}
+              </p>
+            ) : (
+              <ol className="space-y-1">
+                {leaderboard.map((entry) => (
+                  <li
+                    key={entry.rank}
+                    className={`flex items-center justify-between text-sm rounded-lg px-3 py-1.5 ${
+                      entry.isCurrentUser
+                        ? "bg-[#c8942a]/10 border border-[#c8942a]/30"
+                        : ""
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="w-5 text-right text-xs text-[#999] font-mono">
+                        {entry.rank}.
+                      </span>
+                      <span className="font-medium text-[#1a1a1a]">
+                        {entry.displayName}
+                      </span>
+                      {entry.isCurrentUser && (
+                        <span className="text-[9px] font-bold text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                          YOU
+                        </span>
+                      )}
+                    </span>
+                    <span className={`font-mono text-xs ${entry.isCurrentUser ? "text-[#c8942a] font-bold" : "text-[#666]"}`}>
+                      {entry.formattedTime}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+        )}
+
+        {/* ━━ Footer ━━ */}
+        <footer className="mt-10 pt-6 border-t border-[#e8e4de] text-center">
+          <p className="text-xs text-[#999]">{footerText ?? "Cassandra Chess · Puzzles from the Lichess open database (CC0)"}</p>
+        </footer>
       </div>
     </div>
   );

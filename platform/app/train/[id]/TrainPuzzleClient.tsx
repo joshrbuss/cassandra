@@ -19,6 +19,8 @@ interface TrainPuzzleClientProps {
   evalCp?: number | null;
   playerColor?: string | null;
   gameUrl?: string | null;
+  stripeLink?: string | null;
+  footerText?: string;
 }
 
 export default function TrainPuzzleClient(props: TrainPuzzleClientProps) {

@@ -10,7 +10,6 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import { cookies } from "next/headers";
-import Link from "next/link";
 import TrainPuzzleClient from "./TrainPuzzleClient";
 import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
 
@@ -58,45 +57,21 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
   const stripeLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
 
   return (
-    <main className="min-h-screen bg-white px-4 py-8">
-      <div className="max-w-lg mx-auto">
-        {/* Top nav */}
-        <div className="flex items-center justify-between mb-8">
-          <Link href="/dashboard" className="text-sm text-gray-400 hover:text-gray-700">
-            {t("train.dashboard")}
-          </Link>
-          {stripeLink && (
-            <a
-              href={stripeLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs font-medium text-purple-700 bg-purple-50 border border-purple-200 px-3 py-1.5 rounded-full hover:bg-purple-100 transition-colors"
-            >
-              ✨ Go ad-free
-            </a>
-          )}
-        </div>
-
-        <TrainPuzzleClient
-          puzzleId={puzzle.id}
-          solvingFen={puzzle.solvingFen}
-          solutionMoves={puzzle.solutionMoves}
-          opponentUsername={puzzle.opponentUsername}
-          gameDate={puzzle.gameDate}
-          gameResult={puzzle.gameResult}
-          moveNumber={puzzle.moveNumber}
-          evalCp={puzzle.evalCp}
-          playerColor={puzzle.playerColor}
-          gameUrl={puzzle.gameUrl}
-        />
-
-        {/* Footer */}
-        <footer className="mt-10 pt-6 border-t border-gray-100 text-center">
-          <p className="text-xs text-gray-400">
-            {t("dashboard.footer")}
-          </p>
-        </footer>
-      </div>
+    <main className="min-h-screen bg-white">
+      <TrainPuzzleClient
+        puzzleId={puzzle.id}
+        solvingFen={puzzle.solvingFen}
+        solutionMoves={puzzle.solutionMoves}
+        opponentUsername={puzzle.opponentUsername}
+        gameDate={puzzle.gameDate}
+        gameResult={puzzle.gameResult}
+        moveNumber={puzzle.moveNumber}
+        evalCp={puzzle.evalCp}
+        playerColor={puzzle.playerColor}
+        gameUrl={puzzle.gameUrl}
+        stripeLink={stripeLink ?? null}
+        footerText={t("dashboard.footer")}
+      />
     </main>
   );
 }
