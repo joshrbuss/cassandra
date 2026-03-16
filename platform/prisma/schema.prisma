@@ -70,14 +70,16 @@ model Puzzle {
 }
 
 model PuzzleAttempt {
-  id          String   @id @default(cuid())
-  userId      String?
-  puzzleId    String
-  solveTimeMs Int?
-  success     Boolean
+  id            String   @id @default(cuid())
+  userId        String?
+  puzzleId      String
+  solveTimeMs   Int?
+  success       Boolean
+  /// 1 = first try, 2 = retry, etc. Only attemptNumber=1 counts for accuracy.
+  attemptNumber Int      @default(1)
   /// First Lichess theme tag of the puzzle (e.g. "fork", "pin")
-  tacticType  String?
-  createdAt   DateTime @default(now())
+  tacticType    String?
+  createdAt     DateTime @default(now())
 
   // No FK relation — puzzleId may reference either Puzzle or LibraryPuzzle
   @@index([puzzleId])

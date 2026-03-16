@@ -97,13 +97,6 @@ export default function TrainPuzzleShell({
     if (submitLock.current) return;
     submitLock.current = true;
 
-    // Update session stats
-    const key = "cassandra_session_stats";
-    const prev = JSON.parse(sessionStorage.getItem(key) ?? '{"solved":0,"total":0}');
-    const next = { solved: prev.solved + 1, total: prev.total + 1 };
-    sessionStorage.setItem(key, JSON.stringify(next));
-    setSessionStats(next);
-
     try {
       const res = await fetch(`/api/puzzles/${puzzleId}/attempt`, {
         method: "POST",
@@ -112,6 +105,18 @@ export default function TrainPuzzleShell({
       });
       const data: AttemptResponse = await res.json();
       setAttemptResult(data);
+
+      // Update session stats — only count first attempts for accuracy
+      if (data.attemptNumber === 1) {
+        const key = "cassandra_session_stats";
+        const prev = JSON.parse(sessionStorage.getItem(key) ?? '{"solved":0,"total":0}');
+        const next = {
+          solved: prev.solved + (data.recorded && success ? 1 : 0),
+          total: prev.total + 1,
+        };
+        sessionStorage.setItem(key, JSON.stringify(next));
+        setSessionStats(next);
+      }
 
       // Load leaderboard after attempt is saved
       setLoadingBoard(true);

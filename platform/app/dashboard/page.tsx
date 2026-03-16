@@ -48,7 +48,7 @@ export default async function DashboardPage() {
     user ? getTotalImportedCount(user.id) : Promise.resolve(0),
     user
       ? prisma.puzzleAttempt.findMany({
-          where: { userId: user.id },
+          where: { userId: user.id, attemptNumber: 1 },
           select: { success: true },
         })
       : Promise.resolve([]),

@@ -20,6 +20,8 @@ export interface AttemptResponse {
   totalAttempts: number;
   /** The resolved userId from the session */
   userId: string | null;
+  /** 1 = first try, 2+ = retry. Only attemptNumber=1 counts for accuracy. */
+  attemptNumber: number;
   /** True when solve time exceeded 2× the global average for this tactic */
   timeout_blunder?: boolean;
 }
@@ -72,8 +74,16 @@ export const POST = auth(async function POST(req, ctx) {
     globalAvg !== null && body.solveTimeMs > 2 * globalAvg && body.success;
   const recordedSuccess = isTimeoutBlunder ? false : body.success;
 
+  // Calculate attempt number for this puzzle+user (1 = first try, 2 = retry, etc.)
+  const priorCount = resolvedUserId
+    ? await prisma.puzzleAttempt.count({
+        where: { puzzleId: id, userId: resolvedUserId },
+      })
+    : 0;
+  const attemptNumber = priorCount + 1;
+
   // Record the attempt
-  console.log(`[attempt] puzzleId=${id} userId=${resolvedUserId} success=${recordedSuccess} solveTimeMs=${body.solveTimeMs} tactic=${tacticType}`);
+  console.log(`[attempt] puzzleId=${id} userId=${resolvedUserId} success=${recordedSuccess} solveTimeMs=${body.solveTimeMs} tactic=${tacticType} attemptNumber=${attemptNumber}`);
   let attempt;
   try {
     attempt = await prisma.puzzleAttempt.create({
@@ -82,6 +92,7 @@ export const POST = auth(async function POST(req, ctx) {
         userId: resolvedUserId,
         solveTimeMs: body.solveTimeMs,
         success: recordedSuccess,
+        attemptNumber,
         tacticType,
       },
     });
@@ -149,6 +160,7 @@ export const POST = auth(async function POST(req, ctx) {
     top10PctMs,
     totalAttempts,
     userId: resolvedUserId,
+    attemptNumber,
     ...(isTimeoutBlunder ? { timeout_blunder: true } : {}),
   };
 
