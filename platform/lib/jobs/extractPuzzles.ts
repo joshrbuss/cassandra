@@ -113,6 +113,41 @@ function countAttackedPieceValues(
 }
 
 /**
+ * Attempts to extend a 1-move solution into a 3-ply sequence:
+ *   M1 (player best) → M2 (opponent forced response) → M3 (player follow-up).
+ * Only extends if the follow-up is clearly winning (≥ 200 cp advantage).
+ * Returns the original single move on any failure.
+ */
+async function tryExtendSequence(startFen: string, firstMove: string): Promise<string> {
+  try {
+    const chess = new Chess(startFen);
+    const m1 = chess.move({
+      from: firstMove.slice(0, 2),
+      to: firstMove.slice(2, 4),
+      promotion: firstMove[4] || undefined,
+    });
+    if (!m1) return firstMove;
+
+    const r2 = await getBestMove(chess.fen());
+    if (!r2) return firstMove;
+    const m2 = chess.move({
+      from: r2.move.slice(0, 2),
+      to: r2.move.slice(2, 4),
+      promotion: r2.move[4] || undefined,
+    });
+    if (!m2) return firstMove;
+
+    const r3 = await getBestMove(chess.fen());
+    // Only include extension if the follow-up is clearly winning
+    if (!r3 || r3.cp < 200) return firstMove;
+
+    return `${firstMove} ${r2.move} ${r3.move}`;
+  } catch {
+    return firstMove;
+  }
+}
+
+/**
  * Parses PGN headers and moves, returning positions to analyse.
  * Returns null if the PGN is unreadable.
  */
@@ -239,6 +274,9 @@ export async function extractPuzzlesFromGame(
         const solvingChess = new Chess(blunderFen);
         const themes = guessThemes(solvingChess, prevBestMove);
 
+        // Attempt to extend to a 3-ply forcing sequence
+        const solutionMoves = await tryExtendSequence(blunderFen, prevBestMove);
+
         // moveNumber: half-move index (i-1) → full move = floor((i-1)/2) + 1
         const moveNumber = Math.floor((i - 1) / 2) + 1;
         // evalCp: prevCp is already from the solver's (blunderer's) perspective at blunderFen
@@ -249,7 +287,7 @@ export async function extractPuzzlesFromGame(
           fen: blunderFen,
           solvingFen: blunderFen,
           lastMove,
-          solutionMoves: prevBestMove,
+          solutionMoves,
           rating: estimateRating(swing),
           themes,
           type: "standard",

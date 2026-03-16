@@ -130,6 +130,40 @@ function extractGameContext(
 }
 
 /**
+ * Attempts to extend a 1-move solution into a 3-ply sequence:
+ *   M1 (player best) → M2 (opponent forced response) → M3 (player follow-up).
+ * Only extends if the follow-up is clearly winning (≥ 200 cp advantage).
+ * Returns the original single move on any failure.
+ */
+async function tryExtendSequence(startFen: string, firstMove: string): Promise<string> {
+  try {
+    const chess = new Chess(startFen);
+    const m1 = chess.move({
+      from: firstMove.slice(0, 2),
+      to: firstMove.slice(2, 4),
+      promotion: firstMove[4] || undefined,
+    });
+    if (!m1) return firstMove;
+
+    const r2 = await getBestMove(chess.fen());
+    if (!r2) return firstMove;
+    const m2 = chess.move({
+      from: r2.move.slice(0, 2),
+      to: r2.move.slice(2, 4),
+      promotion: r2.move[4] || undefined,
+    });
+    if (!m2) return firstMove;
+
+    const r3 = await getBestMove(chess.fen());
+    if (!r3 || r3.cp < 200) return firstMove;
+
+    return `${firstMove} ${r2.move} ${r3.move}`;
+  } catch {
+    return firstMove;
+  }
+}
+
+/**
  * Extracts puzzle candidates from an eval-annotated PGN.
  * Uses %eval annotations to detect blunders, Stockfish to find the correct solution move.
  * Returns [] if no eval annotations are present.
@@ -177,6 +211,9 @@ export async function extractPuzzlesFromAnnotatedPgn(
     // Skip if Stockfish agrees the played move was fine (shouldn't happen given swing, but guard)
     if (engineResult.move === blunderUci) continue;
 
+    // Attempt to extend to a 3-ply forcing sequence
+    const solutionMoves = await tryExtendSequence(fenBefore, engineResult.move);
+
     const swingCp = Math.round(swing * 100);
     const rating =
       swingCp >= 600 ? 1200 : swingCp >= 400 ? 1000 : swingCp >= 250 ? 900 : 800;
@@ -197,7 +234,7 @@ export async function extractPuzzlesFromAnnotatedPgn(
       fen: fenBefore,
       solvingFen: fenBefore,
       lastMove,
-      solutionMoves: engineResult.move,
+      solutionMoves,
       rating,
       themes: "tactics",
       type: "standard",

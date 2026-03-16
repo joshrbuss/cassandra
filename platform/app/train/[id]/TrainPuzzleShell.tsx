@@ -56,7 +56,7 @@ export default function TrainPuzzleShell({
   const [moveIndex, setMoveIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>("playing");
   const [lastSquares, setLastSquares] = useState<Record<string, React.CSSProperties>>({});
-  const [showHint, setShowHint] = useState(false);
+  const [hintLevel, setHintLevel] = useState<0 | 1 | 2>(0);
 
   const { elapsedMs, start, stop } = useTimer();
   const [attemptResult, setAttemptResult] = useState<AttemptResponse | null>(null);
@@ -139,7 +139,7 @@ export default function TrainPuzzleShell({
       return true;
     }
 
-    setShowHint(false);
+    setHintLevel(0);
     setFen(chess.fen());
     setLastSquares({
       [sourceSquare]: { backgroundColor: "rgba(0,200,0,0.35)" },
@@ -228,10 +228,18 @@ export default function TrainPuzzleShell({
           boardOrientation={boardOrientation}
           squareStyles={{
             ...lastSquares,
-            ...(showHint && phase === "playing" && solution[moveIndex]
+            ...(hintLevel >= 1 && phase === "playing" && solution[moveIndex]
               ? {
                   [solution[moveIndex].slice(0, 2)]: {
                     backgroundColor: "rgba(255, 200, 0, 0.7)",
+                    borderRadius: "50%",
+                  },
+                }
+              : {}),
+            ...(hintLevel >= 2 && phase === "playing" && solution[moveIndex]
+              ? {
+                  [solution[moveIndex].slice(2, 4)]: {
+                    backgroundColor: "rgba(255, 140, 0, 0.65)",
                     borderRadius: "50%",
                   },
                 }
@@ -258,12 +266,17 @@ export default function TrainPuzzleShell({
       {phase !== "solved" && (
         <div className="mt-4 flex items-end justify-between">
           <div className="flex flex-col gap-1">
-            <button
-              onClick={() => { setShowHint(true); hadWrongMove.current = true; }}
-              className="text-sm text-gray-400 hover:text-gray-700 underline underline-offset-2 text-left"
-            >
-              Hint
-            </button>
+            {hintLevel < 2 && (
+              <button
+                onClick={() => {
+                  setHintLevel((l) => (Math.min(l + 1, 2) as 0 | 1 | 2));
+                  hadWrongMove.current = true;
+                }}
+                className="text-sm text-gray-400 hover:text-gray-700 underline underline-offset-2 text-left"
+              >
+                {hintLevel === 0 ? "Hint" : "Show destination"}
+              </button>
+            )}
             {gameUrl && (
               <a
                 href={gameUrl}
