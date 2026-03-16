@@ -6,8 +6,11 @@ import { cookies } from "next/headers";
 import "./globals.css";
 import LocaleProvider from "@/components/i18n/LocaleProvider";
 import LanguageToggleGuard from "@/components/i18n/LanguageToggleGuard";
+import CookieConsentBanner from "@/components/CookieConsentBanner";
+import ChangelogBanner from "@/components/ChangelogBanner";
 import { resolveLocale } from "@/lib/i18n";
 import { LOCALES } from "@/lib/i18n/locales";
+import { auth } from "@/auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -71,6 +74,7 @@ export default async function RootLayout({
   // Read locale server-side so LocaleProvider hydrates without flash
   const cookieStore = await cookies();
   const locale = resolveLocale(cookieStore.get("preferred_locale")?.value);
+  const session = await auth();
 
   return (
     <html lang={locale}>
@@ -119,7 +123,9 @@ export default async function RootLayout({
           <div className="fixed top-3 right-3 z-40">
             <LanguageToggleGuard />
           </div>
+          {session?.userId && <ChangelogBanner />}
           {children}
+          <CookieConsentBanner />
           <Analytics />
         </LocaleProvider>
       </body>

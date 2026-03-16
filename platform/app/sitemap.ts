@@ -25,6 +25,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { ...withAlternates(`${BASE_URL}/battles`), lastModified: now, changeFrequency: "daily", priority: 0.8 },
     { ...withAlternates(`${BASE_URL}/leaderboard`), lastModified: now, changeFrequency: "hourly", priority: 0.7 },
     { ...withAlternates(`${BASE_URL}/creator`), lastModified: now, changeFrequency: "daily", priority: 0.6 },
+    { ...withAlternates(`${BASE_URL}/privacy`), lastModified: now, changeFrequency: "monthly", priority: 0.3 },
+    { ...withAlternates(`${BASE_URL}/terms`), lastModified: now, changeFrequency: "monthly", priority: 0.3 },
   ];
 
   const articleRoutes: MetadataRoute.Sitemap = ARTICLES.map((article) => ({

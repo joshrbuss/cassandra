@@ -400,6 +400,11 @@ export default async function DashboardPage() {
         {/* ── Footer ── */}
         <footer className="mt-10 pt-6 border-t border-[#333] text-center space-y-3 bg-[#0e0e0e] rounded-xl p-6">
           <SocialLinks variant="dark" />
+          <div className="flex items-center justify-center gap-3 text-xs">
+            <Link href="/privacy" className="text-[#c8942a]/70 hover:text-[#c8942a] transition-colors">{t("legal.privacy")}</Link>
+            <span className="text-[#444]">·</span>
+            <Link href="/terms" className="text-[#c8942a]/70 hover:text-[#c8942a] transition-colors">{t("legal.terms")}</Link>
+          </div>
           <p className="text-xs text-[#666]">
             {t("dashboard.footer")}
           </p>
