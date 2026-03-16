@@ -6,6 +6,7 @@ import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
 import ConfirmedToast from "@/components/marketing/ConfirmedToast";
 import NavLanguageToggle from "@/components/NavLanguageToggle";
 import HomepageStats from "@/components/HomepageStats";
+import SocialLinks from "@/components/SocialLinks";
 
 async function getStats() {
   const fifteenMinAgo = new Date(Date.now() - 15 * 60 * 1000);
@@ -227,10 +228,13 @@ export default async function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#f8f7f4] px-4 sm:px-6 py-5">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#999]">
-          <p>{t("landing.footer.copy")}</p>
-          <p>{t("landing.footer.source")}</p>
+      <footer className="bg-[#f8f7f4] px-4 sm:px-6 py-6">
+        <div className="max-w-5xl mx-auto flex flex-col items-center gap-3">
+          <SocialLinks variant="light" />
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#999] w-full">
+            <p>{t("landing.footer.copy")}</p>
+            <p>{t("landing.footer.source")}</p>
+          </div>
         </div>
       </footer>
 

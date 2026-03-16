@@ -7,6 +7,9 @@ import ConnectClient from "./ConnectClient";
 
 export const metadata = {
   title: "Connect — Cassandra Chess",
+  description: "Connect your Chess.com or Lichess account to get personalised puzzles from your own games.",
+  openGraph: { title: "Connect — Cassandra Chess", description: "Connect your Chess.com or Lichess account to get personalised puzzles." },
+  twitter: { title: "Connect — Cassandra Chess", description: "Connect your Chess.com or Lichess account to get personalised puzzles." },
 };
 
 export default async function ConnectPage({

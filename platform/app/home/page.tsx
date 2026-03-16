@@ -10,9 +10,13 @@ import ReferralBar from "@/components/ReferralBar";
 import { ensureReferralCode } from "@/lib/referral";
 import EmailPopup from "@/components/EmailPopup";
 import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
+import SocialLinks from "@/components/SocialLinks";
 
 export const metadata = {
   title: "Home — Cassandra Chess",
+  description: "Your personalised chess puzzle dashboard. Train on your blunders, track your streak, and improve your game.",
+  openGraph: { title: "Home — Cassandra Chess", description: "Your personalised chess puzzle dashboard." },
+  twitter: { title: "Home — Cassandra Chess", description: "Your personalised chess puzzle dashboard." },
 };
 
 function displayName(u: { lichessUsername: string | null; chessComUsername: string | null }): string {
@@ -369,11 +373,12 @@ export default async function DashboardPage() {
         </div>
 
         {/* ── Footer ── */}
-        <footer className="mt-10 pt-6 border-t border-[#d8d4ce] text-center">
+        <footer className="mt-10 pt-6 border-t border-[#d8d4ce] text-center space-y-3">
+          <SocialLinks variant="light" />
           <p className="text-xs text-[#999]">
             {t("dashboard.footer")}
           </p>
-          <p className="text-xs text-[#bbb] mt-2">
+          <p className="text-xs text-[#bbb]">
             <a href="/api/auth/signout" className="hover:underline hover:text-[#666]">
               {t("dashboard.signOut")}
             </a>
