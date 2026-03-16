@@ -91,7 +91,7 @@ export default async function DashboardPage() {
   return (
     <main className="min-h-screen bg-white">
       {/* ── Obsidian header ── */}
-      <header className="bg-[#0e0e0e] px-4 py-5">
+      <header className="bg-[#0e0e0e] pl-4 pr-14 py-5">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3.5">
