@@ -78,10 +78,16 @@ export default function TrainPuzzleShell({
 
   // Session accuracy tracking
   const [sessionStats, setSessionStats] = useState({ solved: 0, total: 0 });
+  // Daily accuracy tracking (resets at midnight via date key)
+  const dailyKey = `cassandra_daily_stats_${new Date().toISOString().split("T")[0]}`;
+  const [dailyStats, setDailyStats] = useState({ solved: 0, total: 0 });
   useEffect(() => {
     const key = "cassandra_session_stats";
     const prev = JSON.parse(sessionStorage.getItem(key) ?? '{"solved":0,"total":0}');
     setSessionStats(prev);
+    const dayPrev = JSON.parse(localStorage.getItem(dailyKey) ?? '{"solved":0,"total":0}');
+    setDailyStats(dayPrev);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Leaderboard (loaded after solve)
@@ -106,16 +112,24 @@ export default function TrainPuzzleShell({
       const data: AttemptResponse = await res.json();
       setAttemptResult(data);
 
-      // Update session stats — only count first attempts for accuracy
+      // Update session + daily stats — only count first attempts for accuracy
       if (data.attemptNumber === 1) {
-        const key = "cassandra_session_stats";
-        const prev = JSON.parse(sessionStorage.getItem(key) ?? '{"solved":0,"total":0}');
+        const sKey = "cassandra_session_stats";
+        const prev = JSON.parse(sessionStorage.getItem(sKey) ?? '{"solved":0,"total":0}');
         const next = {
           solved: prev.solved + (data.recorded && success ? 1 : 0),
           total: prev.total + 1,
         };
-        sessionStorage.setItem(key, JSON.stringify(next));
+        sessionStorage.setItem(sKey, JSON.stringify(next));
         setSessionStats(next);
+
+        const dayPrev = JSON.parse(localStorage.getItem(dailyKey) ?? '{"solved":0,"total":0}');
+        const dayNext = {
+          solved: dayPrev.solved + (data.recorded && success ? 1 : 0),
+          total: dayPrev.total + 1,
+        };
+        localStorage.setItem(dailyKey, JSON.stringify(dayNext));
+        setDailyStats(dayNext);
       }
 
       // Load leaderboard after attempt is saved
@@ -301,12 +315,16 @@ export default function TrainPuzzleShell({
                 </div>
                 <div className="bg-[#1a1a1a] rounded-lg p-3 text-center">
                   <p className="text-[#c8942a] font-bold text-lg">
-                    {sessionStats.total > 0
-                      ? `${Math.round((sessionStats.solved / sessionStats.total) * 100)}%`
-                      : "\u2014"}
+                    {dailyStats.total > 0
+                      ? `${Math.round((dailyStats.solved / dailyStats.total) * 100)}%`
+                      : sessionStats.total > 0
+                        ? `${Math.round((sessionStats.solved / sessionStats.total) * 100)}%`
+                        : "\u2014"}
                   </p>
                   <p className="text-[10px] text-gray-500 uppercase tracking-wide mt-0.5">
-                    Session ({sessionStats.solved}/{sessionStats.total})
+                    {dailyStats.total > 0
+                      ? `Today (${dailyStats.solved}/${dailyStats.total})`
+                      : `Session (${sessionStats.solved}/${sessionStats.total})`}
                   </p>
                 </div>
               </div>
@@ -355,12 +373,16 @@ export default function TrainPuzzleShell({
                 </div>
                 <div className="bg-[#1a1a1a] rounded-lg p-3 text-center">
                   <p className="text-[#c8942a] font-bold text-lg">
-                    {sessionStats.total > 0
-                      ? `${Math.round((sessionStats.solved / sessionStats.total) * 100)}%`
-                      : "\u2014"}
+                    {dailyStats.total > 0
+                      ? `${Math.round((dailyStats.solved / dailyStats.total) * 100)}%`
+                      : sessionStats.total > 0
+                        ? `${Math.round((sessionStats.solved / sessionStats.total) * 100)}%`
+                        : "\u2014"}
                   </p>
                   <p className="text-[10px] text-gray-500 uppercase tracking-wide mt-0.5">
-                    Session ({sessionStats.solved}/{sessionStats.total})
+                    {dailyStats.total > 0
+                      ? `Today (${dailyStats.solved}/${dailyStats.total})`
+                      : `Session (${sessionStats.solved}/${sessionStats.total})`}
                   </p>
                 </div>
               </div>

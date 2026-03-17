@@ -57,11 +57,20 @@ export default async function DashboardPage() {
   const name = user?.lichessUsername ?? user?.chessComUsername ?? "Player";
   const displayElo = user?.rawElo ?? user?.elo;
 
-  const [totalImported, userAttempts, streakLeaders, referralLeaders] = await Promise.all([
+  const todayStr = new Date().toISOString().split("T")[0];
+  const todayStart = new Date(todayStr);
+
+  const [totalImported, userAttempts, todayAttempts, streakLeaders, referralLeaders] = await Promise.all([
     user ? getTotalImportedCount(user.id) : Promise.resolve(0),
     user
       ? prisma.puzzleAttempt.findMany({
           where: { userId: user.id, attemptNumber: 1 },
+          select: { success: true },
+        })
+      : Promise.resolve([]),
+    user
+      ? prisma.puzzleAttempt.findMany({
+          where: { userId: user.id, attemptNumber: 1, createdAt: { gte: todayStart } },
           select: { success: true },
         })
       : Promise.resolve([]),
@@ -95,6 +104,12 @@ export default async function DashboardPage() {
   const accuracy =
     userAttempts.length > 0
       ? Math.round((totalSolved / userAttempts.length) * 100)
+      : null;
+
+  const todaySolved = todayAttempts.filter((a) => a.success).length;
+  const todayAccuracy =
+    todayAttempts.length > 0
+      ? Math.round((todaySolved / todayAttempts.length) * 100)
       : null;
 
   const referralCode = user ? await ensureReferralCode(user.id) : "";
@@ -190,11 +205,20 @@ export default async function DashboardPage() {
             <p className="text-xs text-[#666] mt-1">{t("dashboard.statStreak")}</p>
           </div>
           <div className="bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4 text-center">
-            {userAttempts.length > 0 ? (
+            {todayAttempts.length > 0 ? (
+              <>
+                <p className="text-2xl font-extrabold text-[#c8942a] tabular-nums">{todayAccuracy}%</p>
+                <p className="text-xs text-[#666] mt-1">Today</p>
+                <p className="text-xs text-[#777] mt-0.5">{todaySolved}/{todayAttempts.length} correct</p>
+                {userAttempts.length > todayAttempts.length && (
+                  <p className="text-[10px] text-[#999] mt-0.5">All-time {accuracy}%</p>
+                )}
+              </>
+            ) : userAttempts.length > 0 ? (
               <>
                 <p className="text-2xl font-extrabold text-[#c8942a] tabular-nums">{accuracy}%</p>
                 <p className="text-xs text-[#666] mt-1">{t("dashboard.statAccuracy")}</p>
-                <p className="text-xs text-[#777] mt-0.5">{totalSolved} / {userAttempts.length} {t("dashboard.correct")}</p>
+                <p className="text-xs text-[#777] mt-0.5">{totalSolved}/{userAttempts.length} {t("dashboard.correct")}</p>
               </>
             ) : (
               <>
