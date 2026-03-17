@@ -232,7 +232,7 @@ export default async function DashboardPage() {
           </Link>
 
           <div className="sm:col-span-1 bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4 flex flex-col justify-center">
-            <SyncButton lastSyncedAt={user?.lastSyncedAt?.toISOString() ?? null} />
+            <SyncButton lastSyncedAt={user?.lastSyncedAt?.toISOString() ?? null} isFirstSync={totalImported === 0} />
           </div>
         </div>
 

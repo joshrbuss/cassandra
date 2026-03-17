@@ -160,8 +160,13 @@
   "sync.oneHourAgo": "há 1 hora",
   "sync.syncing": "Sincronizando suas partidas…",
   "sync.syncNew": "Sincronizar novas partidas",
+  "sync.syncNow": "Sincronizar agora",
   "sync.upToDate": "Você está atualizado!",
   "sync.error": "Algo deu errado. Tente novamente.",
+  "sync.failed": "A sincronização falhou — tente novamente",
+  "sync.newFound": "+{puzzles} novos puzzles de {games} partidas analisadas",
+  "sync.noBlunders": "{games} partidas analisadas — nenhum novo erro encontrado",
+  "sync.firstSync": "{puzzles} puzzles criados a partir de {games} partidas — Chess On!",
   "sync.newPuzzles": "{puzzles} novo(s) puzzle(s) encontrado(s) em {games} nova(s) partida(s)",
 
   "onboarding.title": "Conecte sua conta",

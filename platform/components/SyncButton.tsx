@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "@/components/i18n/LocaleProvider";
 
 interface Props {
   lastSyncedAt: string | null;
+  /** True if user has never had puzzles imported before */
+  isFirstSync?: boolean;
 }
 
-function formatHoursAgo(isoString: string, t: (key: string, vars?: Record<string, string | number>) => string): string {
+function formatTimeAgo(isoString: string, t: (key: string, vars?: Record<string, string | number>) => string): string {
   const diffMs = Date.now() - new Date(isoString).getTime();
   const hours = Math.floor(diffMs / (1000 * 60 * 60));
   if (hours < 1) {
@@ -17,28 +19,20 @@ function formatHoursAgo(isoString: string, t: (key: string, vars?: Record<string
   return hours === 1 ? t("sync.oneHourAgo") : t("sync.hoursAgo", { count: hours });
 }
 
-export default function SyncButton({ lastSyncedAt }: Props) {
+export default function SyncButton({ lastSyncedAt, isFirstSync = false }: Props) {
   const { t } = useTranslation();
-  const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
-  const [message, setMessage] = useState<string | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "result">("idle");
+  const [resultMessage, setResultMessage] = useState<string | null>(null);
+  const [resultType, setResultType] = useState<"success" | "error">("success");
   const [syncedAt, setSyncedAt] = useState(lastSyncedAt);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  const recentlySynced =
-    syncedAt !== null &&
-    Date.now() - new Date(syncedAt).getTime() < 24 * 60 * 60 * 1000;
-
-  if (recentlySynced && status === "idle") {
-    return (
-      <p className="text-xs text-[#666]">
-        {t("sync.lastSynced", { time: formatHoursAgo(syncedAt!, t) })}
-      </p>
-    );
-  }
-
+  // Clean up timer on unmount
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
 
   async function handleSync() {
     setStatus("loading");
-    setMessage(null);
+    setResultMessage(null);
     try {
       const res = await fetch("/api/users/me/import", { method: "POST" });
       const data = (await res.json()) as {
@@ -48,37 +42,63 @@ export default function SyncButton({ lastSyncedAt }: Props) {
         error?: string;
       };
       if (!res.ok || !data.ok) {
-        setMessage(data.error ?? t("sync.error"));
+        setResultMessage(t("sync.failed"));
+        setResultType("error");
       } else {
         const { gamesProcessed = 0, puzzlesImported = 0 } = data;
-        if (puzzlesImported > 0) {
-          setMessage(
-            t("sync.newPuzzles", { puzzles: puzzlesImported, games: gamesProcessed })
-          );
+        if (puzzlesImported > 0 && isFirstSync) {
+          setResultMessage(t("sync.firstSync", { puzzles: puzzlesImported, games: gamesProcessed }));
+        } else if (puzzlesImported > 0) {
+          setResultMessage(t("sync.newFound", { puzzles: puzzlesImported, games: gamesProcessed }));
         } else {
-          setMessage(t("sync.upToDate"));
+          setResultMessage(t("sync.noBlunders", { games: gamesProcessed }));
         }
+        setResultType("success");
         setSyncedAt(new Date().toISOString());
       }
     } catch {
-      setMessage(t("sync.error"));
+      setResultMessage(t("sync.failed"));
+      setResultType("error");
     }
-    setStatus("done");
+    setStatus("result");
+    // Revert to idle after 5 seconds
+    timerRef.current = setTimeout(() => {
+      setStatus("idle");
+      setResultMessage(null);
+    }, 5000);
   }
 
   return (
-    <div className="flex flex-col gap-1">
-      {status !== "done" && (
+    <div className="flex flex-col items-start gap-1.5">
+      {/* Last synced timestamp */}
+      {syncedAt && status !== "loading" && (
+        <p className="text-xs text-[#666]">
+          {t("sync.lastSynced", { time: formatTimeAgo(syncedAt, t) })}
+        </p>
+      )}
+
+      {/* Loading state */}
+      {status === "loading" && (
+        <p className="text-xs text-[#c8942a] font-medium animate-pulse">
+          {t("sync.syncing")}
+        </p>
+      )}
+
+      {/* Result message */}
+      {status === "result" && resultMessage && (
+        <p className={`text-xs font-medium ${resultType === "error" ? "text-red-500" : "text-[#c8942a]"}`}>
+          {resultMessage}
+        </p>
+      )}
+
+      {/* Sync button — always visible when not loading */}
+      {status !== "loading" && (
         <button
           onClick={handleSync}
-          disabled={status === "loading"}
-          className="text-sm font-medium text-[#1a1a1a] bg-[#d8d4ce] px-4 py-2 rounded-lg hover:bg-[#ccc8c0] disabled:opacity-50 transition-colors w-fit"
+          className="text-xs font-medium text-[#c8942a] border border-[#c8942a]/40 px-3 py-1 rounded-full hover:bg-[#c8942a]/10 transition-colors"
         >
-          {status === "loading" ? t("sync.syncing") : t("sync.syncNew")}
+          {t("sync.syncNow")}
         </button>
-      )}
-      {message && (
-        <p className="text-xs text-[#c8942a] font-medium">{message}</p>
       )}
     </div>
   );

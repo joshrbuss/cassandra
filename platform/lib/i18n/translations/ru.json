@@ -160,8 +160,13 @@
   "sync.oneHourAgo": "1 час назад",
   "sync.syncing": "Синхронизация партий…",
   "sync.syncNew": "Синхронизировать новые партии",
+  "sync.syncNow": "Синхронизировать",
   "sync.upToDate": "Всё актуально!",
   "sync.error": "Что-то пошло не так. Попробуйте снова.",
+  "sync.failed": "Синхронизация не удалась — попробуйте снова",
+  "sync.newFound": "+{puzzles} новых задач из {games} проанализированных партий",
+  "sync.noBlunders": "{games} партий проанализировано — новых ошибок не найдено",
+  "sync.firstSync": "{puzzles} задач создано из {games} партий — Chess On!",
   "sync.newPuzzles": "{puzzles} новых задач из {games} новых партий",
 
   "onboarding.title": "Подключите аккаунт",
