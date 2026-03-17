@@ -42,7 +42,7 @@ export async function connectLichessUsername(
   try {
     const res = await fetch(
       `https://lichess.org/api/user/${encodeURIComponent(username)}`,
-      { headers: { "User-Agent": "CassandraChess/1.0" }, cache: "no-store" }
+      { headers: { "User-Agent": "CassandraChess/1.0" }, cache: "no-store", signal: AbortSignal.timeout(10_000) }
     );
     if (res.status === 404) return { error: "Lichess username not found." };
     if (!res.ok) return { error: "Could not reach Lichess. Try again." };
@@ -161,17 +161,21 @@ export async function connectChessComUsername(
     return { error: "Enter a valid Chess.com username." };
   }
 
-  // Validate against Chess.com public API
+  const normalizedUsername = username.toLowerCase();
+
+  // Validate against Chess.com public API (10s timeout)
   let rawElo: number | null = null;
   try {
     const [profileRes, statsRes] = await Promise.all([
-      fetch(`https://api.chess.com/pub/player/${encodeURIComponent(username)}`, {
+      fetch(`https://api.chess.com/pub/player/${encodeURIComponent(normalizedUsername)}`, {
         headers: { "User-Agent": "CassandraChess/1.0" },
         cache: "no-store",
+        signal: AbortSignal.timeout(10_000),
       }),
-      fetch(`https://api.chess.com/pub/player/${encodeURIComponent(username)}/stats`, {
+      fetch(`https://api.chess.com/pub/player/${encodeURIComponent(normalizedUsername)}/stats`, {
         headers: { "User-Agent": "CassandraChess/1.0" },
         cache: "no-store",
+        signal: AbortSignal.timeout(10_000),
       }),
     ]);
 
@@ -186,15 +190,21 @@ export async function connectChessComUsername(
         stats.chess_bullet?.last?.rating ??
         null;
     }
-  } catch {
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`[chesscom-action] API fetch failed: ${msg}`);
+    if (msg.includes("timeout") || msg.includes("abort")) {
+      return { error: "Chess.com is taking too long to respond. Please try again." };
+    }
     return { error: "Could not reach Chess.com. Try again." };
   }
 
   const normalizedElo = rawElo != null ? normalizeElo(rawElo, "chess_com") : null;
   const session = await auth();
 
-  const existing = await prisma.user.findUnique({
-    where: { chessComUsername: username },
+  // Case-insensitive lookup
+  const existing = await prisma.user.findFirst({
+    where: { chessComUsername: { equals: normalizedUsername, mode: "insensitive" } },
     select: { id: true },
   });
 
@@ -221,7 +231,7 @@ export async function connectChessComUsername(
       // Stale session — user record was deleted. Create a fresh record.
       const newUser = await prisma.user.create({
         data: {
-          chessComUsername: username,
+          chessComUsername: normalizedUsername,
           chessComLinkedAt: new Date(),
           rawElo: rawElo ?? undefined,
           normalizedElo: normalizedElo ?? undefined,
@@ -234,7 +244,7 @@ export async function connectChessComUsername(
       await prisma.user.update({
         where: { id: session.userId },
         data: {
-          chessComUsername: username,
+          chessComUsername: normalizedUsername,
           chessComLinkedAt: new Date(),
           ...(rawElo != null && !currentUser.eloPlatform
             ? { rawElo, normalizedElo, elo: rawElo, eloPlatform: "chess_com" }
@@ -246,7 +256,7 @@ export async function connectChessComUsername(
   } else {
     const user = await prisma.user.create({
       data: {
-        chessComUsername: username,
+        chessComUsername: normalizedUsername,
         chessComLinkedAt: new Date(),
         rawElo: rawElo ?? undefined,
         normalizedElo: normalizedElo ?? undefined,

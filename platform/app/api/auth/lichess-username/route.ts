@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   try {
     const res = await fetch(
       `https://lichess.org/api/user/${encodeURIComponent(username)}`,
-      { headers: { "User-Agent": "CassandraChess/1.0" }, cache: "no-store" }
+      { headers: { "User-Agent": "CassandraChess/1.0" }, cache: "no-store", signal: AbortSignal.timeout(10_000) }
     );
     if (res.status === 404) {
       return NextResponse.json({ error: "Lichess username not found." }, { status: 400 });
