@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/analyse-games",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 4 * * *"
     }
   ],
   "functions": {

@@ -1,0 +1,12 @@
+node_modules
+.next
+*.db
+*.pgn
+*.zst
+data/
+cassandra/
+tests/
+__pycache__
+*.pyc
+.env
+frontend/
