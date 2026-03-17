@@ -96,7 +96,13 @@ export default function AnalysingClient({ platform, username, libraryPuzzleId, l
       for (let i = 0; i < pgns.length; i++) {
         setGamesAnalysed(i + 1);
         setSteps((prev) => prev.map((s, idx) => idx === 2 ? { ...s, label: `Analysing game ${i + 1} of ${total}... (${totalPuzzles} puzzles found)` } : s));
-        try { const puzzles = await extractBlundersFromPgn(pgns[i], username); batch.push(...puzzles); } catch { }
+        try {
+          const puzzles = await extractBlundersFromPgn(pgns[i], username);
+          console.log(`[Analysis] Game ${i + 1}: extracted ${puzzles.length} puzzles`);
+          batch.push(...puzzles);
+        } catch (err) {
+          console.error(`[Analysis] Game ${i + 1} extraction failed:`, err);
+        }
         analysed++;
         if (batch.length > 0 && (i % 5 === 4 || i === pgns.length - 1)) {
           try {
