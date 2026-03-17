@@ -2,24 +2,8 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import dynamic from "next/dynamic";
 import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
-
-// Defer next-auth/react bundle until after initial paint
-const ConnectClient = dynamic(() => import("./ConnectClient"), {
-  ssr: false,
-  loading: () => (
-    <div className="space-y-3">
-      <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 h-[120px] animate-pulse" />
-      <div className="flex items-center gap-3 px-2">
-        <div className="flex-1 h-px bg-[#2a2a2a]" />
-        <span className="text-xs text-gray-600">or</span>
-        <div className="flex-1 h-px bg-[#2a2a2a]" />
-      </div>
-      <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 h-[120px] animate-pulse" />
-    </div>
-  ),
-});
+import ConnectClient from "./ClientShell";
 
 export const metadata = {
   title: "Connect — Cassandra Chess",

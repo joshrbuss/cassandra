@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { getTotalImportedCount } from "@/lib/jobs/importGames";
 import LockedFeature from "@/components/LockedFeature";
 import EmailSignup from "@/components/marketing/EmailSignup";
@@ -18,9 +17,7 @@ import CookiePreferencesLink from "@/components/CookiePreferencesLink";
 import LazySection from "@/components/LazySection";
 import BackgroundAnalysisBar from "@/components/BackgroundAnalysisBar";
 
-// Lazy-load heavy client components that aren't needed for initial render
-const GutterAds = dynamic(() => import("@/components/GutterAds"), { ssr: false });
-const EmailPopup = dynamic(() => import("@/components/EmailPopup"), { ssr: false });
+import { GutterAds, EmailPopup } from "./ClientShells";
 
 export const metadata = {
   title: "Home — Cassandra Chess",

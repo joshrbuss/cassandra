@@ -37,6 +37,7 @@ export default async function AnalysingPage() {
     <main className="min-h-screen bg-[#0e0e0e] flex flex-col items-center justify-center px-4 py-16">
       <AnalysingClient
         platform={platform}
+        username={user.chessComUsername ?? user.lichessUsername ?? ""}
         libraryPuzzleId={libraryPuzzle?.id ?? null}
         libraryPuzzleRating={libraryPuzzle?.rating ?? null}
       />

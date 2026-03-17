@@ -1,3 +1,5 @@
+import "server-only";
+
 /**
  * Extracts tactical puzzles from a PGN that contains Lichess eval annotations.
  *

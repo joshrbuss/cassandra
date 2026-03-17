@@ -1,3 +1,5 @@
+import "server-only";
+
 /**
  * Stockfish UCI wrapper for Node.js.
  *

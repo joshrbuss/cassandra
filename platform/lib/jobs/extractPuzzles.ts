@@ -1,3 +1,5 @@
+import "server-only";
+
 /**
  * Extracts tactical puzzles from a game PGN using Stockfish analysis.
  *

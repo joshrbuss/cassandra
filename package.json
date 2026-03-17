@@ -6,7 +6,14 @@
     "dev": "serve frontend",
     "start": "serve frontend"
   },
-  "keywords": ["chess", "analytics", "puzzles"],
+  "keywords": [
+    "chess",
+    "analytics",
+    "puzzles"
+  ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
 }
