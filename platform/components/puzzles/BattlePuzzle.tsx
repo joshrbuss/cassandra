@@ -37,6 +37,7 @@ export default function BattlePuzzle({
   const [moveIndex, setMoveIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>("playing");
   const [lastSquares, setLastSquares] = useState<Record<string, React.CSSProperties>>({});
+  const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [elapsedMs, setElapsedMs] = useState(0);
 
   const startRef = useRef(Date.now());
@@ -129,6 +130,60 @@ export default function BattlePuzzle({
     return true;
   }
 
+  function handleSquareClick({ square }: { piece: unknown; square: string }) {
+    if (phase !== "playing") return;
+
+    if (selectedSquare) {
+      const result = chess.move({ from: selectedSquare, to: square, promotion: "q" });
+      setSelectedSquare(null);
+
+      if (!result) {
+        const moves = chess.moves({ square: square as never, verbose: true });
+        if (moves.length > 0) setSelectedSquare(square);
+        return;
+      }
+
+      const uci = `${selectedSquare}${square}${result.promotion ?? ""}`;
+      if (uci !== solution[moveIndex]) {
+        setFen(chess.fen());
+        setPhase("wrong");
+        setTimeout(() => {
+          chess.undo();
+          setFen(chess.fen());
+          setPhase("playing");
+        }, 700);
+        return;
+      }
+
+      setFen(chess.fen());
+      setLastSquares({
+        [selectedSquare]: { backgroundColor: "rgba(0,200,0,0.35)" },
+        [square]: { backgroundColor: "rgba(0,200,0,0.35)" },
+      });
+      const nextIdx = moveIndex + 1;
+      setMoveIndex(nextIdx);
+      applyOpponentMove(nextIdx, chess);
+    } else {
+      const moves = chess.moves({ square: square as never, verbose: true });
+      if (moves.length > 0) setSelectedSquare(square);
+    }
+  }
+
+  function getClickStyles(): Record<string, React.CSSProperties> {
+    if (!selectedSquare || phase !== "playing") return {};
+    const styles: Record<string, React.CSSProperties> = {
+      [selectedSquare]: { backgroundColor: "rgba(255, 200, 0, 0.5)" },
+    };
+    const moves = chess.moves({ square: selectedSquare as never, verbose: true });
+    for (const m of moves) {
+      styles[m.to] = {
+        background: "radial-gradient(circle, rgba(0,0,0,0.2) 25%, transparent 25%)",
+        borderRadius: "50%",
+      };
+    }
+    return styles;
+  }
+
   const remaining = Math.max(0, timeoutMs - elapsedMs);
   const pct = (remaining / timeoutMs) * 100;
   const timerColor = remaining < 20_000 ? "bg-red-500" : remaining < 45_000 ? "bg-yellow-400" : "bg-green-500";
@@ -148,8 +203,9 @@ export default function BattlePuzzle({
           position={fen}
           interactive={phase === "playing"}
           onPieceDrop={handleDrop}
+          onSquareClick={handleSquareClick}
           boardOrientation={boardOrientation}
-          squareStyles={lastSquares}
+          squareStyles={{ ...lastSquares, ...getClickStyles() }}
         />
       </div>
 

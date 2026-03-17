@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { getTotalImportedCount } from "@/lib/jobs/importGames";
 import LockedFeature from "@/components/LockedFeature";
+import EmailSignup from "@/components/marketing/EmailSignup";
 import SyncButton from "@/components/SyncButton";
 import ReferralBar from "@/components/ReferralBar";
 import { ensureReferralCode } from "@/lib/referral";
@@ -369,32 +370,30 @@ export default async function DashboardPage() {
               emoji="🧠"
               name="Smart Review"
               description="Puzzles you struggle with resurface at the perfect moment. Powered by spaced repetition."
-              source="teaser_smart_review"
             />
             <LockedFeature
               emoji="⏪"
               name="The Echo"
               description="Replay any position from your game history and explore alternatives"
-              source="dashboard-rewind"
             />
             <LockedFeature
               emoji="🎯"
               name="The Scales"
               description="Guess what rating played each move — train your intuition"
-              source="dashboard-rankit"
             />
             <LockedFeature
               emoji="📖"
               name="Opening Trainer"
               description="Master your opening repertoire with targeted drills"
-              source="dashboard-openings"
             />
             <LockedFeature
               emoji="⚔️"
-              name="Duels v2"
+              name="The Trials"
               description="Real-time rated puzzle races with leaderboards and ELO"
-              source="dashboard-duels"
             />
+          </div>
+          <div className="mt-4">
+            <EmailSignup source="coming_soon_unified" headline={t("comingSoon.notifyHeadline")} cta={t("comingSoon.notifyCta")} />
           </div>
         </div>
 

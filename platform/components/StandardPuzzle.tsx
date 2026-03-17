@@ -49,6 +49,7 @@ export default function StandardPuzzle({
   const { elapsedMs, isRunning, start, stop } = useTimer();
   const [attemptResult, setAttemptResult] = useState<AttemptResponse | null>(null);
   const [hintLevel, setHintLevel] = useState<0 | 1 | 2>(0);
+  const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const submitLock = useRef(false);
   const hadWrongMove = useRef(false);
 
@@ -149,6 +150,77 @@ export default function StandardPuzzle({
     return true;
   }
 
+  /** Click-to-move: first click selects piece, second click moves */
+  function handleSquareClick({ square }: { piece: unknown; square: string }) {
+    if (phase !== "playing") return;
+
+    if (selectedSquare) {
+      // Second click — attempt move
+      const moveResult = chess.move({
+        from: selectedSquare,
+        to: square,
+        promotion: "q",
+      });
+      setSelectedSquare(null);
+
+      if (!moveResult) {
+        // Invalid move — try selecting the clicked square instead
+        const moves = chess.moves({ square: square as never, verbose: true });
+        if (moves.length > 0) {
+          setSelectedSquare(square);
+        }
+        return;
+      }
+
+      const uci = `${selectedSquare}${square}${moveResult.promotion ?? ""}`;
+      const expected = solution[moveIndex];
+
+      if (uci !== expected) {
+        hadWrongMove.current = true;
+        setFen(chess.fen());
+        setPhase("wrong");
+        setTimeout(() => {
+          chess.undo();
+          setFen(chess.fen());
+          setPhase("playing");
+        }, 800);
+        return;
+      }
+
+      setHintLevel(0);
+      setFen(chess.fen());
+      setLastSquares({
+        [selectedSquare]: { backgroundColor: "rgba(0,200,0,0.35)" },
+        [square]: { backgroundColor: "rgba(0,200,0,0.35)" },
+      });
+      const nextIdx = moveIndex + 1;
+      setMoveIndex(nextIdx);
+      applyOpponentMove(nextIdx, chess);
+    } else {
+      // First click — select piece if it has legal moves
+      const moves = chess.moves({ square: square as never, verbose: true });
+      if (moves.length > 0) {
+        setSelectedSquare(square);
+      }
+    }
+  }
+
+  /** Build square styles for selected piece + legal move dots */
+  function getClickStyles(): Record<string, React.CSSProperties> {
+    if (!selectedSquare || phase !== "playing") return {};
+    const styles: Record<string, React.CSSProperties> = {
+      [selectedSquare]: { backgroundColor: "rgba(255, 200, 0, 0.5)" },
+    };
+    const moves = chess.moves({ square: selectedSquare as never, verbose: true });
+    for (const m of moves) {
+      styles[m.to] = {
+        background: "radial-gradient(circle, rgba(0,0,0,0.2) 25%, transparent 25%)",
+        borderRadius: "50%",
+      };
+    }
+    return styles;
+  }
+
   return (
     <div className="flex flex-col items-center gap-4 w-full max-w-[500px] mx-auto">
       {/* Timer */}
@@ -165,9 +237,11 @@ export default function StandardPuzzle({
           position={fen}
           interactive={phase === "playing"}
           onPieceDrop={handleDrop}
+          onSquareClick={handleSquareClick}
           boardOrientation={boardOrientation}
           squareStyles={{
             ...lastSquares,
+            ...getClickStyles(),
             ...(hintLevel >= 1 && phase === "playing" && solution[moveIndex]
               ? {
                   [solution[moveIndex].slice(0, 2)]: {

@@ -1,15 +1,12 @@
 "use client";
 
-import EmailSignup from "@/components/marketing/EmailSignup";
-
 interface Props {
   emoji: string;
   name: string;
   description: string;
-  source: string;
 }
 
-export default function LockedFeature({ emoji, name, description, source }: Props) {
+export default function LockedFeature({ emoji, name, description }: Props) {
   return (
     <div className="relative bg-white border border-dashed border-gray-300 rounded-xl overflow-hidden shadow-sm">
       {/* Blur tint overlay behind content */}
@@ -24,8 +21,7 @@ export default function LockedFeature({ emoji, name, description, source }: Prop
             Coming Soon
           </span>
         </div>
-        <p className="text-xs text-gray-400 mb-4">{description}</p>
-        <EmailSignup source={source} headline="" cta="Notify me" />
+        <p className="text-xs text-gray-400">{description}</p>
       </div>
     </div>
   );

@@ -7,8 +7,8 @@ import { playerDisplayName } from "@/lib/battles/types";
 import CreateBattleButton from "./CreateBattleButton";
 
 export const metadata: Metadata = {
-  title: "Puzzle Duels",
-  description: "Challenge another player to a head-to-head puzzle duel.",
+  title: "The Trials",
+  description: "Challenge another player to a head-to-head puzzle trial.",
 };
 
 export default async function BattlesPage() {
@@ -27,7 +27,7 @@ export default async function BattlesPage() {
           <Link href="/" className="text-sm text-blue-600 hover:underline">
             ← Home
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 mt-3">Puzzle Duels</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mt-3">The Trials</h1>
           <p className="text-sm text-gray-500 mt-1">
             Race a friend through 5 puzzles — fastest correct solver wins each round.
           </p>
@@ -37,7 +37,7 @@ export default async function BattlesPage() {
         <div className="flex gap-6 mb-6 text-sm text-gray-500">
           <span>
             <span className="font-semibold text-gray-900">{activeBattleCount}</span> active{" "}
-            {activeBattleCount === 1 ? "duel" : "duels"}
+            {activeBattleCount === 1 ? "trial" : "trials"}
           </span>
           <span>
             <span className="font-semibold text-gray-900">{openBattles.length}</span> open{" "}
