@@ -38,7 +38,6 @@ export default async function AnalysingPage() {
       <AnalysingClient
         platform={platform}
         username={user.chessComUsername ?? user.lichessUsername ?? ""}
-        username={user.chessComUsername ?? user.lichessUsername ?? ""}
         libraryPuzzleId={libraryPuzzle?.id ?? null}
         libraryPuzzleRating={libraryPuzzle?.rating ?? null}
       />
