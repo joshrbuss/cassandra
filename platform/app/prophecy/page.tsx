@@ -23,16 +23,22 @@ async function getDailyProphecyPuzzle() {
   });
   console.log(`[prophecy] Brilliant (sacrifice ≥1800) puzzle pool: ${total}`);
 
-  if (total === 0) return null;
+  if (total === 0) {
+    console.log("[prophecy] WARNING: 0 sacrifice puzzles with rating >= 1800 in LibraryPuzzle table");
+    return null;
+  }
 
   const dayNumber = Math.floor(Date.now() / 86_400_000);
   const skipIdx = dayNumber % total;
 
-  return prisma.libraryPuzzle.findFirst({
+  const puzzle = await prisma.libraryPuzzle.findFirst({
     where: { themes: { contains: "sacrifice" }, rating: { gte: 1800 } },
     orderBy: { id: "asc" },
     skip: skipIdx,
   });
+
+  console.log(`[prophecy] Day ${dayNumber}, index ${skipIdx}/${total}, puzzle=${puzzle?.id ?? "null"}, rating=${puzzle?.rating ?? "n/a"}`);
+  return puzzle;
 }
 
 export default async function ProphecyPage() {

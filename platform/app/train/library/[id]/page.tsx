@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import TrainPuzzleClient from "../../[id]/TrainPuzzleClient";
+import AdSlot from "@/components/AdSlot";
 
 export const metadata = {
   title: "Train — Cassandra Chess",
@@ -44,6 +45,10 @@ export default async function LibraryPuzzlePage({ params }: PageProps) {
   const boardOrientation: "white" | "black" = solvingTurn === "w" ? "white" : "black";
 
   const stripeLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
+  const paidUser = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: { isPaid: true },
+  });
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-8">
@@ -53,7 +58,7 @@ export default async function LibraryPuzzlePage({ params }: PageProps) {
           <Link href="/home" className="text-sm text-blue-600 hover:underline">
             ← Dashboard
           </Link>
-          {stripeLink && (
+          {stripeLink && !paidUser?.isPaid && (
             <a
               href={stripeLink}
               target="_blank"
@@ -96,6 +101,12 @@ export default async function LibraryPuzzlePage({ params }: PageProps) {
         />
 
         {/* Navigation */}
+        {!paidUser?.isPaid && (
+          <div className="mt-4">
+            <AdSlot slot="1234567890" />
+          </div>
+        )}
+
         <div className="mt-6 flex items-center justify-between">
           <Link
             href="/train/library"

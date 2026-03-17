@@ -6,6 +6,7 @@ import Link from "next/link";
 import { getTotalImportedCount } from "@/lib/jobs/importGames";
 import LockedFeature from "@/components/LockedFeature";
 import EmailSignup from "@/components/marketing/EmailSignup";
+import AdSlot from "@/components/AdSlot";
 import SyncButton from "@/components/SyncButton";
 import ReferralBar from "@/components/ReferralBar";
 import { ensureReferralCode } from "@/lib/referral";
@@ -46,6 +47,7 @@ export default async function DashboardPage() {
       referralCount: true,
       email: true,
       country: true,
+      isPaid: true,
     },
   });
 
@@ -160,7 +162,7 @@ export default async function DashboardPage() {
               </div>
             </div>
 
-            {stripeLink && (
+            {stripeLink && !user?.isPaid && (
               <a
                 href={stripeLink}
                 target="_blank"
@@ -361,6 +363,13 @@ export default async function DashboardPage() {
             )}
           </div>
         </div>
+
+        {/* ── Ad slot (free users only) ── */}
+        {!user?.isPaid && (
+          <div className="mb-6">
+            <AdSlot slot="1234567890" />
+          </div>
+        )}
 
         {/* ── Coming soon ── */}
         <div className="mt-6">

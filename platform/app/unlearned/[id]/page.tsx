@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import TrainPuzzleClient from "./TrainPuzzleClient";
+import AdSlot from "@/components/AdSlot";
 import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
 
 export const metadata = {
@@ -55,6 +56,10 @@ export default async function UnlearnedPuzzlePage({ params }: PageProps) {
   const cookieStore = await cookies();
   const t = getT(resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value));
   const stripeLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
+  const paidUser = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: { isPaid: true },
+  });
 
   return (
     <main className="min-h-screen bg-white">
@@ -69,9 +74,14 @@ export default async function UnlearnedPuzzlePage({ params }: PageProps) {
         evalCp={puzzle.evalCp}
         playerColor={puzzle.playerColor}
         gameUrl={puzzle.gameUrl}
-        stripeLink={stripeLink ?? null}
+        stripeLink={paidUser?.isPaid ? null : (stripeLink ?? null)}
         footerText={t("dashboard.footer")}
       />
+      {!paidUser?.isPaid && (
+        <div className="max-w-[500px] mx-auto px-4 py-4">
+          <AdSlot slot="1234567890" />
+        </div>
+      )}
     </main>
   );
 }
