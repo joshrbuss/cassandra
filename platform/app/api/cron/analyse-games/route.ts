@@ -4,6 +4,10 @@
  * Background cron job that processes pending RawGames left over after the
  * foreground /analysing page finishes (which only handles the first 10-20 games).
  *
+ * Self-chaining: after each batch, if more pending games remain, fires a
+ * follow-up POST to itself using next/server `after()` so it doesn't block
+ * the response. The chain continues until all pending games are processed.
+ *
  * Runs every 5 minutes via Vercel Cron (GET). Can also be triggered manually:
  *
  *   curl -X POST https://your-domain/api/cron/analyse-games \
@@ -13,6 +17,7 @@
  */
 
 import { type NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { extractPuzzlesFromGame } from "@/lib/jobs/extractPuzzles";
 import { extractPuzzlesFromAnnotatedPgn } from "@/lib/jobs/extractPuzzlesFromAnnotatedPgn";
@@ -171,12 +176,39 @@ async function handleRequest(req: NextRequest) {
     }
   }
 
-  console.log(`[cron/analyse-games] Done: ${gamesProcessed} games, ${puzzlesCreated} puzzles in ${Date.now() - startMs}ms`);
+  // Check if more pending games remain
+  const remainingCount = await prisma.rawGame.count({
+    where: { status: { in: ["pending", "processing"] } },
+  });
+
+  console.log(`[cron/analyse-games] Done: ${gamesProcessed} games, ${puzzlesCreated} puzzles in ${Date.now() - startMs}ms | remaining=${remainingCount}`);
+
+  // Self-chain: if more games remain, fire a follow-up request after responding
+  if (remainingCount > 0) {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
+    const secret = process.env.CRON_SECRET;
+
+    after(async () => {
+      try {
+        console.log(`[cron/analyse-games] Chaining: ${remainingCount} games remaining, firing follow-up`);
+        await fetch(`${baseUrl}/api/cron/analyse-games`, {
+          method: "POST",
+          headers: {
+            ...(secret ? { Authorization: `Bearer ${secret}` } : {}),
+          },
+        });
+      } catch (err) {
+        console.error(`[cron/analyse-games] Chain fetch failed: ${err}`);
+      }
+    });
+  }
 
   return NextResponse.json({
     ok: true,
     gamesProcessed,
     puzzlesCreated,
+    remainingGames: remainingCount,
+    chained: remainingCount > 0,
     durationMs: Date.now() - startMs,
   });
 }
