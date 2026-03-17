@@ -5,3 +5,5 @@ __pycache__/
 *.zst
 *.pgn
 node_modules/
+.vercel
+.env*.local
