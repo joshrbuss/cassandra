@@ -134,5 +134,5 @@ export async function POST(req: NextRequest) {
     userId = user.id;
   }
 
-  return NextResponse.json({ userId });
+  return NextResponse.json({ userId, isReturning: !!existing });
 }

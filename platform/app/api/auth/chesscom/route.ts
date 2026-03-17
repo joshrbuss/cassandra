@@ -170,8 +170,8 @@ export async function POST(req: NextRequest) {
       userId = user.id;
     }
 
-    console.log(`[chesscom] Success: userId=${userId}`);
-    return NextResponse.json({ userId });
+    console.log(`[chesscom] Success: userId=${userId} returning=${!!existing}`);
+    return NextResponse.json({ userId, isReturning: !!existing });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     const code = (err as { code?: string })?.code;

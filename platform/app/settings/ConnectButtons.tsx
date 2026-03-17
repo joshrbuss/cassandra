@@ -237,7 +237,7 @@ export default function ConnectButtons({
       {/* Sign out */}
       {isSignedIn && (
         <div className="pt-2 text-center">
-          <a href="/api/auth/signout" className="text-xs text-gray-400 hover:underline">
+          <a href="/signout" className="text-xs text-gray-400 hover:underline">
             Sign out
           </a>
         </div>

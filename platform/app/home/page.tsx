@@ -183,7 +183,7 @@ export default async function DashboardPage() {
                   <Link href="/settings" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
                     {t("dashboard.manageAccounts")}
                   </Link>
-                  <a href="/api/auth/signout" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
+                  <a href="/signout" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
                     {t("dashboard.signOut")}
                   </a>
                 </div>
@@ -246,8 +246,8 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* ── Background analysis progress ── */}
-        <BackgroundAnalysisBar />
+        {/* ── Background analysis progress + auto-sync for returning users ── */}
+        <BackgroundAnalysisBar needsSync={!user?.lastSyncedAt || (Date.now() - user.lastSyncedAt.getTime()) > 24 * 60 * 60 * 1000} />
 
         {/* ── Lose streak warning ── */}
         {daysAway > 2 && (

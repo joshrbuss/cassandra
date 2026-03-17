@@ -25,7 +25,7 @@ export default function ConnectClient({ refCode }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, ...(refCode ? { ref: refCode } : {}) }),
       });
-      const data = (await res.json()) as { userId?: string; error?: string };
+      const data = (await res.json()) as { userId?: string; isReturning?: boolean; error?: string };
 
       if (!res.ok || !data.userId) {
         setError(data.error ?? t("connect.error"));
@@ -33,8 +33,9 @@ export default function ConnectClient({ refCode }: Props) {
         return;
       }
 
-      // Sign in and redirect straight to /analysing
-      await signIn("credentials", { userId: data.userId, callbackUrl: "/analysing" });
+      // Returning users go straight to /home; new users go to /analysing
+      const dest = data.isReturning ? "/home" : "/analysing";
+      await signIn("credentials", { userId: data.userId, callbackUrl: dest });
     } catch {
       setError(t("connect.error"));
       setPending(null);

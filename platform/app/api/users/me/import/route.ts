@@ -40,6 +40,7 @@ export async function POST(_req: NextRequest) {
 
   // First sync = no lastSyncedAt → fetch ALL games. Subsequent = incremental.
   const since = user.lastSyncedAt ?? null;
+  console.log(`[import] User ${session.userId}: lichess=${user.lichessUsername ?? "none"} chesscom=${user.chessComUsername ?? "none"} since=${since?.toISOString() ?? "ALL"}`);
 
   // Fetch PGNs from both platforms
   const allPgns: { pgn: string; platform: string }[] = [];
@@ -65,6 +66,8 @@ export async function POST(_req: NextRequest) {
       console.error(`[import] Chess.com fetch failed: ${err}`);
     }
   }
+
+  console.log(`[import] Fetched ${allPgns.length} total PGNs (lichess=${allPgns.filter(g => g.platform === "lichess").length} chesscom=${allPgns.filter(g => g.platform === "chesscom").length})`);
 
   if (allPgns.length === 0) {
     // Update lastSyncedAt even if no games found
@@ -102,6 +105,15 @@ export async function POST(_req: NextRequest) {
     if (!url) return true; // Can't dedup without URL, let it through
     return !existingUrls.has(url) && !existingPuzzleUrls.has(url);
   });
+
+  console.log(`[import] After dedup: ${newGames.length} new games (${allPgns.length - newGames.length} duplicates filtered). existingRawGames=${existingUrls.size} existingPuzzles=${existingPuzzleUrls.size}`);
+
+  // Log first game PGN header for debugging
+  if (newGames.length > 0) {
+    const firstPgn = newGames[0].pgn;
+    const headers = firstPgn.split("\n").filter(l => l.startsWith("[")).slice(0, 5).join(" | ");
+    console.log(`[import] First game headers: ${headers}`);
+  }
 
   // Insert new games into RawGame queue
   if (newGames.length > 0) {

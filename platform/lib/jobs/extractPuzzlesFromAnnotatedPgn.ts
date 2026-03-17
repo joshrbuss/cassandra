@@ -176,10 +176,21 @@ export async function extractPuzzlesFromAnnotatedPgn(
   const gameUrl = extractGameUrl(pgn);
   const gameContext = extractGameContext(pgn, playerUsername);
   const evals = extractEvals(pgn);
-  if (evals.length === 0) return []; // no annotations → caller should try Stockfish fallback
+
+  console.log(`[annotated-extract] Game: ${gameUrl ?? "unknown"} | evals=${evals.length} | player=${playerUsername ?? "?"} | color=${gameContext.playerColor ?? "unknown"}`);
+
+  if (evals.length === 0) {
+    console.log(`[annotated-extract] No %eval annotations found — skipping`);
+    return [];
+  }
 
   const moves = parseMoves(pgn);
-  if (moves.length < 5) return [];
+  if (moves.length < 5) {
+    console.log(`[annotated-extract] Too few moves (${moves.length}) — skipping`);
+    return [];
+  }
+
+  console.log(`[annotated-extract] ${moves.length} moves, ${evals.length} evals`);
 
   // Determine which FEN turn corresponds to the player's moves
   const playerTurn: "w" | "b" | null =
@@ -188,6 +199,10 @@ export async function extractPuzzlesFromAnnotatedPgn(
     : null;
 
   const candidates: PuzzleCandidate[] = [];
+  let blundersChecked = 0;
+  let skippedOpponent = 0;
+  let belowThreshold = 0;
+  let maxSwing = 0;
 
   for (let i = 1; i < moves.length; i++) {
     if (candidates.length >= MAX_PER_GAME) break;
@@ -201,7 +216,7 @@ export async function extractPuzzlesFromAnnotatedPgn(
     const { sideToMove, uci: blunderUci, fenBefore } = moves[i];
 
     // Only extract blunders from the PLAYER's moves, not the opponent's
-    if (playerTurn && sideToMove !== playerTurn) continue;
+    if (playerTurn && sideToMove !== playerTurn) { skippedOpponent++; continue; }
 
     // Swing against the side that made move[i]:
     //   White moved → white wants high eval → swing = evalBefore - evalAfter (positive = white lost)
@@ -211,7 +226,12 @@ export async function extractPuzzlesFromAnnotatedPgn(
         ? evalBefore - evalAfter
         : evalAfter - evalBefore;
 
-    if (swing < BLUNDER_THRESHOLD_PAWNS) continue;
+    blundersChecked++;
+    if (Math.abs(swing) > Math.abs(maxSwing)) maxSwing = swing;
+
+    if (swing < BLUNDER_THRESHOLD_PAWNS) { belowThreshold++; continue; }
+
+    console.log(`[annotated-extract]   Move ${Math.floor(i/2)+1} (${sideToMove}): evalBefore=${evalBefore.toFixed(2)} evalAfter=${evalAfter.toFixed(2)} swing=${swing.toFixed(2)} → BLUNDER`);
 
     // Ask Stockfish for the best move from fenBefore — what the player SHOULD have played.
     const engineResult = await getBestMove(fenBefore);
@@ -256,6 +276,8 @@ export async function extractPuzzlesFromAnnotatedPgn(
       evalCp,
     });
   }
+
+  console.log(`[annotated-extract] Summary: checked=${blundersChecked} skippedOpponent=${skippedOpponent} belowThreshold=${belowThreshold} maxSwing=${maxSwing.toFixed(2)} puzzlesFound=${candidates.length}`);
 
   return candidates;
 }
