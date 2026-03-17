@@ -121,12 +121,12 @@ export async function POST(req: NextRequest) {
           ? game.user.lichessUsername
           : game.user.chessComUsername;
         const hasEvals = game.pgn.includes("[%eval");
-        const candidates = hasEvals
+        const rawCandidates = hasEvals
           ? await extractPuzzlesFromAnnotatedPgn(game.pgn, game.userId, playerUsername ?? undefined)
-          : await extractPuzzlesFromGame(game.pgn, game.userId, playerUsername ?? undefined);
+          : (await extractPuzzlesFromGame(game.pgn, game.userId, playerUsername ?? undefined)).candidates;
 
         let found = 0;
-        for (const c of candidates) {
+        for (const c of rawCandidates) {
           const exists = await prisma.puzzle.findFirst({ where: { solvingFen: c.solvingFen }, select: { id: true } });
           if (exists) continue;
           await prisma.puzzle.create({ data: { ...c } });

@@ -177,6 +177,8 @@ model RawGame {
   /// "pending" | "processing" | "done" | "failed"
   status        String   @default("pending")
   puzzlesFound  Int      @default(0)
+  /// Position index to resume analysis from (chunked Stockfish processing)
+  analysedUpTo  Int      @default(0)
   createdAt     DateTime @default(now())
   processedAt   DateTime?
 

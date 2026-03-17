@@ -223,24 +223,39 @@ function extractGameContext(
   return { opponentUsername, gameResult, gameDate, playerColor };
 }
 
+export interface ExtractResult {
+  candidates: PuzzleCandidate[];
+  /** Position index where analysis stopped (for resumption) */
+  stoppedAt: number;
+  /** Total positions in the game */
+  totalPositions: number;
+  /** True if all positions have been analysed */
+  complete: boolean;
+}
+
 /**
  * Extracts puzzle candidates from one PGN game.
  * Uses Stockfish to identify blunder positions.
+ *
+ * @param startIdx   Resume analysis from this position index (default 0)
+ * @param maxPositions  Max positions to evaluate before returning (default: all)
  */
 export async function extractPuzzlesFromGame(
   pgn: string,
   userId: string,
-  playerUsername?: string
-): Promise<PuzzleCandidate[]> {
+  playerUsername?: string,
+  startIdx = 0,
+  maxPositions = Infinity,
+): Promise<ExtractResult> {
   const gameUrl = extractGameUrl(pgn);
   const gameContext = extractGameContext(pgn, playerUsername);
   const positions = getPositionSequence(pgn);
 
-  console.log(`[extract] Game: ${gameUrl ?? "unknown"} | positions=${positions.length} | player=${playerUsername ?? "?"} | color=${gameContext.playerColor ?? "unknown"}`);
+  console.log(`[extract] Game: ${gameUrl ?? "unknown"} | positions=${positions.length} | start=${startIdx} | max=${maxPositions} | player=${playerUsername ?? "?"} | color=${gameContext.playerColor ?? "unknown"}`);
 
   if (positions.length < 5) {
     console.log(`[extract] Skipped — too few positions (${positions.length})`);
-    return [];
+    return { candidates: [], stoppedAt: positions.length, totalPositions: positions.length, complete: true };
   }
 
   // Determine which FEN turn corresponds to the player's moves
@@ -257,7 +272,19 @@ export async function extractPuzzlesFromGame(
   let skippedOpponentMoves = 0;
   let maxSwingSeen = 0;
 
-  for (let i = 0; i < positions.length; i++) {
+  // If resuming, we need the eval from the position before startIdx for swing detection.
+  // Evaluate position at startIdx-1 to seed prevCp/prevBestMove.
+  if (startIdx > 0 && startIdx < positions.length) {
+    const seedResult = await getBestMove(positions[startIdx - 1].fen);
+    if (seedResult) {
+      prevCp = seedResult.cp;
+      prevBestMove = seedResult.move;
+    }
+  }
+
+  const endIdx = Math.min(positions.length, startIdx + maxPositions);
+
+  for (let i = startIdx; i < endIdx; i++) {
     if (candidates.length >= MAX_PER_GAME) break;
 
     const { fen } = positions[i];
@@ -344,7 +371,10 @@ export async function extractPuzzlesFromGame(
     prevBestMove = result.move;
   }
 
-  console.log(`[extract] Summary: evaluated=${positionsEvaluated} engineFails=${engineFailures} skippedOpponent=${skippedOpponentMoves} maxSwing=${maxSwingSeen}cp puzzlesFound=${candidates.length} threshold=${BLUNDER_THRESHOLD}cp`);
+  const stoppedAt = Math.min(endIdx, positions.length);
+  const complete = stoppedAt >= positions.length || candidates.length >= MAX_PER_GAME;
 
-  return candidates;
+  console.log(`[extract] Summary: evaluated=${positionsEvaluated} engineFails=${engineFailures} skippedOpponent=${skippedOpponentMoves} maxSwing=${maxSwingSeen}cp puzzlesFound=${candidates.length} stoppedAt=${stoppedAt}/${positions.length} complete=${complete}`);
+
+  return { candidates, stoppedAt, totalPositions: positions.length, complete };
 }

@@ -59,7 +59,7 @@ export async function importGamesForUser(userId: string): Promise<ImportResult> 
 
   // Helper: deduplicate and insert puzzle candidates
   async function insertCandidates(
-    candidates: Awaited<ReturnType<typeof extractPuzzlesFromGame>>
+    candidates: import("./extractPuzzles").PuzzleCandidate[]
   ): Promise<number> {
     let inserted = 0;
     for (const candidate of candidates) {
@@ -130,8 +130,8 @@ export async function importGamesForUser(userId: string): Promise<ImportResult> 
         if (puzzlesImported >= remaining) break;
         gamesProcessed++;
         try {
-          const candidates = await extractPuzzlesFromGame(pgn, userId, user.chessComUsername ?? undefined);
-          await insertCandidates(candidates);
+          const result = await extractPuzzlesFromGame(pgn, userId, user.chessComUsername ?? undefined);
+          await insertCandidates(result.candidates);
         } catch (err) {
           errors.push(`Chess.com extraction failed: ${String(err)}`);
         }
