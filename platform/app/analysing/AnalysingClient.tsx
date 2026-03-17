@@ -48,7 +48,7 @@ export default function AnalysingClient({ platform, username, libraryPuzzleId, l
     try {
       const pgns: string[] = [];
       const now = new Date();
-      for (let i = 0; i < 3 && pgns.length < MAX_GAMES; i++) {
+      for (let i = 0; i < 6 && pgns.length < MAX_GAMES; i++) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
         const year = d.getFullYear();
         const month = String(d.getMonth() + 1).padStart(2, "0");
@@ -58,7 +58,7 @@ export default function AnalysingClient({ platform, username, libraryPuzzleId, l
           const data = await res.json();
           const games = (data.games ?? []) as Array<{ pgn?: string; rated?: boolean }>;
           for (const g of [...games].reverse()) {
-            if (g.rated && g.pgn) { pgns.push(g.pgn); if (pgns.length >= MAX_GAMES) break; }
+            if (g.pgn) { pgns.push(g.pgn); if (pgns.length >= MAX_GAMES) break; }
           }
         } catch { }
       }
