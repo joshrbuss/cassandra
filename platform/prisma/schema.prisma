@@ -61,7 +61,7 @@ model Puzzle {
   playerColor      String?
   createdAt     DateTime @default(now())
 
-  sourceUser User?           @relation(fields: [sourceUserId], references: [id])
+  sourceUser User?           @relation(fields: [sourceUserId], references: [id], onDelete: Cascade)
 
   @@index([ecoCode])
   @@index([eloRangeMin, eloRangeMax])
@@ -160,9 +160,9 @@ model Battle {
   createdAt   DateTime  @default(now())
   completedAt DateTime?
 
-  player1 User  @relation("BattlePlayer1", fields: [player1Id], references: [id])
-  player2 User? @relation("BattlePlayer2", fields: [player2Id], references: [id])
-  winner  User? @relation("BattleWinner", fields: [winnerId], references: [id])
+  player1 User  @relation("BattlePlayer1", fields: [player1Id], references: [id], onDelete: Cascade)
+  player2 User? @relation("BattlePlayer2", fields: [player2Id], references: [id], onDelete: SetNull)
+  winner  User? @relation("BattleWinner", fields: [winnerId], references: [id], onDelete: SetNull)
 
   @@index([status])
 }
@@ -180,7 +180,7 @@ model RawGame {
   createdAt     DateTime @default(now())
   processedAt   DateTime?
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, status])
   @@index([status])
