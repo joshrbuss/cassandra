@@ -6,6 +6,8 @@ import Link from "next/link";
 
 interface Props {
   platform: string;
+  libraryPuzzleId: string | null;
+  libraryPuzzleRating: number | null;
 }
 
 type Step = {
@@ -13,7 +15,7 @@ type Step = {
   status: "pending" | "active" | "done";
 };
 
-export default function AnalysingClient({ platform }: Props) {
+export default function AnalysingClient({ platform, libraryPuzzleId, libraryPuzzleRating }: Props) {
   const router = useRouter();
   const hasStarted = useRef(false);
 
@@ -31,6 +33,7 @@ export default function AnalysingClient({ platform }: Props) {
   const [firstPuzzleReady, setFirstPuzzleReady] = useState(false);
   const [noPuzzles, setNoPuzzles] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [analysingPhase, setAnalysingPhase] = useState(false); // true = show puzzle while analysing
 
   const doneCount = steps.filter((s) => s.status === "done").length;
   const progress = firstPuzzleReady || noPuzzles ? 100 : Math.round((doneCount / steps.length) * 80);
@@ -83,6 +86,7 @@ export default function AnalysingClient({ platform }: Props) {
       await delay(500);
 
       // ── Phase 2: Analyse games one at a time ──
+      setAnalysingPhase(true);
       setSteps((prev) => prev.map((s, i) =>
         i === 2 ? { ...s, status: "active", label: `Analysing game 1 of ${totalGames}...` } : s
       ));
@@ -127,6 +131,7 @@ export default function AnalysingClient({ platform }: Props) {
       }
 
       // Step 3 done
+      setAnalysingPhase(false);
       setSteps((prev) => prev.map((s, i) =>
         i === 2 ? { ...s, label: `Analysed ${analysed} games`, status: "done" } : s
       ));
@@ -218,7 +223,63 @@ export default function AnalysingClient({ platform }: Props) {
             Go to your home &rarr;
           </Link>
         </>
+      ) : analysingPhase && libraryPuzzleId ? (
+        /* ── Phase 2: Show puzzle while analysing ── */
+        <>
+          {/* Compact progress indicator at top */}
+          <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4 mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs text-gray-400 animate-pulse">
+                Cassandra is analysing your games... ({gamesAnalysed}/{gamesQueued})
+              </p>
+              <p className="text-xs text-[#c8942a] font-medium tabular-nums">
+                {puzzlesTotal} puzzle{puzzlesTotal !== 1 ? "s" : ""} found
+              </p>
+            </div>
+            <div className="w-full bg-[#333] rounded-full h-1.5 overflow-hidden">
+              <div
+                className="h-full bg-[#c8942a] rounded-full transition-all duration-700 ease-out"
+                style={{ width: gamesQueued > 0 ? `${Math.round((gamesAnalysed / gamesQueued) * 100)}%` : "0%" }}
+              />
+            </div>
+          </div>
+
+          {/* Library puzzle card */}
+          <div className="text-center mb-4">
+            <p className="text-sm text-gray-400">While you wait, try this puzzle</p>
+          </div>
+          <Link
+            href={`/puzzles/${libraryPuzzleId}`}
+            className="flex items-center justify-between bg-[#1a1a1a] border border-[#c8942a]/30 rounded-xl p-6 hover:bg-[#1a1a1a]/80 hover:border-[#c8942a] transition-colors mb-4"
+          >
+            <div>
+              <p className="font-semibold text-white mb-1">Solve a puzzle</p>
+              <p className="text-xs text-gray-400">
+                Rating {libraryPuzzleRating ?? "~1200"} — matched to your level
+              </p>
+            </div>
+            <span className="text-[#c8942a] font-bold text-2xl ml-4">&rarr;</span>
+          </Link>
+
+          {/* Ready banner */}
+          {firstPuzzleReady && (
+            <Link
+              href={firstPuzzleDest}
+              className="block w-full h-12 rounded-full bg-[#c8942a] text-white font-semibold hover:bg-[#b5852a] transition-colors shadow-lg shadow-[#c8942a]/20 text-sm text-center leading-[3rem]"
+            >
+              Your personal puzzles are ready! &rarr;
+            </Link>
+          )}
+
+          {error && (
+            <div className="text-center mt-6">
+              <p className="text-red-400 text-sm mb-3">{error}</p>
+              <a href="/home" className="text-[#c8942a] text-sm hover:underline">Go to dashboard</a>
+            </div>
+          )}
+        </>
       ) : (
+        /* ── Phase 1 / completion / no library puzzle ── */
         <>
           {/* Progress bar */}
           <div className="w-full bg-[#1a1a1a] rounded-full h-2 mb-8 overflow-hidden">

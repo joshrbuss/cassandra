@@ -19,20 +19,58 @@ interface ChessComArchiveResponse {
 }
 
 /**
- * Fetches rated games for a Chess.com user from the last 6 months.
- * Returns an array of PGN strings (one per game), capped at maxGames.
+ * Fetches rated games for a Chess.com user.
+ *
+ * @param since - If provided, only fetch months that overlap with this date.
+ *                If null, fetch ALL available monthly archives (first sync).
+ * @param maxGames - Cap on total games returned.
  */
 export async function fetchRecentGames(
   username: string,
-  maxGames = 200
+  maxGames = 500,
+  since?: Date | null
 ): Promise<string[]> {
   const now = new Date();
-  const months: { year: number; month: number }[] = [];
 
-  // Last 6 months
-  for (let i = 0; i < 6; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    months.push({ year: d.getFullYear(), month: d.getMonth() + 1 });
+  let months: { year: number; month: number }[];
+
+  if (since) {
+    // Incremental sync: only fetch months from `since` to now
+    months = [];
+    const d = new Date(since.getFullYear(), since.getMonth(), 1);
+    while (d <= now) {
+      months.push({ year: d.getFullYear(), month: d.getMonth() + 1 });
+      d.setMonth(d.getMonth() + 1);
+    }
+  } else {
+    // First sync: fetch ALL archives from the Chess.com archives endpoint
+    try {
+      const archivesRes = await fetch(
+        `${CHESSCOM_API}/pub/player/${encodeURIComponent(username)}/games/archives`,
+        { signal: AbortSignal.timeout(10_000) }
+      );
+      if (archivesRes.ok) {
+        const archivesData = (await archivesRes.json()) as { archives?: string[] };
+        // Archives are URLs like "https://api.chess.com/pub/player/username/games/2024/01"
+        months = (archivesData.archives ?? []).map((url) => {
+          const parts = url.split("/");
+          return { year: parseInt(parts[parts.length - 2], 10), month: parseInt(parts[parts.length - 1], 10) };
+        }).reverse(); // Most recent first
+      } else {
+        // Fallback: last 12 months
+        months = [];
+        for (let i = 0; i < 12; i++) {
+          const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+          months.push({ year: d.getFullYear(), month: d.getMonth() + 1 });
+        }
+      }
+    } catch {
+      months = [];
+      for (let i = 0; i < 12; i++) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        months.push({ year: d.getFullYear(), month: d.getMonth() + 1 });
+      }
+    }
   }
 
   const pgns: string[] = [];

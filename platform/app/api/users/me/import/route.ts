@@ -31,19 +31,22 @@ export async function POST(_req: NextRequest) {
 
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { lichessUsername: true, chessComUsername: true },
+    select: { lichessUsername: true, chessComUsername: true, lastSyncedAt: true },
   });
 
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
+  // First sync = no lastSyncedAt → fetch ALL games. Subsequent = incremental.
+  const since = user.lastSyncedAt ?? null;
+
   // Fetch PGNs from both platforms
   const allPgns: { pgn: string; platform: string }[] = [];
 
   if (user.lichessUsername) {
     try {
-      const pgns = await lichessGames(user.lichessUsername, 200);
+      const pgns = await lichessGames(user.lichessUsername, 500, since);
       for (const pgn of pgns) {
         allPgns.push({ pgn, platform: "lichess" });
       }
@@ -54,7 +57,7 @@ export async function POST(_req: NextRequest) {
 
   if (user.chessComUsername) {
     try {
-      const pgns = await chesscomGames(user.chessComUsername, 200);
+      const pgns = await chesscomGames(user.chessComUsername, 500, since);
       for (const pgn of pgns) {
         allPgns.push({ pgn, platform: "chesscom" });
       }

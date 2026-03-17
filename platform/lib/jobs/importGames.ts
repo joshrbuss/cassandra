@@ -36,7 +36,7 @@ export async function importGamesForUser(userId: string): Promise<ImportResult> 
   // 1. Fetch linked usernames
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { lichessUsername: true, chessComUsername: true },
+    select: { lichessUsername: true, chessComUsername: true, lastSyncedAt: true },
   });
 
   if (!user) return { userId, gamesProcessed, puzzlesImported, errors: ["User not found"] };
@@ -100,10 +100,12 @@ export async function importGamesForUser(userId: string): Promise<ImportResult> 
     return inserted;
   }
 
-  // 3. Lichess — fetch 200 games with eval annotations, extract fast (no Stockfish)
+  const since = user.lastSyncedAt ?? null;
+
+  // 3. Lichess — fetch games with eval annotations, extract fast (no Stockfish)
   if (user.lichessUsername && puzzlesImported < remaining) {
     try {
-      const pgns = await lichessGames(user.lichessUsername, 200);
+      const pgns = await lichessGames(user.lichessUsername, 500, since);
       for (const pgn of pgns) {
         if (puzzlesImported >= remaining) break;
         gamesProcessed++;
@@ -120,10 +122,10 @@ export async function importGamesForUser(userId: string): Promise<ImportResult> 
     }
   }
 
-  // 4. Chess.com — fetch 6 months, run Stockfish on every game (returns [] if engine unavailable)
+  // 4. Chess.com — run Stockfish on every game (returns [] if engine unavailable)
   if (user.chessComUsername && puzzlesImported < remaining) {
     try {
-      const pgns = await chesscomGames(user.chessComUsername, 200);
+      const pgns = await chesscomGames(user.chessComUsername, 500, since);
       for (const pgn of pgns) {
         if (puzzlesImported >= remaining) break;
         gamesProcessed++;

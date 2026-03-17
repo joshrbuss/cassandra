@@ -16,13 +16,16 @@ interface LichessGame {
 }
 
 /**
- * Fetches the most recent `count` rated games for a Lichess user.
- * Requests eval annotations (evals=true) so puzzle extraction can run
- * without Stockfish. Returns an array of PGN strings (one per game).
+ * Fetches rated games for a Lichess user.
+ *
+ * @param since - If provided, only fetch games after this date.
+ *                If null, fetch all available games (first sync).
+ * @param count - Max games to return.
  */
 export async function fetchRecentGames(
   username: string,
-  count = 200
+  count = 500,
+  since?: Date | null
 ): Promise<string[]> {
   const url = new URL(`${LICHESS_API}/api/games/user/${encodeURIComponent(username)}`);
   url.searchParams.set("max", String(count));
@@ -31,17 +34,18 @@ export async function fetchRecentGames(
   url.searchParams.set("clocks", "false");
   url.searchParams.set("evals", "true");  // include %eval annotations for blunder detection
   url.searchParams.set("rated", "true");
-  // Last 6 months — Lichess `since` is a Unix timestamp in milliseconds
-  const sixMonthsAgo = new Date();
-  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-  url.searchParams.set("since", String(sixMonthsAgo.getTime()));
+
+  if (since) {
+    // Incremental: only games after last sync
+    url.searchParams.set("since", String(since.getTime()));
+  }
+  // If no `since`, Lichess returns the most recent `count` games (all time)
 
   const res = await fetch(url.toString(), {
     headers: {
       Accept: "application/x-ndjson",
       "User-Agent": "CassandraChess/1.0",
     },
-    // 200 games is more data — allow more time
     signal: AbortSignal.timeout(60_000),
   });
 
@@ -60,8 +64,6 @@ export async function fetchRecentGames(
       const game: LichessGame = JSON.parse(trimmed);
       if (game.pgn) {
         let pgn = game.pgn;
-        // Ensure [Site] header is present so extractGameUrl() can pick up the URL.
-        // The NDJSON response includes game.id reliably even if the PGN header is missing.
         if (game.id && !pgn.includes("[Site ")) {
           pgn = `[Site "https://lichess.org/${game.id}"]\n${pgn}`;
         }
