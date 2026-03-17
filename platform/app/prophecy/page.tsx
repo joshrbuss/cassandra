@@ -12,18 +12,24 @@ export const metadata = {
 /**
  * Picks today's brilliant puzzle deterministically from LibraryPuzzle
  * using day-of-year as seed. All users see the same puzzle on a given UTC day.
+ *
+ * Lichess themes don't include "brilliantMove" — we use "sacrifice" (the real
+ * Lichess tag) with a rating floor of 1800 to surface impressive puzzles.
  */
 async function getDailyProphecyPuzzle() {
+  // Lichess uses "sacrifice" — not "brilliantMove" — as the theme tag
   const total = await prisma.libraryPuzzle.count({
-    where: { themes: { contains: "brilliantMove" } },
+    where: { themes: { contains: "sacrifice" }, rating: { gte: 1800 } },
   });
+  console.log(`[prophecy] Brilliant (sacrifice ≥1800) puzzle pool: ${total}`);
+
   if (total === 0) return null;
 
   const dayNumber = Math.floor(Date.now() / 86_400_000);
   const skipIdx = dayNumber % total;
 
   return prisma.libraryPuzzle.findFirst({
-    where: { themes: { contains: "brilliantMove" } },
+    where: { themes: { contains: "sacrifice" }, rating: { gte: 1800 } },
     orderBy: { id: "asc" },
     skip: skipIdx,
   });

@@ -1,15 +1,12 @@
 /**
  * Backfills subtype = 'brilliant' for all puzzles whose themes field contains
- * the Lichess "brilliantMove" tag.
- *
- * Also ensures enrich-openings already ran (eloRangeMin should be set). If not,
- * this script still runs safely — it only updates the subtype field.
+ * the Lichess "sacrifice" tag (Lichess does NOT use "brilliantMove").
  *
  * Usage:
  *   npx tsx scripts/tag-brilliant.ts
  *
  * Safe to re-run — only processes puzzles where subtype != 'brilliant' AND
- * themes contains 'brilliantMove'.
+ * themes contains 'sacrifice'.
  */
 
 import { PrismaClient } from "@prisma/client";
@@ -17,12 +14,11 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Counting puzzles with brilliantMove theme...");
+  console.log("Counting puzzles with sacrifice theme...");
 
-  // Prisma/SQLite uses LIKE for contains — find candidates first, then update in batch
   const candidates = await prisma.puzzle.findMany({
     where: {
-      themes: { contains: "brilliantMove" },
+      themes: { contains: "sacrifice" },
       NOT: { subtype: "brilliant" },
     },
     select: { id: true },

@@ -32,7 +32,7 @@ export const LICHESS_THEME_MAP: Record<Tactic, string> = {
   sacrifice: "sacrifice",
   deflection: "deflection",
   zwischenzug: "zwischenzug",
-  brilliant: "brilliant",
+  brilliant: "sacrifice",
 };
 
 export const TACTIC_LABELS: Record<Tactic, string> = {

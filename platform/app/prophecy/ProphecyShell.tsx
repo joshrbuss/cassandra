@@ -56,9 +56,10 @@ const THEME_LABELS: Record<string, string> = {
 
 function getThemeExplanation(themes: string): string {
   const tags = themes.split(/\s+/);
-  // Skip generic tags, find the most interesting one
+  // Skip generic/length tags, find the most interesting tactic
+  const skipTags = new Set(["short", "long", "oneMove", "veryLong", "middlegame", "endgame", "opening", "crushing", "advantage", "mate"]);
   for (const tag of tags) {
-    if (tag === "brilliantMove" || tag === "short" || tag === "long" || tag === "oneMove") continue;
+    if (skipTags.has(tag)) continue;
     if (THEME_LABELS[tag]) return THEME_LABELS[tag];
   }
   return "A brilliant tactical idea";
