@@ -414,12 +414,10 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* ── Ad slot (free users only) ── */}
-        {!user?.isPaid && (
-          <div className="mb-6">
-            <AdSlot slot="1234567890" />
-          </div>
-        )}
+        {/* ── Ad slot / paid thank-you ── */}
+        <div className="mb-6">
+          <AdSlot slot="1234567890" isPaid={!!user?.isPaid} />
+        </div>
 
         {/* ── Coming soon ── */}
         <div className="mt-6">

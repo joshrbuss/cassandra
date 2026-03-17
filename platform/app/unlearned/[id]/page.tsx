@@ -77,11 +77,9 @@ export default async function UnlearnedPuzzlePage({ params }: PageProps) {
         stripeLink={paidUser?.isPaid ? null : (stripeLink ?? null)}
         footerText={t("dashboard.footer")}
       />
-      {!paidUser?.isPaid && (
-        <div className="max-w-[500px] mx-auto px-4 py-4">
-          <AdSlot slot="1234567890" />
-        </div>
-      )}
+      <div className="max-w-[500px] mx-auto px-4 py-4">
+        <AdSlot slot="1234567890" isPaid={!!paidUser?.isPaid} />
+      </div>
     </main>
   );
 }

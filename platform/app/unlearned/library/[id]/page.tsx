@@ -97,11 +97,9 @@ export default async function LibraryPuzzlePage({ params }: PageProps) {
           solutionMoves={puzzle.solutionMoves}
         />
 
-        {!paidUser?.isPaid && (
-          <div className="mt-4">
-            <AdSlot slot="1234567890" />
-          </div>
-        )}
+        <div className="mt-4">
+          <AdSlot slot="1234567890" isPaid={!!paidUser?.isPaid} />
+        </div>
 
         <div className="mt-6 flex items-center justify-between">
           <Link
