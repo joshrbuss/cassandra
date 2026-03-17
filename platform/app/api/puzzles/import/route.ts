@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { puzzles } = body;
+  console.log(`[import] Received ${Array.isArray(puzzles) ? puzzles.length : 0} puzzle candidates`);
   if (!Array.isArray(puzzles) || puzzles.length === 0) {
     return NextResponse.json({ imported: 0 });
   }
@@ -53,6 +54,7 @@ export async function POST(req: NextRequest) {
   const existingCount = await prisma.puzzle.count({
     where: { sourceUserId: userId, source: "user_import" },
   });
+  console.log(`[import] User ${userId} has ${existingCount} existing puzzles (cap: ${MAX_PERSONAL_PUZZLES})`);
 
   if (existingCount >= MAX_PERSONAL_PUZZLES) {
     return NextResponse.json({ imported: 0, capped: true });
@@ -60,16 +62,27 @@ export async function POST(req: NextRequest) {
 
   const remaining = MAX_PERSONAL_PUZZLES - existingCount;
   let imported = 0;
+  let firstPuzzleId: string | null = null;
+  let skippedMissing = 0;
+  let skippedDup = 0;
+  let skippedError = 0;
 
   for (const puzzle of puzzles.slice(0, remaining)) {
-    if (!puzzle.fen || !puzzle.solvingFen || !puzzle.solutionMoves || !puzzle.id) continue;
+    if (!puzzle.fen || !puzzle.solvingFen || !puzzle.solutionMoves || !puzzle.id) {
+      skippedMissing++;
+      console.log(`[import] Skipped puzzle — missing fields: id=${!!puzzle.id} fen=${!!puzzle.fen} solvingFen=${!!puzzle.solvingFen} solutionMoves=${!!puzzle.solutionMoves}`);
+      continue;
+    }
 
     // Deduplicate by solvingFen (same position shouldn't become two puzzles)
     const dup = await prisma.puzzle.findFirst({
       where: { solvingFen: puzzle.solvingFen },
       select: { id: true },
     });
-    if (dup) continue;
+    if (dup) {
+      skippedDup++;
+      continue;
+    }
 
     try {
       await prisma.puzzle.create({
@@ -94,10 +107,13 @@ export async function POST(req: NextRequest) {
         },
       });
       imported++;
-    } catch {
-      // Skip on unique constraint or other DB error (e.g. duplicate id)
+      if (!firstPuzzleId) firstPuzzleId = puzzle.id;
+    } catch (err) {
+      skippedError++;
+      console.error(`[import] Failed to create puzzle ${puzzle.id}:`, err);
     }
   }
 
-  return NextResponse.json({ imported });
+  console.log(`[import] Result: imported=${imported}, skippedMissing=${skippedMissing}, skippedDup=${skippedDup}, skippedError=${skippedError}`);
+  return NextResponse.json({ imported, firstPuzzleId });
 }
