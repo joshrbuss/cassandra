@@ -47,25 +47,35 @@ export default function AnalysingClient({ platform, username, libraryPuzzleId, l
   async function runPipeline() {
     try {
       const pgns: string[] = [];
-      const now = new Date();
-      for (let i = 0; i < 6 && pgns.length < MAX_GAMES; i++) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, "0");
+
+      // Fetch the list of available archive URLs from Chess.com
+      const archivesUrl = `https://api.chess.com/pub/player/${encodeURIComponent(username)}/games/archives`;
+      console.log(`[Chess.com] Fetching archives: ${archivesUrl}`);
+      const archivesRes = await fetch(archivesUrl);
+      console.log(`[Chess.com] Archives response status: ${archivesRes.status}`);
+      if (!archivesRes.ok) { setNoPuzzles(true); return; }
+      const archivesData = await archivesRes.json();
+      const archives: string[] = archivesData.archives ?? [];
+      console.log(`[Chess.com] Found ${archives.length} archive months`);
+
+      // Take the most recent archives (up to 6 months), newest first
+      const recentArchives = archives.slice(-6).reverse();
+
+      for (const archiveUrl of recentArchives) {
+        if (pgns.length >= MAX_GAMES) break;
         try {
-          const url = `https://api.chess.com/pub/player/${encodeURIComponent(username)}/games/${year}/${month}`;
-          console.log(`[Chess.com] Fetching: ${url}`);
-          const res = await fetch(url);
-          console.log(`[Chess.com] ${year}/${month} response status: ${res.status}`);
+          console.log(`[Chess.com] Fetching: ${archiveUrl}`);
+          const res = await fetch(archiveUrl);
+          console.log(`[Chess.com] ${archiveUrl} response status: ${res.status}`);
           if (!res.ok) continue;
           const data = await res.json();
           const games = (data.games ?? []) as Array<{ pgn?: string; rated?: boolean }>;
-          console.log(`[Chess.com] ${year}/${month}: ${games.length} games returned, ${games.filter(g => g.pgn).length} with PGN`);
+          console.log(`[Chess.com] ${archiveUrl}: ${games.length} games returned, ${games.filter(g => g.pgn).length} with PGN`);
           for (const g of [...games].reverse()) {
             if (g.pgn) { pgns.push(g.pgn); if (pgns.length >= MAX_GAMES) break; }
           }
         } catch (err) {
-          console.error(`[Chess.com] ${year}/${month} fetch error:`, err);
+          console.error(`[Chess.com] ${archiveUrl} fetch error:`, err);
         }
       }
 
