@@ -1,13 +1,15 @@
 /**
- * GET /api/cron/analyse-games
+ * GET/POST /api/cron/analyse-games
  *
  * Background cron job that processes pending RawGames left over after the
  * foreground /analysing page finishes (which only handles the first 10-20 games).
  *
- * Runs every 5 minutes via Vercel Cron. Processes games in chunks within the
- * function time limit, then exits so the next invocation picks up where it left off.
+ * Runs every 5 minutes via Vercel Cron (GET). Can also be triggered manually:
  *
- * Protected by CRON_SECRET header.
+ *   curl -X POST https://your-domain/api/cron/analyse-games \
+ *        -H "Authorization: Bearer <CRON_SECRET>"
+ *
+ * Protected by CRON_SECRET header (x-cron-secret or Authorization: Bearer).
  */
 
 import { type NextRequest, NextResponse } from "next/server";
@@ -39,7 +41,7 @@ function isAuthorized(req: NextRequest): boolean {
   return provided === secret;
 }
 
-export async function GET(req: NextRequest) {
+async function handleRequest(req: NextRequest) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -177,4 +179,14 @@ export async function GET(req: NextRequest) {
     puzzlesCreated,
     durationMs: Date.now() - startMs,
   });
+}
+
+/** Vercel Cron calls GET */
+export async function GET(req: NextRequest) {
+  return handleRequest(req);
+}
+
+/** Manual trigger via curl -X POST */
+export async function POST(req: NextRequest) {
+  return handleRequest(req);
 }
