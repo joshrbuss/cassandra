@@ -16,6 +16,7 @@ import SocialLinks from "@/components/SocialLinks";
 import { countryToFlag } from "@/lib/countryFlag";
 import CookiePreferencesLink from "@/components/CookiePreferencesLink";
 import GutterAds from "@/components/GutterAds";
+import BackgroundAnalysisBar from "@/components/BackgroundAnalysisBar";
 
 export const metadata = {
   title: "Home — Cassandra Chess",
@@ -240,6 +241,9 @@ export default async function DashboardPage() {
             <p className="text-xs text-[#666] mt-1">{t("dashboard.statReferrals")}</p>
           </div>
         </div>
+
+        {/* ── Background analysis progress ── */}
+        <BackgroundAnalysisBar />
 
         {/* ── Lose streak warning ── */}
         {daysAway > 2 && (

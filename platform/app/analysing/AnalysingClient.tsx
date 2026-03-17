@@ -15,6 +15,13 @@ type Step = {
   status: "pending" | "active" | "done";
 };
 
+/** Foreground limits: analyse up to this many games initially */
+const INITIAL_GAME_LIMIT = 10;
+/** If fewer than this many puzzles after INITIAL_GAME_LIMIT, extend to MAX_FOREGROUND_GAMES */
+const PUZZLE_THRESHOLD = 20;
+/** Absolute max games to analyse in the foreground */
+const MAX_FOREGROUND_GAMES = 20;
+
 export default function AnalysingClient({ platform, libraryPuzzleId, libraryPuzzleRating }: Props) {
   const router = useRouter();
   const hasStarted = useRef(false);
@@ -94,9 +101,26 @@ export default function AnalysingClient({ platform, libraryPuzzleId, libraryPuzz
       let analysed = 0;
       let totalPuzzles = 0;
       let firstPuzzleId: string | null = data.firstPuzzleId ?? null;
+      let allDone = false;
 
       let consecutiveErrors = 0;
       while (true) {
+        // ── Foreground limits ──
+        // Stop once we have enough puzzles
+        if (totalPuzzles >= PUZZLE_THRESHOLD) {
+          console.log(`[analysing] Reached ${totalPuzzles} puzzles — stopping foreground analysis`);
+          break;
+        }
+        // After INITIAL_GAME_LIMIT games, only continue if we haven't hit the puzzle threshold
+        if (analysed >= INITIAL_GAME_LIMIT && totalPuzzles >= PUZZLE_THRESHOLD) {
+          break;
+        }
+        // Hard cap: never analyse more than MAX_FOREGROUND_GAMES in the foreground
+        if (analysed >= MAX_FOREGROUND_GAMES) {
+          console.log(`[analysing] Reached ${MAX_FOREGROUND_GAMES} games — stopping foreground analysis`);
+          break;
+        }
+
         let analyseData: {
           done: boolean;
           gameId: string | null;
@@ -111,7 +135,6 @@ export default function AnalysingClient({ platform, libraryPuzzleId, libraryPuzz
             console.error(`[analysing] analyse-game returned ${analyseRes.status}`);
             consecutiveErrors++;
             if (consecutiveErrors >= 3) {
-              // Skip remaining games after 3 consecutive failures
               console.error("[analysing] 3 consecutive failures, stopping analysis");
               break;
             }
@@ -141,13 +164,15 @@ export default function AnalysingClient({ platform, libraryPuzzleId, libraryPuzz
           // Update step label with progress
           const remaining = analyseData.remaining;
           if (remaining > 0) {
+            const displayTotal = Math.min(totalGames, MAX_FOREGROUND_GAMES);
             setSteps((prev) => prev.map((s, i) =>
-              i === 2 ? { ...s, label: `Analysing game ${analysed + 1} of ${totalGames}... (${totalPuzzles} puzzles found)` } : s
+              i === 2 ? { ...s, label: `Analysing game ${analysed + 1} of ${displayTotal}... (${totalPuzzles} puzzles found)` } : s
             ));
           }
         }
 
         if (analyseData.done || !analyseData.gameId) {
+          allDone = true;
           if (analyseData.firstPuzzleId) firstPuzzleId = analyseData.firstPuzzleId;
           break;
         }
@@ -155,8 +180,9 @@ export default function AnalysingClient({ platform, libraryPuzzleId, libraryPuzz
 
       // Step 3 done
       setAnalysingPhase(false);
+      const remainingGamesMsg = !allDone ? ` — remaining games will finish in the background` : "";
       setSteps((prev) => prev.map((s, i) =>
-        i === 2 ? { ...s, label: `Analysed ${analysed} games`, status: "done" } : s
+        i === 2 ? { ...s, label: `Analysed ${analysed} games${remainingGamesMsg}`, status: "done" } : s
       ));
 
       await delay(400);
@@ -166,8 +192,12 @@ export default function AnalysingClient({ platform, libraryPuzzleId, libraryPuzz
         i === 3 ? { ...s, status: "active" } : s
       ));
       await delay(500);
+
+      const puzzleMsg = totalPuzzles >= PUZZLE_THRESHOLD
+        ? `Your first ${totalPuzzles} puzzles are ready!`
+        : `Built ${totalPuzzles} puzzles from your games`;
       setSteps((prev) => prev.map((s, i) =>
-        i === 3 ? { ...s, label: `Built ${totalPuzzles} puzzles from your games`, status: "done" } : s
+        i === 3 ? { ...s, label: puzzleMsg, status: "done" } : s
       ));
 
       await delay(500);
