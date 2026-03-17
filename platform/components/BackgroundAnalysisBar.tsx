@@ -11,7 +11,7 @@ interface AnalysisStatus {
 }
 
 /** Poll interval in ms */
-const POLL_INTERVAL = 30_000;
+const POLL_INTERVAL = 60_000;
 
 export default function BackgroundAnalysisBar() {
   const [status, setStatus] = useState<AnalysisStatus | null>(null);

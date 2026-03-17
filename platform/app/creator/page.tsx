@@ -155,6 +155,7 @@ export default async function CreatorPage() {
                   <img
                     src={profile.avatar}
                     alt={`${username}'s Chess.com profile picture`}
+                    loading="lazy"
                     className="w-20 h-20 rounded-full border-4 border-white shadow object-cover"
                   />
                 ) : (

@@ -30,18 +30,36 @@ const PROMOS = [
 
 /**
  * Vertical 160x600 house ad columns that fill the desktop gutters
- * on either side of the main content. Hidden on mobile/tablet.
- * Rotates between three promotional messages every 8 seconds.
+ * on either side of the main content. Hidden on mobile/tablet via CSS.
+ * Only starts the rotation interval on xl+ screens to avoid wasted
+ * JS execution on mobile.
  */
 export default function GutterAds({ stripeLink }: GutterAdsProps) {
   const [idx, setIdx] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
+    // Only run rotation on xl+ screens (1280px+)
+    const mq = window.matchMedia("(min-width: 1280px)");
+    setIsDesktop(mq.matches);
+
+    function handleChange(e: MediaQueryListEvent) {
+      setIsDesktop(e.matches);
+    }
+    mq.addEventListener("change", handleChange);
+    return () => mq.removeEventListener("change", handleChange);
+  }, []);
+
+  useEffect(() => {
+    if (!isDesktop) return;
     const timer = setInterval(() => {
       setIdx((prev) => (prev + 1) % PROMOS.length);
     }, 8000);
     return () => clearInterval(timer);
-  }, []);
+  }, [isDesktop]);
+
+  // Don't render anything on mobile/tablet — saves DOM nodes + event listeners
+  if (!isDesktop) return null;
 
   const promo = PROMOS[idx];
   const href = promo.href === "__stripe__"
@@ -65,11 +83,11 @@ export default function GutterAds({ stripeLink }: GutterAdsProps) {
   return (
     <>
       {/* Left gutter */}
-      <div className="hidden xl:fixed xl:block xl:left-4 xl:top-1/2 xl:-translate-y-1/2 z-30">
+      <div className="fixed left-4 top-1/2 -translate-y-1/2 z-30">
         <Link href={href}>{card}</Link>
       </div>
       {/* Right gutter */}
-      <div className="hidden xl:fixed xl:block xl:right-4 xl:top-1/2 xl:-translate-y-1/2 z-30">
+      <div className="fixed right-4 top-1/2 -translate-y-1/2 z-30">
         <Link href={href}>{card}</Link>
       </div>
     </>

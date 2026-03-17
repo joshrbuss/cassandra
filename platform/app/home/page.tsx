@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { getTotalImportedCount } from "@/lib/jobs/importGames";
 import LockedFeature from "@/components/LockedFeature";
 import EmailSignup from "@/components/marketing/EmailSignup";
@@ -10,13 +11,16 @@ import AdSlot from "@/components/AdSlot";
 import SyncButton from "@/components/SyncButton";
 import ReferralBar from "@/components/ReferralBar";
 import { ensureReferralCode } from "@/lib/referral";
-import EmailPopup from "@/components/EmailPopup";
 import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
 import SocialLinks from "@/components/SocialLinks";
 import { countryToFlag } from "@/lib/countryFlag";
 import CookiePreferencesLink from "@/components/CookiePreferencesLink";
-import GutterAds from "@/components/GutterAds";
+import LazySection from "@/components/LazySection";
 import BackgroundAnalysisBar from "@/components/BackgroundAnalysisBar";
+
+// Lazy-load heavy client components that aren't needed for initial render
+const GutterAds = dynamic(() => import("@/components/GutterAds"), { ssr: false });
+const EmailPopup = dynamic(() => import("@/components/EmailPopup"), { ssr: false });
 
 export const metadata = {
   title: "Home — Cassandra Chess",
@@ -341,136 +345,140 @@ export default async function DashboardPage() {
         </Link>
         */}
 
-        {/* ── Two leaderboard panels ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-          {/* Streak leaders */}
-          <div className="bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4">
-            <h3 className="text-sm font-semibold text-[#1a1a1a] mb-3">{t("dashboard.streakLeaders")}</h3>
-            {streakLeaders.length === 0 ? (
-              <p className="text-xs text-[#777] italic">{t("dashboard.noStreaksYet")}</p>
-            ) : (
-              <table className="w-full text-xs">
-                <tbody>
-                  {(() => {
-                    let rank = 0;
-                    let prev: number | null = null;
-                    return streakLeaders.map((entry) => {
-                    if (entry.currentStreak !== prev) { rank++; prev = entry.currentStreak; }
-                    const isOwner = entry.id === session.userId;
-                    return (
-                      <tr key={entry.id} className={isOwner ? "bg-[#c8942a]/10" : ""}>
-                        <td className="py-1.5 pr-2 text-[#666] w-6">
-                          {rank === 1 ? "\uD83D\uDC51" : `#${rank}`}
-                        </td>
-                        <td className="py-1.5 pr-2">
-                          <span className={`font-medium ${isOwner ? "text-[#1a1a1a]" : "text-[#1a1a1a]"}`}>
-                            {displayName(entry)}
-                          </span>
-                          {countryToFlag(entry.country) && (
-                            <span className="ml-1">{countryToFlag(entry.country)}</span>
-                          )}
-                          {isOwner && (
-                            <span className="ml-1.5 text-[9px] font-bold text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-1.5 py-0.5 rounded-full uppercase">
-                              {t("dashboard.owner")}
+        {/* ── Two leaderboard panels (lazy loaded — below the fold) ── */}
+        <LazySection minHeight={200}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+            {/* Streak leaders */}
+            <div className="bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4">
+              <h3 className="text-sm font-semibold text-[#1a1a1a] mb-3">{t("dashboard.streakLeaders")}</h3>
+              {streakLeaders.length === 0 ? (
+                <p className="text-xs text-[#777] italic">{t("dashboard.noStreaksYet")}</p>
+              ) : (
+                <table className="w-full text-xs">
+                  <tbody>
+                    {(() => {
+                      let rank = 0;
+                      let prev: number | null = null;
+                      return streakLeaders.map((entry) => {
+                      if (entry.currentStreak !== prev) { rank++; prev = entry.currentStreak; }
+                      const isOwner = entry.id === session.userId;
+                      return (
+                        <tr key={entry.id} className={isOwner ? "bg-[#c8942a]/10" : ""}>
+                          <td className="py-1.5 pr-2 text-[#666] w-6">
+                            {rank === 1 ? "\uD83D\uDC51" : `#${rank}`}
+                          </td>
+                          <td className="py-1.5 pr-2">
+                            <span className={`font-medium ${isOwner ? "text-[#1a1a1a]" : "text-[#1a1a1a]"}`}>
+                              {displayName(entry)}
                             </span>
-                          )}
-                        </td>
-                        <td className="py-1.5 text-right font-mono font-bold text-[#c8942a]">
-                          {entry.currentStreak}d
-                        </td>
-                      </tr>
-                    );
-                  });
-                  })()}
-                </tbody>
-              </table>
-            )}
-          </div>
+                            {countryToFlag(entry.country) && (
+                              <span className="ml-1">{countryToFlag(entry.country)}</span>
+                            )}
+                            {isOwner && (
+                              <span className="ml-1.5 text-[9px] font-bold text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-1.5 py-0.5 rounded-full uppercase">
+                                {t("dashboard.owner")}
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-1.5 text-right font-mono font-bold text-[#c8942a]">
+                            {entry.currentStreak}d
+                          </td>
+                        </tr>
+                      );
+                    });
+                    })()}
+                  </tbody>
+                </table>
+              )}
+            </div>
 
-          {/* Top referrers */}
-          <div className="bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4">
-            <h3 className="text-sm font-semibold text-[#1a1a1a] mb-3">{t("dashboard.topReferrers")}</h3>
-            {referralLeaders.length === 0 ? (
-              <p className="text-xs text-[#777] italic">{t("dashboard.noReferralsYet")}</p>
-            ) : (
-              <table className="w-full text-xs">
-                <tbody>
-                  {(() => {
-                    let rank = 0;
-                    let prev: number | null = null;
-                    return referralLeaders.map((entry) => {
-                    if (entry.referralCount !== prev) { rank++; prev = entry.referralCount; }
-                    const isOwner = entry.id === session.userId;
-                    return (
-                      <tr key={entry.id} className={isOwner ? "bg-[#c8942a]/10" : ""}>
-                        <td className="py-1.5 pr-2 text-[#666] w-6">
-                          {rank === 1 ? "\u2B50" : `#${rank}`}
-                        </td>
-                        <td className="py-1.5 pr-2">
-                          <span className="font-medium text-[#1a1a1a]">
-                            {displayName(entry)}
-                          </span>
-                          {countryToFlag(entry.country) && (
-                            <span className="ml-1">{countryToFlag(entry.country)}</span>
-                          )}
-                          {isOwner && (
-                            <span className="ml-1.5 text-[9px] font-bold text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-1.5 py-0.5 rounded-full uppercase">
-                              {t("dashboard.owner")}
+            {/* Top referrers */}
+            <div className="bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4">
+              <h3 className="text-sm font-semibold text-[#1a1a1a] mb-3">{t("dashboard.topReferrers")}</h3>
+              {referralLeaders.length === 0 ? (
+                <p className="text-xs text-[#777] italic">{t("dashboard.noReferralsYet")}</p>
+              ) : (
+                <table className="w-full text-xs">
+                  <tbody>
+                    {(() => {
+                      let rank = 0;
+                      let prev: number | null = null;
+                      return referralLeaders.map((entry) => {
+                      if (entry.referralCount !== prev) { rank++; prev = entry.referralCount; }
+                      const isOwner = entry.id === session.userId;
+                      return (
+                        <tr key={entry.id} className={isOwner ? "bg-[#c8942a]/10" : ""}>
+                          <td className="py-1.5 pr-2 text-[#666] w-6">
+                            {rank === 1 ? "\u2B50" : `#${rank}`}
+                          </td>
+                          <td className="py-1.5 pr-2">
+                            <span className="font-medium text-[#1a1a1a]">
+                              {displayName(entry)}
                             </span>
-                          )}
-                        </td>
-                        <td className="py-1.5 text-right font-mono font-bold text-[#c8942a]">
-                          {entry.referralCount}
-                        </td>
-                      </tr>
-                    );
-                  });
-                  })()}
-                </tbody>
-              </table>
-            )}
+                            {countryToFlag(entry.country) && (
+                              <span className="ml-1">{countryToFlag(entry.country)}</span>
+                            )}
+                            {isOwner && (
+                              <span className="ml-1.5 text-[9px] font-bold text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-1.5 py-0.5 rounded-full uppercase">
+                                {t("dashboard.owner")}
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-1.5 text-right font-mono font-bold text-[#c8942a]">
+                            {entry.referralCount}
+                          </td>
+                        </tr>
+                      );
+                    });
+                    })()}
+                  </tbody>
+                </table>
+              )}
+            </div>
           </div>
-        </div>
+        </LazySection>
 
         {/* ── Ad slot / paid thank-you ── */}
         <div className="mb-6">
           <AdSlot slot="1234567890" isPaid={!!user?.isPaid} />
         </div>
 
-        {/* ── Coming soon ── */}
-        <div className="mt-6">
-          <h2 className="text-xs font-semibold text-[#999] uppercase tracking-wide mb-3">{t("dashboard.comingSoon")}</h2>
-          <div className="grid grid-cols-1 gap-3">
-            <LockedFeature
-              emoji="🧠"
-              name="Smart Review"
-              description="Puzzles you struggle with resurface at the perfect moment. Powered by spaced repetition."
-            />
-            <LockedFeature
-              emoji="⏪"
-              name="The Echo"
-              description="Replay any position from your game history and explore alternatives"
-            />
-            <LockedFeature
-              emoji="🎯"
-              name="The Scales"
-              description="Guess what rating played each move — train your intuition"
-            />
-            <LockedFeature
-              emoji="📖"
-              name="Opening Trainer"
-              description="Master your opening repertoire with targeted drills"
-            />
-            <LockedFeature
-              emoji="⚔️"
-              name="The Trials"
-              description="Real-time rated puzzle races with leaderboards and ELO"
-            />
+        {/* ── Coming soon (lazy loaded — well below the fold) ── */}
+        <LazySection minHeight={300}>
+          <div className="mt-6">
+            <h2 className="text-xs font-semibold text-[#999] uppercase tracking-wide mb-3">{t("dashboard.comingSoon")}</h2>
+            <div className="grid grid-cols-1 gap-3">
+              <LockedFeature
+                emoji="🧠"
+                name="Smart Review"
+                description="Puzzles you struggle with resurface at the perfect moment. Powered by spaced repetition."
+              />
+              <LockedFeature
+                emoji="⏪"
+                name="The Echo"
+                description="Replay any position from your game history and explore alternatives"
+              />
+              <LockedFeature
+                emoji="🎯"
+                name="The Scales"
+                description="Guess what rating played each move — train your intuition"
+              />
+              <LockedFeature
+                emoji="📖"
+                name="Opening Trainer"
+                description="Master your opening repertoire with targeted drills"
+              />
+              <LockedFeature
+                emoji="⚔️"
+                name="The Trials"
+                description="Real-time rated puzzle races with leaderboards and ELO"
+              />
+            </div>
+            <div className="mt-4">
+              <EmailSignup source="coming_soon_unified" headline={t("comingSoon.notifyHeadline")} cta={t("comingSoon.notifyCta")} />
+            </div>
           </div>
-          <div className="mt-4">
-            <EmailSignup source="coming_soon_unified" headline={t("comingSoon.notifyHeadline")} cta={t("comingSoon.notifyCta")} />
-          </div>
-        </div>
+        </LazySection>
 
         {/* ── Footer ── */}
         <footer className="mt-10 pt-6 border-t border-[#333] text-center space-y-3 bg-[#0e0e0e] rounded-xl p-6">
