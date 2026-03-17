@@ -314,6 +314,20 @@ export default async function DashboardPage() {
           </span>
         </Link>
 
+        {/* ── Learn articles ── */}
+        <Link
+          href="/learn"
+          className="flex items-center justify-between bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-5 mb-4 hover:border-[#c8942a] transition-colors"
+        >
+          <div>
+            <p className="font-semibold text-[#1a1a1a]">Learn Chess Tactics</p>
+            <p className="text-xs text-[#777] mt-1">
+              Free guides on puzzles, blunder training, and pattern recognition
+            </p>
+          </div>
+          <span className="text-[#999] text-xl ml-3">&#8594;</span>
+        </Link>
+
         {/* MVP: hidden until library UX is improved
         <Link
           href="/puzzles"

@@ -29,8 +29,39 @@ export default async function LearnPage() {
   const t = getT(locale);
   const articles = getLocalizedArticles(locale);
 
+  const siteUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://cassandrachess.com";
+
+  // JSON-LD for the article collection (ItemList)
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Learn Chess Tactics",
+    description: "Free chess tactic guides covering puzzles, blunder training, personalised tactics, and more.",
+    url: `${siteUrl}/learn`,
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: articles.map((a, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `${siteUrl}/learn/${a.slug}`,
+        name: a.title,
+      })),
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Cassandra Chess",
+      url: siteUrl,
+    },
+  };
+
   return (
     <main className="min-h-screen bg-white">
+      {/* JSON-LD structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* Obsidian header */}
       <header className="bg-[#0e0e0e] px-4 sm:px-6 py-12">
         <div className="max-w-3xl mx-auto">

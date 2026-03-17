@@ -75,7 +75,7 @@ function LeaderboardTable({ entries, label }: { entries: LeaderboardEntry[]; lab
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={entry.avatarUrl}
-                        alt=""
+                        alt={`${entry.displayName}'s avatar`}
                         className="w-6 h-6 rounded-full object-cover"
                       />
                     ) : (
@@ -142,7 +142,7 @@ function ReferralTable({ entries }: { entries: (ReferralLeaderboardEntry & { cou
                   <div className="flex items-center gap-2">
                     {entry.avatarUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={entry.avatarUrl} alt="" className="w-6 h-6 rounded-full object-cover" />
+                      <img src={entry.avatarUrl} alt={`${entry.displayName}'s avatar`} className="w-6 h-6 rounded-full object-cover" />
                     ) : (
                       <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-500">
                         {entry.displayName[0]?.toUpperCase() ?? "?"}
