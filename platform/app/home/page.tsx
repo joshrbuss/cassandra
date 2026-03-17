@@ -15,6 +15,7 @@ import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
 import SocialLinks from "@/components/SocialLinks";
 import { countryToFlag } from "@/lib/countryFlag";
 import CookiePreferencesLink from "@/components/CookiePreferencesLink";
+import GutterAds from "@/components/GutterAds";
 
 export const metadata = {
   title: "Home — Cassandra Chess",
@@ -421,6 +422,9 @@ export default async function DashboardPage() {
           </p>
         </footer>
       </div>
+
+      {/* Desktop gutter house ads (free users only) */}
+      {!user?.isPaid && <GutterAds stripeLink={stripeLink} />}
 
       {/* Email capture popup — shown once per session for users without email who have solved 3+ puzzles */}
       <EmailPopup
