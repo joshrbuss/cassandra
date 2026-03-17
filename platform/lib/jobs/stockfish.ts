@@ -18,30 +18,44 @@ export interface EngineResult {
   cp: number;
 }
 
+let cachedCommand: string[] | null | undefined;
+
 function getEngineCommand(): string[] | null {
-  // 1. System binary
+  if (cachedCommand !== undefined) return cachedCommand;
+
+  // 1. System binary (check known paths — do NOT trust bare "stockfish" on PATH
+  //    because on Vercel serverless it doesn't exist and spawn will fail silently)
   const systemPaths = [
     "/opt/homebrew/bin/stockfish",
     "/usr/local/bin/stockfish",
     "/usr/bin/stockfish",
-    "stockfish", // on PATH
   ];
   for (const p of systemPaths) {
-    if (p === "stockfish") {
-      // Trust PATH; we'll let spawn fail gracefully if not found
-      return [p];
+    if (existsSync(p)) {
+      cachedCommand = [p];
+      return cachedCommand;
     }
-    if (existsSync(p)) return [p];
   }
 
-  // 2. npm package fallback
-  const npmJs = join(
-    process.cwd(),
-    "node_modules/stockfish/bin/stockfish-18-lite-single.js"
-  );
-  if (existsSync(npmJs)) return ["node", npmJs];
+  // 2. npm package — works on Vercel serverless via `node <path>`
+  //    Try multiple base paths: process.cwd(), __dirname-relative, /var/task (Vercel)
+  const sfFile = "node_modules/stockfish/bin/stockfish-18-lite-single.js";
+  const candidates = [
+    join(process.cwd(), sfFile),
+    join(__dirname, "..", "..", sfFile),           // lib/jobs/../../node_modules
+    join("/var/task", sfFile),                      // Vercel serverless
+  ];
+  for (const c of candidates) {
+    if (existsSync(c)) {
+      cachedCommand = ["node", c];
+      console.log(`[stockfish] Using npm package: ${c}`);
+      return cachedCommand;
+    }
+  }
 
-  return null;
+  // 3. Last resort: try bare "stockfish" on PATH (local dev)
+  cachedCommand = ["stockfish"];
+  return cachedCommand;
 }
 
 const ANALYSIS_DEPTH = 12;
