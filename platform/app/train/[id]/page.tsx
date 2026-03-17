@@ -55,6 +55,10 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
   const cookieStore = await cookies();
   const t = getT(resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value));
   const stripeLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
+  const paidUser = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: { isPaid: true },
+  });
 
   return (
     <main className="min-h-screen bg-white">
@@ -69,7 +73,7 @@ export default async function TrainPuzzlePage({ params }: PageProps) {
         evalCp={puzzle.evalCp}
         playerColor={puzzle.playerColor}
         gameUrl={puzzle.gameUrl}
-        stripeLink={stripeLink ?? null}
+        stripeLink={paidUser?.isPaid ? null : (stripeLink ?? null)}
         footerText={t("dashboard.footer")}
       />
     </main>
