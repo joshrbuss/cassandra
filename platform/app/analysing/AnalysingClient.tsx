@@ -20,37 +20,36 @@ export default function AnalysingClient({ platform }: Props) {
   const [steps, setSteps] = useState<Step[]>([
     { label: `Connected to ${platform}`, status: "done" },
     { label: "Fetching recent games...", status: "active" },
-    { label: "Identifying your blunders...", status: "pending" },
-    { label: "Building puzzles from your games...", status: "pending" },
+    { label: "Analysing games with Stockfish...", status: "pending" },
+    { label: "Building puzzles from your blunders...", status: "pending" },
   ]);
 
-  const [gamesFound, setGamesFound] = useState<number | null>(null);
-  const [puzzlesBuilt, setPuzzlesBuilt] = useState<number | null>(null);
-  const [firstPuzzleReady, setFirstPuzzleReady] = useState(false);
+  const [gamesQueued, setGamesQueued] = useState(0);
+  const [gamesAnalysed, setGamesAnalysed] = useState(0);
+  const [puzzlesTotal, setPuzzlesTotal] = useState(0);
   const [firstPuzzleDest, setFirstPuzzleDest] = useState("/unlearned");
+  const [firstPuzzleReady, setFirstPuzzleReady] = useState(false);
   const [noPuzzles, setNoPuzzles] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Progress: 0-100
   const doneCount = steps.filter((s) => s.status === "done").length;
   const progress = firstPuzzleReady || noPuzzles ? 100 : Math.round((doneCount / steps.length) * 80);
 
   useEffect(() => {
     if (hasStarted.current) return;
     hasStarted.current = true;
-    runImport();
+    runPipeline();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function runImport() {
+  async function runPipeline() {
     try {
-      // Step 2: Fetching games
+      // ── Phase 1: Fetch games (fast) ──
       const res = await fetch("/api/users/me/import", { method: "POST" });
       const data = (await res.json()) as {
         ok?: boolean;
-        gamesProcessed?: number;
-        puzzlesImported?: number;
-        errors?: string[];
+        gamesQueued?: number;
+        gamesTotal?: number;
         firstPuzzleId?: string | null;
       };
 
@@ -59,49 +58,101 @@ export default function AnalysingClient({ platform }: Props) {
         return;
       }
 
-      // Step 2 done: found X games
-      setGamesFound(data.gamesProcessed ?? 0);
+      const totalGames = data.gamesTotal ?? data.gamesQueued ?? 0;
+      setGamesQueued(totalGames);
+
+      // Step 2 done: fetched games
       setSteps((prev) => prev.map((s, i) =>
-        i === 1 ? { ...s, label: `Found ${data.gamesProcessed ?? 0} recent games`, status: "done" } : s
+        i === 1 ? { ...s, label: `Found ${totalGames} games to analyse`, status: "done" } : s
       ));
 
-      await delay(600);
+      if (totalGames === 0) {
+        // Check if user already has puzzles from a previous sync
+        if (data.firstPuzzleId) {
+          setFirstPuzzleDest(`/unlearned/${data.firstPuzzleId}`);
+          setFirstPuzzleReady(true);
+          setSteps((prev) => prev.map((s, i) =>
+            i >= 2 ? { ...s, status: "done", label: i === 2 ? "No new games to analyse" : "Up to date" } : s
+          ));
+        } else {
+          setNoPuzzles(true);
+        }
+        return;
+      }
 
-      // Step 3: identifying blunders
+      await delay(500);
+
+      // ── Phase 2: Analyse games one at a time ──
       setSteps((prev) => prev.map((s, i) =>
-        i === 2 ? { ...s, status: "active" } : s
-      ));
-      await delay(800);
-      setSteps((prev) => prev.map((s, i) =>
-        i === 2 ? { ...s, label: "Identified your blunders", status: "done" } : s
+        i === 2 ? { ...s, status: "active", label: `Analysing game 1 of ${totalGames}...` } : s
       ));
 
-      // Step 4: building puzzles
+      let analysed = 0;
+      let totalPuzzles = 0;
+      let firstPuzzleId: string | null = data.firstPuzzleId ?? null;
+
+      while (true) {
+        const analyseRes = await fetch("/api/puzzles/analyse-game", { method: "POST" });
+        const analyseData = (await analyseRes.json()) as {
+          done: boolean;
+          gameId: string | null;
+          puzzlesFound: number;
+          remaining: number;
+          firstPuzzleId: string | null;
+        };
+
+        if (analyseData.gameId) {
+          analysed++;
+          totalPuzzles += analyseData.puzzlesFound;
+          setGamesAnalysed(analysed);
+          setPuzzlesTotal(totalPuzzles);
+
+          if (analyseData.firstPuzzleId) {
+            firstPuzzleId = analyseData.firstPuzzleId;
+          }
+
+          // Update step label with progress
+          const remaining = analyseData.remaining;
+          if (remaining > 0) {
+            setSteps((prev) => prev.map((s, i) =>
+              i === 2 ? { ...s, label: `Analysing game ${analysed + 1} of ${totalGames}... (${totalPuzzles} puzzles found)` } : s
+            ));
+          }
+        }
+
+        if (analyseData.done || !analyseData.gameId) {
+          if (analyseData.firstPuzzleId) firstPuzzleId = analyseData.firstPuzzleId;
+          break;
+        }
+      }
+
+      // Step 3 done
+      setSteps((prev) => prev.map((s, i) =>
+        i === 2 ? { ...s, label: `Analysed ${analysed} games`, status: "done" } : s
+      ));
+
       await delay(400);
+
+      // Step 4: puzzles built
       setSteps((prev) => prev.map((s, i) =>
         i === 3 ? { ...s, status: "active" } : s
       ));
-      await delay(600);
-
-      const count = data.puzzlesImported ?? 0;
-      setPuzzlesBuilt(count);
+      await delay(500);
       setSteps((prev) => prev.map((s, i) =>
-        i === 3 ? { ...s, label: `Built ${count} puzzles from your games`, status: "done" } : s
+        i === 3 ? { ...s, label: `Built ${totalPuzzles} puzzles from your games`, status: "done" } : s
       ));
 
       await delay(500);
 
-      if (count === 0) {
-        // No puzzles found — show fallback screen
+      if (totalPuzzles === 0 && !firstPuzzleId) {
         setNoPuzzles(true);
         return;
       }
 
-      const dest = data.firstPuzzleId ? `/unlearned/${data.firstPuzzleId}` : "/unlearned";
+      const dest = firstPuzzleId ? `/unlearned/${firstPuzzleId}` : "/unlearned";
       setFirstPuzzleDest(dest);
       setFirstPuzzleReady(true);
 
-      // Auto-redirect after a moment
       await delay(2000);
       router.push(dest);
     } catch {
@@ -130,7 +181,6 @@ export default function AnalysingClient({ platform }: Props) {
       {noPuzzles ? (
         <>
           <div className="space-y-3 mb-8">
-            {/* Cassandra's Prophecy */}
             <Link
               href="/prophecy"
               className="flex items-center justify-between bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 hover:bg-[#222] transition-colors"
@@ -141,8 +191,6 @@ export default function AnalysingClient({ platform }: Props) {
               </div>
               <span className="text-[#c8942a] text-sm ml-3">&rarr;</span>
             </Link>
-
-            {/* The Echo */}
             <Link
               href="/echo"
               className="flex items-center justify-between bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 hover:bg-[#222] transition-colors"
@@ -153,8 +201,6 @@ export default function AnalysingClient({ platform }: Props) {
               </div>
               <span className="text-gray-500 text-sm ml-3">&rarr;</span>
             </Link>
-
-            {/* The Scales */}
             <Link
               href="/scales"
               className="flex items-center justify-between bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 hover:bg-[#222] transition-colors opacity-60"
@@ -168,11 +214,7 @@ export default function AnalysingClient({ platform }: Props) {
               </span>
             </Link>
           </div>
-
-          <Link
-            href="/home"
-            className="block text-center text-[#c8942a] text-sm hover:underline"
-          >
+          <Link href="/home" className="block text-center text-[#c8942a] text-sm hover:underline">
             Go to your home &rarr;
           </Link>
         </>
@@ -187,7 +229,7 @@ export default function AnalysingClient({ platform }: Props) {
           </div>
 
           {/* Steps */}
-          <div className="space-y-4 mb-10">
+          <div className="space-y-4 mb-6">
             {steps.map((step, i) => (
               <div key={i} className="flex items-center gap-3">
                 <StepIcon status={step.status} />
@@ -206,6 +248,14 @@ export default function AnalysingClient({ platform }: Props) {
             ))}
           </div>
 
+          {/* Running totals during analysis */}
+          {gamesAnalysed > 0 && !firstPuzzleReady && (
+            <div className="bg-[#1a1a1a] rounded-xl p-4 mb-6 text-center">
+              <p className="text-[#c8942a] font-bold text-lg tabular-nums">{puzzlesTotal}</p>
+              <p className="text-xs text-gray-500">puzzles found so far</p>
+            </div>
+          )}
+
           {/* CTA when done */}
           {firstPuzzleReady && (
             <button
@@ -219,10 +269,7 @@ export default function AnalysingClient({ platform }: Props) {
           {error && (
             <div className="text-center mt-6">
               <p className="text-red-400 text-sm mb-3">{error}</p>
-              <a
-                href="/home"
-                className="text-[#c8942a] text-sm hover:underline"
-              >
+              <a href="/home" className="text-[#c8942a] text-sm hover:underline">
                 Go to dashboard
               </a>
             </div>

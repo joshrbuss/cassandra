@@ -129,6 +129,7 @@ model User {
   createdAt         DateTime  @default(now())
 
   puzzles          Puzzle[]
+  rawGames         RawGame[]
   battlesAsPlayer1 Battle[]  @relation("BattlePlayer1")
   battlesAsPlayer2 Battle[]  @relation("BattlePlayer2")
   battlesWon       Battle[]  @relation("BattleWinner")
@@ -159,6 +160,25 @@ model Battle {
   player2 User? @relation("BattlePlayer2", fields: [player2Id], references: [id])
   winner  User? @relation("BattleWinner", fields: [winnerId], references: [id])
 
+  @@index([status])
+}
+
+/// Raw game PGN queued for Stockfish analysis (chunked pipeline)
+model RawGame {
+  id            String   @id @default(cuid())
+  userId        String
+  platform      String   // "chesscom" | "lichess"
+  pgn           String
+  gameUrl       String?
+  /// "pending" | "processing" | "done" | "failed"
+  status        String   @default("pending")
+  puzzlesFound  Int      @default(0)
+  createdAt     DateTime @default(now())
+  processedAt   DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, status])
   @@index([status])
 }
 

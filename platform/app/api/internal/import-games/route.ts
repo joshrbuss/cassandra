@@ -95,11 +95,62 @@ export async function POST(req: NextRequest) {
   const totalImported = results.reduce((s, r) => s + r.puzzlesImported, 0);
   const totalProcessed = results.reduce((s, r) => s + r.gamesProcessed, 0);
 
+  // Also process any abandoned RawGames (user left /analysing page mid-analysis)
+  let rawGamesProcessed = 0;
+  if (Date.now() - startMs < MAX_RUNTIME_MS) {
+    const { extractPuzzlesFromGame } = await import("@/lib/jobs/extractPuzzles");
+    const { extractPuzzlesFromAnnotatedPgn } = await import("@/lib/jobs/extractPuzzlesFromAnnotatedPgn");
+
+    const staleGames = await prisma.rawGame.findMany({
+      where: {
+        status: { in: ["pending", "processing"] },
+        // Only process games that have been waiting for >5 minutes (abandoned)
+        createdAt: { lt: new Date(Date.now() - 5 * 60 * 1000) },
+      },
+      include: { user: { select: { lichessUsername: true, chessComUsername: true } } },
+      take: 10,
+    });
+
+    for (const game of staleGames) {
+      if (Date.now() - startMs > MAX_RUNTIME_MS) break;
+
+      await prisma.rawGame.update({ where: { id: game.id }, data: { status: "processing" } });
+
+      try {
+        const playerUsername = game.platform === "lichess"
+          ? game.user.lichessUsername
+          : game.user.chessComUsername;
+        const hasEvals = game.pgn.includes("[%eval");
+        const candidates = hasEvals
+          ? await extractPuzzlesFromAnnotatedPgn(game.pgn, game.userId, playerUsername ?? undefined)
+          : await extractPuzzlesFromGame(game.pgn, game.userId, playerUsername ?? undefined);
+
+        let found = 0;
+        for (const c of candidates) {
+          const exists = await prisma.puzzle.findFirst({ where: { solvingFen: c.solvingFen }, select: { id: true } });
+          if (exists) continue;
+          await prisma.puzzle.create({ data: { ...c } });
+          found++;
+        }
+
+        await prisma.rawGame.update({
+          where: { id: game.id },
+          data: { status: "done", processedAt: new Date(), puzzlesFound: found },
+        });
+        rawGamesProcessed++;
+      } catch (err) {
+        await prisma.rawGame.update({ where: { id: game.id }, data: { status: "failed", processedAt: new Date() } });
+        console.error(`[cron] Failed to process RawGame ${game.id}: ${err}`);
+      }
+    }
+  }
+
   return NextResponse.json({
     ok: true,
     usersProcessed: results.length,
     gamesProcessed: totalProcessed,
     puzzlesImported: totalImported,
+    rawGamesProcessed,
     durationMs: Date.now() - startMs,
     results,
   });

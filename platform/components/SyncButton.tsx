@@ -34,28 +34,65 @@ export default function SyncButton({ lastSyncedAt, isFirstSync = false }: Props)
     setStatus("loading");
     setResultMessage(null);
     try {
+      // Phase 1: fetch games
       const res = await fetch("/api/users/me/import", { method: "POST" });
       const data = (await res.json()) as {
         ok?: boolean;
-        gamesProcessed?: number;
-        puzzlesImported?: number;
+        gamesQueued?: number;
+        gamesTotal?: number;
         error?: string;
       };
       if (!res.ok || !data.ok) {
         setResultMessage(t("sync.failed"));
         setResultType("error");
-      } else {
-        const { gamesProcessed = 0, puzzlesImported = 0 } = data;
-        if (puzzlesImported > 0 && isFirstSync) {
-          setResultMessage(t("sync.firstSync", { puzzles: puzzlesImported, games: gamesProcessed }));
-        } else if (puzzlesImported > 0) {
-          setResultMessage(t("sync.newFound", { puzzles: puzzlesImported, games: gamesProcessed }));
-        } else {
-          setResultMessage(t("sync.noBlunders", { games: gamesProcessed }));
-        }
+        setStatus("result");
+        timerRef.current = setTimeout(() => { setStatus("idle"); setResultMessage(null); }, 5000);
+        return;
+      }
+
+      const totalGames = data.gamesTotal ?? data.gamesQueued ?? 0;
+      if (totalGames === 0) {
+        setResultMessage(t("sync.noBlunders", { games: 0 }));
         setResultType("success");
         setSyncedAt(new Date().toISOString());
+        setStatus("result");
+        timerRef.current = setTimeout(() => { setStatus("idle"); setResultMessage(null); }, 5000);
+        return;
       }
+
+      // Phase 2: analyse games one at a time
+      setResultMessage(t("sync.syncing"));
+      let totalPuzzles = 0;
+      let gamesAnalysed = 0;
+
+      while (true) {
+        const analyseRes = await fetch("/api/puzzles/analyse-game", { method: "POST" });
+        const analyseData = (await analyseRes.json()) as {
+          done: boolean;
+          gameId: string | null;
+          puzzlesFound: number;
+          remaining: number;
+        };
+
+        if (analyseData.gameId) {
+          gamesAnalysed++;
+          totalPuzzles += analyseData.puzzlesFound;
+          setResultMessage(`${gamesAnalysed}/${totalGames} games... ${totalPuzzles} puzzles`);
+        }
+
+        if (analyseData.done || !analyseData.gameId) break;
+      }
+
+      // Show final result
+      if (totalPuzzles > 0 && isFirstSync) {
+        setResultMessage(t("sync.firstSync", { puzzles: totalPuzzles, games: gamesAnalysed }));
+      } else if (totalPuzzles > 0) {
+        setResultMessage(t("sync.newFound", { puzzles: totalPuzzles, games: gamesAnalysed }));
+      } else {
+        setResultMessage(t("sync.noBlunders", { games: gamesAnalysed }));
+      }
+      setResultType("success");
+      setSyncedAt(new Date().toISOString());
     } catch {
       setResultMessage(t("sync.failed"));
       setResultType("error");
