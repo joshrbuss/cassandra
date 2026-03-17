@@ -174,7 +174,7 @@ async function updateStreak(userId: string): Promise<void> {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { currentStreak: true, longestStreak: true, lastPuzzleDate: true },
+      select: { currentStreak: true, longestStreak: true, currentLoseStreak: true, longestLoseStreak: true, lastPuzzleDate: true },
     });
     if (!user) {
       console.log(`[streak] user not found: ${userId}`);
@@ -194,12 +194,27 @@ async function updateStreak(userId: string): Promise<void> {
     const newLongest = Math.max(newStreak, user.longestStreak);
 
     console.log(`[streak] userId=${userId} lastPuzzleDate=${user.lastPuzzleDate} today=${today} consecutive=${isConsecutive} ${user.currentStreak}→${newStreak} longest=${newLongest}`);
+    // When user returns after missing days, record the lose streak before resetting
+    let loseStreakUpdate = {};
+    if (!isConsecutive && user.lastPuzzleDate) {
+      const lastDate = new Date(user.lastPuzzleDate);
+      const todayDate = new Date(today);
+      const daysMissed = Math.floor((todayDate.getTime() - lastDate.getTime()) / 86_400_000) - 1;
+      if (daysMissed > 0) {
+        const newLongestLose = Math.max(daysMissed, user.longestLoseStreak);
+        loseStreakUpdate = { currentLoseStreak: 0, longestLoseStreak: newLongestLose };
+      }
+    } else {
+      loseStreakUpdate = { currentLoseStreak: 0 };
+    }
+
     await prisma.user.update({
       where: { id: userId },
       data: {
         currentStreak: newStreak,
         longestStreak: newLongest,
         lastPuzzleDate: today,
+        ...loseStreakUpdate,
       },
     });
     console.log(`[streak] ✓ updated`);

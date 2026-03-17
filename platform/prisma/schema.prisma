@@ -110,6 +110,10 @@ model User {
   battleRating      Int       @default(1200)
   currentStreak     Int       @default(0)
   longestStreak     Int       @default(0)
+  /// Consecutive days without solving a puzzle
+  currentLoseStreak Int       @default(0)
+  /// Longest recorded lose streak
+  longestLoseStreak Int       @default(0)
   /// Last date the user solved a puzzle (YYYY-MM-DD UTC)
   lastPuzzleDate    String?
   /// Last time games were synced for this user

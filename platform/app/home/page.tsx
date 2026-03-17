@@ -44,6 +44,7 @@ export default async function DashboardPage() {
       elo: true,
       currentStreak: true,
       lastSyncedAt: true,
+      lastPuzzleDate: true,
       referralCode: true,
       referralCount: true,
       email: true,
@@ -111,6 +112,12 @@ export default async function DashboardPage() {
     todayAttempts.length > 0
       ? Math.round((todaySolved / todayAttempts.length) * 100)
       : null;
+
+  // Compute days away (lose streak)
+  const todayDate = new Date(todayStr);
+  const daysAway = user?.lastPuzzleDate
+    ? Math.floor((todayDate.getTime() - new Date(user.lastPuzzleDate).getTime()) / 86_400_000)
+    : 0;
 
   const referralCode = user ? await ensureReferralCode(user.id) : "";
   const stripeLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
@@ -233,6 +240,24 @@ export default async function DashboardPage() {
             <p className="text-xs text-[#666] mt-1">{t("dashboard.statReferrals")}</p>
           </div>
         </div>
+
+        {/* ── Lose streak warning ── */}
+        {daysAway > 2 && (
+          <div className="bg-[#0e0e0e] border border-[#c8942a]/30 rounded-xl p-4 mb-4 flex items-center gap-3">
+            <span className="text-2xl shrink-0">&#9888;&#65039;</span>
+            <div>
+              <p className="text-[#c8942a] font-semibold text-sm">
+                You&apos;ve been away {daysAway} days
+              </p>
+              <p className="text-gray-500 text-xs mt-0.5">
+                Your blunders are waiting — get back to training!
+              </p>
+            </div>
+            <Link href="/unlearned" className="ml-auto shrink-0 text-xs font-medium text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-3 py-1.5 rounded-full hover:bg-[#c8942a]/20 transition-colors">
+              Train now
+            </Link>
+          </div>
+        )}
 
         {/* ── Referral progress bar ── */}
         {referralCode && (
