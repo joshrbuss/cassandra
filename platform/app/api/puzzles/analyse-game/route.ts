@@ -55,6 +55,7 @@ export async function POST(_req: NextRequest) {
   });
 
   let puzzlesFound = 0;
+  const startMs = Date.now();
 
   try {
     // Check puzzle cap
@@ -62,6 +63,8 @@ export async function POST(_req: NextRequest) {
       where: { sourceUserId: session.userId, source: "user_import" },
     });
     const remaining = MAX_PERSONAL_PUZZLES - existingCount;
+
+    console.log(`[analyse-game] Game ${game.id}: platform=${game.platform} existing=${existingCount} remaining=${remaining}`);
 
     if (remaining <= 0) {
       await prisma.rawGame.update({
@@ -80,9 +83,12 @@ export async function POST(_req: NextRequest) {
 
       // Extract puzzles — use annotated extractor for Lichess (has %eval), Stockfish for Chess.com
       const hasEvals = game.pgn.includes("[%eval");
+      console.log(`[analyse-game] Game ${game.id}: hasEvals=${hasEvals} player=${playerUsername} extracting...`);
+      const extractStart = Date.now();
       const candidates = hasEvals
         ? await extractPuzzlesFromAnnotatedPgn(game.pgn, session.userId, playerUsername ?? undefined)
         : await extractPuzzlesFromGame(game.pgn, session.userId, playerUsername ?? undefined);
+      console.log(`[analyse-game] Game ${game.id}: ${candidates.length} candidates in ${Date.now() - extractStart}ms`);
 
       // Insert with dedup
       for (const candidate of candidates) {
@@ -125,7 +131,7 @@ export async function POST(_req: NextRequest) {
       });
     }
   } catch (err) {
-    console.error(`[analyse-game] Failed for game ${game.id}: ${err}`);
+    console.error(`[analyse-game] Failed for game ${game.id} after ${Date.now() - startMs}ms: ${err}`);
     await prisma.rawGame.update({
       where: { id: game.id },
       data: { status: "failed", processedAt: new Date() },

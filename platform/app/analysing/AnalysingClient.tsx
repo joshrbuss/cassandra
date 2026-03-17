@@ -95,15 +95,38 @@ export default function AnalysingClient({ platform, libraryPuzzleId, libraryPuzz
       let totalPuzzles = 0;
       let firstPuzzleId: string | null = data.firstPuzzleId ?? null;
 
+      let consecutiveErrors = 0;
       while (true) {
-        const analyseRes = await fetch("/api/puzzles/analyse-game", { method: "POST" });
-        const analyseData = (await analyseRes.json()) as {
+        let analyseData: {
           done: boolean;
           gameId: string | null;
           puzzlesFound: number;
           remaining: number;
           firstPuzzleId: string | null;
         };
+
+        try {
+          const analyseRes = await fetch("/api/puzzles/analyse-game", { method: "POST" });
+          if (!analyseRes.ok) {
+            console.error(`[analysing] analyse-game returned ${analyseRes.status}`);
+            consecutiveErrors++;
+            if (consecutiveErrors >= 3) {
+              // Skip remaining games after 3 consecutive failures
+              console.error("[analysing] 3 consecutive failures, stopping analysis");
+              break;
+            }
+            await delay(2000);
+            continue;
+          }
+          analyseData = await analyseRes.json();
+          consecutiveErrors = 0;
+        } catch (fetchErr) {
+          console.error("[analysing] analyse-game fetch error:", fetchErr);
+          consecutiveErrors++;
+          if (consecutiveErrors >= 3) break;
+          await delay(2000);
+          continue;
+        }
 
         if (analyseData.gameId) {
           analysed++;

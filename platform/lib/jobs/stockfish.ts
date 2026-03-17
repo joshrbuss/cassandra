@@ -2,13 +2,17 @@
  * Stockfish UCI wrapper for Node.js.
  *
  * Resolution order:
- *  1. System `stockfish` binary on PATH (fastest, most reliable)
+ *  1. System `stockfish` binary at known paths (macOS/Linux)
  *  2. npm `stockfish` package – spawns via `node ./node_modules/stockfish/bin/stockfish-18-lite-single.js`
- *  3. Returns null if neither is available (puzzle extraction degrades gracefully)
+ *  3. Bare "stockfish" on PATH (last resort, local dev only)
+ *
+ * On Vercel serverless, only option 2 works. Requires:
+ *  - `serverExternalPackages: ["stockfish"]` in next.config.ts
+ *  - The WASM file co-located with the JS entry point
  */
 
 import { spawn } from "child_process";
-import { existsSync } from "fs";
+import { existsSync, readdirSync } from "fs";
 import { join } from "path";
 
 export interface EngineResult {
@@ -32,28 +36,61 @@ function getEngineCommand(): string[] | null {
   ];
   for (const p of systemPaths) {
     if (existsSync(p)) {
+      console.log(`[stockfish] Using system binary: ${p}`);
       cachedCommand = [p];
       return cachedCommand;
     }
   }
 
   // 2. npm package — works on Vercel serverless via `node <path>`
-  //    Try multiple base paths: process.cwd(), __dirname-relative, /var/task (Vercel)
-  const sfFile = "node_modules/stockfish/bin/stockfish-18-lite-single.js";
-  const candidates = [
-    join(process.cwd(), sfFile),
-    join(__dirname, "..", "..", sfFile),           // lib/jobs/../../node_modules
-    join("/var/task", sfFile),                      // Vercel serverless
+  //    Try multiple base paths and file names
+  const sfFiles = [
+    "node_modules/stockfish/bin/stockfish-18-lite-single.js",
+    "node_modules/stockfish/bin/stockfish.js",
   ];
-  for (const c of candidates) {
-    if (existsSync(c)) {
-      cachedCommand = ["node", c];
-      console.log(`[stockfish] Using npm package: ${c}`);
-      return cachedCommand;
+  const basePaths = [
+    process.cwd(),
+    join(__dirname, "..", ".."),              // lib/jobs/../../node_modules
+    "/var/task",                               // Vercel serverless
+    join(__dirname, "..", "..", "..", ".."),   // deeper traversal for bundled output
+  ];
+
+  console.log(`[stockfish] Searching npm package. cwd=${process.cwd()} __dirname=${__dirname}`);
+
+  for (const base of basePaths) {
+    for (const sf of sfFiles) {
+      const candidate = join(base, sf);
+      if (existsSync(candidate)) {
+        // Also verify the WASM file exists alongside
+        const wasmFile = candidate.replace(/\.js$/, ".wasm");
+        const wasmExists = existsSync(wasmFile);
+        console.log(`[stockfish] Found JS: ${candidate} (WASM: ${wasmExists ? "yes" : "MISSING"})`);
+        cachedCommand = ["node", candidate];
+        return cachedCommand;
+      }
     }
   }
 
-  // 3. Last resort: try bare "stockfish" on PATH (local dev)
+  // Log what we can see in node_modules for debugging
+  try {
+    const sfDir = join(process.cwd(), "node_modules/stockfish");
+    if (existsSync(sfDir)) {
+      const binDir = join(sfDir, "bin");
+      if (existsSync(binDir)) {
+        const files = readdirSync(binDir);
+        console.log(`[stockfish] bin/ contents: ${files.join(", ")}`);
+      } else {
+        console.log(`[stockfish] stockfish package exists but no bin/ directory`);
+      }
+    } else {
+      console.log(`[stockfish] stockfish package NOT found in node_modules`);
+    }
+  } catch (e) {
+    console.log(`[stockfish] Error listing node_modules: ${e}`);
+  }
+
+  // 3. Last resort: try bare "stockfish" on PATH (local dev only)
+  console.warn("[stockfish] No engine found via known paths or npm — falling back to bare PATH");
   cachedCommand = ["stockfish"];
   return cachedCommand;
 }
@@ -66,6 +103,7 @@ const ENGINE_TIMEOUT_MS = 10_000;
  * Returns null if no engine is available or on timeout.
  */
 let engineInitLogged = false;
+let engineCallCount = 0;
 
 export async function getBestMove(fen: string): Promise<EngineResult | null> {
   const cmd = getEngineCommand();
@@ -77,17 +115,21 @@ export async function getBestMove(fen: string): Promise<EngineResult | null> {
     return null;
   }
   if (!engineInitLogged) {
-    console.log(`[stockfish] Engine found: ${cmd.join(" ")}`);
+    console.log(`[stockfish] Engine command: ${cmd.join(" ")}`);
     engineInitLogged = true;
   }
+
+  engineCallCount++;
+  const callId = engineCallCount;
 
   return new Promise((resolve) => {
     let proc: ReturnType<typeof spawn>;
     try {
       proc = spawn(cmd[0], cmd.slice(1), {
-        stdio: ["pipe", "pipe", "ignore"],
+        stdio: ["pipe", "pipe", "pipe"],
       });
-    } catch {
+    } catch (err) {
+      console.error(`[stockfish] Spawn failed: ${err instanceof Error ? err.message : err}`);
       resolve(null);
       return;
     }
@@ -95,6 +137,7 @@ export async function getBestMove(fen: string): Promise<EngineResult | null> {
     let bestMove = "";
     let cp = 0;
     let done = false;
+    let gotAnyOutput = false;
 
     const finish = (result: EngineResult | null) => {
       if (!done) {
@@ -105,20 +148,26 @@ export async function getBestMove(fen: string): Promise<EngineResult | null> {
         } catch {
           // ignore
         }
+        if (!result && !gotAnyOutput) {
+          console.error(`[stockfish] Call #${callId}: No output received from engine (likely crash or WASM load failure)`);
+        }
         resolve(result);
       }
     };
 
-    const timeout = setTimeout(() => finish(null), ENGINE_TIMEOUT_MS);
+    const timeout = setTimeout(() => {
+      console.warn(`[stockfish] Call #${callId}: Timeout after ${ENGINE_TIMEOUT_MS}ms (gotOutput=${gotAnyOutput})`);
+      finish(null);
+    }, ENGINE_TIMEOUT_MS);
 
     let buf = "";
     proc.stdout!.on("data", (chunk: Buffer) => {
+      gotAnyOutput = true;
       buf += chunk.toString();
       const lines = buf.split("\n");
       buf = lines.pop() ?? "";
 
       for (const line of lines) {
-        // Track the best centipawn score and pv move from info lines
         if (line.startsWith("info") && line.includes("score cp")) {
           const cpMatch = line.match(/score cp (-?\d+)/);
           if (cpMatch) cp = parseInt(cpMatch[1], 10);
@@ -134,7 +183,23 @@ export async function getBestMove(fen: string): Promise<EngineResult | null> {
       }
     });
 
-    proc.on("error", () => finish(null));
+    // Capture stderr for WASM load errors
+    proc.stderr!.on("data", (chunk: Buffer) => {
+      const msg = chunk.toString().trim();
+      if (msg) console.error(`[stockfish] stderr: ${msg.substring(0, 200)}`);
+    });
+
+    proc.on("error", (err) => {
+      console.error(`[stockfish] Process error: ${err.message}`);
+      finish(null);
+    });
+
+    proc.on("exit", (code) => {
+      if (code !== null && code !== 0 && !done) {
+        console.error(`[stockfish] Process exited with code ${code}`);
+        finish(null);
+      }
+    });
 
     // Send UCI commands
     proc.stdin!.write("uci\n");
