@@ -1,13 +1,11 @@
 /**
  * POST /api/internal/reset-puzzles
  *
- * Admin endpoint: clears all user_import puzzles and re-queues games for re-analysis.
- * Protected by CRON_SECRET.
+ * Admin endpoint: full clean slate — deletes all user_import puzzles,
+ * all RawGame records, and resets lastSyncedAt so the next sync
+ * re-fetches ALL games from scratch.
  *
- * Steps:
- *  1. Delete all Puzzle records where source = "user_import"
- *  2. Reset all RawGame records to status = "pending"
- *  3. Reset lastSyncedAt for all users (so next sync re-fetches all games)
+ * Protected by CRON_SECRET.
  */
 
 import { type NextRequest, NextResponse } from "next/server";
@@ -19,14 +17,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // 1. Delete all user-imported puzzles
   const deletedPuzzles = await prisma.puzzle.deleteMany({
     where: { source: "user_import" },
   });
 
-  const resetGames = await prisma.rawGame.updateMany({
-    data: { status: "pending", puzzlesFound: 0, processedAt: null },
-  });
+  // 2. Delete all RawGame records (full wipe, not re-queue)
+  const deletedGames = await prisma.rawGame.deleteMany({});
 
+  // 3. Reset lastSyncedAt for all users so next sync fetches ALL games
   const resetUsers = await prisma.user.updateMany({
     where: {
       OR: [
@@ -40,7 +39,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     ok: true,
     puzzlesDeleted: deletedPuzzles.count,
-    gamesRequeued: resetGames.count,
+    gamesDeleted: deletedGames.count,
     usersReset: resetUsers.count,
   });
 }

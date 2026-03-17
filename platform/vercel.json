@@ -1,8 +1,8 @@
 {
   "crons": [
     {
-      "path": "/api/internal/import-games",
-      "schedule": "0 0 * * *"
+      "path": "/api/cron/sync-all-users",
+      "schedule": "0 3 * * *"
     },
     {
       "path": "/api/cron/analyse-games",
@@ -10,14 +10,17 @@
     }
   ],
   "functions": {
-    "app/api/internal/import-games/route.ts": {
+    "app/api/cron/sync-all-users/route.ts": {
       "maxDuration": 300
+    },
+    "app/api/cron/analyse-games/route.ts": {
+      "maxDuration": 60
     },
     "app/api/users/me/import/route.ts": {
       "maxDuration": 60
     },
-    "app/api/cron/analyse-games/route.ts": {
-      "maxDuration": 60
+    "app/api/internal/import-games/route.ts": {
+      "maxDuration": 300
     }
   }
 }
