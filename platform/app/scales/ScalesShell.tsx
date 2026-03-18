@@ -146,6 +146,16 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
     setPhase("evaluating");
 
     const results = await analyzePositionMultiPV(fen, 3);
+
+    // If fewer than 3 moves returned or any move has a mate score, skip this position
+    const hasMate = results.some((r) => Math.abs(r.cp) >= 20000);
+    if (results.length < 3 || hasMate) {
+      console.warn(`[Scales] Position unsuitable: ${results.length} moves, hasMate=${hasMate} — reloading`);
+      terminateEngine();
+      window.location.reload();
+      return;
+    }
+
     terminateEngine();
     setEngineMoves(results);
 
@@ -155,7 +165,7 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
 
     let pts = 0;
     for (let i = 0; i < 3; i++) {
-      if (i < engineOrder.length && userMoves[i] === engineOrder[i]) {
+      if (userMoves[i] === engineOrder[i]) {
         pts++;
       }
     }
@@ -164,6 +174,7 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
   }
 
   function formatCp(cp: number): string {
+    if (Math.abs(cp) >= 20000) return cp > 0 ? "+M" : "-M";
     if (cp >= 0) return `+${(cp / 100).toFixed(1)}`;
     return (cp / 100).toFixed(1);
   }

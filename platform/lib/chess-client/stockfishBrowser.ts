@@ -140,6 +140,9 @@ async function runMultiPVAnalysis(
 
   const sf = ensureWorker();
 
+  console.log(`[Stockfish MultiPV] Evaluating FEN: ${fen}`);
+  console.log(`[Stockfish MultiPV] Side to move: ${fen.split(" ")[1] === "w" ? "white" : "black"}`);
+
   return new Promise<EngineResult[]>((resolve) => {
     const pvResults = new Map<number, EngineResult>();
     let settled = false;
@@ -151,28 +154,49 @@ async function runMultiPVAnalysis(
       sf.removeEventListener("message", handler);
       // Reset MultiPV back to 1 for other callers
       sf.postMessage("setoption name MultiPV value 1");
+      console.log(`[Stockfish MultiPV] Results:`, results.map((r, i) => `PV${i+1}: ${r.move} (${r.cp}cp)`).join(", ") || "EMPTY");
       resolve(results);
     };
 
-    const timeout = setTimeout(() => finish([]), TIMEOUT_MS);
+    const timeout = setTimeout(() => {
+      console.warn(`[Stockfish MultiPV] Timeout after ${TIMEOUT_MS}ms`);
+      finish([]);
+    }, TIMEOUT_MS);
 
     const handler = (e: MessageEvent) => {
       const line = typeof e.data === "string" ? e.data : "";
+
       // Parse "info depth D multipv N score cp X ... pv MOVE ..."
-      if (line.includes("score cp") && line.includes("multipv")) {
+      // Also handle "score mate N" lines
+      if (line.includes("multipv") && (line.includes("score cp") || line.includes("score mate"))) {
         const depthMatch = line.match(/depth (\d+)/);
         const depth = depthMatch ? parseInt(depthMatch[1], 10) : 0;
         if (depth < DEPTH) return; // Only use final depth results
+
         const pvNum = line.match(/multipv (\d+)/);
-        const cpMatch = line.match(/score cp (-?\d+)/);
         const moveMatch = line.match(/\bpv ([a-h][1-8][a-h][1-8]\w?)/);
-        if (pvNum && cpMatch && moveMatch) {
-          pvResults.set(parseInt(pvNum[1], 10), {
-            move: moveMatch[1],
-            cp: parseInt(cpMatch[1], 10),
-          });
+        if (!pvNum || !moveMatch) return;
+
+        let cp: number;
+        const cpMatch = line.match(/score cp (-?\d+)/);
+        const mateMatch = line.match(/score mate (-?\d+)/);
+        if (cpMatch) {
+          cp = parseInt(cpMatch[1], 10);
+        } else if (mateMatch) {
+          // Encode mate as very large cp value (30000 = mate)
+          const mateIn = parseInt(mateMatch[1], 10);
+          cp = mateIn > 0 ? 30000 : -30000;
+        } else {
+          return;
         }
+
+        console.log(`[Stockfish MultiPV] depth=${depth} pv=${pvNum[1]} move=${moveMatch[1]} cp=${cp}`);
+        pvResults.set(parseInt(pvNum[1], 10), {
+          move: moveMatch[1],
+          cp,
+        });
       }
+
       if (line.startsWith("bestmove")) {
         const results: EngineResult[] = [];
         for (let i = 1; i <= numLines; i++) {

@@ -19,26 +19,32 @@ async function getScalesPuzzle(userElo: number | null) {
   const ratingMin = elo - 300;
   const ratingMax = elo + 300;
 
+  // Exclude all mate-themed puzzles — The Scales needs positions with clear cp differences
+  const EXCLUDED_THEMES = ["mateIn1", "mateIn2", "mateIn3", "mate", "backRankMate", "smotheredMate", "hookMate"];
+
   // Try middlegame positions in ELO range first
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let where: any = {
-    themes: { contains: "middlegame", not: { contains: "mateIn1" } },
+    themes: { contains: "middlegame" },
     rating: { gte: ratingMin, lte: ratingMax },
+    AND: EXCLUDED_THEMES.map((t) => ({ themes: { not: { contains: t } } })),
   };
   let total = await prisma.libraryPuzzle.count({ where });
 
-  // Fallback: any non-mateIn1 in ELO range
+  // Fallback: any non-mate in ELO range
   if (total === 0) {
     where = {
-      themes: { not: { contains: "mateIn1" } },
       rating: { gte: ratingMin, lte: ratingMax },
+      AND: EXCLUDED_THEMES.map((t) => ({ themes: { not: { contains: t } } })),
     };
     total = await prisma.libraryPuzzle.count({ where });
   }
 
-  // Fallback: any non-mateIn1
+  // Fallback: any non-mate
   if (total === 0) {
-    where = { themes: { not: { contains: "mateIn1" } } };
+    where = {
+      AND: EXCLUDED_THEMES.map((t) => ({ themes: { not: { contains: t } } })),
+    };
     total = await prisma.libraryPuzzle.count({ where });
   }
 
