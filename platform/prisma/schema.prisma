@@ -300,6 +300,21 @@ model RevenueEvent {
   @@index([userId, type])
 }
 
+/// Cached Google Search Console keyword performance (daily snapshots)
+model SearchConsoleKeyword {
+  id          String   @id @default(cuid())
+  keyword     String
+  clicks      Int
+  impressions Int
+  ctr         Float
+  position    Float
+  date        String   // YYYY-MM-DD
+  createdAt   DateTime @default(now())
+
+  @@unique([keyword, date])
+  @@index([date])
+}
+
 /// Resend email webhook events (opened, clicked, etc.)
 model ResendEvent {
   id             String   @id @default(cuid())
