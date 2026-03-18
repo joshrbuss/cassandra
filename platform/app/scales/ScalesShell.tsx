@@ -65,13 +65,14 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
       // Quality checks (only enforce if we haven't exceeded reload limit)
       if (results.length >= 3 && reloadCount < MAX_RELOADS) {
         const hasMate = results.some((r) => Math.abs(r.cp) >= 20000);
+        const hasNegative = results.slice(1).some((r) => r.cp < 0); // moves 2/3 negative = blunder
         const topGap = results[0].cp - results[1].cp;
         const spread = results[0].cp - results[2].cp;
 
-        if (hasMate || results.length < 3 || topGap > 200 || spread < 20) {
+        if (hasMate || hasNegative || results.length < 3 || topGap > 200 || spread < 20) {
           console.warn(
             `[Scales] Position rejected (attempt ${reloadCount + 1}/${MAX_RELOADS}): ` +
-            `moves=${results.length} hasMate=${hasMate} topGap=${topGap}cp spread=${spread}cp`
+            `moves=${results.length} hasMate=${hasMate} hasNegative=${hasNegative} topGap=${topGap}cp spread=${spread}cp`
           );
           sessionStorage.setItem(RELOAD_COUNT_KEY, String(reloadCount + 1));
           terminateEngine();
@@ -349,12 +350,12 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
 
               {/* Actions */}
               <div className="flex gap-3 mt-4">
-                <Link
-                  href="/scales"
+                <button
+                  onClick={() => { window.location.href = "/scales"; }}
                   className="flex-1 text-center bg-[#c8942a] text-white px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#b5852a] transition-colors"
                 >
                   Next position
-                </Link>
+                </button>
                 <Link
                   href="/home"
                   className="flex-1 text-center bg-[#2a2a2a] text-gray-400 px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#333] hover:text-gray-300 transition-colors"
