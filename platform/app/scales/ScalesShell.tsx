@@ -48,6 +48,8 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
   const [lastMoveSquares, setLastMoveSquares] = useState<Record<string, React.CSSProperties>>({});
   /** Centipawn eval for each user slot (may differ from engine top 3 if user picked an off-list move) */
   const [userEvals, setUserEvals] = useState<(number | null)[]>([null, null, null]);
+  /** Brief explanation for off-list moves (e.g. "allows Nxe5 winning a pawn") */
+  const [moveExplanations, setMoveExplanations] = useState<(string | null)[]>([null, null, null]);
 
   const allFilled = slots.every((s) => s !== null);
 
@@ -149,11 +151,13 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
     // For each user move, find its eval: either from engine top 3 or run Stockfish
     const userMoves = slots.map((s) => s!.uci);
     const evals: (number | null)[] = [];
+    const explanations: (string | null)[] = [];
 
     for (const uci of userMoves) {
       const engineMatch = engineTop3.find((em) => em.move === uci);
       if (engineMatch) {
         evals.push(engineMatch.cp);
+        explanations.push(null);
       } else {
         // Run a quick single-position eval for this move
         const chess = new Chess(fen);
@@ -168,17 +172,25 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
             // Engine returns score from the OPPONENT's perspective after our move
             // So we negate it to get the score from our perspective
             evals.push(-result.cp);
+            // Generate a brief explanation based on the opponent's best reply
+            const explanation = generateMoveExplanation(
+              chess, result.move, -result.cp, engineTop3[0]?.cp ?? 0
+            );
+            explanations.push(explanation);
           } else {
             evals.push(null);
+            explanations.push(null);
           }
         } else {
           evals.push(null);
+          explanations.push(null);
         }
       }
     }
 
     terminateEngine();
     setUserEvals(evals);
+    setMoveExplanations(explanations);
 
     // Score: compare user ranking to engine ranking
     const engineOrder = engineTop3.map((r) => r.move);
@@ -236,6 +248,69 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
         sanMoves.push(result.san);
       }
       return sanMoves.length > 0 ? sanMoves.join(" ") : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Generate a brief explanation of why a user's move is weaker,
+   * based on the opponent's best reply after the user's move.
+   */
+  function generateMoveExplanation(
+    chessAfterUserMove: Chess,
+    opponentBestUci: string,
+    userMoveCp: number,
+    bestMoveCp: number
+  ): string | null {
+    try {
+      const reply = chessAfterUserMove.move({
+        from: opponentBestUci.slice(0, 2),
+        to: opponentBestUci.slice(2, 4),
+        promotion: opponentBestUci[4] || undefined,
+      });
+      if (!reply) return null;
+
+      const cpLoss = bestMoveCp - userMoveCp;
+      const replySan = reply.san;
+
+      // Checkmate threat
+      if (chessAfterUserMove.isCheckmate()) {
+        return `allows ${replySan} with checkmate`;
+      }
+
+      // Check
+      if (chessAfterUserMove.isCheck()) {
+        if (reply.captured) {
+          return `allows ${replySan} winning material with check`;
+        }
+        return `allows ${replySan} with check`;
+      }
+
+      // Material loss
+      if (reply.captured) {
+        const PIECE_NAME: Record<string, string> = {
+          p: "a pawn", n: "a knight", b: "a bishop", r: "a rook", q: "the queen",
+        };
+        const capName = PIECE_NAME[reply.captured] ?? "material";
+        if (cpLoss > 200) {
+          return `allows ${replySan} winning ${capName}`;
+        }
+        return `allows ${replySan} capturing ${capName}`;
+      }
+
+      // Positional weakness based on cp loss
+      if (cpLoss > 300) {
+        return `allows ${replySan} with a strong attack`;
+      }
+      if (cpLoss > 150) {
+        return `allows ${replySan} gaining the initiative`;
+      }
+      if (cpLoss > 50) {
+        return `allows ${replySan} improving the position`;
+      }
+
+      return `opponent responds ${replySan}`;
     } catch {
       return null;
     }
@@ -345,10 +420,12 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
                   // "Close" if move eval is within 15cp of engine move 3
                   const move3Cp = engineTop3[2]?.cp ?? 0;
                   const isClose = !isInTop3 && cpVal !== null && Math.abs(cpVal - move3Cp) <= 15;
+                  const explanation = moveExplanations[i];
+                  const showExplanation = !isInTop3 && !isClose && explanation;
                   return (
                     <div
                       key={i}
-                      className={`flex items-center justify-between rounded-lg px-3 py-2 ${
+                      className={`rounded-lg px-3 py-2 ${
                         isCorrect
                           ? "bg-green-500/10 border border-green-500/30"
                           : isInTop3
@@ -358,28 +435,35 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
                           : "bg-red-500/10 border border-red-500/30"
                       }`}
                     >
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-gray-500 w-6">
-                          {i + 1}.
-                        </span>
-                        <span className="text-white font-semibold text-sm">
-                          {s.san}
-                        </span>
-                        {cpVal !== null && (
-                          <span className="text-xs font-mono text-gray-500">
-                            {formatCp(cpVal)}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-gray-500 w-6">
+                            {i + 1}.
                           </span>
-                        )}
+                          <span className="text-white font-semibold text-sm">
+                            {s.san}
+                          </span>
+                          {cpVal !== null && (
+                            <span className="text-xs font-mono text-gray-500">
+                              {formatCp(cpVal)}
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-xs text-gray-500">
+                          {isCorrect
+                            ? "Correct"
+                            : isInTop3
+                            ? `Engine: #${engineIdx + 1}`
+                            : isClose
+                            ? "Close"
+                            : "Not in top 3"}
+                        </span>
                       </div>
-                      <span className="text-xs text-gray-500">
-                        {isCorrect
-                          ? "Correct"
-                          : isInTop3
-                          ? `Engine: #${engineIdx + 1}`
-                          : isClose
-                          ? "Close"
-                          : "Not in top 3"}
-                      </span>
+                      {showExplanation && (
+                        <p className="text-[10px] text-red-400/70 ml-8 mt-0.5 italic">
+                          {explanation}
+                        </p>
+                      )}
                     </div>
                   );
                 })}

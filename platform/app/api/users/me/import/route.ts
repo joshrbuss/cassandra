@@ -38,6 +38,30 @@ export async function POST(_req: NextRequest) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
+  // One-time cleanup: remove duplicate puzzles (same solvingFen, keep oldest)
+  try {
+    const userPuzzles = await prisma.puzzle.findMany({
+      where: { sourceUserId: session.userId, source: "user_import" },
+      select: { id: true, solvingFen: true, createdAt: true },
+      orderBy: { createdAt: "asc" },
+    });
+    const seenFens = new Set<string>();
+    const duplicateIds: string[] = [];
+    for (const p of userPuzzles) {
+      if (seenFens.has(p.solvingFen)) {
+        duplicateIds.push(p.id);
+      } else {
+        seenFens.add(p.solvingFen);
+      }
+    }
+    if (duplicateIds.length > 0) {
+      await prisma.puzzle.deleteMany({ where: { id: { in: duplicateIds } } });
+      console.log(`[import] Cleaned up ${duplicateIds.length} duplicate puzzles for user ${session.userId}`);
+    }
+  } catch (err) {
+    console.error(`[import] Duplicate cleanup failed:`, err);
+  }
+
   // First sync = no lastSyncedAt → fetch ALL games. Subsequent = incremental.
   const since = user.lastSyncedAt ?? null;
   console.log(`[import] User ${session.userId}: lichess=${user.lichessUsername ?? "none"} chesscom=${user.chessComUsername ?? "none"} since=${since?.toISOString() ?? "ALL"}`);
@@ -82,6 +106,31 @@ export async function POST(_req: NextRequest) {
       gamesTotal: 0,
       firstPuzzleId: null,
     });
+  }
+
+  // Clean up duplicate RawGame entries (same gameUrl, keep oldest)
+  try {
+    const rawGames = await prisma.rawGame.findMany({
+      where: { userId: session.userId, gameUrl: { not: null } },
+      select: { id: true, gameUrl: true, createdAt: true },
+      orderBy: { createdAt: "asc" },
+    });
+    const seenUrls = new Set<string>();
+    const dupRawIds: string[] = [];
+    for (const g of rawGames) {
+      if (!g.gameUrl) continue;
+      if (seenUrls.has(g.gameUrl)) {
+        dupRawIds.push(g.id);
+      } else {
+        seenUrls.add(g.gameUrl);
+      }
+    }
+    if (dupRawIds.length > 0) {
+      await prisma.rawGame.deleteMany({ where: { id: { in: dupRawIds } } });
+      console.log(`[import] Cleaned up ${dupRawIds.length} duplicate RawGame entries for user ${session.userId}`);
+    }
+  } catch (err) {
+    console.error(`[import] RawGame duplicate cleanup failed:`, err);
   }
 
   // Deduplicate against already-queued/done games by gameUrl

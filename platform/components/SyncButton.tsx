@@ -54,15 +54,16 @@ export default function SyncButton({ lastSyncedAt, isFirstSync = false, username
         return;
       }
 
-      const totalGames = data.gamesTotal ?? data.gamesQueued ?? 0;
-      if (totalGames === 0) {
-        setResultMessage(t("sync.upToDate"));
+      const newlyQueued = data.gamesQueued ?? 0;
+      if (newlyQueued === 0) {
+        setResultMessage("No new games since last sync");
         setResultType("success");
         setSyncedAt(new Date().toISOString());
         setStatus("result");
         timerRef.current = setTimeout(() => { setStatus("idle"); setResultMessage(null); }, 5000);
         return;
       }
+      const totalGames = newlyQueued;
 
       // Phase 2: analyse games client-side with browser Stockfish
       setResultMessage(t("sync.syncing"));

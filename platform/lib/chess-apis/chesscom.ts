@@ -12,6 +12,7 @@ interface ChessComGame {
   pgn?: string;
   time_class?: string;
   rated?: boolean;
+  end_time?: number; // Unix timestamp
 }
 
 interface ChessComArchiveResponse {
@@ -90,8 +91,13 @@ export async function fetchRecentGames(
       const games = data.games ?? [];
 
       // Take rated games only, most recent first (archive is oldest-first)
+      // Filter by individual game date when doing incremental sync
       for (const game of [...games].reverse()) {
         if (game.rated && game.pgn) {
+          if (since && game.end_time) {
+            const gameDate = new Date(game.end_time * 1000);
+            if (gameDate <= since) continue;
+          }
           pgns.push(game.pgn);
           if (pgns.length >= maxGames) break;
         }
