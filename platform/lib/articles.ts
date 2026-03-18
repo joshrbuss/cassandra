@@ -401,6 +401,304 @@ This doesn't mean random puzzles are useless — they're great for broadening yo
 
 *Want to try Cassandra's daily challenge? **[Cassandra's Prophecy →](/prophecy)** — a new brilliant puzzle every day.*`,
   },
+  {
+    slug: "chess-tactics-trainer-free",
+    title: "The Best Free Chess Tactics Trainer in 2026",
+    metaTitle: "Best Free Chess Tactics Trainer 2026 — No Paywall",
+    metaDescription:
+      "Looking for a free chess tactics trainer? Here's why random puzzles plateau your improvement, and how training on your own games breaks through.",
+    themes: ["fork", "pin", "mateIn2"],
+    content: `If you search for a free chess tactics trainer, you'll find dozens of options. Lichess, Chess.com (with limits), ChessTempo, and countless apps. They all do roughly the same thing: show you a position, ask you to find the best move, and tell you whether you got it right.
+
+Most of them work. You will improve by solving random puzzles. But there's a ceiling to how far random training can take you, and in 2026, smarter alternatives exist.
+
+## Why Random Puzzles Eventually Stop Working
+
+When you first start solving tactics, everything is new. Forks, pins, skewers, back-rank mates — each one builds a fresh pattern in your memory. Your rating climbs quickly because you're filling gaps everywhere.
+
+Then progress slows. You're still solving puzzles, still putting in the time, but your rating barely moves. What happened?
+
+The problem is that random puzzles don't know your weaknesses. They serve you an equal distribution of tactical motifs regardless of what you actually struggle with. If you're excellent at spotting forks but consistently miss discovered attacks, a random trainer will still give you roughly 50/50 — wasting half your training time on patterns you've already internalised.
+
+This is the plateau problem, and it affects almost every chess player who trains with generic puzzle sets. For a deeper look at why this happens, see our article on [chess improvement plateaus](/learn/chess-improvement-plateaus).
+
+## What a Good Tactics Trainer Actually Needs
+
+A genuinely effective tactics trainer needs three things:
+
+- **Relevance.** The positions should reflect the patterns you actually encounter in your games — not random positions from random openings at random rating levels.
+- **Targeting.** The trainer should know what you're bad at and give you more of that, not a uniform random sample.
+- **Feedback beyond right/wrong.** Understanding why a move is correct matters more than knowing that it is.
+
+Most free trainers nail none of these. They give you a database, an adaptive rating, and a thumbs-up or thumbs-down. That's fine for beginners. For players trying to break through a plateau, it's insufficient.
+
+## Training on Your Own Games
+
+The most relevant tactical positions you can study are the ones from your own games. When you blunder a fork in the Sicilian Defence, the position involves pieces you placed, an opening you chose, and a middlegame structure you'll see again. It's not abstract — it's your chess.
+
+[Cassandra Chess](/) takes this approach. Connect your Chess.com or Lichess account, and we analyse your games with Stockfish — the same engine that powers professional chess analysis. Every position where you made a significant mistake becomes a puzzle.
+
+The result is a puzzle bank that's 100% relevant to your actual weaknesses. No generic positions. No paywall. No limit on how many puzzles you can solve.
+
+## How It Compares to Other Free Options
+
+**Lichess puzzles** are excellent and completely free — over 4 million positions from real games. We use the Lichess open database for our own general puzzle library. But Lichess puzzles are generic. They're not drawn from your games, and they don't target your specific weaknesses. For more on this comparison, read [Lichess puzzles vs personal puzzles](/learn/lichess-puzzles-vs-personal-puzzles).
+
+**Chess.com puzzles** are high quality but limited for free users. You get a handful per day, and game analysis requires a premium subscription. The players who need the most practice are gated behind a paywall.
+
+**ChessTempo** has strong puzzle quality and customisation options, but the interface is dated and there's no personal game analysis.
+
+**Cassandra Chess** is free, unlimited, and builds your puzzle bank from your actual games. We also offer [The Prophecy](/prophecy) — a daily brilliant-move challenge — and [The Scales](/scales), a move-ranking exercise that trains positional evaluation.
+
+## The Bottom Line
+
+A free chess tactics trainer is valuable at every level. But if you've been solving random puzzles for months and your rating has stalled, the issue isn't effort — it's specificity. The fastest path through a plateau is training on the exact positions where you personally go wrong.
+
+**[Connect your account — it's free →](/connect)**`,
+  },
+  {
+    slug: "how-to-analyse-chess-games",
+    title: "How to Analyse Your Chess Games (And Actually Improve)",
+    metaTitle: "How to Analyse Chess Games — Turn Reviews Into Improvement",
+    metaDescription:
+      "Most players review games passively and learn nothing. Here's how to analyse your chess games so the lessons actually stick and your rating goes up.",
+    themes: ["fork", "hangingPiece", "pin"],
+    content: `You finish a game, open the analysis board, and click through the moves. The engine shows you where you went wrong. You nod. You close the tab. Next game, you make the same mistakes.
+
+This is how most chess players "analyse" their games. It feels productive, but it's almost entirely passive. And passive review doesn't build the skills that prevent mistakes — it just shows you where they happened.
+
+## The Difference Between Reviewing and Analysing
+
+**Reviewing** is clicking through moves with an engine running, noting where the evaluation bar dipped. It's watching someone else's surgery on video. You can see what happened, but you haven't learned to hold the scalpel.
+
+**Analysing** is actively engaging with critical positions. It means covering the engine evaluation, looking at the position yourself, finding candidate moves, choosing one, and only then checking the engine. It means asking *why* your move was worse, not just *that* it was worse.
+
+The difference is effort. Analysis requires you to think. Review lets you watch.
+
+## A Practical Analysis Method
+
+Here's a five-step process that actually produces improvement:
+
+**Step 1: Play through the game without an engine.** Note the moments where you felt uncertain, spent a long time, or were surprised by your opponent's move. These are your critical moments.
+
+**Step 2: At each critical moment, write down your thought process.** What did you consider? What did you reject? What were you afraid of? This is the data that matters — not the engine's evaluation, but your reasoning.
+
+**Step 3: Now turn on the engine.** Compare your thought process to the engine's assessment. The gap between what you considered and what the engine found is your training signal.
+
+**Step 4: For each significant mistake, understand the pattern.** Was it a tactical blind spot (you didn't see the fork)? A positional misunderstanding (you traded the wrong pieces)? A calculation error (you saw the move but miscounted)? Each type of error requires different training. For more on this approach, see [how to train on your blunders](/learn/chess-blunder-training).
+
+**Step 5: Drill the positions.** This is where most players stop — and it's where the actual improvement happens. Take the positions where you went wrong and solve them as puzzles, without the engine. Repeat until you can find the correct move in under 15 seconds.
+
+## Why Most Analysis Tools Fall Short
+
+Chess.com's game review is excellent — but it's behind a paywall. Free users get one game review per day with limited depth. Lichess offers unlimited free analysis, but the interface requires you to drive the process yourself.
+
+Neither platform takes the critical next step: turning your mistakes into drills.
+
+## From Analysis to Active Training
+
+Cassandra Chess bridges this gap. When you connect your Chess.com or Lichess account, we analyse every game with Stockfish and extract the positions where you blundered. Each blunder becomes a puzzle — the position before your mistake, with you finding the correct move.
+
+This closes the loop between analysis and training. You don't just see where you went wrong — you actively practice getting it right. And because the puzzles come from your own games, they target patterns you'll encounter again.
+
+The analysis is free. No subscription required, no daily limits. We run Stockfish on every game because we believe game analysis shouldn't be locked behind a paywall.
+
+## How Often to Analyse
+
+Analyse at least one game per day, even if briefly. Frequency beats depth. A player who spends 10 minutes analysing every game improves faster than one who does a deep 2-hour review once a month.
+
+The best routine: play a game, analyse it with the five-step method above, and then spend 10 minutes solving your personalised puzzle bank. This creates a tight feedback loop between play and training.
+
+**[Get free game analysis →](/connect)**`,
+  },
+  {
+    slug: "chess-improvement-plateaus",
+    title: "Why You're Stuck at the Same Chess Rating (And How to Break Through)",
+    metaTitle: "Chess Rating Plateau — Why You're Stuck and How to Break Through",
+    metaDescription:
+      "Hit a chess rating plateau? The problem isn't effort — it's training on random positions instead of your actual weaknesses. Here's how to break through.",
+    themes: ["fork", "pin", "discoveredAttack"],
+    content: `You've been playing chess for months. You solved hundreds of puzzles. You watched YouTube videos. You read opening theory. And your rating hasn't moved in weeks.
+
+Welcome to the plateau. Every chess player hits one, usually between 800–1000, 1200–1400, or 1600–1800. It's the most frustrating experience in chess because you're putting in work and getting nothing back.
+
+But the plateau isn't caused by a lack of effort. It's caused by the wrong kind of effort.
+
+## Why Plateaus Happen
+
+Chess improvement follows a power curve, not a straight line. Early gains come fast because everything is new — you learn to stop hanging pieces, and you jump 200 points overnight. Then the easy wins dry up. The opponents who still hang pieces are below you now. To beat the players at your level, you need to fix subtler problems.
+
+The issue is that most training methods don't adapt. You're still solving the same type of random puzzles that worked when you were 300 points lower. You're still watching the same kind of videos. The training that got you here won't get you there.
+
+**The single biggest cause of rating plateaus is training on patterns you've already learned while ignoring the ones you haven't.**
+
+## The Random Puzzle Trap
+
+Random puzzle trainers are the biggest culprit. At any rating, you have a set of patterns you can already see and a set you can't. A random trainer gives you both — which means you're spending roughly half your time on patterns that don't challenge you.
+
+Worse, the patterns you can't see are often specific to your playing style. A Sicilian player and a London System player face different tactical landscapes. Random puzzles drawn from all openings can't account for this. For a detailed comparison of generic vs. personal puzzles, see [Lichess puzzles vs personal puzzles](/learn/lichess-puzzles-vs-personal-puzzles).
+
+## How to Diagnose Your Plateau
+
+Before you can break through, you need to know what's holding you back. There are three categories:
+
+**Tactical blind spots.** You miss specific patterns — discovered attacks, intermediate moves, or quiet defensive moves. These show up as recurring blunders in similar position types. The fix is targeted drilling, not more random puzzles. See our guide on [blunder training](/learn/chess-blunder-training) for the method.
+
+**Positional misunderstanding.** You make reasonable-looking moves that are strategically wrong — trading the wrong pieces, misplacing pawns, neglecting king safety. These are harder to diagnose because the engine often shows only a small eval drop.
+
+**Time management.** You find the right moves in analysis but miss them in games because you spend too much time on easy positions and too little on critical ones. If your puzzle solve times are consistently slow, this might be your issue.
+
+## The Fix: Train on Your Actual Weaknesses
+
+The fastest way through a plateau is to stop training randomly and start training specifically.
+
+**Step 1: Identify your patterns.** Analyse your last 20 losses. What types of positions caused problems? Were there recurring tactical motifs you missed? Were your blunders concentrated in openings, middlegames, or endgames?
+
+**Step 2: Build a targeted training set.** Instead of solving random puzzles, focus exclusively on the patterns you identified. If you missed 5 discovered attacks in your last 20 games, solve 50 discovered attack puzzles.
+
+**Step 3: Use your own games.** The most relevant training positions come from your own games. Cassandra Chess does this automatically — connect your account and we analyse every game, turning your blunders into puzzles. Each puzzle targets a specific position where you went wrong, using your actual openings and middlegame structures.
+
+**Step 4: Track progress.** A plateau breaks when your mistake rate drops in the specific patterns you're training. If you were blundering forks in 1 out of 5 games and now it's 1 out of 20, the training is working — even if your rating hasn't moved yet. Rating follows skill with a delay.
+
+## The Plateau Is a Signal, Not a Wall
+
+A rating plateau means your current training method has been fully absorbed. Your brain has learned everything it can from that approach. The plateau is a signal to change methods, not to try harder at the same thing.
+
+The players who break through are the ones who shift from general to specific training — from random puzzles to targeted drilling on their documented weaknesses.
+
+**[Break through your plateau — free game analysis →](/connect)**`,
+  },
+  {
+    slug: "lichess-puzzles-vs-personal-puzzles",
+    title: "Lichess Puzzles vs Personal Puzzles: Which Makes You Improve Faster?",
+    metaTitle: "Lichess Puzzles vs Personal Puzzles — Which Is Better?",
+    metaDescription:
+      "Lichess puzzles are great but generic. Personal puzzles from your own games target your specific weaknesses. Here's what the difference means for improvement.",
+    themes: ["fork", "pin", "skewer", "mateIn2"],
+    content: `Lichess has the best free puzzle database in chess. Over 4 million positions from real games, completely open-source, with ratings, themes, and verified solutions. If you're looking for a free chess tactics trainer, Lichess is the gold standard.
+
+So why would anyone use anything else?
+
+Because there's a fundamental limitation to any generic puzzle database, no matter how large or well-curated: the positions come from other people's games, not yours.
+
+## What Lichess Puzzles Do Well
+
+Lichess puzzles are excellent for building a broad tactical vocabulary. The database covers every motif — forks, pins, skewers, discovered attacks, deflections, decoys, and hundreds of mating patterns. The positions are drawn from real games at all rating levels, so the difficulty distribution is natural and well-calibrated.
+
+The adaptive rating system means you're always solving puzzles near your skill level. Too easy, and your rating rises to show you harder positions. Too hard, and it drops. This keeps you in the productive zone of challenge.
+
+For beginners and intermediate players building foundational pattern recognition, Lichess puzzles are genuinely hard to beat. Cassandra Chess uses the Lichess open database for its own general library — we believe in building on the best available resources.
+
+## The Limitation of Generic Puzzles
+
+Here's the problem: Lichess puzzles are drawn from millions of games played by millions of players with millions of different opening repertoires, playing styles, and weaknesses. The positions you see are a random sample of chess tactics, not a targeted sample of your chess tactics.
+
+This matters because your weaknesses are specific. If you play the King's Indian Defence, you face a particular set of middlegame structures that arise from that opening. If you play the London System, your tactical landscape is completely different. A random puzzle database treats both players identically.
+
+The result is that a significant portion of your training time is spent on positions you'll never see in your own games. That's not wasted time — broad pattern recognition is valuable — but it's not the most efficient use of your limited training minutes.
+
+## What Personal Puzzles Do Differently
+
+A personal puzzle is extracted from your own game. It shows you the exact position where you made a mistake, and asks you to find the move you should have played.
+
+The advantages are immediate:
+
+- **Relevance.** The position comes from an opening you play, a middlegame structure you reach, and a time control you're familiar with. You will see this type of position again.
+- **Emotional weight.** You lost rating points because of this mistake. That emotional connection makes the learning stickier than solving a random stranger's position.
+- **Weakness targeting.** If you keep making the same type of mistake — say, missing back-rank threats in rook endings — your personal puzzle bank will be heavy on exactly that pattern. The training naturally concentrates on your weakest areas.
+- **Progression tracking.** As you solve personal puzzles and the mistakes stop recurring in your games, you can see the direct impact on your play.
+
+## The Research on Specificity
+
+Cognitive science research on skill acquisition consistently shows that specific, contextualised practice produces faster improvement than general practice. A basketball player improves free throws by practising free throws, not by practising random shots from all positions.
+
+Chess is no different. A player who drills the tactical patterns from their own games will improve faster in their own games than a player who solves generic puzzles — even if the generic puzzles are excellent.
+
+This doesn't mean Lichess puzzles are bad. They're genuinely one of the best free training resources available. But they're a complement to personal training, not a substitute for it.
+
+## Using Both Together
+
+The optimal training approach uses both generic and personal puzzles:
+
+- **Generic puzzles** (Lichess, Cassandra library) for broadening your tactical vocabulary and maintaining pattern fluency across all motifs.
+- **Personal puzzles** (from your own games) for targeted improvement on your specific weaknesses.
+
+A practical split: spend 60% of your puzzle time on personal puzzles and 40% on generic ones. As a beginner, reverse that ratio — you need the broad foundation first. As you improve, shift toward personal puzzles. For a complete guide to using your blunders as training material, see [how to train on your blunders](/learn/chess-blunder-training).
+
+## How Cassandra Bridges the Gap
+
+Cassandra Chess gives you both. Our general library draws from the Lichess open database. Your personal puzzle bank is built by analysing your Chess.com and Lichess games with Stockfish and extracting your blunders.
+
+Both are free. No paywall, no daily limits. We believe the best [free chess tactics trainer](/learn/chess-tactics-trainer-free) should offer both breadth and depth.
+
+**[Build your personal puzzle bank — free →](/connect)**`,
+  },
+  {
+    slug: "chess-blunder-training",
+    title: "How to Train on Your Chess Blunders (The Right Way)",
+    metaTitle: "Chess Blunder Training — Drill Your Mistakes Until They Disappear",
+    metaDescription:
+      "Reviewing blunders passively does nothing. Here's the right way to train on your chess blunders so the mistakes actually stop happening in your games.",
+    themes: ["fork", "hangingPiece", "pin", "backRankMate"],
+    content: `Every chess player blunders. Magnus Carlsen blunders. You blunder. The difference between a 1200 and a 2000 isn't that the 2000 never blunders — it's that they blunder less often, in fewer positions, and recover better when they do.
+
+The question isn't whether you'll make mistakes. It's whether you'll make the same mistake twice.
+
+## What a Blunder Actually Is
+
+In engine terms, a blunder is a move that loses significant evaluation — typically 100+ centipawns (one pawn's worth of advantage or more). But not all blunders are equal:
+
+- **Tactical blunders** — you missed a concrete threat. A fork, a pin, a back-rank mate. These are the most trainable because they involve specific patterns.
+- **Positional blunders** — you made a structurally bad decision. Wrong pawn break, misplaced piece, premature exchange. These require deeper understanding to fix.
+- **Time-pressure blunders** — you knew the right move but played too fast (or too slow and panicked). These are a time management problem, not a chess problem.
+
+For training purposes, tactical blunders give you the highest return on investment. They're concrete, pattern-based, and directly drillable.
+
+## Why Passive Review Doesn't Work
+
+Most players "train" on their blunders by reviewing them. They open the analysis board, click through to the mistake, see the engine's suggestion, and move on. This is reviewing, not training.
+
+The problem with passive review is that recognition is not recall. You might recognise the correct move when the engine shows it to you. But in your next game, when you're in a similar position with no engine and a ticking clock, you won't recall it — because you never actually practised finding it yourself. For a deeper dive into this distinction, read [how to actually learn from your blunders](/learn/learn-from-chess-blunders).
+
+## The Right Way to Train on Blunders
+
+Active blunder training follows three steps:
+
+**Step 1: Extract the position.** Take the position from your game where you blundered. Strip away the move list and the engine evaluation. All you have is the board and the pieces.
+
+**Step 2: Solve it cold.** Look at the position and find the correct move yourself. No hints, no engine, no move list. This is the crucial step — you're building the neural pathway that will fire in your next game.
+
+**Step 3: Repeat with spacing.** Solve the same position again tomorrow. Then in three days. Then in a week. Spaced repetition is the most effective memorisation technique known to cognitive science, and it applies directly to chess patterns.
+
+## Common Blunder Patterns to Drill
+
+Most club-level blunders fall into a small number of categories. If you can eliminate even two or three of these from your games, you'll gain 100+ rating points:
+
+- **Hanging pieces.** You left a piece undefended and your opponent took it. Train by solving puzzles with the theme "hanging piece" — you'll start automatically scanning for undefended material.
+- **Back-rank weakness.** Your king is on the back rank with no escape square, and your opponent exploits it. Drill back-rank mate puzzles until you instinctively create luft (an escape square) when castled.
+- **Knight forks.** You placed your king and a high-value piece on squares that allowed a knight fork. Drill fork puzzles and you'll start seeing the vulnerable squares before you step on them.
+- **Discovered attacks.** Your opponent moved a piece that revealed a hidden attack from another piece. These are the hardest to see because the threatening piece doesn't move. Volume training is the only reliable fix.
+
+## Automating the Process
+
+Manually extracting positions from your games, setting them up as puzzles, and scheduling spaced repetition is tedious. Most players who try it give up within a week.
+
+Cassandra Chess automates the entire pipeline. Connect your Chess.com or Lichess account, and we analyse every game with Stockfish. Each blunder is automatically converted into a puzzle — the position before your mistake, with you finding what you should have played.
+
+Your personal puzzle bank grows with every game you play. The positions are sorted by severity, so your worst blunders get the most attention. And because the puzzles come from your own games, every minute of training targets patterns you'll actually encounter again.
+
+We also offer [The Scales](/scales) — a move-ranking exercise where you order three candidate moves from best to worst — and [The Echo](/echo), a retrograde analysis mode that trains you to read positions backwards. Both complement blunder training by building different aspects of chess vision.
+
+## How Long Until Blunders Decrease
+
+With consistent daily training (15–20 minutes on personal puzzles), most players see a measurable reduction in blunder rate within 2–3 weeks. The specific patterns you drill disappear from your games first — if you spent a week on back-rank mates, you'll stop getting back-rank mated.
+
+Rating improvement follows with a slight delay, typically 3–4 weeks after the blunder rate drops. This delay is normal — it takes time for better decisions to compound into more wins.
+
+The key is consistency. A player who solves 10 personal puzzles daily for a month will improve more than one who solves 100 in a single weekend. Spacing is everything.
+
+**[Start training on your blunders — free →](/connect)**`,
+  },
 ];
 
 export function getArticle(slug: string): Article | undefined {
