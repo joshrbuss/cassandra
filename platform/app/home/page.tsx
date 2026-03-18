@@ -343,6 +343,23 @@ export default async function DashboardPage() {
           <span className="text-white/40 text-xl ml-3">&#8594;</span>
         </Link>
 
+        {/* ── The Echo ── */}
+        <Link
+          href="/echo"
+          className="flex items-center justify-between bg-[#0e0e0e] text-white rounded-xl p-5 mb-4 hover:bg-[#1a1a1a] transition-colors border border-[#2a2a2a]"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-lg">&#127754;</span>
+            <div>
+              <p className="font-semibold text-white">The Echo</p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                See a position and figure out what move was just played
+              </p>
+            </div>
+          </div>
+          <span className="text-white/40 text-xl ml-3">&#8594;</span>
+        </Link>
+
         {/* ── Learn articles ── */}
         <Link
           href="/learn"
@@ -478,23 +495,16 @@ export default async function DashboardPage() {
                 name="Smart Review"
                 description="Puzzles you struggle with resurface at the perfect moment. Powered by spaced repetition."
               />
-              <Link href="/echo" className="block bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:border-[#c8942a]/50 hover:shadow-md transition-all">
-                <div className="p-5">
-                  <p className="font-semibold text-gray-900">The Echo</p>
-                  <p className="text-xs text-gray-500 mt-0.5">See a position and figure out what move was just played</p>
-                </div>
-              </Link>
               <LockedFeature
                 emoji="📖"
                 name="Opening Trainer"
                 description="Master your opening repertoire with targeted drills"
               />
-              <Link href="/trials" className="block bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:border-[#c8942a]/50 hover:shadow-md transition-all">
-                <div className="p-5">
-                  <p className="font-semibold text-gray-900">{t("home.trials.title")}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{t("home.trials.desc")}</p>
-                </div>
-              </Link>
+              <LockedFeature
+                emoji="⚔️"
+                name={t("home.trials.title")}
+                description={t("home.trials.desc")}
+              />
             </div>
             <div className="mt-4">
               <EmailSignup source="coming_soon_unified" headline={t("comingSoon.notifyHeadline")} cta={t("comingSoon.notifyCta")} />
