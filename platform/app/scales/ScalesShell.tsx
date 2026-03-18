@@ -147,10 +147,23 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
 
     const results = await analyzePositionMultiPV(fen, 3);
 
-    // If fewer than 3 moves returned or any move has a mate score, skip this position
+    // Quality filters — reject positions that aren't interesting for ranking
     const hasMate = results.some((r) => Math.abs(r.cp) >= 20000);
-    if (results.length < 3 || hasMate) {
-      console.warn(`[Scales] Position unsuitable: ${results.length} moves, hasMate=${hasMate} — reloading`);
+    const hasBlunder = results.some((r) => r.cp < 0);
+    const topGap = results.length >= 2 ? results[0].cp - results[1].cp : 9999;
+    const spread = results.length >= 3 ? results[0].cp - results[2].cp : 0;
+
+    const reject =
+      results.length < 3 ||
+      hasMate ||
+      hasBlunder ||       // all 3 should be positive (good moves)
+      topGap > 150 ||     // top move too obvious
+      spread < 30;        // all moves basically equal
+
+    if (reject) {
+      console.warn(
+        `[Scales] Position rejected: moves=${results.length} hasMate=${hasMate} hasBlunder=${hasBlunder} topGap=${topGap}cp spread=${spread}cp — reloading`
+      );
       terminateEngine();
       window.location.reload();
       return;
