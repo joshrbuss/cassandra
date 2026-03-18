@@ -7,7 +7,7 @@ import Link from "next/link";
 import { BoardSkeleton } from "@/components/Skeleton";
 import type { PieceDropHandlerArgs } from "@/components/ChessBoardWrapper";
 import {
-  analyzePositionMultiPV,
+  analyzePosition,
   terminateEngine,
 } from "@/lib/chess-client/stockfishBrowser";
 import type { EngineResult } from "@/lib/chess-client/stockfishBrowser";
@@ -21,6 +21,8 @@ interface Props {
   puzzleId: string;
   fen: string;
   rating: number;
+  /** Pre-seeded engine moves from ScalesPosition table */
+  engineTop3: EngineResult[];
 }
 
 interface SlotData {
@@ -30,70 +32,22 @@ interface SlotData {
   to: string;
 }
 
-type Phase = "loading" | "picking" | "results";
+type Phase = "picking" | "evaluating" | "results";
 
-/** Max reloads before giving up and showing whatever position we have */
-const MAX_RELOADS = 3;
-const RELOAD_COUNT_KEY = "scales_reload_count";
-
-export default function ScalesShell({ puzzleId, fen, rating }: Props) {
+export default function ScalesShell({ puzzleId, fen, rating, engineTop3 }: Props) {
   const boardOrientation: "white" | "black" =
     fen.split(" ")[1] === "b" ? "black" : "white";
 
   const [slots, setSlots] = useState<(SlotData | null)[]>([null, null, null]);
   const [activeSlot, setActiveSlot] = useState<number>(0);
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
-  const [phase, setPhase] = useState<Phase>("loading");
-  const [engineMoves, setEngineMoves] = useState<EngineResult[]>([]);
+  const [phase, setPhase] = useState<Phase>("picking");
   const [score, setScore] = useState<number | null>(null);
   const [lastMoveSquares, setLastMoveSquares] = useState<Record<string, React.CSSProperties>>({});
+  /** Centipawn eval for each user slot (may differ from engine top 3 if user picked an off-list move) */
+  const [userEvals, setUserEvals] = useState<(number | null)[]>([null, null, null]);
 
   const allFilled = slots.every((s) => s !== null);
-
-  // Pre-evaluate position on mount — reject unsuitable positions BEFORE user interacts
-  useEffect(() => {
-    let cancelled = false;
-
-    async function preEvaluate() {
-      console.log(`[Scales] Pre-evaluating FEN: ${fen}`);
-      const results = await analyzePositionMultiPV(fen, 3);
-
-      if (cancelled) return;
-
-      const reloadCount = parseInt(sessionStorage.getItem(RELOAD_COUNT_KEY) ?? "0", 10);
-
-      // Quality checks (only enforce if we haven't exceeded reload limit)
-      if (results.length >= 3 && reloadCount < MAX_RELOADS) {
-        const hasMate = results.some((r) => Math.abs(r.cp) >= 20000);
-        const hasNegative = results.slice(1).some((r) => r.cp < 0); // moves 2/3 negative = blunder
-        const topGap = results[0].cp - results[1].cp;
-        const spread = results[0].cp - results[2].cp;
-
-        if (hasMate || hasNegative || results.length < 3 || topGap > 200 || spread < 20) {
-          console.warn(
-            `[Scales] Position rejected (attempt ${reloadCount + 1}/${MAX_RELOADS}): ` +
-            `moves=${results.length} hasMate=${hasMate} hasNegative=${hasNegative} topGap=${topGap}cp spread=${spread}cp`
-          );
-          sessionStorage.setItem(RELOAD_COUNT_KEY, String(reloadCount + 1));
-          terminateEngine();
-          window.location.reload();
-          return;
-        }
-      }
-
-      // Position accepted — reset reload counter and store results
-      sessionStorage.setItem(RELOAD_COUNT_KEY, "0");
-      console.log(
-        `[Scales] Position accepted: ${results.map((r, i) => `#${i + 1} ${r.move} (${r.cp}cp)`).join(", ")}`
-      );
-      setEngineMoves(results);
-      setPhase("picking");
-    }
-
-    preEvaluate();
-    return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   /** Try to place a move into the active slot */
   const placeMove = useCallback(
@@ -185,12 +139,47 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
     setLastMoveSquares({});
   }
 
-  function handleSubmit() {
-    if (!allFilled || engineMoves.length === 0) return;
+  async function handleSubmit() {
+    if (!allFilled || engineTop3.length === 0) return;
 
-    // Score: compare user ranking to engine ranking (already pre-computed)
+    setPhase("evaluating");
+
+    // For each user move, find its eval: either from engine top 3 or run Stockfish
     const userMoves = slots.map((s) => s!.uci);
-    const engineOrder = engineMoves.map((r) => r.move);
+    const evals: (number | null)[] = [];
+
+    for (const uci of userMoves) {
+      const engineMatch = engineTop3.find((em) => em.move === uci);
+      if (engineMatch) {
+        evals.push(engineMatch.cp);
+      } else {
+        // Run a quick single-position eval for this move
+        const chess = new Chess(fen);
+        const moveResult = chess.move({
+          from: uci.slice(0, 2),
+          to: uci.slice(2, 4),
+          promotion: uci[4] || undefined,
+        });
+        if (moveResult) {
+          const result = await analyzePosition(chess.fen());
+          if (result) {
+            // Engine returns score from the OPPONENT's perspective after our move
+            // So we negate it to get the score from our perspective
+            evals.push(-result.cp);
+          } else {
+            evals.push(null);
+          }
+        } else {
+          evals.push(null);
+        }
+      }
+    }
+
+    terminateEngine();
+    setUserEvals(evals);
+
+    // Score: compare user ranking to engine ranking
+    const engineOrder = engineTop3.map((r) => r.move);
 
     console.log(`[Scales] User ranking: ${userMoves.join(", ")}`);
     console.log(`[Scales] Engine ranking: ${engineOrder.join(", ")}`);
@@ -203,6 +192,9 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
     console.log(`[Scales] Score: ${pts}/3`);
     setScore(pts);
     setPhase("results");
+
+    // Credit streak (fire-and-forget)
+    fetch("/api/scales/complete", { method: "POST" }).catch(() => {});
   }
 
   function formatCp(cp: number): string {
@@ -258,11 +250,11 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
       <div className="max-w-lg mx-auto px-4 pt-4 pb-6">
         {/* Instruction / Results panel */}
         <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-5 py-4 mb-4">
-          {phase === "loading" ? (
+          {phase === "evaluating" ? (
             <div className="text-center py-4">
               <div className="inline-block w-6 h-6 border-2 border-[#c8942a] border-t-transparent rounded-full animate-spin mb-3" />
               <p className="text-gray-400 text-sm">
-                Stockfish is evaluating the position...
+                Evaluating your moves...
               </p>
             </div>
           ) : phase === "results" && score !== null ? (
@@ -276,7 +268,7 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 mb-2">
                   Stockfish ranking
                 </p>
-                {engineMoves.map((em, i) => {
+                {engineTop3.map((em, i) => {
                   const san = getMoveLabel(em.move);
                   const userSlot = slots.findIndex((s) => s?.uci === em.move);
                   const isCorrectPosition = userSlot === i;
@@ -312,11 +304,12 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
                 </p>
                 {slots.map((s, i) => {
                   if (!s) return null;
-                  const engineIdx = engineMoves.findIndex(
+                  const engineIdx = engineTop3.findIndex(
                     (em) => em.move === s.uci
                   );
                   const isCorrect = engineIdx === i;
                   const isInTop3 = engineIdx !== -1;
+                  const cpVal = userEvals[i];
                   return (
                     <div
                       key={i}
@@ -335,6 +328,11 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
                         <span className="text-white font-semibold text-sm">
                           {s.san}
                         </span>
+                        {cpVal !== null && (
+                          <span className="text-xs font-mono text-gray-500">
+                            {formatCp(cpVal)}
+                          </span>
+                        )}
                       </div>
                       <span className="text-xs text-gray-500">
                         {isCorrect
@@ -443,8 +441,8 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
           <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-600">
             {phase === "picking"
               ? `Playing as ${boardOrientation} · Rating ${rating}`
-              : phase === "loading"
-              ? "Evaluating position..."
+              : phase === "evaluating"
+              ? "Evaluating your moves..."
               : "Position evaluated"}
           </p>
         </div>
