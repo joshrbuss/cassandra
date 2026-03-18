@@ -38,7 +38,8 @@ async function getDailyProphecyPuzzle(userElo: number | null) {
     return null;
   }
 
-  const dayIndex = Math.floor(Date.now() / 86_400_000);
+  const today = new Date();
+  const dayIndex = Math.floor(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()) / 86_400_000);
   const skipIdx = dayIndex % total;
 
   const puzzle = await prisma.libraryPuzzle.findFirst({
@@ -77,13 +78,14 @@ export default async function ProphecyPage() {
     );
   }
 
-  // Check if user already solved today's prophecy
-  const todayStr = new Date().toISOString().split("T")[0];
+  // Check if user already solved today's prophecy (UTC date-aware)
+  const nowUtc = new Date();
+  const todayUtcStart = new Date(Date.UTC(nowUtc.getUTCFullYear(), nowUtc.getUTCMonth(), nowUtc.getUTCDate()));
   const existingAttempt = await prisma.puzzleAttempt.findFirst({
     where: {
       userId: session.userId,
       puzzleId: puzzle.id,
-      createdAt: { gte: new Date(todayStr) },
+      createdAt: { gte: todayUtcStart },
     },
     select: { success: true, solveTimeMs: true },
   });
