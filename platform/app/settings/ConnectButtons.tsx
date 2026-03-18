@@ -7,6 +7,7 @@ import {
   connectChessComUsername,
   type ConnectState,
 } from "@/app/actions/auth";
+import { gtagEvent } from "@/lib/gtag";
 
 interface ConnectButtonsProps {
   lichessUsername: string | null;
@@ -117,7 +118,7 @@ export default function ConnectButtons({
         </div>
 
         {!lichessUsername && (
-          <form action={lichessAction} className="flex gap-2">
+          <form action={lichessAction} onSubmit={() => gtagEvent("connect_completed", { platform: "lichess" })} className="flex gap-2">
             <input type="hidden" name="callbackUrl" value="/settings" />
             <input
               type="text"
@@ -180,7 +181,7 @@ export default function ConnectButtons({
         </div>
 
         {!chessComUsername && (
-          <form action={ccAction} className="flex gap-2">
+          <form action={ccAction} onSubmit={() => gtagEvent("connect_completed", { platform: "chesscom" })} className="flex gap-2">
             <input type="hidden" name="callbackUrl" value="/settings" />
             <input
               type="text"

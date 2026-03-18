@@ -270,6 +270,7 @@
   "privacy.thirdParty.bing": "Bing Webmaster Tools — überwacht, wie cassandrachess.com in Bing-Suchergebnissen erscheint. Es werden keine persönlichen Nutzerdaten erfasst.",
   "privacy.thirdParty.adsense": "Google AdSense — Werbe-Cookies für kostenlose Nutzer. Bezahlte Nutzer sind ausgenommen.",
   "privacy.thirdParty.metaPixel": "Meta Pixel — Werbeleistungs-Tracking. Wir teilen gehashte E-Mail und Land mit Meta für Zielgruppen-Matching.",
+  "privacy.thirdParty.clarity": "Microsoft Clarity — Sitzungsaufzeichnungen und Heatmaps, um zu verstehen, wie Nutzer mit der Website interagieren. Clarity kann IP-Adresse, Geräte- und Browserinformationen sowie Nutzerinteraktionen erfassen. Wird nur mit Cookie-Zustimmung geladen.",
   "privacy.thirdParty.vercel": "Vercel Analytics — Leistung, Seitenaufrufe, Geräte- und Länderdaten",
   "privacy.thirdParty.vercelFull": "Vercel — hostet die Anwendung und bietet Analysen einschließlich Seitenaufrufe, Gerätetyp, Browser, Betriebssystem, Land und verweisende Website. Diese Daten sind pseudonym und nicht mit einzelnen Benutzerkonten verknüpft. Vercel verarbeitet auch eingehende E-Mails an josh@cassandrachess.com.",
   "privacy.thirdParty.speedInsights": "Vercel Speed Insights — erfasst Core Web Vitals und Leistungskennzahlen einschließlich Seitenladezeiten, Gerätetyp und Browser. Diese Daten sind pseudonym und nicht mit einzelnen Benutzerkonten verknüpft.",

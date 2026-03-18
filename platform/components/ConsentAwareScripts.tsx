@@ -62,6 +62,13 @@ export default function ConsentAwareScripts({ gaId, metaPixelId, isPaid }: Props
         </>
       )}
 
+      {/* Microsoft Clarity — only with full consent */}
+      {fullConsent && (
+        <Script id="ms-clarity-init" strategy="afterInteractive">
+          {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/vxtx370hio";y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script");`}
+        </Script>
+      )}
+
       {/* Meta Pixel — only with full consent */}
       {loadMetaPixel && (
         <>

@@ -8,6 +8,7 @@ import type { PieceDropHandlerArgs } from "@/components/ChessBoardWrapper";
 import { useTimer } from "@/hooks/useTimer";
 import { formatTime } from "@/lib/benchmarks";
 import Link from "next/link";
+import { gtagEvent } from "@/lib/gtag";
 
 const ChessBoardWrapper = dynamic(() => import("@/components/ChessBoardWrapper"), {
   ssr: false,
@@ -141,6 +142,10 @@ export default function ProphecyShell({
     if (submitLock.current) return;
     submitLock.current = true;
     setSolveTimeMs(ms);
+    if (success) {
+      gtagEvent("puzzle_solved", { mode: "prophecy", puzzle_id: puzzleId });
+      gtagEvent("prophecy_completed");
+    }
     try {
       await fetch(`/api/puzzles/${puzzleId}/attempt`, {
         method: "POST",

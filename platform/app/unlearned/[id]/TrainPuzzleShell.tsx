@@ -12,6 +12,7 @@ import type { LeaderboardEntry } from "@/app/api/puzzles/[id]/leaderboard/route"
 import { formatTime } from "@/lib/benchmarks";
 import ShareButton from "@/components/marketing/ShareButton";
 import Link from "next/link";
+import { gtagEvent } from "@/lib/gtag";
 
 const ChessBoardWrapper = dynamic(() => import("@/components/ChessBoardWrapper"), {
   ssr: false,
@@ -102,6 +103,9 @@ export default function TrainPuzzleShell({
   async function submitAttempt(solveTimeMs: number, success: boolean) {
     if (submitLock.current) return;
     submitLock.current = true;
+    if (success) {
+      gtagEvent("puzzle_solved", { mode: "unlearned", puzzle_id: puzzleId });
+    }
 
     try {
       const res = await fetch(`/api/puzzles/${puzzleId}/attempt`, {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslation } from "@/components/i18n/LocaleProvider";
+import { gtagEvent } from "@/lib/gtag";
 
 interface Props {
   referralCode: string;
@@ -21,6 +22,7 @@ export default function ReferralBar({ referralCode, referralCount }: Props) {
     navigator.clipboard.writeText(referralLink).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      gtagEvent("referral_link_copied");
     });
   }
 

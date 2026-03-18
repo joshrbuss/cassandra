@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { extractBlundersFromPgn, type ClientPuzzle } from "@/lib/chess-client/extractBlundersFromPgn";
 import { terminateEngine } from "@/lib/chess-client/stockfishBrowser";
+import { gtagEvent } from "@/lib/gtag";
 
 interface Props {
   platform: string;
@@ -125,6 +126,7 @@ export default function AnalysingClient({ platform, username, libraryPuzzleId, l
 
       terminateEngine();
       setAnalysingPhase(false);
+      gtagEvent("game_analysed", { puzzle_count: totalPuzzles });
       setSteps((prev) => prev.map((s, i) => i === 2 ? { ...s, label: `Analysed ${analysed} games`, status: "done" } : s));
       await new Promise(r => setTimeout(r, 400));
       setSteps((prev) => prev.map((s, i) => i === 3 ? { ...s, status: "active" } : s));

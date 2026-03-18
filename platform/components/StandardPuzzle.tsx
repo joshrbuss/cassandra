@@ -11,6 +11,7 @@ import PuzzleTimer from "./PuzzleTimer";
 import SolveResultCard from "./SolveResultCard";
 import type { AttemptResponse } from "@/app/api/puzzles/[id]/attempt/route";
 import type { TimeControl } from "@/lib/benchmarks";
+import { gtagEvent } from "@/lib/gtag";
 
 const ChessBoardWrapper = dynamic(() => import("./ChessBoardWrapper"), {
   ssr: false,
@@ -62,6 +63,9 @@ export default function StandardPuzzle({
   async function submitAttempt(solveTimeMs: number, success: boolean) {
     if (submitLock.current) return;
     submitLock.current = true;
+    if (success) {
+      gtagEvent("puzzle_solved", { mode: "standard", puzzle_id: puzzleId });
+    }
     try {
       const res = await fetch(`/api/puzzles/${puzzleId}/attempt`, {
         method: "POST",

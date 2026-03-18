@@ -65,6 +65,7 @@ export default async function PrivacyPage() {
             <li>{t("privacy.thirdParty.bing")}</li>
             <li>{t("privacy.thirdParty.adsense")}</li>
             <li>{t("privacy.thirdParty.metaPixel")}</li>
+            <li>{t("privacy.thirdParty.clarity")}</li>
             <li>{t("privacy.thirdParty.vercelFull")}</li>
             <li>{t("privacy.thirdParty.speedInsights")}</li>
             <li>{t("privacy.thirdParty.supabase")}</li>

@@ -11,6 +11,7 @@ import {
   terminateEngine,
 } from "@/lib/chess-client/stockfishBrowser";
 import type { EngineResult } from "@/lib/chess-client/stockfishBrowser";
+import { gtagEvent } from "@/lib/gtag";
 
 const ChessBoardWrapper = dynamic(() => import("@/components/ChessBoardWrapper"), {
   ssr: false,
@@ -206,6 +207,7 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
     console.log(`[Scales] Score: ${pts}/3`);
     setScore(pts);
     setPhase("results");
+    gtagEvent("scales_completed", { score: pts });
 
     // Credit streak (fire-and-forget)
     fetch("/api/scales/complete", { method: "POST" }).catch(() => {});

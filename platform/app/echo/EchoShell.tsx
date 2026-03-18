@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { BoardSkeleton } from "@/components/Skeleton";
 import type { PieceDropHandlerArgs } from "@/components/ChessBoardWrapper";
+import { gtagEvent } from "@/lib/gtag";
 
 const ChessBoardWrapper = dynamic(
   () => import("@/components/ChessBoardWrapper"),
@@ -154,9 +155,11 @@ export default function EchoShell({
       });
       setShowBeforePosition(true);
       setTimeout(() => setShowBeforePosition(false), 2000);
+      gtagEvent("echo_completed", { correct: true });
       fetch("/api/scales/complete", { method: "POST" }).catch(() => {});
     } else {
       setPhase("wrong");
+      gtagEvent("echo_completed", { correct: false });
       const styles: Record<string, React.CSSProperties> = {
         [correctFrom]: { backgroundColor: "rgba(76, 175, 80, 0.5)" },
         [correctTo]: { backgroundColor: "rgba(76, 175, 80, 0.5)" },
