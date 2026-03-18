@@ -478,11 +478,12 @@ export default async function DashboardPage() {
                 name="Smart Review"
                 description="Puzzles you struggle with resurface at the perfect moment. Powered by spaced repetition."
               />
-              <LockedFeature
-                emoji="⏪"
-                name="The Echo"
-                description="Replay any position from your game history and explore alternatives"
-              />
+              <Link href="/echo" className="block bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:border-[#c8942a]/50 hover:shadow-md transition-all">
+                <div className="p-5">
+                  <p className="font-semibold text-gray-900">The Echo</p>
+                  <p className="text-xs text-gray-500 mt-0.5">See a position and figure out what move was just played</p>
+                </div>
+              </Link>
               <LockedFeature
                 emoji="📖"
                 name="Opening Trainer"

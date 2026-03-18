@@ -207,6 +207,19 @@ model ScalesPosition {
   @@index([id])
 }
 
+model EchoPosition {
+  id           String   @id @default(cuid())
+  fenBefore    String   // FEN before the move was played
+  fenAfter     String   @unique // FEN after the move (shown to user)
+  moveSan      String   // SAN notation, e.g. "Bxf7+"
+  moveUci      String   // UCI notation, e.g. "c4f7"
+  gameUrl      String?  // URL of the source game
+  explanation  String   // Short description, e.g. "captures the bishop"
+  createdAt    DateTime @default(now())
+
+  @@index([id])
+}
+
 model LibraryPuzzle {
   id            String   @id @default(cuid())
   /// Lichess puzzle ID — unique identifier from Lichess database
