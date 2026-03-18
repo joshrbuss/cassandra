@@ -7,6 +7,10 @@
     {
       "path": "/api/cron/analyse-games",
       "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/sync-search-console",
+      "schedule": "0 6 * * *"
     }
   ],
   "functions": {
@@ -21,6 +25,9 @@
     },
     "app/api/internal/import-games/route.ts": {
       "maxDuration": 300
+    },
+    "app/api/cron/sync-search-console/route.ts": {
+      "maxDuration": 60
     }
   }
 }
