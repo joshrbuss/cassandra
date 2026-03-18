@@ -309,7 +309,7 @@
   "cookie.privacyLink": "Политика конфиденциальности →",
   "cookie.preferences": "Настройки cookie",
 
-  "changelog.message": "🆕 Cassandra Chess v1.2 — управление cookies, политика конфиденциальности, улучшения скорости и многое другое. Chess On! 🏆",
+  "changelog.message": "🆕 Cassandra Chess v1.3 — режим The Scales (ранжирование ходов), Prophecy с подбором по Elo, и The Trials дуэльные задачи. Chess On! 🏆",
   "changelog.seeMore": "Смотреть новости →",
 
   "landing.hero.sellingPoint": "Устали платить за анализ партий? Мы анализируем ваши партии бесплатно и превращаем ваши ошибки в задачи.",

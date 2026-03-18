@@ -315,6 +315,20 @@ export default async function DashboardPage() {
           </span>
         </Link>
 
+        {/* ── The Scales ── */}
+        <Link
+          href="/scales"
+          className="flex items-center justify-between bg-[#0e0e0e] text-white rounded-xl p-5 mb-4 hover:bg-[#1a1a1a] transition-colors border border-[#2a2a2a]"
+        >
+          <div>
+            <p className="font-semibold text-white">⚖️ The Scales</p>
+            <p className="text-xs text-gray-400 mt-1">
+              Rank the top 3 moves — train your evaluation instinct
+            </p>
+          </div>
+          <span className="text-white/40 text-xl ml-3">&#8594;</span>
+        </Link>
+
         {/* ── Learn articles ── */}
         <Link
           href="/learn"
@@ -455,12 +469,6 @@ export default async function DashboardPage() {
                 name="The Echo"
                 description="Replay any position from your game history and explore alternatives"
               />
-              <Link href="/scales" className="block bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:border-[#c8942a]/50 hover:shadow-md transition-all">
-                <div className="p-5">
-                  <p className="font-semibold text-gray-900">🎯 The Scales</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Rank the top 3 moves — train your evaluation instinct</p>
-                </div>
-              </Link>
               <LockedFeature
                 emoji="📖"
                 name="Opening Trainer"
