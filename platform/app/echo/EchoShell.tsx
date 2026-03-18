@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Chess } from "chess.js";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { BoardSkeleton } from "@/components/Skeleton";
+import type { PieceDropHandlerArgs } from "@/components/ChessBoardWrapper";
 
 const ChessBoardWrapper = dynamic(
   () => import("@/components/ChessBoardWrapper"),
@@ -39,17 +40,15 @@ function getCapturedPieces(fen: string): { white: string[]; black: string[] } {
     }
   }
 
-  const whiteCaptured: string[] = []; // black pieces that were captured
-  const blackCaptured: string[] = []; // white pieces that were captured
+  const whiteCaptured: string[] = []; // black pieces that were captured by white
+  const blackCaptured: string[] = []; // white pieces that were captured by black
 
   for (const [piece, count] of Object.entries(starting)) {
     const diff = count - (current[piece] ?? 0);
     for (let i = 0; i < diff; i++) {
       if (piece === piece.toUpperCase()) {
-        // White piece captured by black
         blackCaptured.push(piece);
       } else {
-        // Black piece captured by white
         whiteCaptured.push(piece);
       }
     }
@@ -71,7 +70,7 @@ export default function EchoShell({
   moveUci,
   explanation,
 }: Props) {
-  // Determine who just moved (it's the opposite of whose turn it is in fenAfter)
+  // Determine who just moved (opposite of whose turn it is in fenAfter)
   const sideToMove = fenAfter.split(" ")[1]; // "w" or "b"
   const movedSide = sideToMove === "w" ? "black" : "white";
   const boardOrientation: "white" | "black" =
@@ -79,7 +78,6 @@ export default function EchoShell({
 
   const [phase, setPhase] = useState<Phase>("selecting");
   const [selectedPiece, setSelectedPiece] = useState<string | null>(null);
-  const [userGuessFrom, setUserGuessFrom] = useState<string | null>(null);
   const [highlightSquares, setHighlightSquares] = useState<
     Record<string, React.CSSProperties>
   >({});
@@ -91,70 +89,133 @@ export default function EchoShell({
   const captured = getCapturedPieces(fenAfter);
 
   /**
-   * Step 1: User clicks a piece on the board (the piece that moved).
-   * Step 2: User clicks the square it came FROM.
+   * Compute plausible "from" squares for a piece on the given square.
+   * Uses fenBefore to find all legal moves that land on `toSquare`.
    */
+  const getRetrogradeHints = useCallback(
+    (toSquare: string): string[] => {
+      try {
+        const chess = new Chess(fenBefore);
+        const allMoves = chess.moves({ verbose: true });
+        return allMoves
+          .filter((m) => m.to === toSquare)
+          .map((m) => m.from);
+      } catch {
+        return [];
+      }
+    },
+    [fenBefore]
+  );
+
+  /** Show selection highlight + retrograde from-square dots */
+  function showSelectionHints(square: string) {
+    const hints = getRetrogradeHints(square);
+    const styles: Record<string, React.CSSProperties> = {
+      [square]: { backgroundColor: "rgba(200, 148, 42, 0.5)" },
+    };
+    for (const from of hints) {
+      styles[from] = {
+        background:
+          "radial-gradient(circle, rgba(200, 148, 42, 0.4) 25%, transparent 25%)",
+        borderRadius: "50%",
+      };
+    }
+    setHighlightSquares(styles);
+  }
+
+  /** Check the user's guess and update phase */
+  function checkGuess(pieceSquare: string, fromSquare: string) {
+    const isCorrect =
+      pieceSquare === correctTo && fromSquare === correctFrom;
+
+    if (isCorrect) {
+      setPhase("correct");
+      setHighlightSquares({
+        [correctFrom]: { backgroundColor: "rgba(76, 175, 80, 0.5)" },
+        [correctTo]: { backgroundColor: "rgba(76, 175, 80, 0.5)" },
+      });
+      setShowBeforePosition(true);
+      setTimeout(() => setShowBeforePosition(false), 2000);
+      fetch("/api/scales/complete", { method: "POST" }).catch(() => {});
+    } else {
+      setPhase("wrong");
+      const styles: Record<string, React.CSSProperties> = {
+        [correctFrom]: { backgroundColor: "rgba(76, 175, 80, 0.5)" },
+        [correctTo]: { backgroundColor: "rgba(76, 175, 80, 0.5)" },
+      };
+      if (pieceSquare !== correctTo) {
+        styles[pieceSquare] = {
+          backgroundColor: "rgba(244, 67, 54, 0.4)",
+        };
+      }
+      if (fromSquare !== correctFrom) {
+        styles[fromSquare] = { backgroundColor: "rgba(244, 67, 54, 0.4)" };
+      }
+      setHighlightSquares(styles);
+    }
+  }
+
+  /** Click-to-move: first click selects piece, second click picks from-square */
   const handleSquareClick = useCallback(
     ({ square }: { piece: unknown; square: string }) => {
       if (phase !== "selecting") return;
 
       if (!selectedPiece) {
-        // Step 1: select the piece that moved — must be on the "after" board
+        // Step 1: select the piece that moved
         const chess = new Chess(fenAfter);
         const piece = chess.get(square as never);
         if (!piece) return;
-        // Only allow selecting pieces of the side that just moved
         const movedColor = movedSide === "white" ? "w" : "b";
         if (piece.color !== movedColor) return;
 
         setSelectedPiece(square);
-        setHighlightSquares({
-          [square]: { backgroundColor: "rgba(200, 148, 42, 0.5)" },
-        });
+        showSelectionHints(square);
       } else {
-        // Step 2: user clicks where the piece came FROM
-        setUserGuessFrom(square);
-
-        const isCorrect =
-          selectedPiece === correctTo && square === correctFrom;
-
-        if (isCorrect) {
-          setPhase("correct");
-          setHighlightSquares({
-            [correctFrom]: { backgroundColor: "rgba(76, 175, 80, 0.5)" },
-            [correctTo]: { backgroundColor: "rgba(76, 175, 80, 0.5)" },
-          });
-          // Show the "before" position briefly
-          setShowBeforePosition(true);
-          setTimeout(() => setShowBeforePosition(false), 2000);
-          // Credit streak
-          fetch("/api/scales/complete", { method: "POST" }).catch(() => {});
-        } else {
-          setPhase("wrong");
-          // Highlight the user's wrong guess in red, correct answer in green
-          const styles: Record<string, React.CSSProperties> = {
-            [correctFrom]: { backgroundColor: "rgba(76, 175, 80, 0.5)" },
-            [correctTo]: { backgroundColor: "rgba(76, 175, 80, 0.5)" },
-          };
-          if (selectedPiece !== correctTo) {
-            styles[selectedPiece] = {
-              backgroundColor: "rgba(244, 67, 54, 0.4)",
-            };
-          }
-          if (square !== correctFrom) {
-            styles[square] = { backgroundColor: "rgba(244, 67, 54, 0.4)" };
-          }
-          setHighlightSquares(styles);
+        if (square === selectedPiece) {
+          // Clicked same square — deselect
+          setSelectedPiece(null);
+          setHighlightSquares({});
+          return;
         }
+
+        // Check if clicking another piece of the same color — reselect
+        const chess = new Chess(fenAfter);
+        const piece = chess.get(square as never);
+        const movedColor = movedSide === "white" ? "w" : "b";
+        if (piece && piece.color === movedColor) {
+          setSelectedPiece(square);
+          showSelectionHints(square);
+          return;
+        }
+
+        // Step 2: user clicks where the piece came FROM
+        checkGuess(selectedPiece, square);
+        setSelectedPiece(null);
       }
     },
-    [phase, selectedPiece, correctTo, correctFrom, fenAfter, movedSide]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [phase, selectedPiece, correctTo, correctFrom, fenAfter, fenBefore, movedSide]
   );
+
+  /** Drag-and-drop: user drags piece from its current square to where it came from */
+  function handleDrop({ sourceSquare, targetSquare }: PieceDropHandlerArgs): boolean {
+    if (phase !== "selecting" || !targetSquare) return false;
+
+    // Verify the dragged piece belongs to the side that just moved
+    const chess = new Chess(fenAfter);
+    const piece = chess.get(sourceSquare as never);
+    if (!piece) return false;
+    const movedColor = movedSide === "white" ? "w" : "b";
+    if (piece.color !== movedColor) return false;
+
+    checkGuess(sourceSquare, targetSquare);
+    setSelectedPiece(null);
+    return true;
+  }
 
   /** Reset selection without changing phase */
   function resetSelection() {
     setSelectedPiece(null);
-    setUserGuessFrom(null);
     setHighlightSquares({});
   }
 
@@ -186,8 +247,8 @@ export default function EchoShell({
               </p>
               <p className="text-gray-500 text-sm mt-1">
                 {!selectedPiece
-                  ? "Click the piece that moved to reach this position."
-                  : "Now click the square it came from."}
+                  ? "Click or drag the piece that moved, then show where it came from."
+                  : "Now click the square it came from, or drag it there."}
               </p>
               {selectedPiece && (
                 <button
@@ -274,7 +335,8 @@ export default function EchoShell({
         <div className="w-full aspect-square">
           <ChessBoardWrapper
             position={displayFen}
-            interactive={false}
+            interactive={phase === "selecting"}
+            onPieceDrop={handleDrop}
             onSquareClick={handleSquareClick}
             boardOrientation={boardOrientation}
             squareStyles={highlightSquares}
