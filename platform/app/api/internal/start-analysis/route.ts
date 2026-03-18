@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       await fetch(`${baseUrl}/api/cron/analyse-games`, {
         method: "POST",
         headers: {
-          ...(secret ? { Authorization: `Bearer ${secret}` } : {}),
+          ...(process.env.CRON_SECRET ? { Authorization: `Bearer ${process.env.CRON_SECRET}` } : {}),
         },
       });
     } catch (err) {
