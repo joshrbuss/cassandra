@@ -11,7 +11,7 @@ const ChessBoardWrapper = dynamic(() => import("@/components/ChessBoardWrapper")
   loading: () => <BoardSkeleton />,
 });
 
-interface BattlePuzzleProps {
+interface TrialsPuzzleProps {
   puzzleId: string;
   solvingFen: string;
   solutionMoves: string;
@@ -24,13 +24,13 @@ interface BattlePuzzleProps {
 
 type Phase = "playing" | "opponent" | "solved" | "wrong";
 
-export default function BattlePuzzle({
+export default function TrialsPuzzle({
   solvingFen,
   solutionMoves,
   boardOrientation = "white",
   onComplete,
   timeoutMs = 120_000,
-}: BattlePuzzleProps) {
+}: TrialsPuzzleProps) {
   const solution = solutionMoves.trim().split(/\s+/);
   const [chess] = useState(() => new Chess(solvingFen));
   const [fen, setFen] = useState(solvingFen);

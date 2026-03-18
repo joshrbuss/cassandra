@@ -112,6 +112,85 @@ async function runAnalysis(fen: string): Promise<EngineResult | null> {
   });
 }
 
+/**
+ * Evaluates a FEN position with MultiPV and returns the top N moves + centipawn scores.
+ * Returns an empty array on timeout or if the worker is unavailable.
+ */
+export async function analyzePositionMultiPV(
+  fen: string,
+  numLines: number = 3
+): Promise<EngineResult[]> {
+  const myTurn = lock.then(() => runMultiPVAnalysis(fen, numLines));
+  lock = myTurn.then(
+    () => {},
+    () => {}
+  );
+  return myTurn;
+}
+
+async function runMultiPVAnalysis(
+  fen: string,
+  numLines: number
+): Promise<EngineResult[]> {
+  try {
+    await ensureInit();
+  } catch {
+    return [];
+  }
+
+  const sf = ensureWorker();
+
+  return new Promise<EngineResult[]>((resolve) => {
+    const pvResults = new Map<number, EngineResult>();
+    let settled = false;
+
+    const finish = (results: EngineResult[]) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      sf.removeEventListener("message", handler);
+      // Reset MultiPV back to 1 for other callers
+      sf.postMessage("setoption name MultiPV value 1");
+      resolve(results);
+    };
+
+    const timeout = setTimeout(() => finish([]), TIMEOUT_MS);
+
+    const handler = (e: MessageEvent) => {
+      const line = typeof e.data === "string" ? e.data : "";
+      // Parse "info depth D multipv N score cp X ... pv MOVE ..."
+      if (line.includes("score cp") && line.includes("multipv")) {
+        const depthMatch = line.match(/depth (\d+)/);
+        const depth = depthMatch ? parseInt(depthMatch[1], 10) : 0;
+        if (depth < DEPTH) return; // Only use final depth results
+        const pvNum = line.match(/multipv (\d+)/);
+        const cpMatch = line.match(/score cp (-?\d+)/);
+        const moveMatch = line.match(/\bpv ([a-h][1-8][a-h][1-8]\w?)/);
+        if (pvNum && cpMatch && moveMatch) {
+          pvResults.set(parseInt(pvNum[1], 10), {
+            move: moveMatch[1],
+            cp: parseInt(cpMatch[1], 10),
+          });
+        }
+      }
+      if (line.startsWith("bestmove")) {
+        const results: EngineResult[] = [];
+        for (let i = 1; i <= numLines; i++) {
+          const r = pvResults.get(i);
+          if (r) results.push(r);
+        }
+        finish(results);
+      }
+    };
+
+    sf.addEventListener("message", handler);
+    sf.postMessage("ucinewgame");
+    sf.postMessage(`setoption name MultiPV value ${numLines}`);
+    sf.postMessage(`position fen ${fen}`);
+    sf.postMessage(`go depth ${DEPTH}`);
+  });
+}
+
 /** Terminates the worker. Call when analysis is fully done to free memory. */
 export function terminateEngine() {
   if (worker) {

@@ -22,7 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { ...withAlternates(BASE_URL), lastModified: now, changeFrequency: "daily", priority: 1 },
     { ...withAlternates(`${BASE_URL}/learn`), lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { ...withAlternates(`${BASE_URL}/puzzles`), lastModified: now, changeFrequency: "daily", priority: 0.9 },
-    { ...withAlternates(`${BASE_URL}/battles`), lastModified: now, changeFrequency: "daily", priority: 0.8 },
+    { ...withAlternates(`${BASE_URL}/trials`), lastModified: now, changeFrequency: "daily", priority: 0.8 },
     { ...withAlternates(`${BASE_URL}/leaderboard`), lastModified: now, changeFrequency: "hourly", priority: 0.7 },
     { ...withAlternates(`${BASE_URL}/creator`), lastModified: now, changeFrequency: "daily", priority: 0.6 },
     { ...withAlternates(`${BASE_URL}/privacy`), lastModified: now, changeFrequency: "monthly", priority: 0.3 },

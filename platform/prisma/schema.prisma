@@ -107,7 +107,7 @@ model User {
   /// "lichess" | "chess_com" — which platform rawElo came from
   eloPlatform       String?
   avatarUrl         String?
-  battleRating      Int       @default(1200)
+  trialRating       Int       @default(1200) @map("battleRating")
   currentStreak     Int       @default(0)
   longestStreak     Int       @default(0)
   /// Consecutive days without solving a puzzle
@@ -134,9 +134,9 @@ model User {
 
   puzzles          Puzzle[]
   rawGames         RawGame[]
-  battlesAsPlayer1 Battle[]  @relation("BattlePlayer1")
-  battlesAsPlayer2 Battle[]  @relation("BattlePlayer2")
-  battlesWon       Battle[]  @relation("BattleWinner")
+  trialsAsPlayer1  Trial[]   @relation("TrialPlayer1")
+  trialsAsPlayer2  Trial[]   @relation("TrialPlayer2")
+  trialsWon        Trial[]   @relation("TrialWinner")
 }
 
 model Subscriber {
@@ -148,7 +148,7 @@ model Subscriber {
   createdAt DateTime @default(now())
 }
 
-model Battle {
+model Trial {
   id          String    @id @default(cuid())
   player1Id   String
   player2Id   String?
@@ -160,10 +160,11 @@ model Battle {
   createdAt   DateTime  @default(now())
   completedAt DateTime?
 
-  player1 User  @relation("BattlePlayer1", fields: [player1Id], references: [id], onDelete: Cascade)
-  player2 User? @relation("BattlePlayer2", fields: [player2Id], references: [id], onDelete: SetNull)
-  winner  User? @relation("BattleWinner", fields: [winnerId], references: [id], onDelete: SetNull)
+  player1 User  @relation("TrialPlayer1", fields: [player1Id], references: [id], onDelete: Cascade)
+  player2 User? @relation("TrialPlayer2", fields: [player2Id], references: [id], onDelete: SetNull)
+  winner  User? @relation("TrialWinner", fields: [winnerId], references: [id], onDelete: SetNull)
 
+  @@map("Battle")
   @@index([status])
 }
 

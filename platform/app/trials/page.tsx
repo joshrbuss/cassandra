@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { auth } from "@/auth";
-import { listOpenBattles } from "@/lib/battles/battleService";
+import { listOpenTrials } from "@/lib/trials/trialService";
 import { prisma } from "@/lib/prisma";
-import { playerDisplayName } from "@/lib/battles/types";
-import CreateBattleButton from "./CreateBattleButton";
+import { playerDisplayName } from "@/lib/trials/types";
+import CreateTrialButton from "./CreateTrialButton";
 
 export const metadata: Metadata = {
   title: "The Trials",
   description: "Challenge another player to a head-to-head puzzle trial.",
 };
 
-export default async function BattlesPage() {
-  const [session, openBattles, activeBattleCount] = await Promise.all([
+export default async function TrialsPage() {
+  const [session, openTrials, activeTrialCount] = await Promise.all([
     auth(),
-    listOpenBattles(),
-    prisma.battle.count({ where: { status: "active" } }),
+    listOpenTrials(),
+    prisma.trial.count({ where: { status: "active" } }),
   ]);
 
   const isSignedIn = !!session?.userId;
@@ -36,55 +36,55 @@ export default async function BattlesPage() {
         {/* Stats bar */}
         <div className="flex gap-6 mb-6 text-sm text-gray-500">
           <span>
-            <span className="font-semibold text-gray-900">{activeBattleCount}</span> active{" "}
-            {activeBattleCount === 1 ? "trial" : "trials"}
+            <span className="font-semibold text-gray-900">{activeTrialCount}</span> active{" "}
+            {activeTrialCount === 1 ? "trial" : "trials"}
           </span>
           <span>
-            <span className="font-semibold text-gray-900">{openBattles.length}</span> open{" "}
-            {openBattles.length === 1 ? "open challenge" : "open challenges"}
+            <span className="font-semibold text-gray-900">{openTrials.length}</span> open{" "}
+            {openTrials.length === 1 ? "open challenge" : "open challenges"}
           </span>
         </div>
 
-        {/* Create battle */}
+        {/* Create trial */}
         <div className="bg-white border border-gray-200 rounded-xl p-5 mb-6 shadow-sm">
           <h2 className="font-semibold text-gray-900 mb-1">Start a challenge</h2>
           <p className="text-sm text-gray-500 mb-4">
             Get a shareable link and send it to a friend, or wait in the lobby for a random opponent.
           </p>
           {isSignedIn ? (
-            <CreateBattleButton />
+            <CreateTrialButton />
           ) : (
             <div className="text-sm text-gray-500">
               <Link href="/connect" className="text-blue-600 hover:underline font-medium">
                 Connect your account
               </Link>{" "}
-              to create a battle.
+              to create a trial.
             </div>
           )}
         </div>
 
-        {/* Open battles */}
+        {/* Open trials */}
         <div>
           <h2 className="font-semibold text-gray-900 mb-3">Open challenges</h2>
-          {openBattles.length === 0 ? (
+          {openTrials.length === 0 ? (
             <p className="text-sm text-gray-400 italic">No open challenges right now — create one above!</p>
           ) : (
             <ol className="space-y-2">
-              {openBattles.map((b) => (
-                <li key={b.id}>
+              {openTrials.map((t) => (
+                <li key={t.id}>
                   <Link
-                    href={`/battles/${b.id}`}
+                    href={`/trials/${t.id}`}
                     className="flex items-center justify-between bg-white border border-gray-200 rounded-lg px-4 py-3 hover:border-blue-300 hover:shadow-sm transition-all"
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-lg">⚔️</span>
                       <div>
                         <div className="text-sm font-medium text-gray-900">
-                          {playerDisplayName(b.player1)}&apos;s challenge
+                          {playerDisplayName(t.player1)}&apos;s challenge
                         </div>
                         <div className="text-xs text-gray-400">
-                          Rating {b.player1.battleRating} •{" "}
-                          {new Date(b.createdAt).toLocaleTimeString([], {
+                          Rating {t.player1.trialRating} •{" "}
+                          {new Date(t.createdAt).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
                           })}

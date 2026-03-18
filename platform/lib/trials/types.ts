@@ -1,4 +1,4 @@
-export type BattleStatus = "waiting" | "active" | "completed";
+export type TrialStatus = "waiting" | "active" | "completed";
 
 export type RoundResult = {
   puzzleId: string;
@@ -10,28 +10,28 @@ export type RoundResult = {
   roundWinnerId: string | null;
 };
 
-export type BattlePlayer = {
+export type TrialPlayer = {
   id: string;
   lichessUsername: string | null;
   chessComUsername: string | null;
-  battleRating: number;
+  trialRating: number;
 };
 
-export type BattleData = {
+export type TrialData = {
   id: string;
   player1Id: string;
   player2Id: string | null;
   winnerId: string | null;
   rounds: RoundResult[];
-  status: BattleStatus;
+  status: TrialStatus;
   createdAt: Date;
   completedAt: Date | null;
-  player1: BattlePlayer;
-  player2: BattlePlayer | null;
+  player1: TrialPlayer;
+  player2: TrialPlayer | null;
 };
 
 export function playerDisplayName(
-  player: Pick<BattlePlayer, "lichessUsername" | "chessComUsername">
+  player: Pick<TrialPlayer, "lichessUsername" | "chessComUsername">
 ): string {
   return player.lichessUsername ?? player.chessComUsername ?? "Anonymous";
 }

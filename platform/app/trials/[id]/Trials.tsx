@@ -3,11 +3,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import type { BattleData, RoundResult } from "@/lib/battles/types";
-import { playerDisplayName } from "@/lib/battles/types";
+import type { TrialData, RoundResult } from "@/lib/trials/types";
+import { playerDisplayName } from "@/lib/trials/types";
 import ShareButton from "@/components/marketing/ShareButton";
 
-const BattlePuzzle = dynamic(() => import("@/components/puzzles/BattlePuzzle"), {
+const TrialsPuzzle = dynamic(() => import("@/components/puzzles/TrialsPuzzle"), {
   ssr: false,
 });
 
@@ -18,8 +18,8 @@ interface PuzzleRow {
   themes: string;
 }
 
-interface BattleArenaProps {
-  initialBattle: BattleData;
+interface TrialsProps {
+  initialTrial: TrialData;
   currentUserId: string | null;
   /** Pre-fetched puzzle data for rounds */
   puzzles: PuzzleRow[];
@@ -31,17 +31,17 @@ type ArenaPhase =
   | "playing"       // actively solving current round's puzzle
   | "submitted"     // submitted, waiting for opponent
   | "round_result"  // brief round result screen
-  | "complete";     // battle over
+  | "complete";     // trial over
 
-export default function BattleArena({
-  initialBattle,
+export default function Trials({
+  initialTrial,
   currentUserId,
   puzzles,
-}: BattleArenaProps) {
-  const [battle, setBattle] = useState<BattleData>(initialBattle);
+}: TrialsProps) {
+  const [trial, setTrial] = useState<TrialData>(initialTrial);
   const [arenaPhase, setArenaPhase] = useState<ArenaPhase>(() =>
-    initialBattle.status === "waiting" ? "waiting" :
-    initialBattle.status === "completed" ? "complete" :
+    initialTrial.status === "waiting" ? "waiting" :
+    initialTrial.status === "completed" ? "complete" :
     "countdown"
   );
   const [countdown, setCountdown] = useState(3);
@@ -50,39 +50,39 @@ export default function BattleArena({
   const [myRatingChange, setMyRatingChange] = useState<number | null>(null);
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const prevStatusRef = useRef(initialBattle.status);
+  const prevStatusRef = useRef(initialTrial.status);
 
-  const isPlayer1 = battle.player1Id === currentUserId;
-  const isPlayer2 = battle.player2Id === currentUserId;
+  const isPlayer1 = trial.player1Id === currentUserId;
+  const isPlayer2 = trial.player2Id === currentUserId;
   const isParticipant = isPlayer1 || isPlayer2;
 
   const myName = currentUserId
     ? isPlayer1
-      ? playerDisplayName(battle.player1)
-      : battle.player2
-      ? playerDisplayName(battle.player2)
+      ? playerDisplayName(trial.player1)
+      : trial.player2
+      ? playerDisplayName(trial.player2)
       : "You"
     : "Spectator";
 
   const opponentName = isPlayer1
-    ? battle.player2 ? playerDisplayName(battle.player2) : "Waiting…"
-    : playerDisplayName(battle.player1);
+    ? trial.player2 ? playerDisplayName(trial.player2) : "Waiting…"
+    : playerDisplayName(trial.player1);
 
   // Score from rounds
   const myId = currentUserId;
-  const myWins = battle.rounds.filter((r) => r.roundWinnerId === myId).length;
-  const oppWins = battle.rounds.filter(
+  const myWins = trial.rounds.filter((r) => r.roundWinnerId === myId).length;
+  const oppWins = trial.rounds.filter(
     (r) => r.roundWinnerId !== null && r.roundWinnerId !== myId
   ).length;
 
   // Active round: first round where I haven't yet submitted
-  const activeRound = battle.rounds.find((r) => {
+  const activeRound = trial.rounds.find((r) => {
     if (isPlayer1) return r.player1SolveMs === null;
     if (isPlayer2) return r.player2SolveMs === null;
     return false;
   });
 
-  const activeRoundIdx = battle.rounds.findIndex((r) => {
+  const activeRoundIdx = trial.rounds.findIndex((r) => {
     if (isPlayer1) return r.player1SolveMs === null;
     if (isPlayer2) return r.player2SolveMs === null;
     return false;
@@ -90,13 +90,13 @@ export default function BattleArena({
 
   const currentPuzzle = activeRound ? puzzles.find((p) => p.id === activeRound.puzzleId) : null;
 
-  // Polling: update battle state every 2s
-  const fetchBattle = useCallback(async () => {
+  // Polling: update trial state every 2s
+  const fetchTrial = useCallback(async () => {
     try {
-      const res = await fetch(`/api/battles/${battle.id}`, { cache: "no-store" });
+      const res = await fetch(`/api/trials/${trial.id}`, { cache: "no-store" });
       if (!res.ok) return;
-      const updated: BattleData = await res.json();
-      setBattle(updated);
+      const updated: TrialData = await res.json();
+      setTrial(updated);
 
       // Detect transition from waiting → active
       if (prevStatusRef.current === "waiting" && updated.status === "active") {
@@ -113,9 +113,9 @@ export default function BattleArena({
         if (myId) {
           const myPlayer =
             updated.player1Id === myId ? updated.player1 : updated.player2;
-          const oldRating = isPlayer1 ? initialBattle.player1.battleRating : initialBattle.player2?.battleRating;
+          const oldRating = isPlayer1 ? initialTrial.player1.trialRating : initialTrial.player2?.trialRating;
           if (myPlayer && oldRating !== undefined) {
-            setMyRatingChange(myPlayer.battleRating - oldRating);
+            setMyRatingChange(myPlayer.trialRating - oldRating);
           }
         }
       }
@@ -123,11 +123,11 @@ export default function BattleArena({
       // ignore network errors
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [battle.id]);
+  }, [trial.id]);
 
   function startPolling() {
     if (pollRef.current) return;
-    pollRef.current = setInterval(fetchBattle, 2000);
+    pollRef.current = setInterval(fetchTrial, 2000);
   }
 
   function stopPolling() {
@@ -152,11 +152,11 @@ export default function BattleArena({
   }
 
   useEffect(() => {
-    if (battle.status === "waiting" || battle.status === "active") {
+    if (trial.status === "waiting" || trial.status === "active") {
       startPolling();
     }
-    if (battle.status === "active" && arenaPhase === "countdown") {
-      // If we loaded directly into an active battle (player 2's first load)
+    if (trial.status === "active" && arenaPhase === "countdown") {
+      // If we loaded directly into an active trial (player 2's first load)
       startCountdown();
     }
     return () => stopPolling();
@@ -168,7 +168,7 @@ export default function BattleArena({
     setArenaPhase("submitted");
 
     try {
-      const res = await fetch(`/api/battles/${battle.id}/submit`, {
+      const res = await fetch(`/api/trials/${trial.id}/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -180,24 +180,24 @@ export default function BattleArena({
       const data = await res.json();
       if (!res.ok) return;
 
-      setBattle(data.battle);
+      setTrial(data.trial);
 
-      if (data.battleComplete) {
+      if (data.trialComplete) {
         stopPolling();
         setArenaPhase("complete");
-        const updatedBattle: BattleData = data.battle;
+        const updatedTrial: TrialData = data.trial;
         const myPlayer =
-          updatedBattle.player1Id === myId ? updatedBattle.player1 : updatedBattle.player2;
-        const oldRating = isPlayer1 ? initialBattle.player1.battleRating : initialBattle.player2?.battleRating;
+          updatedTrial.player1Id === myId ? updatedTrial.player1 : updatedTrial.player2;
+        const oldRating = isPlayer1 ? initialTrial.player1.trialRating : initialTrial.player2?.trialRating;
         if (myPlayer && oldRating !== undefined) {
-          setMyRatingChange(myPlayer.battleRating - oldRating);
+          setMyRatingChange(myPlayer.trialRating - oldRating);
         }
         return;
       }
 
       if (data.roundResolved) {
         // Show the round result briefly, then move to next round
-        const resolvedRound = (data.battle as BattleData).rounds.find(
+        const resolvedRound = (data.trial as TrialData).rounds.find(
           (r: RoundResult) => r.puzzleId === activeRound.puzzleId
         );
         setLastRoundResult(resolvedRound ?? null);
@@ -205,7 +205,7 @@ export default function BattleArena({
 
         setTimeout(() => {
           setLastRoundResult(null);
-          const nextRound = (data.battle as BattleData).rounds.find(
+          const nextRound = (data.trial as TrialData).rounds.find(
             (r: RoundResult) =>
               isPlayer1 ? r.player1SolveMs === null : r.player2SolveMs === null
           );
@@ -222,10 +222,10 @@ export default function BattleArena({
   }
 
   async function handleJoin() {
-    const res = await fetch(`/api/battles/${battle.id}/join`, { method: "POST" });
+    const res = await fetch(`/api/trials/${trial.id}/join`, { method: "POST" });
     if (res.ok) {
-      const updated: BattleData = await res.json();
-      setBattle(updated);
+      const updated: TrialData = await res.json();
+      setTrial(updated);
       prevStatusRef.current = "active";
       startCountdown();
     }
@@ -248,12 +248,12 @@ export default function BattleArena({
             onClick={handleJoin}
             className="bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Join Battle
+            Join Trial
           </button>
         )}
         {!currentUserId && (
           <p className="text-sm text-gray-400">
-            <Link href="/api/auth/signin" className="text-blue-600 underline">Sign in</Link> to join this battle.
+            <Link href="/api/auth/signin" className="text-blue-600 underline">Sign in</Link> to join this trial.
           </p>
         )}
       </div>
@@ -261,8 +261,8 @@ export default function BattleArena({
   }
 
   if (arenaPhase === "complete") {
-    const iWon = battle.winnerId === currentUserId;
-    const isDraw = !battle.winnerId;
+    const iWon = trial.winnerId === currentUserId;
+    const isDraw = !trial.winnerId;
     return (
       <div className="text-center space-y-6">
         <div className="text-6xl">{iWon ? "🏆" : isDraw ? "🤝" : "😔"}</div>
@@ -289,10 +289,10 @@ export default function BattleArena({
 
         <div className="flex gap-3 justify-center">
           <Link
-            href="/battles"
+            href="/trials"
             className="bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
           >
-            New Battle
+            New Trial
           </Link>
           <Link
             href="/puzzles"
@@ -304,7 +304,7 @@ export default function BattleArena({
 
         {iWon && (
           <ShareButton
-            text={`I just won a Cassandra Chess puzzle battle ${myWins}–${oppWins}! Challenge me:`}
+            text={`I just won a Cassandra Chess puzzle trial ${myWins}–${oppWins}! Challenge me:`}
             className="flex items-center justify-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors mx-auto"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -408,7 +408,7 @@ export default function BattleArena({
       </div>
 
       {currentPuzzle ? (
-        <BattlePuzzle
+        <TrialsPuzzle
           key={currentPuzzle.id}
           puzzleId={currentPuzzle.id}
           solvingFen={currentPuzzle.solvingFen}

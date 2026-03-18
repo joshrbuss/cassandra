@@ -455,21 +455,23 @@ export default async function DashboardPage() {
                 name="The Echo"
                 description="Replay any position from your game history and explore alternatives"
               />
-              <LockedFeature
-                emoji="🎯"
-                name="The Scales"
-                description="Guess what rating played each move — train your intuition"
-              />
+              <Link href="/scales" className="block bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:border-[#c8942a]/50 hover:shadow-md transition-all">
+                <div className="p-5">
+                  <p className="font-semibold text-gray-900">🎯 The Scales</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Rank the top 3 moves — train your evaluation instinct</p>
+                </div>
+              </Link>
               <LockedFeature
                 emoji="📖"
                 name="Opening Trainer"
                 description="Master your opening repertoire with targeted drills"
               />
-              <LockedFeature
-                emoji="⚔️"
-                name="The Trials"
-                description="Real-time rated puzzle races with leaderboards and ELO"
-              />
+              <Link href="/trials" className="block bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:border-[#c8942a]/50 hover:shadow-md transition-all">
+                <div className="p-5">
+                  <p className="font-semibold text-gray-900">⚔️ The Trials</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Real-time rated puzzle races with leaderboards and ELO</p>
+                </div>
+              </Link>
             </div>
             <div className="mt-4">
               <EmailSignup source="coming_soon_unified" headline={t("comingSoon.notifyHeadline")} cta={t("comingSoon.notifyCta")} />

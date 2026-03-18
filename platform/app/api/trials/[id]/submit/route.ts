@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { submitRound } from "@/lib/battles/battleService";
+import { submitRound } from "@/lib/trials/trialService";
 
 interface SubmitBody {
   puzzleId: string;
@@ -8,7 +8,7 @@ interface SubmitBody {
   success: boolean;
 }
 
-/** POST /api/battles/[id]/submit — record a player's round result */
+/** POST /api/trials/[id]/submit — record a player's round result */
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

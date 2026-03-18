@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function CreateBattleButton() {
+export default function CreateTrialButton() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -12,14 +12,14 @@ export default function CreateBattleButton() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/battles", { method: "POST" });
+      const res = await fetch("/api/trials", { method: "POST" });
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error ?? "Failed to create battle");
+        setError(data.error ?? "Failed to create trial");
         return;
       }
-      const battle = await res.json();
-      router.push(`/battles/${battle.id}`);
+      const trial = await res.json();
+      router.push(`/trials/${trial.id}`);
     } catch {
       setError("Network error — please try again");
     } finally {
@@ -34,7 +34,7 @@ export default function CreateBattleButton() {
         disabled={loading}
         className="bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors text-sm"
       >
-        {loading ? "Creating…" : "⚔️ Create Battle"}
+        {loading ? "Creating…" : "⚔️ Create Trial"}
       </button>
       {error && <p className="text-xs text-red-600">{error}</p>}
     </div>

@@ -5,7 +5,7 @@ export interface StatsResponse {
   puzzles_solved: number;
   registered_players: number;
   puzzles_in_library: number;
-  active_battles: number;
+  active_trials: number;
   longest_current_streak: number;
   from_real_games: number;
   total_players: number;
@@ -29,7 +29,7 @@ export async function GET() {
 
   const fifteenMinAgo = new Date(now - 15 * 60 * 1000);
 
-  const [siteStats, distinctPlayers, puzzleCount, activeBattleCount, streakAgg, userImportCount, totalUsers, recentActiveUsers] =
+  const [siteStats, distinctPlayers, puzzleCount, activeTrialCount, streakAgg, userImportCount, totalUsers, recentActiveUsers] =
     await Promise.all([
       prisma.siteStats.findUnique({ where: { id: 1 } }),
       prisma.puzzleAttempt.findMany({
@@ -38,7 +38,7 @@ export async function GET() {
         distinct: ["userId"],
       }),
       prisma.puzzle.count(),
-      prisma.battle.count({ where: { status: "active" } }),
+      prisma.trial.count({ where: { status: "active" } }),
       prisma.user.aggregate({ _max: { currentStreak: true } }),
       prisma.puzzle.count({ where: { source: "user_import" } }),
       prisma.user.count(),
@@ -56,7 +56,7 @@ export async function GET() {
     puzzles_solved: Number(siteStats?.totalPuzzlesSolved ?? 0),
     registered_players: distinctPlayers.length,
     puzzles_in_library: puzzleCount,
-    active_battles: activeBattleCount,
+    active_trials: activeTrialCount,
     longest_current_streak: streakAgg._max.currentStreak ?? 0,
     from_real_games: userImportCount,
     total_players: totalUsers,

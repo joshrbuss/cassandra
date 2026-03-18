@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { BattleData, BattleStatus, RoundResult } from "./types";
+import type { TrialData, TrialStatus, RoundResult } from "./types";
 
 const TOTAL_ROUNDS = 5;
 const K_FACTOR = 32;
@@ -8,7 +8,7 @@ const playerSelect = {
   id: true,
   lichessUsername: true,
   chessComUsername: true,
-  battleRating: true,
+  trialRating: true,
 } as const;
 
 function eloUpdate(rating: number, opponentRating: number, won: boolean): number {
@@ -16,7 +16,7 @@ function eloUpdate(rating: number, opponentRating: number, won: boolean): number
   return Math.round(rating + K_FACTOR * ((won ? 1 : 0) - expected));
 }
 
-function parseBattle(battle: {
+function parseTrial(trial: {
   id: string;
   player1Id: string;
   player2Id: string | null;
@@ -25,13 +25,13 @@ function parseBattle(battle: {
   status: string;
   createdAt: Date;
   completedAt: Date | null;
-  player1: { id: string; lichessUsername: string | null; chessComUsername: string | null; battleRating: number };
-  player2: { id: string; lichessUsername: string | null; chessComUsername: string | null; battleRating: number } | null;
-}): BattleData {
+  player1: { id: string; lichessUsername: string | null; chessComUsername: string | null; trialRating: number };
+  player2: { id: string; lichessUsername: string | null; chessComUsername: string | null; trialRating: number } | null;
+}): TrialData {
   return {
-    ...battle,
-    rounds: JSON.parse(battle.rounds) as RoundResult[],
-    status: battle.status as BattleStatus,
+    ...trial,
+    rounds: JSON.parse(trial.rounds) as RoundResult[],
+    status: trial.status as TrialStatus,
   };
 }
 
@@ -52,7 +52,7 @@ async function pickPuzzleIds(count: number): Promise<string[]> {
   return puzzles.map((p) => p.id).sort(() => Math.random() - 0.5);
 }
 
-export async function createBattle(player1Id: string): Promise<BattleData> {
+export async function createTrial(player1Id: string): Promise<TrialData> {
   const puzzleIds = await pickPuzzleIds(TOTAL_ROUNDS);
   const rounds: RoundResult[] = puzzleIds.map((id) => ({
     puzzleId: id,
@@ -63,51 +63,51 @@ export async function createBattle(player1Id: string): Promise<BattleData> {
     roundWinnerId: null,
   }));
 
-  const battle = await prisma.battle.create({
+  const trial = await prisma.trial.create({
     data: { player1Id, rounds: JSON.stringify(rounds), status: "waiting" },
     include: { player1: { select: playerSelect }, player2: { select: playerSelect } },
   });
 
-  return parseBattle(battle);
+  return parseTrial(trial);
 }
 
-export async function getBattle(battleId: string): Promise<BattleData | null> {
-  const battle = await prisma.battle.findUnique({
-    where: { id: battleId },
+export async function getTrial(trialId: string): Promise<TrialData | null> {
+  const trial = await prisma.trial.findUnique({
+    where: { id: trialId },
     include: { player1: { select: playerSelect }, player2: { select: playerSelect } },
   });
-  return battle ? parseBattle(battle) : null;
+  return trial ? parseTrial(trial) : null;
 }
 
-export async function listOpenBattles(): Promise<BattleData[]> {
-  const battles = await prisma.battle.findMany({
+export async function listOpenTrials(): Promise<TrialData[]> {
+  const trials = await prisma.trial.findMany({
     where: { status: "waiting" },
     orderBy: { createdAt: "desc" },
     take: 20,
     include: { player1: { select: playerSelect }, player2: { select: playerSelect } },
   });
-  return battles.map(parseBattle);
+  return trials.map(parseTrial);
 }
 
-export async function joinBattle(battleId: string, player2Id: string): Promise<BattleData> {
-  const battle = await prisma.battle.update({
-    where: { id: battleId, status: "waiting", player2Id: null },
+export async function joinTrial(trialId: string, player2Id: string): Promise<TrialData> {
+  const trial = await prisma.trial.update({
+    where: { id: trialId, status: "waiting", player2Id: null },
     data: { player2Id, status: "active" },
     include: { player1: { select: playerSelect }, player2: { select: playerSelect } },
   });
-  return parseBattle(battle);
+  return parseTrial(trial);
 }
 
 export async function submitRound(
-  battleId: string,
+  trialId: string,
   playerId: string,
   puzzleId: string,
   solveTimeMs: number,
   success: boolean
-): Promise<{ battle: BattleData; roundResolved: boolean; battleComplete: boolean }> {
+): Promise<{ trial: TrialData; roundResolved: boolean; trialComplete: boolean }> {
   return prisma.$transaction(async (tx) => {
-    const raw = await tx.battle.findUniqueOrThrow({
-      where: { id: battleId, status: "active" },
+    const raw = await tx.trial.findUniqueOrThrow({
+      where: { id: trialId, status: "active" },
       include: { player1: { select: playerSelect }, player2: { select: playerSelect } },
     });
 
@@ -117,7 +117,7 @@ export async function submitRound(
 
     const rounds = JSON.parse(raw.rounds) as RoundResult[];
     const roundIndex = rounds.findIndex((r) => r.puzzleId === puzzleId);
-    if (roundIndex === -1) throw new Error("Puzzle not in this battle");
+    if (roundIndex === -1) throw new Error("Puzzle not in this trial");
 
     const round = rounds[roundIndex];
     if (isPlayer1 && round.player1SolveMs !== null) throw new Error("Already submitted for this round");
@@ -132,7 +132,7 @@ export async function submitRound(
     }
 
     let roundResolved = false;
-    let battleComplete = false;
+    let trialComplete = false;
 
     // Resolve round when both players have submitted
     if (round.player1SolveMs !== null && round.player2SolveMs !== null) {
@@ -155,27 +155,27 @@ export async function submitRound(
         (r) => r.player1SolveMs !== null && r.player2SolveMs !== null
       );
       if (allDone) {
-        battleComplete = true;
+        trialComplete = true;
         const p1Wins = rounds.filter((r) => r.roundWinnerId === raw.player1Id).length;
         const p2Wins = rounds.filter((r) => r.roundWinnerId === raw.player2Id).length;
         const winnerId = p1Wins > p2Wins ? raw.player1Id : p2Wins > p1Wins ? raw.player2Id : null;
 
-        // Update battle ratings
+        // Update trial ratings
         if (winnerId) {
-          const p1r = raw.player1.battleRating;
-          const p2r = raw.player2!.battleRating;
+          const p1r = raw.player1.trialRating;
+          const p2r = raw.player2!.trialRating;
           await tx.user.update({
             where: { id: raw.player1Id },
-            data: { battleRating: eloUpdate(p1r, p2r, winnerId === raw.player1Id) },
+            data: { trialRating: eloUpdate(p1r, p2r, winnerId === raw.player1Id) },
           });
           await tx.user.update({
             where: { id: raw.player2Id! },
-            data: { battleRating: eloUpdate(p2r, p1r, winnerId === raw.player2Id) },
+            data: { trialRating: eloUpdate(p2r, p1r, winnerId === raw.player2Id) },
           });
         }
 
-        const updated = await tx.battle.update({
-          where: { id: battleId },
+        const updated = await tx.trial.update({
+          where: { id: trialId },
           data: {
             rounds: JSON.stringify(rounds),
             status: "completed",
@@ -184,15 +184,15 @@ export async function submitRound(
           },
           include: { player1: { select: playerSelect }, player2: { select: playerSelect } },
         });
-        return { battle: parseBattle(updated), roundResolved, battleComplete };
+        return { trial: parseTrial(updated), roundResolved, trialComplete };
       }
     }
 
-    const updated = await tx.battle.update({
-      where: { id: battleId },
+    const updated = await tx.trial.update({
+      where: { id: trialId },
       data: { rounds: JSON.stringify(rounds) },
       include: { player1: { select: playerSelect }, player2: { select: playerSelect } },
     });
-    return { battle: parseBattle(updated), roundResolved, battleComplete };
+    return { trial: parseTrial(updated), roundResolved, trialComplete };
   });
 }
