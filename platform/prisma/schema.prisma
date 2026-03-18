@@ -132,11 +132,14 @@ model User {
   country           String?
   createdAt         DateTime  @default(now())
 
-  puzzles          Puzzle[]
-  rawGames         RawGame[]
-  trialsAsPlayer1  Trial[]   @relation("TrialPlayer1")
-  trialsAsPlayer2  Trial[]   @relation("TrialPlayer2")
-  trialsWon        Trial[]   @relation("TrialWinner")
+  puzzles            Puzzle[]
+  rawGames           RawGame[]
+  trialsAsPlayer1    Trial[]            @relation("TrialPlayer1")
+  trialsAsPlayer2    Trial[]            @relation("TrialPlayer2")
+  trialsWon          Trial[]            @relation("TrialWinner")
+  userEvents         UserEvent[]
+  acquisitionTouches AcquisitionTouch[]
+  revenueEvents      RevenueEvent[]
 }
 
 model Subscriber {
@@ -164,7 +167,7 @@ model Trial {
   player2 User? @relation("TrialPlayer2", fields: [player2Id], references: [id], onDelete: SetNull)
   winner  User? @relation("TrialWinner", fields: [winnerId], references: [id], onDelete: SetNull)
 
-  @@map("Battle")
+  @@map("Trials")
   @@index([status])
 }
 
@@ -242,4 +245,57 @@ model LibraryPuzzle {
   createdAt     DateTime @default(now())
 
   @@index([rating])
+}
+
+/// First-party analytics events
+model UserEvent {
+  id         String   @id @default(cuid())
+  userId     String?
+  sessionId  String
+  event      String
+  properties Json?
+  createdAt  DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([event])
+  @@index([userId, event])
+}
+
+/// UTM / channel attribution touches
+model AcquisitionTouch {
+  id          String   @id @default(cuid())
+  userId      String?
+  sessionId   String
+  channel     String
+  source      String?
+  medium      String?
+  landingPage String?
+  createdAt   DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([channel])
+}
+
+/// Monetisation events (Stripe webhooks, referral unlocks, etc.)
+model RevenueEvent {
+  id            String   @id @default(cuid())
+  userId        String?
+  type          String
+  amount        Float
+  currency      String   @default("GBP")
+  stripeEventId String?  @unique
+  properties    Json?
+  createdAt     DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([userId, type])
 }
