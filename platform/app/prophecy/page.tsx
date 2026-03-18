@@ -10,34 +10,44 @@ export const metadata = {
 };
 
 /**
- * Picks today's brilliant puzzle deterministically from LibraryPuzzle
- * using day-of-year as seed. All users see the same puzzle on a given UTC day.
+ * Picks today's prophecy puzzle deterministically, matched to user Elo.
  *
- * Lichess themes don't include "brilliantMove" — we use "sacrifice" (the real
- * Lichess tag) with a rating floor of 1800 to surface impressive puzzles.
+ * Pool: sacrifice-themed LibraryPuzzles with rating within ±200 of userElo.
+ * Falls back to rating ≥ 1500 if the Elo-matched pool is empty.
+ * Deterministic by day: dayIndex = floor(now / 86400000), skip(dayIndex % poolSize).
  */
-async function getDailyProphecyPuzzle() {
-  // Lichess uses "sacrifice" — not "brilliantMove" — as the theme tag
-  const total = await prisma.libraryPuzzle.count({
-    where: { themes: { contains: "sacrifice" }, rating: { gte: 1800 } },
-  });
-  console.log(`[prophecy] Brilliant (sacrifice ≥1800) puzzle pool: ${total}`);
+async function getDailyProphecyPuzzle(userElo: number | null) {
+  const elo = userElo ?? 1500;
+  const ratingMin = elo - 200;
+  const ratingMax = elo + 200;
+
+  // Try Elo-matched pool first
+  let where = { themes: { contains: "sacrifice" }, rating: { gte: ratingMin, lte: ratingMax } };
+  let total = await prisma.libraryPuzzle.count({ where });
+  console.log(`[prophecy] Sacrifice pool (rating ${ratingMin}-${ratingMax}): ${total}`);
+
+  // Fallback: rating >= 1500 if Elo-matched pool is empty
+  if (total === 0) {
+    where = { themes: { contains: "sacrifice" }, rating: { gte: 1500, lte: 99999 } };
+    total = await prisma.libraryPuzzle.count({ where });
+    console.log(`[prophecy] Fallback pool (sacrifice ≥1500): ${total}`);
+  }
 
   if (total === 0) {
-    console.log("[prophecy] WARNING: 0 sacrifice puzzles with rating >= 1800 in LibraryPuzzle table");
+    console.log("[prophecy] WARNING: 0 sacrifice puzzles in LibraryPuzzle table");
     return null;
   }
 
-  const dayNumber = Math.floor(Date.now() / 86_400_000);
-  const skipIdx = dayNumber % total;
+  const dayIndex = Math.floor(Date.now() / 86_400_000);
+  const skipIdx = dayIndex % total;
 
   const puzzle = await prisma.libraryPuzzle.findFirst({
-    where: { themes: { contains: "sacrifice" }, rating: { gte: 1800 } },
+    where,
     orderBy: { id: "asc" },
     skip: skipIdx,
   });
 
-  console.log(`[prophecy] Day ${dayNumber}, index ${skipIdx}/${total}, puzzle=${puzzle?.id ?? "null"}, rating=${puzzle?.rating ?? "n/a"}`);
+  console.log(`[prophecy] userElo=${elo} day=${dayIndex} skip=${skipIdx}/${total} puzzle=${puzzle?.id ?? "null"} rating=${puzzle?.rating ?? "n/a"}`);
   return puzzle;
 }
 
@@ -45,7 +55,12 @@ export default async function ProphecyPage() {
   const session = await auth();
   if (!session?.userId) redirect("/connect");
 
-  const puzzle = await getDailyProphecyPuzzle();
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: { elo: true },
+  });
+
+  const puzzle = await getDailyProphecyPuzzle(user?.elo ?? null);
 
   if (!puzzle) {
     return (
