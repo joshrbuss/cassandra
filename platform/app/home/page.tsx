@@ -321,9 +321,9 @@ export default async function DashboardPage() {
           className="flex items-center justify-between bg-[#0e0e0e] text-white rounded-xl p-5 mb-4 hover:bg-[#1a1a1a] transition-colors border border-[#2a2a2a]"
         >
           <div>
-            <p className="font-semibold text-white">⚖️ The Scales</p>
+            <p className="font-semibold text-white">{t("home.scales.title")}</p>
             <p className="text-xs text-gray-400 mt-1">
-              Rank the top 3 moves — train your evaluation instinct
+              {t("home.scales.desc")}
             </p>
           </div>
           <span className="text-white/40 text-xl ml-3">&#8594;</span>
@@ -476,8 +476,8 @@ export default async function DashboardPage() {
               />
               <Link href="/trials" className="block bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:border-[#c8942a]/50 hover:shadow-md transition-all">
                 <div className="p-5">
-                  <p className="font-semibold text-gray-900">⚔️ The Trials</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Real-time rated puzzle races with leaderboards and ELO</p>
+                  <p className="font-semibold text-gray-900">{t("home.trials.title")}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{t("home.trials.desc")}</p>
                 </div>
               </Link>
             </div>

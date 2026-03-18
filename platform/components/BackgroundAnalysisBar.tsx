@@ -16,8 +16,9 @@ interface Props {
   needsSync?: boolean;
 }
 
-/** Poll interval in ms */
-const POLL_INTERVAL = 60_000;
+/** Poll interval in ms — 5s when analysis is active, 60s otherwise */
+const POLL_ACTIVE = 5_000;
+const POLL_IDLE = 60_000;
 
 export default function BackgroundAnalysisBar({ needsSync = false }: Props) {
   const { t } = useTranslation();
@@ -26,11 +27,11 @@ export default function BackgroundAnalysisBar({ needsSync = false }: Props) {
   const [syncing, setSyncing] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval>>(undefined);
   const syncTriggered = useRef(false);
+  const lastDoneRef = useRef(0);
 
   useEffect(() => {
     fetchStatus();
-
-    timerRef.current = setInterval(fetchStatus, POLL_INTERVAL);
+    timerRef.current = setInterval(fetchStatus, POLL_IDLE);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
@@ -61,6 +62,13 @@ export default function BackgroundAnalysisBar({ needsSync = false }: Props) {
       const data: AnalysisStatus = await res.json();
       setStatus(data);
 
+      // If doneGames is actively increasing, switch to fast polling
+      if (data.doneGames > lastDoneRef.current && !data.isComplete) {
+        lastDoneRef.current = data.doneGames;
+        if (timerRef.current) clearInterval(timerRef.current);
+        timerRef.current = setInterval(fetchStatus, POLL_ACTIVE);
+      }
+
       // Stop polling once complete
       if (data.isComplete && timerRef.current) {
         clearInterval(timerRef.current);
@@ -71,25 +79,10 @@ export default function BackgroundAnalysisBar({ needsSync = false }: Props) {
   }
 
   if (!status || dismissed) return null;
-
-  // Nothing to show if no games at all and not syncing
   if (status.totalGames === 0 && !syncing) return null;
 
-  const progressPct = status.totalGames > 0
-    ? Math.round((status.doneGames / status.totalGames) * 100)
-    : 0;
-
-  if (syncing) {
-    return (
-      <div className="bg-[#0e0e0e] border border-[#2a2a2a] rounded-xl p-4 mb-4">
-        <p className="text-sm text-gray-300 animate-pulse">
-          {t("sync.syncing")}
-        </p>
-      </div>
-    );
-  }
-
-  if (status.isComplete) {
+  // If analysis is complete (all done), show the completion banner
+  if (status.isComplete && status.totalPuzzles > 0) {
     return (
       <div className="bg-[#0e0e0e] border border-[#c8942a]/30 rounded-xl p-4 mb-4">
         <div className="flex items-center justify-between">
@@ -109,6 +102,30 @@ export default function BackgroundAnalysisBar({ needsSync = false }: Props) {
       </div>
     );
   }
+
+  // If complete but no puzzles, don't show anything
+  if (status.isComplete) return null;
+
+  // If there are pending games but doneGames hasn't changed (stuck/idle),
+  // don't show the misleading progress bar — the user can use Sync button
+  if (status.doneGames === 0 && status.pendingGames > 0 && !syncing) {
+    return null;
+  }
+
+  if (syncing) {
+    return (
+      <div className="bg-[#0e0e0e] border border-[#2a2a2a] rounded-xl p-4 mb-4">
+        <p className="text-sm text-gray-300 animate-pulse">
+          {t("sync.syncing")}
+        </p>
+      </div>
+    );
+  }
+
+  // Active analysis in progress (doneGames > 0, some still pending)
+  const progressPct = status.totalGames > 0
+    ? Math.round((status.doneGames / status.totalGames) * 100)
+    : 0;
 
   return (
     <div className="bg-[#0e0e0e] border border-[#2a2a2a] rounded-xl p-4 mb-4">
