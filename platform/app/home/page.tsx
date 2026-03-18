@@ -16,6 +16,7 @@ import { countryToFlag } from "@/lib/countryFlag";
 import CookiePreferencesLink from "@/components/CookiePreferencesLink";
 import LazySection from "@/components/LazySection";
 import BackgroundAnalysisBar from "@/components/BackgroundAnalysisBar";
+import { hasCompletedProphecyToday, todayUtcMidnight } from "@/lib/prophecy";
 
 import { GutterAds, EmailPopup } from "./ClientShells";
 
@@ -60,10 +61,9 @@ export default async function DashboardPage() {
   const name = user?.lichessUsername ?? user?.chessComUsername ?? "Player";
   const displayElo = user?.rawElo ?? user?.elo;
 
-  const todayStr = new Date().toISOString().split("T")[0];
-  const todayStart = new Date(todayStr);
+  const todayStart = todayUtcMidnight();
 
-  const [totalImported, userAttempts, todayAttempts, streakLeaders, referralLeaders] = await Promise.all([
+  const [totalImported, userAttempts, todayAttempts, streakLeaders, referralLeaders, prophecyDoneToday] = await Promise.all([
     user ? getTotalImportedCount(user.id) : Promise.resolve(0),
     user
       ? prisma.puzzleAttempt.findMany({
@@ -101,6 +101,7 @@ export default async function DashboardPage() {
         country: true,
       },
     }),
+    user ? hasCompletedProphecyToday(user.id, user.elo) : Promise.resolve(false),
   ]);
 
   const totalSolved = userAttempts.filter((a) => a.success).length;
@@ -116,7 +117,7 @@ export default async function DashboardPage() {
       : null;
 
   // Compute days away (lose streak)
-  const todayDate = new Date(todayStr);
+  const todayDate = todayStart;
   const daysAway = user?.lastPuzzleDate
     ? Math.floor((todayDate.getTime() - new Date(user.lastPuzzleDate).getTime()) / 86_400_000)
     : 0;
@@ -297,21 +298,34 @@ export default async function DashboardPage() {
         {/* ── Cassandra's Prophecy card ── */}
         <Link
           href="/prophecy"
-          className="flex items-center justify-between bg-[#0e0e0e] text-white rounded-xl p-5 mb-4 hover:bg-[#1a1a1a] transition-colors border border-[#2a2a2a]"
+          className={`flex items-center justify-between rounded-xl p-5 mb-4 transition-colors border ${
+            prophecyDoneToday
+              ? "bg-[#0e0e0e]/60 border-[#2a2a2a]/50 opacity-70 hover:opacity-90"
+              : "bg-[#0e0e0e] border-[#2a2a2a] hover:bg-[#1a1a1a]"
+          }`}
         >
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <p className="font-semibold text-[#c8942a]">Cassandra&apos;s Prophecy</p>
+              <p className={`font-semibold ${prophecyDoneToday ? "text-gray-400" : "text-[#c8942a]"}`}>
+                Cassandra&apos;s Prophecy
+              </p>
               <span className="text-[9px] font-bold text-[#c8942a] bg-[#c8942a]/10 border border-[#c8942a]/30 px-1.5 py-0.5 rounded-full uppercase">
-                Daily
+                {new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" })}
               </span>
+              {prophecyDoneToday && (
+                <span className="text-[9px] font-bold text-green-400 bg-green-400/10 border border-green-400/30 px-1.5 py-0.5 rounded-full uppercase">
+                  Completed
+                </span>
+              )}
             </div>
             <p className="text-xs text-gray-400">
-              Today&apos;s brilliant move — can you find what Cassandra saw?
+              {prophecyDoneToday
+                ? "You found the brilliant move. Tap to replay."
+                : "Today\u2019s brilliant move \u2014 can you find what Cassandra saw?"}
             </p>
           </div>
-          <span className="text-[#c8942a] text-sm font-medium ml-3 whitespace-nowrap">
-            Accept the prophecy &rarr;
+          <span className={`text-sm font-medium ml-3 whitespace-nowrap ${prophecyDoneToday ? "text-gray-500" : "text-[#c8942a]"}`}>
+            {prophecyDoneToday ? "Replay \u2192" : "Accept the prophecy \u2192"}
           </span>
         </Link>
 
