@@ -324,6 +324,32 @@ export default function ProphecyShell({
                   {" — "}{themeExplanation}
                 </p>
               </div>
+              <div className="flex gap-3 mt-4">
+                <button
+                  onClick={() => {
+                    // Reset state for replay
+                    chess.load(solvingFen);
+                    setFen(solvingFen);
+                    setMoveIndex(0);
+                    setLastSquares({});
+                    setHintLevel(0);
+                    setSelectedSquare(null);
+                    hadWrongMove.current = true; // replays don't count as clean
+                    submitLock.current = false;
+                    setPhase("playing");
+                    start();
+                  }}
+                  className="flex-1 text-center bg-[#c8942a] text-white px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#b5852a] transition-colors"
+                >
+                  Replay puzzle
+                </button>
+                <Link
+                  href="/home"
+                  className="flex-1 text-center bg-[#2a2a2a] text-gray-400 px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#333] hover:text-gray-300 transition-colors"
+                >
+                  Home
+                </Link>
+              </div>
             </>
           ) : isSolved ? (
             <>

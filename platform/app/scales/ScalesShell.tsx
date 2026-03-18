@@ -312,6 +312,9 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
                   const isCorrect = engineIdx === i;
                   const isInTop3 = engineIdx !== -1;
                   const cpVal = userEvals[i];
+                  // "Close" if move eval is within 15cp of engine move 3
+                  const move3Cp = engineTop3[2]?.cp ?? 0;
+                  const isClose = !isInTop3 && cpVal !== null && Math.abs(cpVal - move3Cp) <= 15;
                   return (
                     <div
                       key={i}
@@ -320,6 +323,8 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
                           ? "bg-green-500/10 border border-green-500/30"
                           : isInTop3
                           ? "bg-yellow-500/10 border border-yellow-500/30"
+                          : isClose
+                          ? "bg-amber-500/10 border border-amber-500/30"
                           : "bg-red-500/10 border border-red-500/30"
                       }`}
                     >
@@ -341,6 +346,8 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
                           ? "Correct"
                           : isInTop3
                           ? `Engine: #${engineIdx + 1}`
+                          : isClose
+                          ? "Close"
                           : "Not in top 3"}
                       </span>
                     </div>
