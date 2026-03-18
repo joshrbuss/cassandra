@@ -4,7 +4,6 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { ARTICLES, getArticle, getLocalizedArticle, getLocalizedArticles } from "@/lib/articles";
 import { resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
-import EmbeddedPuzzle from "@/components/EmbeddedPuzzle";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -112,7 +111,6 @@ export default async function ArticlePage({ params }: Props) {
   if (!article) notFound();
 
   const readTime = estimateReadTime(article.content);
-  const embedThemes = article.themes.slice(0, 3);
 
   const siteUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://cassandrachess.com";
 
@@ -178,20 +176,6 @@ export default async function ArticlePage({ params }: Props) {
         <div className="space-y-4">
           {renderContent(article.content)}
         </div>
-
-        {/* Embedded interactive puzzles */}
-        {embedThemes.length > 0 && (
-          <section className="mt-12 bg-[#f8f7f4] rounded-xl border border-[#eee] p-6">
-            <h2 className="text-lg font-bold text-[#1a1a1a] mb-4">
-              Try It — Interactive Puzzles
-            </h2>
-            <div className="space-y-3">
-              {embedThemes.map((theme, i) => (
-                <EmbeddedPuzzle key={theme} theme={theme} offset={i} />
-              ))}
-            </div>
-          </section>
-        )}
 
         {/* Related articles */}
         {relatedArticles.length > 0 && (

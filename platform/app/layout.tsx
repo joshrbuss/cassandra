@@ -47,6 +47,10 @@ export const metadata: Metadata = {
       "x-default": BASE_URL,
     },
   },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+  },
   openGraph: {
     siteName: "Cassandra Chess",
     type: "website",
@@ -56,7 +60,7 @@ export const metadata: Metadata = {
       "Personalised chess puzzles from your own games. Connect Chess.com or Lichess and train on your actual blunders. Free, unlimited, no paywall.",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     site: "@joshrbuss",
     title: "Cassandra Chess — Train smarter. Chess On.",
     description:
