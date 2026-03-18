@@ -11,6 +11,8 @@ export interface EngineResult {
   move: string;
   /** Centipawn score from the perspective of the side to move (positive = good) */
   cp: number;
+  /** Principal variation (space-separated UCI moves, 2-3 deep) */
+  pv?: string;
 }
 
 const DEPTH = 8;

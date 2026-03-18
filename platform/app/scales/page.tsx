@@ -52,9 +52,9 @@ export default async function ScalesPage() {
       fen={position.fen}
       rating={0}
       engineTop3={[
-        { move: position.move1, cp: position.eval1 },
-        { move: position.move2, cp: position.eval2 },
-        { move: position.move3, cp: position.eval3 },
+        { move: position.move1, cp: position.eval1, pv: position.pv1 ?? undefined },
+        { move: position.move2, cp: position.eval2, pv: position.pv2 ?? undefined },
+        { move: position.move3, cp: position.eval3, pv: position.pv3 ?? undefined },
       ]}
       hasSacrifice={position.hasSacrifice}
     />

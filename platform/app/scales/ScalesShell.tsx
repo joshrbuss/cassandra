@@ -219,43 +219,33 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
     }
   }
 
-  /** Detect the tactical motif of a move (capture, check, promotion, etc.) */
-  function getMoveMotif(uci: string): string | null {
+  /** Convert a UCI PV line to SAN notation for display */
+  function pvToSan(pvLine: string | undefined): string | null {
+    if (!pvLine) return null;
     try {
       const chess = new Chess(fen);
-      const result = chess.move({
-        from: uci.slice(0, 2),
-        to: uci.slice(2, 4),
-        promotion: uci[4] || undefined,
-      });
-      if (!result) return null;
-
-      // Check for check/checkmate first (most dramatic)
-      if (result.san.includes("#")) return "Checkmate";
-      if (result.san.includes("+")) {
-        if (result.captured) return "Capture with check";
-        return "A check";
+      const uciMoves = pvLine.trim().split(/\s+/);
+      const sanMoves: string[] = [];
+      for (const uci of uciMoves) {
+        const result = chess.move({
+          from: uci.slice(0, 2),
+          to: uci.slice(2, 4),
+          promotion: uci[4] || undefined,
+        });
+        if (!result) break;
+        sanMoves.push(result.san);
       }
-      if (result.promotion) return "Promotion";
-      if (result.captured) return "A capture";
-
-      // Detect fork: after this move, does the piece attack 2+ opponent pieces?
-      const attacked = chess.moves({ verbose: true }).filter(
-        (m) => m.from === uci.slice(2, 4) && m.captured
-      );
-      if (attacked.length >= 2) return "A fork";
-
-      return "A quiet move";
+      return sanMoves.length > 0 ? sanMoves.join(" ") : null;
     } catch {
       return null;
     }
   }
 
   const scoreLabels = [
-    "All wrong — keep training!",
-    "1 correct — getting there",
-    "2 correct — strong evaluation!",
-    "Perfect — you see like an engine!",
+    "Keep going — try another!",
+    "Nice start — getting there!",
+    "Strong evaluation!",
+    "Perfect read!",
   ];
 
   const scoreColors = [
@@ -304,34 +294,36 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
                 </p>
                 {engineTop3.map((em, i) => {
                   const san = getMoveLabel(em.move);
-                  const motif = getMoveMotif(em.move);
+                  const pvSan = pvToSan(em.pv);
                   const userSlot = slots.findIndex((s) => s?.uci === em.move);
                   const isCorrectPosition = userSlot === i;
                   return (
                     <div
                       key={em.move}
-                      className={`flex items-center justify-between rounded-lg px-3 py-2 ${
+                      className={`rounded-lg px-3 py-2 ${
                         isCorrectPosition
                           ? "bg-[#c8942a]/15 border border-[#c8942a]/30"
                           : "bg-[#0e0e0e] border border-[#2a2a2a]"
                       }`}
                     >
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-gray-500 w-6">
-                          {i + 1}.
-                        </span>
-                        <span className="text-white font-semibold text-sm">
-                          {san}
-                        </span>
-                        {motif && (
-                          <span className="text-[10px] text-gray-500 italic">
-                            {motif}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-gray-500 w-6">
+                            {i + 1}.
                           </span>
-                        )}
+                          <span className="text-white font-semibold text-sm">
+                            {san}
+                          </span>
+                        </div>
+                        <span className="text-xs font-mono text-gray-400">
+                          {formatCp(em.cp)}
+                        </span>
                       </div>
-                      <span className="text-xs font-mono text-gray-400">
-                        {formatCp(em.cp)}
-                      </span>
+                      {pvSan && (
+                        <p className="text-[10px] text-gray-500 ml-8 mt-0.5 font-mono">
+                          {pvSan}
+                        </p>
+                      )}
                     </div>
                   );
                 })}

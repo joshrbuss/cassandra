@@ -194,10 +194,13 @@ model ScalesPosition {
   fen          String   @unique
   move1        String   // UCI notation, best move
   eval1        Int      // centipawns
+  pv1          String?  // principal variation (space-separated UCI moves)
   move2        String   // UCI notation, 2nd best
   eval2        Int
+  pv2          String?
   move3        String   // UCI notation, 3rd best
   eval3        Int
+  pv3          String?
   hasSacrifice Boolean  @default(false)
   createdAt    DateTime @default(now())
 

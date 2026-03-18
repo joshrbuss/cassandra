@@ -29,6 +29,7 @@ const TIMEOUT_MS = 10_000;
 interface MultiPVResult {
   move: string;
   cp: number;
+  pv: string; // full PV line (space-separated UCI moves)
 }
 
 // ── Stockfish process management ──
@@ -105,8 +106,12 @@ async function analyzeMultiPV(fen: string): Promise<MultiPVResult[]> {
           if (depth < DEPTH) continue;
 
           const pvNum = line.match(/multipv (\d+)/);
-          const moveMatch = line.match(/\bpv ([a-h][1-8][a-h][1-8]\w?)/);
-          if (!pvNum || !moveMatch) continue;
+          // Capture the full PV line (all moves after "pv")
+          const pvMatch = line.match(/\bpv ((?:[a-h][1-8][a-h][1-8]\w?\s*)+)/);
+          if (!pvNum || !pvMatch) continue;
+
+          const pvMoves = pvMatch[1].trim().split(/\s+/);
+          const firstMove = pvMoves[0];
 
           let cp: number;
           const cpMatch = line.match(/score cp (-?\d+)/);
@@ -120,7 +125,9 @@ async function analyzeMultiPV(fen: string): Promise<MultiPVResult[]> {
             continue;
           }
 
-          results.set(parseInt(pvNum[1], 10), { move: moveMatch[1], cp });
+          // Store first 3 moves of PV as context
+          const pvLine = pvMoves.slice(0, 3).join(" ");
+          results.set(parseInt(pvNum[1], 10), { move: firstMove, cp, pv: pvLine });
         }
 
         if (line.startsWith("bestmove")) {
@@ -278,10 +285,13 @@ async function main() {
             fen,
             move1: results[0].move,
             eval1: results[0].cp,
+            pv1: results[0].pv,
             move2: results[1].move,
             eval2: results[1].cp,
+            pv2: results[1].pv,
             move3: results[2].move,
             eval3: results[2].cp,
+            pv3: results[2].pv,
             hasSacrifice,
           },
         });
