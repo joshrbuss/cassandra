@@ -97,9 +97,27 @@ export default function EchoShell({
       try {
         const chess = new Chess(fenBefore);
         const allMoves = chess.moves({ verbose: true });
-        return allMoves
+
+        // Moves that land on this square (piece moved here)
+        const movesToSquare = allMoves
           .filter((m) => m.to === toSquare)
           .map((m) => m.from);
+
+        if (movesToSquare.length > 0) {
+          return movesToSquare;
+        }
+
+        // Piece was already on this square — show its legal destinations
+        // as plausible "could have come from" squares so every piece
+        // displays dots and the answer isn't revealed
+        const piece = chess.get(toSquare as never);
+        if (piece) {
+          return allMoves
+            .filter((m) => m.from === toSquare)
+            .map((m) => m.to);
+        }
+
+        return [];
       } catch {
         return [];
       }
