@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Chess } from "chess.js";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -30,23 +30,69 @@ interface SlotData {
   to: string;
 }
 
-type Phase = "picking" | "evaluating" | "results";
+type Phase = "loading" | "picking" | "results";
+
+/** Max reloads before giving up and showing whatever position we have */
+const MAX_RELOADS = 3;
+const RELOAD_COUNT_KEY = "scales_reload_count";
 
 export default function ScalesShell({ puzzleId, fen, rating }: Props) {
   const boardOrientation: "white" | "black" =
     fen.split(" ")[1] === "b" ? "black" : "white";
 
-  const chessRef = useRef(new Chess(fen));
-
   const [slots, setSlots] = useState<(SlotData | null)[]>([null, null, null]);
   const [activeSlot, setActiveSlot] = useState<number>(0);
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
-  const [phase, setPhase] = useState<Phase>("picking");
+  const [phase, setPhase] = useState<Phase>("loading");
   const [engineMoves, setEngineMoves] = useState<EngineResult[]>([]);
   const [score, setScore] = useState<number | null>(null);
   const [lastMoveSquares, setLastMoveSquares] = useState<Record<string, React.CSSProperties>>({});
 
   const allFilled = slots.every((s) => s !== null);
+
+  // Pre-evaluate position on mount — reject unsuitable positions BEFORE user interacts
+  useEffect(() => {
+    let cancelled = false;
+
+    async function preEvaluate() {
+      console.log(`[Scales] Pre-evaluating FEN: ${fen}`);
+      const results = await analyzePositionMultiPV(fen, 3);
+
+      if (cancelled) return;
+
+      const reloadCount = parseInt(sessionStorage.getItem(RELOAD_COUNT_KEY) ?? "0", 10);
+
+      // Quality checks (only enforce if we haven't exceeded reload limit)
+      if (results.length >= 3 && reloadCount < MAX_RELOADS) {
+        const hasMate = results.some((r) => Math.abs(r.cp) >= 20000);
+        const topGap = results[0].cp - results[1].cp;
+        const spread = results[0].cp - results[2].cp;
+
+        if (hasMate || results.length < 3 || topGap > 200 || spread < 20) {
+          console.warn(
+            `[Scales] Position rejected (attempt ${reloadCount + 1}/${MAX_RELOADS}): ` +
+            `moves=${results.length} hasMate=${hasMate} topGap=${topGap}cp spread=${spread}cp`
+          );
+          sessionStorage.setItem(RELOAD_COUNT_KEY, String(reloadCount + 1));
+          terminateEngine();
+          window.location.reload();
+          return;
+        }
+      }
+
+      // Position accepted — reset reload counter and store results
+      sessionStorage.setItem(RELOAD_COUNT_KEY, "0");
+      console.log(
+        `[Scales] Position accepted: ${results.map((r, i) => `#${i + 1} ${r.move} (${r.cp}cp)`).join(", ")}`
+      );
+      setEngineMoves(results);
+      setPhase("picking");
+    }
+
+    preEvaluate();
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /** Try to place a move into the active slot */
   const placeMove = useCallback(
@@ -59,16 +105,14 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
       const moveResult = chess.move({ from, to, promotion: "q" });
       if (!moveResult) return false;
 
-      const uci = `${from}${to}${moveResult.promotion && moveResult.promotion !== "q" ? "" : moveResult.promotion ?? ""}`;
+      const uci = `${from}${to}${moveResult.promotion ?? ""}`;
       const san = moveResult.san;
 
       // Check for duplicate move in another slot
-      if (slots.some((s) => s && s.uci === `${from}${to}${moveResult.promotion ?? ""}`)) {
-        return false;
-      }
+      if (slots.some((s) => s && s.uci === uci)) return false;
 
       const newSlots = [...slots];
-      newSlots[activeSlot] = { uci: `${from}${to}${moveResult.promotion ?? ""}`, san, from, to };
+      newSlots[activeSlot] = { uci, san, from, to };
       setSlots(newSlots);
       setSelectedSquare(null);
       setLastMoveSquares({
@@ -102,7 +146,6 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
       const success = placeMove(selectedSquare, square);
       if (!success) {
         setSelectedSquare(null);
-        // Try selecting the clicked square instead
         const chess = new Chess(fen);
         const moves = chess.moves({ square: square as never, verbose: true });
         if (moves.length > 0) setSelectedSquare(square);
@@ -141,47 +184,22 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
     setLastMoveSquares({});
   }
 
-  async function handleSubmit() {
-    if (!allFilled) return;
-    setPhase("evaluating");
+  function handleSubmit() {
+    if (!allFilled || engineMoves.length === 0) return;
 
-    const results = await analyzePositionMultiPV(fen, 3);
-
-    // Quality filters — reject positions that aren't interesting for ranking
-    const hasMate = results.some((r) => Math.abs(r.cp) >= 20000);
-    const hasBlunder = results.some((r) => r.cp < 0);
-    const topGap = results.length >= 2 ? results[0].cp - results[1].cp : 9999;
-    const spread = results.length >= 3 ? results[0].cp - results[2].cp : 0;
-
-    const reject =
-      results.length < 3 ||
-      hasMate ||
-      hasBlunder ||       // all 3 should be positive (good moves)
-      topGap > 150 ||     // top move too obvious
-      spread < 30;        // all moves basically equal
-
-    if (reject) {
-      console.warn(
-        `[Scales] Position rejected: moves=${results.length} hasMate=${hasMate} hasBlunder=${hasBlunder} topGap=${topGap}cp spread=${spread}cp — reloading`
-      );
-      terminateEngine();
-      window.location.reload();
-      return;
-    }
-
-    terminateEngine();
-    setEngineMoves(results);
-
-    // Score: compare user ranking to engine ranking
+    // Score: compare user ranking to engine ranking (already pre-computed)
     const userMoves = slots.map((s) => s!.uci);
-    const engineOrder = results.map((r) => r.move);
+    const engineOrder = engineMoves.map((r) => r.move);
+
+    console.log(`[Scales] User ranking: ${userMoves.join(", ")}`);
+    console.log(`[Scales] Engine ranking: ${engineOrder.join(", ")}`);
 
     let pts = 0;
-    for (let i = 0; i < 3; i++) {
-      if (userMoves[i] === engineOrder[i]) {
-        pts++;
-      }
+    for (let i = 0; i < Math.min(3, engineOrder.length); i++) {
+      if (userMoves[i] === engineOrder[i]) pts++;
     }
+
+    console.log(`[Scales] Score: ${pts}/3`);
     setScore(pts);
     setPhase("results");
   }
@@ -239,7 +257,14 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
       <div className="max-w-lg mx-auto px-4 pt-4 pb-6">
         {/* Instruction / Results panel */}
         <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-5 py-4 mb-4">
-          {phase === "results" && score !== null ? (
+          {phase === "loading" ? (
+            <div className="text-center py-4">
+              <div className="inline-block w-6 h-6 border-2 border-[#c8942a] border-t-transparent rounded-full animate-spin mb-3" />
+              <p className="text-gray-400 text-sm">
+                Stockfish is evaluating the position...
+              </p>
+            </div>
+          ) : phase === "results" && score !== null ? (
             <>
               <p className={`font-bold text-lg ${scoreColors[score]}`}>
                 {score}/3 — {scoreLabels[score]}
@@ -338,13 +363,6 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
                 </Link>
               </div>
             </>
-          ) : phase === "evaluating" ? (
-            <div className="text-center py-4">
-              <div className="inline-block w-6 h-6 border-2 border-[#c8942a] border-t-transparent rounded-full animate-spin mb-3" />
-              <p className="text-gray-400 text-sm">
-                Stockfish is evaluating the position...
-              </p>
-            </div>
           ) : (
             <>
               <p className="text-white font-bold text-lg">
@@ -361,7 +379,7 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
                   <button
                     key={i}
                     onClick={() => {
-                      if (slot) return; // Can't activate a filled slot, use X to clear
+                      if (slot) return;
                       setActiveSlot(i);
                       setSelectedSquare(null);
                     }}
@@ -424,6 +442,8 @@ export default function ScalesShell({ puzzleId, fen, rating }: Props) {
           <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-600">
             {phase === "picking"
               ? `Playing as ${boardOrientation} · Rating ${rating}`
+              : phase === "loading"
+              ? "Evaluating position..."
               : "Position evaluated"}
           </p>
         </div>
