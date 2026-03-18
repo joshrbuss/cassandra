@@ -299,3 +299,16 @@ model RevenueEvent {
   @@index([type])
   @@index([userId, type])
 }
+
+/// Resend email webhook events (opened, clicked, etc.)
+model ResendEvent {
+  id             String   @id @default(cuid())
+  type           String   // "email.opened" | "email.clicked" etc.
+  emailId        String
+  recipientEmail String
+  occurredAt     DateTime
+  createdAt      DateTime @default(now())
+
+  @@index([type])
+  @@index([emailId])
+}
