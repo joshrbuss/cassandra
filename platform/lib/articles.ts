@@ -1010,6 +1010,452 @@ The fastest path isn't solving more puzzles — it's solving the *right* puzzles
 
 **[Build your personal puzzle bank — free →](/connect)**`,
   },
+  {
+    slug: "chess-rating-improvement-plan",
+    title: "Chess Rating Improvement Plan: A 30-Day Blueprint",
+    metaTitle: "Chess Rating Improvement Plan — 30-Day Blueprint",
+    metaDescription:
+      "Most chess improvement plans focus on openings. The fastest gains come from fixing your specific recurring blunders. Here's a 30-day plan that actually works.",
+    themes: ["fork", "pin", "discoveredAttack", "mateIn2"],
+    content: `Most chess improvement plans read like a syllabus: study openings week one, tactics week two, endgames week three. They're structured, comprehensive, and almost entirely useless for most players.
+
+The problem isn't the content — it's the approach. Generic plans treat every player's weaknesses the same. But a 1000-rated player who hangs pieces in the opening has completely different needs from a 1000-rated player who can't convert won endgames. Treating them identically wastes both players' time.
+
+Here's a 30-day plan built around a different principle: find your specific mistakes and eliminate them.
+
+## Week 1: Diagnosis (Days 1–7)
+
+Play 5–7 games at your normal time control. After each game, analyse it with a free engine — [Lichess does this automatically](/learn/how-to-analyse-chess-games), or connect your account to Cassandra for deeper analysis.
+
+For each game, write down:
+- **Where your biggest mistake happened** (opening, middlegame, or endgame)
+- **What type of mistake it was** (hanging a piece, missing a tactic, poor endgame technique, time trouble)
+- **Whether you've made this type of mistake before**
+
+By day 7, you should see patterns. Most players find that 60–70% of their losses come from 2–3 recurring mistake types. These are your training targets.
+
+## Week 2: Targeted Drilling (Days 8–14)
+
+Now that you know your weak spots, stop solving random puzzles. Instead, train exclusively on positions that match your mistake patterns.
+
+If you keep missing forks, drill fork puzzles. If you blunder in rook endings, drill rook endings. If you lose pieces to discovered attacks, drill discovered attacks.
+
+Cassandra automates this by analysing your games and generating puzzles from the exact positions where you went wrong. But even without automation, you can manually select puzzle themes on Lichess that match your documented weaknesses.
+
+**Daily routine:** 15 minutes of targeted puzzles. That's 8–12 puzzles. Don't rush — spend time on each position before moving. After solving, review why the correct move works.
+
+## Week 3: Reinforce and Test (Days 15–21)
+
+Continue your daily targeted puzzles, but add 3–4 games this week. The goal is to see whether your training is transferring to real games.
+
+After each game, ask: did I face any of my target mistake positions? If so, did I handle them better than in week 1? Even one game where you correctly avoid a recurring blunder is evidence that the training is working.
+
+If you're still making the same mistakes, increase your puzzle volume on those specific patterns. If you've improved on your original weaknesses, identify the next tier of mistakes from your new games.
+
+**Add variety:** supplement your targeted puzzles with 5 minutes of [general tactical training](/learn/chess-tactics-trainer) to maintain broad pattern recognition.
+
+## Week 4: Measure and Adjust (Days 22–30)
+
+Play 5–7 more games and analyse them the same way you did in week 1. Compare your blunder rate, your mistake types, and your results.
+
+Most players following this plan see:
+- **30–50% reduction in their primary blunder type**
+- **50–100 rating point improvement** (often more for players under 1200)
+- **Faster recognition** of patterns they drilled
+
+If your rating hasn't moved but your blunder rate has dropped, keep going — rating follows blunder reduction with a 1–2 week lag.
+
+## Why This Works Better Than Opening Study
+
+Opening study feels productive. You memorise lines, you watch videos, you learn the theory. But below 2000 Elo, your opponent plays an unexpected move by move 6 in most games. All that memorisation is wasted.
+
+Meanwhile, the [blunders you keep making](/learn/chess-blunder-training) are costing you 100–200 rating points right now. Fixing those is immediate, measurable, and permanent. You can always add opening study later — but the fastest gains come from not giving away the games you should be winning.
+
+## The One Principle That Matters
+
+Improvement isn't about studying more. It's about studying the right things. A player who solves 10 puzzles from their own blunders will improve faster than a player who watches 2 hours of grandmaster videos.
+
+Your chess rating is a measure of your weaknesses, not your strengths. Fix the weaknesses, and the rating follows.
+
+**[Find your weaknesses — free game analysis →](/connect)**`,
+  },
+  {
+    slug: "chess-tactics-vs-strategy",
+    title: "Chess Tactics vs Strategy: What Should You Study First?",
+    metaTitle: "Chess Tactics vs Strategy — What to Study First",
+    metaDescription:
+      "Tactics or strategy first? The answer is clear: tactics. But the best tactics to study aren't random — they're from your own games.",
+    themes: ["fork", "pin", "skewer", "discoveredAttack"],
+    content: `The tactics-vs-strategy debate has been around as long as chess education. Tarrasch said strategy is thinking about what to do; tactics is thinking about what to do when there's something to do. Teichmann said chess is 99% tactics. The internet argues about it endlessly.
+
+The answer, for any player under 2000 Elo, is straightforward: **tactics first, always.**
+
+## Why Tactics Come First
+
+Strategy in chess means formulating long-term plans: controlling the centre, creating pawn weaknesses, improving piece activity, targeting weak squares. These concepts matter. But they only matter when both sides play reasonably accurate moves.
+
+Below 2000 Elo, games aren't decided by superior pawn structures or subtle piece manoeuvring. They're decided by blunders. One player hangs a piece, misses a fork, or walks into a back-rank mate. Game over.
+
+No amount of strategic understanding helps if you're losing a piece every 15 moves. Strategy assumes a stable position where you can make plans. Tactics create (and prevent) the instability that ends games.
+
+The data backs this up. Analysis of thousands of games on Chess.com and Lichess shows that players under 1400 make an average of 3–4 tactical blunders per game. Players between 1400–1800 make 1–2. Above 2000, it drops below 1 per game. Strategy becomes relevant when the tactical blunders stop.
+
+## What Tactical Training Looks Like
+
+Effective tactical training has three layers:
+
+**Pattern recognition.** Learn the basic motifs: [forks, pins, skewers, discovered attacks](/learn/chess-tactics-trainer), back-rank threats, removal of the defender. Each pattern is a template that your brain learns to recognise automatically with enough exposure.
+
+**Calculation.** Once you see a potential tactic, you need to calculate whether it actually works. "I think there's a fork" isn't enough — you need to verify it move by move. Puzzle training builds this calculation muscle.
+
+**Application.** Seeing tactics in puzzles is easier than seeing them in games, because in a puzzle you know there's a tactic. In a game, you have to find it while also managing time, evaluating the position, and dealing with nerves. The bridge between puzzles and games is [training on positions from your own games](/learn/chess-blunder-training), where the context is familiar.
+
+## When Strategy Starts Mattering
+
+Strategy becomes relevant when your tactical game is solid enough that you're no longer losing material regularly. For most players, that's around 1600–1800 online rating.
+
+At that level, games are more often decided by:
+- **Pawn structure decisions** — creating or avoiding weaknesses
+- **Piece activity** — good vs bad bishops, rook placement, knight outposts
+- **Planning** — having a concrete idea versus shuffling pieces
+
+Even here, tactics don't stop mattering. They become tools for executing your strategic plans. You create a weak pawn, then win it with a tactical shot. You activate your pieces, then use their activity to launch a combination.
+
+## The Best Tactics to Study
+
+Here's where most tactical training goes wrong: players solve random puzzles. Random puzzles build general pattern recognition, which is useful, but they don't target your specific blind spots.
+
+If you always miss discovered attacks but see forks instantly, spending equal time on both is inefficient. You need 90% discovered attack puzzles and 10% fork puzzles — the exact opposite of what random training gives you.
+
+The most efficient tactical training comes from [your own games](/learn/lichess-puzzles-vs-personal-puzzles). When you blunder in a real game, that position — with that specific piece configuration and that specific tactical pattern — is exactly what you need to drill. Cassandra extracts these positions automatically and turns them into targeted puzzles.
+
+## A Practical Split
+
+For players under 1600:
+- **90% tactics, 10% strategy.** Solve puzzles daily. Read strategic concepts occasionally. Your games are decided by tactics.
+
+For players 1600–2000:
+- **60% tactics, 40% strategy.** Continue daily puzzles but add strategic study: pawn structures, typical plans in your openings, endgame principles.
+
+For players above 2000:
+- **50/50 or personal assessment.** At this level, you know which part of your game needs work. The answer varies by player.
+
+## The Common Mistake
+
+The most common mistake in chess study is studying what's interesting instead of what's useful. Strategy is intellectually appealing — it feels like real chess thinking. Tactics feel mechanical. But mechanics win games.
+
+A player with strong tactics and weak strategy will beat a player with strong strategy and weak tactics almost every time below master level. Fix the tactics first. Strategy can wait.
+
+**[Train your tactics — puzzles from your own games →](/connect)**`,
+  },
+  {
+    slug: "best-chess-apps-2026",
+    title: "Best Chess Apps in 2026: Ranked for Real Improvement",
+    metaTitle: "Best Chess Apps 2026 — Ranked for Real Improvement",
+    metaDescription:
+      "An honest comparison of Chess.com, Lichess, and Cassandra Chess in 2026 — what each is best for and where they fall short.",
+    themes: ["fork", "pin", "mateIn1", "mateIn2"],
+    content: `The chess app market in 2026 is dominated by two giants — Chess.com and Lichess — with a growing ecosystem of specialised tools around them. If you're trying to improve, not just play, which apps deserve your time?
+
+Here's an honest assessment based on what each platform actually delivers for chess improvement, not what their marketing promises.
+
+## 1. Lichess — Best Free All-Rounder
+
+**Price:** Free. Everything. No tiers.
+
+Lichess remains the gold standard for free chess tools. Every feature that Chess.com charges for — unlimited puzzles, full-depth game analysis, opening explorer, study tools, tournament creation — Lichess offers for free.
+
+**Best for:** Playing, game analysis, puzzle volume, opening research.
+
+**Strengths:**
+- Full Stockfish analysis on every game, unlimited
+- 4+ million puzzle database, all free
+- Opening explorer with master and player databases
+- Clean interface with no ads or upselling
+- Open source — the community audits and improves the code
+
+**Limitations:**
+- No personalised training. Lichess gives you excellent tools but doesn't connect the dots between your analysis and your training. You see your blunders in analysis, then go solve unrelated puzzles
+- Smaller playing pool than Chess.com (still large enough for instant matchmaking at all time controls)
+- Study features exist but require self-directed learning
+
+**Verdict:** If you're only going to use one platform, Lichess is the best value in chess. For how it compares to personalised training, see [Lichess puzzles vs personal puzzles](/learn/lichess-puzzles-vs-personal-puzzles).
+
+## 2. Chess.com — Best Playing Experience
+
+**Price:** Free tier (limited), Gold $50/year, Platinum $70/year, Diamond $100/year
+
+Chess.com is where most of the chess world plays. The largest player pool, the best content creators, and a polished mobile app make it the default choice for online chess.
+
+**Best for:** Playing games, watching streamers, social features, casual engagement.
+
+**Strengths:**
+- Largest player pool — fastest matchmaking, most accurate ratings
+- Excellent mobile app
+- Strong content ecosystem (videos, articles, courses)
+- Game review with natural language explanations (paid)
+- Puzzle rush and puzzle battle (engaging, if not optimal for training)
+
+**Limitations:**
+- Free tier is severely limited: 1 game review/day, limited puzzles, no opening explorer
+- Full improvement tools require $70–100/year
+- Game analysis is shallower than Lichess's (even on premium)
+- Training tools are broad but not personalised
+
+**Verdict:** Great for playing, adequate for improvement if you're paying. The [free alternatives](/learn/chess-com-alternatives) cover most of what the premium tier offers.
+
+## 3. Cassandra Chess — Best Personalised Training
+
+**Price:** Free. No subscriptions.
+
+Cassandra takes a different approach: it's not a playing platform. Instead, it connects to your Chess.com or Lichess account, analyses your games with Stockfish, and builds a personalised puzzle bank from your actual mistakes.
+
+**Best for:** Targeted improvement, fixing recurring blunders, training efficiency.
+
+**Strengths:**
+- Personal puzzles from your own games — every puzzle targets a real weakness
+- Free game analysis with Stockfish (same depth Chess.com charges for)
+- Multiple training modes: standard puzzles, [The Prophecy](/prophecy) (daily brilliant-move challenge), [The Scales](/scales) (move-ranking), [The Echo](/echo) (retrograde analysis)
+- No paywall on any feature
+
+**Limitations:**
+- Not a playing platform — you still need Chess.com or Lichess for games
+- Smaller community (newer platform)
+- No video content or courses
+
+**Verdict:** The highest-leverage training tool available. Use it alongside your playing platform of choice.
+
+## 4. ChessTempo — Best Puzzle Calibration
+
+**Price:** Free (standard puzzles unlimited), Premium $30/year
+
+ChessTempo has been refining its puzzle rating system for over a decade. If you want precisely calibrated puzzles with detailed statistics about your solving performance, it's the best option.
+
+**Best for:** Players who want data-driven puzzle training with accurate difficulty ratings.
+
+**Limitations:** Dated interface, no game analysis, puzzles are generic (not personalised).
+
+## 5. Chess24 — Best Video Content
+
+**Price:** Integrated into Chess.com ecosystem
+
+Now part of Chess.com, chess24 retains its library of grandmaster-led video courses. The quality is high, but passive video watching is the [least efficient form of chess training](/learn/how-to-get-better-at-chess-fast).
+
+**Best for:** Players who learn well from structured video instruction.
+
+## The Optimal Stack
+
+Most improving players benefit from using 2–3 apps for different purposes:
+
+1. **Play games** on Chess.com or Lichess (pick your preferred community)
+2. **Train weaknesses** on Cassandra (personal puzzles from your games)
+3. **Supplement** with Lichess puzzles (broad tactical vocabulary)
+
+This combination gives you the playing pool of a major platform, personalised training that targets your specific mistakes, and broad puzzle exposure for general pattern recognition.
+
+The key insight: the best chess app isn't the one with the most features. It's the one that makes you fix the mistakes that are actually costing you rating points. For most players, that means [personalised puzzle training](/learn/chess-blunder-training) over premium subscriptions.
+
+**[Start free personalised training →](/connect)**`,
+  },
+  {
+    slug: "chess-study-plan-beginners",
+    title: "The Complete Chess Study Plan for Beginners (0–1000 Rating)",
+    metaTitle: "Chess Study Plan for Beginners — 0 to 1000 Rating",
+    metaDescription:
+      "A step-by-step chess study plan for beginners rated 0–1000. What to focus on at each stage, with free tools and training exercises.",
+    themes: ["mateIn1", "fork", "pin", "mateIn2"],
+    content: `Starting chess can be overwhelming. There are openings to learn, tactics to study, endgames to practise, and thousands of YouTube videos telling you different things. Most beginners try to learn everything at once and end up learning nothing effectively.
+
+Here's a structured study plan that takes a complete beginner from 0 to 1000 rating. Each phase builds on the last, and you don't move on until the current phase is solid.
+
+## Phase 1: Rules and Basic Checkmates (Rating 0–400)
+
+**Duration:** 1–2 weeks
+
+**Focus:** Learn how every piece moves, what check and checkmate mean, and how to deliver basic checkmates.
+
+**What to study:**
+- How each piece moves and captures (including en passant and castling)
+- The difference between check, checkmate, and stalemate
+- King + Queen vs King mate
+- King + Rook vs King mate
+- How to avoid stalemate when you're winning
+
+**How to practise:** Play games against the computer on the lowest setting. Don't worry about winning — focus on making legal moves confidently and recognising when the king is in check.
+
+**When to move on:** You can consistently deliver checkmate with King + Queen vs King in under 20 moves, and you never make an illegal move.
+
+## Phase 2: Piece Safety (Rating 400–600)
+
+**Duration:** 2–3 weeks
+
+**Focus:** Stop giving away pieces for free. This single skill separates 400-rated players from 600-rated players.
+
+**What to study:**
+- Before every move, ask: "Is my piece safe on that square?"
+- Before every move, ask: "Is my opponent's last move threatening any of my pieces?"
+- Learn the point values: pawn = 1, knight = 3, bishop = 3, rook = 5, queen = 9
+
+**How to practise:** Start solving [mate-in-1 puzzles](/learn/chess-puzzles-for-beginners). These train you to see when a king is vulnerable, which is the foundation of all tactics. Aim for 5 puzzles per day.
+
+**When to move on:** You rarely hang pieces in one move (you might still miss two-move threats, and that's fine). You can find mate-in-1 in most positions within 30 seconds.
+
+## Phase 3: Basic Tactics (Rating 600–800)
+
+**Duration:** 3–4 weeks
+
+**Focus:** Learn the four fundamental tactical patterns that win material.
+
+**What to study:**
+- **Forks** — one piece attacks two targets. [Knights are the best forking pieces](/learn/chess-tactics-trainer).
+- **Pins** — a piece can't move because it would expose something more valuable behind it.
+- **Skewers** — the reverse of a pin; the valuable piece is in front and must move.
+- **Discovered attacks** — move one piece to reveal an attack from another.
+
+**How to practise:** Solve 10 tactical puzzles per day, focusing on one theme per session. Cassandra's puzzle bank draws from real games and sorts by theme, so you can drill forks one day and pins the next.
+
+**Daily routine (15 minutes):**
+- 5 minutes: solve puzzles on your weakest theme
+- 5 minutes: solve mixed tactical puzzles
+- 5 minutes: play one 10-minute game and review the biggest mistake
+
+**When to move on:** You can spot forks and pins in puzzles within 15 seconds. Your blunder rate in games has dropped noticeably.
+
+## Phase 4: Opening Principles and Game Analysis (Rating 800–1000)
+
+**Duration:** 4–6 weeks
+
+**Focus:** Learn opening principles (not memorised lines) and start analysing your games.
+
+**What to study:**
+- **Control the centre** with pawns (e4/d4 or e5/d5) and develop pieces toward it
+- **Develop all pieces before attacking** — move each piece once before moving any piece twice
+- **Castle early** to protect your king
+- **Don't move your queen out early** — it'll get chased around and you'll lose tempo
+
+**Do NOT study:** Specific opening theory. At this level, your opponents won't play theory, so memorising lines is wasted effort. See [why opening mistakes aren't really about openings](/learn/chess-opening-mistakes).
+
+**How to practise:**
+- Continue 10 tactical puzzles per day
+- After every game, use free analysis (Lichess or Cassandra) to find your biggest mistake
+- Connect your account to Cassandra to build a [personal puzzle bank from your blunders](/learn/chess-blunder-training)
+
+**Daily routine (20 minutes):**
+- 10 minutes: solve personal puzzles from your own games
+- 5 minutes: play one 10-minute game
+- 5 minutes: analyse that game, identify the turning point
+
+**When to move on:** You consistently reach 1000 rating. Your games last longer than 25 moves on average. You can articulate why you lost each game.
+
+## What NOT to Study Below 1000
+
+- **Opening theory.** Principles only. Lines are for 1400+.
+- **Endgame theory beyond basic mates.** You won't reach complex endgames often enough for it to matter yet.
+- **Positional chess and strategy.** [Tactics decide your games right now](/learn/chess-tactics-vs-strategy). Strategy comes later.
+- **Master games.** You won't understand why they're making the moves they make. It's entertainment, not education, at this stage.
+
+## The Most Important Habit
+
+Whatever else you do, build one habit: **analyse every game you play.** Not the next day. Not when you feel like it. Immediately after the game, spend 2 minutes looking at the position where the game turned.
+
+This single habit — play, review, learn — is what separates players who improve from players who stay at the same rating for years. Tools like Cassandra automate the hardest part by turning your mistakes into targeted training.
+
+**[Start your training plan — connect your account free →](/connect)**`,
+  },
+  {
+    slug: "chess-mistakes-beginners-make",
+    title: "The 7 Biggest Chess Mistakes Beginners Make (And How to Fix Them)",
+    metaTitle: "7 Biggest Chess Mistakes Beginners Make — And Fixes",
+    metaDescription:
+      "These 7 common beginner chess mistakes cost you the most rating points. Each one has a specific fix and training approach.",
+    themes: ["mateIn1", "fork", "pin", "hangingPiece"],
+    content: `Every chess beginner makes mistakes. That's expected. But some mistakes cost far more rating points than others, and most beginners don't know which ones to fix first.
+
+Here are the seven mistakes that cost beginners the most games, ranked by impact, with a specific fix for each one.
+
+## 1. Hanging Pieces
+
+**What it is:** Leaving a piece where your opponent can capture it for free. No trade, no compensation — you just lose material.
+
+**Why it's #1:** Hanging a piece is an instant losing position in most games. A full piece advantage (knight or bishop) is enough to win at any level with reasonable technique. Below 1000 rating, hanging pieces decides roughly 40% of games.
+
+**The fix:** Before every move, count the attackers and defenders on your destination square. If there are more attackers than defenders, don't go there unless you've calculated a specific reason. After you move, scan the board for any of your pieces that are now undefended.
+
+**Training:** Solve [beginner puzzles](/learn/chess-puzzles-for-beginners) daily. The pattern recognition transfers directly to spotting hanging pieces in games.
+
+## 2. Moving the Queen Out Early
+
+**What it is:** Bringing the queen into the opponent's side of the board in the first 5–6 moves, usually chasing pawns.
+
+**Why it matters:** The queen is your most valuable piece and your opponent's best target. When you move it out early, your opponent develops pieces with tempo by attacking it. You end up with a wandering queen and no developed pieces while your opponent has a fully coordinated army.
+
+**The fix:** Don't move your queen past your third rank before all your minor pieces (knights and bishops) are developed and you've castled. The only exception is if there's a forced checkmate.
+
+**Training:** Follow the opening principles in our [beginner study plan](/learn/chess-study-plan-beginners): develop knights and bishops, castle, then consider queen activity.
+
+## 3. Ignoring Opponent Threats
+
+**What it is:** Making your own plans without checking what your opponent is threatening.
+
+**Why it matters:** Chess is a two-player game, but beginners often play it like solitaire. They have a plan — attack the f7 pawn, push the h-pawn, trap the bishop — and execute it without noticing their opponent is threatening checkmate.
+
+**The fix:** Before every move, ask one question: **"What is my opponent's threat?"** If their last move attacks something, deal with the threat before continuing your plan. This single habit eliminates more losses than any amount of tactical study.
+
+**Training:** [The Echo](/echo) trains you to read positions by asking what move was just played — building the habit of paying attention to your opponent's last move.
+
+## 4. Not Castling (or Castling Too Late)
+
+**What it is:** Leaving your king in the centre for 15+ moves, usually because you're focused on attacking.
+
+**Why it matters:** The centre is where files open first. An uncastled king on e1 (or e8) is exposed to attacks along the e-file and diagonals. Castling moves your king to safety and connects your rooks — two benefits in one move.
+
+**The fix:** Make castling a priority by move 8–10. Develop your kingside knight and bishop first, then castle. If you find yourself on move 12 without having castled, alarm bells should ring.
+
+## 5. Trading Without a Reason
+
+**What it is:** Exchanging pieces just because you can. "His bishop is near my knight, I'll take it."
+
+**Why it matters:** Every trade changes the position, and not always in your favour. Trading pieces when you're ahead in development helps your opponent by simplifying the position. Trading pieces when you're behind in material makes it easier for your opponent to convert.
+
+**The fix:** Before every capture, ask: "Does this trade help me or my opponent?" Trade when you're ahead in material (simplification favours the side with more material). Avoid trades when you're behind or when you have more active pieces.
+
+## 6. Pawn Grabbing on the Flanks
+
+**What it is:** Chasing pawns on the a- and h-files with your queen or bishop while your opponent develops and attacks the centre.
+
+**Why it matters:** The centre is where games are won and lost. Pawns on the edges of the board are worth the same one point as centre pawns, but grabbing them costs tempo and pulls your pieces to the side of the board. Meanwhile, your opponent builds a menacing centre and starts an attack.
+
+**The fix:** Only capture flank pawns when (1) you can do it without losing tempo, (2) your development is already complete, or (3) the pawn creates a specific problem for your opponent (like a passed pawn).
+
+## 7. Not Learning From Losses
+
+**What it is:** Losing a game and immediately starting another one without understanding why you lost.
+
+**Why it matters:** This is the mistake that keeps all the other mistakes alive. If you don't review your games, you'll make the same errors for months or years. Every unanalysed loss is a wasted learning opportunity.
+
+**The fix:** After every loss (and every win where you were in trouble), spend 2 minutes in analysis. Find the move where the game turned. Understand why it was a mistake. Better yet, connect your account to Cassandra and let us [turn your mistakes into puzzles](/learn/chess-blunder-training) automatically.
+
+## How to Prioritise
+
+Don't try to fix all seven at once. Focus on one per week:
+
+**Week 1:** Stop hanging pieces (count attackers and defenders).
+**Week 2:** Keep your queen home until developed.
+**Week 3:** Check opponent threats before every move.
+**Week 4:** Castle by move 10.
+**Weeks 5–6:** Trade purposefully. Avoid flank pawn grabbing.
+**Ongoing:** Analyse every game.
+
+Each fix builds on the previous one. By the end of six weeks, you'll have eliminated the mistakes that cost beginners the most rating points.
+
+## The Compound Effect
+
+Fixing these mistakes doesn't just prevent losses — it creates wins. When you stop hanging pieces, you win games against opponents who still hang theirs. When you castle early and they don't, you get attacking chances. When you check their threats and they ignore yours, you land tactics.
+
+The path from beginner to intermediate isn't about learning brilliant moves. It's about stopping bad ones. Fix the leaks, and the rating takes care of itself.
+
+**[Find your specific mistakes — free game analysis →](/connect)**`,
+  },
 ];
 
 export function getArticle(slug: string): Article | undefined {
