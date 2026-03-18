@@ -2,11 +2,15 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "@/components/i18n/LocaleProvider";
+import { extractBlundersFromPgn } from "@/lib/chess-client/extractBlundersFromPgn";
+import { terminateEngine } from "@/lib/chess-client/stockfishBrowser";
 
 interface Props {
   lastSyncedAt: string | null;
   /** True if user has never had puzzles imported before */
   isFirstSync?: boolean;
+  /** Chess.com or Lichess username for puzzle extraction */
+  username?: string | null;
 }
 
 function formatTimeAgo(isoString: string, t: (key: string, vars?: Record<string, string | number>) => string): string {
@@ -19,7 +23,7 @@ function formatTimeAgo(isoString: string, t: (key: string, vars?: Record<string,
   return hours === 1 ? t("sync.oneHourAgo") : t("sync.hoursAgo", { count: hours });
 }
 
-export default function SyncButton({ lastSyncedAt, isFirstSync = false }: Props) {
+export default function SyncButton({ lastSyncedAt, isFirstSync = false, username }: Props) {
   const { t } = useTranslation();
   const [status, setStatus] = useState<"idle" | "loading" | "result">("idle");
   const [resultMessage, setResultMessage] = useState<string | null>(null);
@@ -34,7 +38,7 @@ export default function SyncButton({ lastSyncedAt, isFirstSync = false }: Props)
     setStatus("loading");
     setResultMessage(null);
     try {
-      // Phase 1: fetch games
+      // Phase 1: fetch and queue games
       const res = await fetch("/api/users/me/import", { method: "POST" });
       const data = (await res.json()) as {
         ok?: boolean;
@@ -52,7 +56,7 @@ export default function SyncButton({ lastSyncedAt, isFirstSync = false }: Props)
 
       const totalGames = data.gamesTotal ?? data.gamesQueued ?? 0;
       if (totalGames === 0) {
-        setResultMessage(t("sync.noBlunders", { games: 0 }));
+        setResultMessage(t("sync.upToDate"));
         setResultType("success");
         setSyncedAt(new Date().toISOString());
         setStatus("result");
@@ -60,28 +64,69 @@ export default function SyncButton({ lastSyncedAt, isFirstSync = false }: Props)
         return;
       }
 
-      // Phase 2: analyse games one at a time
+      // Phase 2: analyse games client-side with browser Stockfish
       setResultMessage(t("sync.syncing"));
       let totalPuzzles = 0;
       let gamesAnalysed = 0;
+      const playerName = username ?? "";
 
       while (true) {
-        const analyseRes = await fetch("/api/puzzles/analyse-game", { method: "POST" });
-        const analyseData = (await analyseRes.json()) as {
+        // Get next pending game from server
+        const analyseRes = await fetch("/api/puzzles/analyse-game", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(
+            gamesAnalysed > 0
+              ? { gameId: null } // just pick next (previous already marked done below)
+              : {}
+          ),
+        });
+        const gameData = (await analyseRes.json()) as {
           done: boolean;
           gameId: string | null;
-          puzzlesFound: number;
+          pgn: string | null;
+          platform: string | null;
           remaining: number;
         };
 
-        if (analyseData.gameId) {
-          gamesAnalysed++;
-          totalPuzzles += analyseData.puzzlesFound;
-          setResultMessage(`${gamesAnalysed}/${totalGames} games... ${totalPuzzles} puzzles`);
+        if (gameData.done || !gameData.gameId || !gameData.pgn) break;
+
+        // Analyse the PGN client-side
+        let puzzlesFromGame = 0;
+        try {
+          const puzzles = await extractBlundersFromPgn(gameData.pgn, playerName);
+          if (puzzles.length > 0) {
+            // Save puzzles via import API
+            const importRes = await fetch("/api/puzzles/import", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ puzzles }),
+            });
+            if (importRes.ok) {
+              const importData = await importRes.json();
+              puzzlesFromGame = importData.imported ?? 0;
+            }
+          }
+        } catch (err) {
+          console.error(`[sync] Game ${gameData.gameId} analysis failed:`, err);
         }
 
-        if (analyseData.done || !analyseData.gameId) break;
+        // Mark game as done on server
+        await fetch("/api/puzzles/analyse-game", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gameId: gameData.gameId,
+            puzzlesFound: puzzlesFromGame,
+          }),
+        }).catch(() => {});
+
+        gamesAnalysed++;
+        totalPuzzles += puzzlesFromGame;
+        setResultMessage(`${gamesAnalysed}/${totalGames} games... ${totalPuzzles} puzzles`);
       }
+
+      terminateEngine();
 
       // Show final result
       if (totalPuzzles > 0 && isFirstSync) {
@@ -98,7 +143,6 @@ export default function SyncButton({ lastSyncedAt, isFirstSync = false }: Props)
       setResultType("error");
     }
     setStatus("result");
-    // Revert to idle after 5 seconds
     timerRef.current = setTimeout(() => {
       setStatus("idle");
       setResultMessage(null);
@@ -117,7 +161,7 @@ export default function SyncButton({ lastSyncedAt, isFirstSync = false }: Props)
       {/* Loading state */}
       {status === "loading" && (
         <p className="text-xs text-[#c8942a] font-medium animate-pulse">
-          {t("sync.syncing")}
+          {resultMessage ?? t("sync.syncing")}
         </p>
       )}
 

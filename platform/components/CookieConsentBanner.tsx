@@ -32,7 +32,7 @@ export default function CookieConsentBanner() {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-0 inset-x-0 z-50 bg-[#0e0e0e] border-t border-[#333] px-4 py-4 sm:py-3">
+    <div className="fixed bottom-0 inset-x-0 z-[9999] bg-[#0e0e0e] border-t border-[#333] px-4 py-4 sm:py-3">
       <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
         <p className="text-xs text-gray-400 leading-relaxed text-center sm:text-left flex-1">
           {t("cookie.message")}

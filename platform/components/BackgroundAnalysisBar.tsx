@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useTranslation } from "@/components/i18n/LocaleProvider";
 
 interface AnalysisStatus {
   isComplete: boolean;
@@ -19,6 +20,7 @@ interface Props {
 const POLL_INTERVAL = 60_000;
 
 export default function BackgroundAnalysisBar({ needsSync = false }: Props) {
+  const { t } = useTranslation();
   const [status, setStatus] = useState<AnalysisStatus | null>(null);
   const [dismissed, setDismissed] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -44,9 +46,7 @@ export default function BackgroundAnalysisBar({ needsSync = false }: Props) {
   async function triggerSync() {
     setSyncing(true);
     try {
-      console.log("[BackgroundAnalysisBar] Triggering background sync for returning user");
       await fetch("/api/users/me/import", { method: "POST" });
-      // Refresh status after sync queues new games
       await fetchStatus();
     } catch {
       // Silently ignore
@@ -83,7 +83,7 @@ export default function BackgroundAnalysisBar({ needsSync = false }: Props) {
     return (
       <div className="bg-[#0e0e0e] border border-[#2a2a2a] rounded-xl p-4 mb-4">
         <p className="text-sm text-gray-300 animate-pulse">
-          Syncing your latest games...
+          {t("sync.syncing")}
         </p>
       </div>
     );
@@ -96,7 +96,7 @@ export default function BackgroundAnalysisBar({ needsSync = false }: Props) {
           <div className="flex items-center gap-2">
             <span className="text-[#c8942a] text-sm">&#10003;</span>
             <p className="text-sm text-white">
-              Analysis complete &mdash; <span className="text-[#c8942a] font-semibold">{status.totalPuzzles} puzzles</span> from your games
+              {t("sync.newPuzzles", { puzzles: status.totalPuzzles, games: status.totalGames })}
             </p>
           </div>
           <button
@@ -114,10 +114,10 @@ export default function BackgroundAnalysisBar({ needsSync = false }: Props) {
     <div className="bg-[#0e0e0e] border border-[#2a2a2a] rounded-xl p-4 mb-4">
       <div className="flex items-center justify-between mb-2">
         <p className="text-sm text-gray-300 animate-pulse">
-          Still analysing your games in the background...
+          {t("sync.syncing")}
         </p>
         <p className="text-xs text-[#c8942a] font-medium tabular-nums">
-          {status.totalPuzzles} puzzle{status.totalPuzzles !== 1 ? "s" : ""} found so far
+          {status.totalPuzzles} puzzle{status.totalPuzzles !== 1 ? "s" : ""}
         </p>
       </div>
       <div className="w-full bg-[#333] rounded-full h-1.5 overflow-hidden">
@@ -127,7 +127,7 @@ export default function BackgroundAnalysisBar({ needsSync = false }: Props) {
         />
       </div>
       <p className="text-xs text-gray-600 mt-1.5 tabular-nums">
-        {status.doneGames}/{status.totalGames} games analysed
+        {status.doneGames}/{status.totalGames}
       </p>
     </div>
   );
