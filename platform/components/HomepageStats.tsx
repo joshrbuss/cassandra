@@ -18,7 +18,7 @@ export default function HomepageStats({
   const { t } = useTranslation();
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto">
+    <div className={`grid grid-cols-2 ${onlineNow >= 1 ? "sm:grid-cols-4" : "sm:grid-cols-3"} gap-3 max-w-2xl mx-auto`}>
       <StatCell label={t("landing.stats.puzzlesSolved")} value={puzzlesSolved.toLocaleString()} />
       <StatCell label={t("landing.stats.fromRealGames")} value={fromRealGames.toLocaleString()} />
       <StatCell label={t("landing.stats.totalPlayers")} value={totalPlayers.toLocaleString()} />
