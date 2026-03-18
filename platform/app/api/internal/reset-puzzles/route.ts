@@ -11,9 +11,18 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+function isAuthorized(req: NextRequest): boolean {
+  const secret = process.env.CRON_SECRET;
+  if (!secret) {
+    return process.env.NODE_ENV === "development";
+  }
+  const provided =
+    req.headers.get("x-cron-secret") ?? req.headers.get("authorization")?.replace("Bearer ", "");
+  return provided === secret;
+}
+
 export async function POST(req: NextRequest) {
-  const secret = req.headers.get("authorization")?.replace("Bearer ", "");
-  if (!secret || secret !== process.env.CRON_SECRET) {
+  if (!isAuthorized(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

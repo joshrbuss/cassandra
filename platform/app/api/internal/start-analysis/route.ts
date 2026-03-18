@@ -16,13 +16,19 @@ import { type NextRequest, NextResponse } from "next/server";
 import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function POST(req: NextRequest) {
+function isAuthorized(req: NextRequest): boolean {
   const secret = process.env.CRON_SECRET;
-  const provided = req.headers.get("authorization")?.replace("Bearer ", "");
-  if (!secret || !provided || provided !== secret) {
-    if (process.env.NODE_ENV !== "development") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!secret) {
+    return process.env.NODE_ENV === "development";
+  }
+  const provided =
+    req.headers.get("x-cron-secret") ?? req.headers.get("authorization")?.replace("Bearer ", "");
+  return provided === secret;
+}
+
+export async function POST(req: NextRequest) {
+  if (!isAuthorized(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   // Count pending games

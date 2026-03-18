@@ -22,7 +22,8 @@ const TARGET_COUNT = 500;
 function isAuthorized(req: NextRequest): boolean {
   const secret = process.env.CRON_SECRET;
   if (!secret) return process.env.NODE_ENV === "development";
-  const provided = req.headers.get("authorization")?.replace("Bearer ", "");
+  const provided =
+    req.headers.get("x-cron-secret") ?? req.headers.get("authorization")?.replace("Bearer ", "");
   return provided === secret;
 }
 
