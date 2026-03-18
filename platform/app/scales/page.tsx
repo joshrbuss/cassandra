@@ -56,6 +56,7 @@ export default async function ScalesPage() {
         { move: position.move2, cp: position.eval2 },
         { move: position.move3, cp: position.eval3 },
       ]}
+      hasSacrifice={position.hasSacrifice}
     />
   );
 }

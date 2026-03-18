@@ -23,6 +23,8 @@ interface Props {
   rating: number;
   /** Pre-seeded engine moves from ScalesPosition table */
   engineTop3: EngineResult[];
+  /** True if one of the top moves involves a tactical sacrifice */
+  hasSacrifice?: boolean;
 }
 
 interface SlotData {
@@ -34,7 +36,7 @@ interface SlotData {
 
 type Phase = "picking" | "evaluating" | "results";
 
-export default function ScalesShell({ puzzleId, fen, rating, engineTop3 }: Props) {
+export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacrifice }: Props) {
   const boardOrientation: "white" | "black" =
     fen.split(" ")[1] === "b" ? "black" : "white";
 
@@ -371,6 +373,12 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3 }: Props
                 Click a slot to activate it, then make a move on the board. Rank
                 all 3 from best to worst.
               </p>
+
+              {hasSacrifice && (
+                <p className="text-[#c8942a]/80 text-xs mt-2 italic">
+                  One of the top moves involves a sacrifice
+                </p>
+              )}
 
               {/* Slots */}
               <div className="grid grid-cols-3 gap-2 mt-4">

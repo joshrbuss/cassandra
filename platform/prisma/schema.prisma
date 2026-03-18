@@ -190,15 +190,16 @@ model RawGame {
 }
 
 model ScalesPosition {
-  id        String   @id @default(cuid())
-  fen       String   @unique
-  move1     String   // UCI notation, best move
-  eval1     Int      // centipawns
-  move2     String   // UCI notation, 2nd best
-  eval2     Int
-  move3     String   // UCI notation, 3rd best
-  eval3     Int
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  fen          String   @unique
+  move1        String   // UCI notation, best move
+  eval1        Int      // centipawns
+  move2        String   // UCI notation, 2nd best
+  eval2        Int
+  move3        String   // UCI notation, 3rd best
+  eval3        Int
+  hasSacrifice Boolean  @default(false)
+  createdAt    DateTime @default(now())
 
   @@index([id])
 }

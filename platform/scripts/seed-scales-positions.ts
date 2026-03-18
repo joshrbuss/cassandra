@@ -248,10 +248,9 @@ async function main() {
         const topGap = results[0].cp - results[1].cp;
         if (topGap > 200) continue;
 
-        // 5. No hanging pieces — reject if any top-3 move places a piece
-        //    on a square where a lesser-value piece can capture it
+        // 5. Detect sacrifice moves (piece lands on square capturable by lesser piece)
         const PIECE_VAL: Record<string, number> = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 99 };
-        let hasHanging = false;
+        let hasSacrifice = false;
         for (const r of results) {
           const testChess = new Chess(fen);
           const moveResult = testChess.move({
@@ -259,8 +258,7 @@ async function main() {
             to: r.move.slice(2, 4),
             promotion: r.move[4] || undefined,
           });
-          if (!moveResult) { hasHanging = true; break; }
-          // Check if opponent can capture the moved piece with a lesser-value piece
+          if (!moveResult) continue;
           const afterChess = new Chess(testChess.fen());
           const captures = afterChess.moves({ verbose: true }).filter(
             (m) => m.to === r.move.slice(2, 4)
@@ -269,12 +267,11 @@ async function main() {
             const movedVal = PIECE_VAL[moveResult.piece] ?? 0;
             const attackerVal = PIECE_VAL[captures[0].piece] ?? 0;
             if (attackerVal < movedVal) {
-              hasHanging = true;
+              hasSacrifice = true;
               break;
             }
           }
         }
-        if (hasHanging) continue;
 
         await prisma.scalesPosition.create({
           data: {
@@ -285,6 +282,7 @@ async function main() {
             eval2: results[1].cp,
             move3: results[2].move,
             eval3: results[2].cp,
+            hasSacrifice,
           },
         });
 
