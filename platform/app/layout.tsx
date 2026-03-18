@@ -79,18 +79,24 @@ export default async function RootLayout({
 }>) {
   // Read locale server-side so LocaleProvider hydrates without flash
   const cookieStore = await cookies();
-  const locale = resolveLocale(cookieStore.get("preferred_locale")?.value);
+  const cookieLocale = cookieStore.get("preferred_locale")?.value;
   const session = await auth();
 
   // Check if logged-in user is paid (skip AdSense for paid users)
+  // Also read persisted locale preference from user record
   let isPaid = false;
+  let userLocale: string | null = null;
   if (session?.userId) {
     const user = await prisma.user.findUnique({
       where: { id: session.userId },
-      select: { isPaid: true },
+      select: { isPaid: true, locale: true },
     });
     isPaid = user?.isPaid ?? false;
+    userLocale = user?.locale ?? null;
   }
+
+  // Priority: user DB locale > cookie > default
+  const locale = resolveLocale(userLocale ?? cookieLocale);
 
   return (
     <html lang={locale}>

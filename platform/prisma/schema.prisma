@@ -130,6 +130,8 @@ model User {
   email             String?
   /// ISO 3166-1 alpha-2 country code (e.g. "GB", "US") — captured from Vercel IP header on signup
   country           String?
+  /// Preferred UI locale (e.g. "en", "es", "fr", "de", "pt", "ru")
+  locale            String?
   createdAt         DateTime  @default(now())
 
   puzzles            Puzzle[]

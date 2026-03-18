@@ -44,6 +44,12 @@ export default function LocaleProvider({ initialLocale, children }: LocaleProvid
     localStorage.setItem(LOCALE_COOKIE, l);
     // Also write a cookie so server components can read it on next navigation
     document.cookie = `${LOCALE_COOKIE}=${l}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+    // Persist to user record (fire-and-forget)
+    fetch("/api/users/me", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ locale: l }),
+    }).catch(() => {});
   }
 
   const t = getT(locale);

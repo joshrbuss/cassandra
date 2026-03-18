@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/components/i18n/LocaleProvider";
 
-const CURRENT_VERSION = "v1.3";
+const CURRENT_VERSION = "v1.4";
 const STORAGE_KEY = "last_seen_update_version";
 
 export default function ChangelogBanner() {
