@@ -699,6 +699,317 @@ The key is consistency. A player who solves 10 personal puzzles daily for a mont
 
 **[Start training on your blunders — free →](/connect)**`,
   },
+  {
+    slug: "chess-opening-mistakes",
+    title: "Why Your Opening Mistakes Are Costing You Games (And How to Fix Them)",
+    metaTitle: "Chess Opening Mistakes — Fix What Happens After Move 10",
+    metaDescription:
+      "Your opening isn't the real problem — the middlegame positions it leads to are. Learn how to find and fix the opening mistakes that actually cost you games.",
+    themes: ["fork", "pin", "hangingPiece"],
+    content: `You lose a game and check the opening. You played 1.e4, your opponent played the Sicilian, and somewhere around move 12 everything fell apart. So you study the Sicilian. You memorise lines. Next game, you reach move 12 again — and everything still falls apart.
+
+The problem isn't your opening knowledge. The problem is what happens after the opening ends.
+
+## The Opening Study Trap
+
+Opening study is the most popular form of chess preparation and the least efficient for most players below 2000. Here's why: memorising moves only helps when your opponent plays the memorised responses. Below master level, opponents deviate from theory early and often. Your 15 moves of preparation are useless when they play a sideline on move 4.
+
+What actually matters is understanding the resulting middlegame. Can you handle an isolated queen's pawn? Do you know what to do when the centre is closed? Are you comfortable in positions with opposite-side castling?
+
+These questions aren't answered by memorising opening lines. They're answered by playing positions and learning from your mistakes in them.
+
+## Where Opening Mistakes Actually Happen
+
+When we analyse thousands of games from Cassandra users, a clear pattern emerges. The critical mistakes rarely happen in the first 8–10 moves. They happen in the transition zone — moves 10–20 — where theory ends and original thinking begins.
+
+This is where players make the moves that lose games:
+
+- **Wrong piece placement.** You develop to natural-looking squares that turn out to be terrible in the specific structure you're in. Your knight goes to c3 when it needed to go to d2. Your bishop is on e2 when it belongs on c4.
+- **Premature pawn breaks.** You push d4 or f4 at the wrong moment, opening lines your position isn't ready for. The pawn break itself isn't wrong — the timing is.
+- **Missing the opponent's plan.** You play your moves in isolation without asking what your opponent is preparing. They build up a kingside attack while you're shuffling pieces on the queenside.
+- **Trading the wrong pieces.** You exchange your active bishop for their passive knight, eliminating the piece that was holding your position together.
+
+These aren't opening mistakes in the traditional sense. They're middlegame mistakes that happen to occur in positions arising from your opening. And they repeat every time you play that opening — because you haven't trained on the specific positions where you go wrong.
+
+## Why Opening Books Don't Fix This
+
+Opening books and databases show you the best moves in the main line. But your problem isn't the main line — it's the moment you leave the main line. No book covers the specific position you'll reach after your opponent plays an unusual 6th move and you respond with a natural-looking but inaccurate 7th.
+
+What you need is to see the positions where *you personally* went wrong, understand why your move was a mistake, and drill the correct response until it's automatic. This is exactly what [blunder training](/learn/chess-blunder-training) does — but applied specifically to your opening-gone-wrong positions.
+
+## Training on Your Actual Opening Positions
+
+Cassandra Chess analyses your real games and extracts the positions where you made significant mistakes. Many of these occur in the opening-to-middlegame transition — exactly the zone where opening books stop helping and your own judgment takes over.
+
+When you solve these puzzles, you're not memorising abstract opening theory. You're learning what to do in the specific positions your openings produce. After drilling 20 positions from your Sicilian games, you'll handle move 12 differently — not because you memorised a line, but because you've trained the judgment that line requires.
+
+This approach works for any opening at any level. Whether you play 1.e4 or 1.d4, the Caro-Kann or the King's Indian, your mistakes happen in specific position types. Finding and drilling those positions is more valuable than memorising another 5 moves of theory.
+
+## A Better Approach to Openings
+
+Here's a practical framework for players under 2000:
+
+- **Choose openings based on middlegame type,** not theoretical soundness. If you like attacking, play openings that create attacking positions. If you prefer structure, play openings that lead to clear plans.
+- **Stop memorising past move 6–8.** Instead, understand the plans and piece placements for both sides. What squares do you want to control? Where should your pieces be aimed?
+- **Analyse your games specifically in moves 10–20.** This is where the real improvement hides. Where did your plan go wrong? What did your opponent do that you didn't anticipate?
+- **Drill the positions where you blundered.** Cassandra automates this — connect your account, and every middlegame blunder from your opening positions becomes a puzzle. For a complete approach to this kind of training, see [how to analyse your chess games](/learn/how-to-analyse-chess-games).
+
+The players who improve fastest aren't the ones with the deepest opening preparation. They're the ones who understand what to do when preparation runs out.
+
+**[Find your real opening weaknesses — free →](/connect)**`,
+  },
+  {
+    slug: "chess-endgame-training",
+    title: "Chess Endgame Training: The Most Neglected Part of Chess Improvement",
+    metaTitle: "Chess Endgame Training — The Fastest Path to More Wins",
+    metaDescription:
+      "Most players skip endgame training and throw away won games. Here's why endgame drilling is the highest-leverage improvement you can make.",
+    themes: ["endgame", "mateIn2", "mateIn3"],
+    content: `You're up a pawn in a rook ending. The position is objectively winning. You know it's winning. Stockfish confirms it's winning. Twenty moves later, it's a draw.
+
+This happens to club players constantly. They invest hours in openings and tactics but can't convert the advantages they create. The endgame — the phase where games are actually decided — gets almost no training time.
+
+## Why Players Skip Endgames
+
+Endgames feel boring compared to tactical fireworks. There's no satisfaction in a flashy queen sacrifice when you're manoeuvring a king and three pawns. Opening theory feels productive because there are concrete lines to memorise. Endgame training feels vague — where do you even start?
+
+But this neglect is costing you games. Every time you reach a winning endgame and fail to convert, that's a full point lost. Every drawn endgame you should have won is half a point gone. Over 100 games, poor endgame technique can cost you 50–100 rating points.
+
+## The Endgame Training Gap
+
+Most chess training platforms focus on tactical puzzles — finding the winning combination in the middlegame. These are important, but they create a blind spot: players who are excellent at creating advantages but terrible at converting them.
+
+The standard advice is to study Dvoretsky's Endgame Manual or work through endgame courses. These are excellent resources, but they're theoretical — they teach you positions you should know, not positions you actually face.
+
+The gap is practical endgame training on positions from your own games. When you butcher a rook ending in a real game, the most effective training is to drill that specific ending until you can play it correctly under time pressure.
+
+## What Endgame Training Actually Looks Like
+
+Effective endgame training has three components:
+
+**Theoretical knowledge.** You need to know the fundamental positions: Lucena, Philidor, opposition, the square rule, basic pawn endings, basic rook endings. These are the building blocks. Without them, you can't evaluate endgame positions correctly. Our [endgame puzzles guide](/learn/chess-endgame-puzzles) covers the core patterns.
+
+**Practical drilling.** Once you know the theory, you need to apply it under pressure. This means solving endgame positions with a ticking clock — not studying them at leisure. The difference is enormous. Theory tells you what to do; drilling makes you do it when it counts.
+
+**Personal game analysis.** The highest-value endgame training comes from your own games. When you botch a rook ending, that specific ending — with that specific pawn structure and piece placement — is what you need to practise. Generic rook endings from a textbook are helpful, but your rook ending from last Tuesday is more relevant.
+
+## Your Endgame Blunders Are Trainable
+
+Cassandra Chess catches endgame blunders the same way it catches middlegame ones. When you connect your account, we analyse every game with Stockfish — including the endgame. If you had a winning position on move 40 and threw it away by move 55, we extract those critical positions and turn them into puzzles.
+
+This is uniquely valuable for endgame improvement because endgame blunders are highly repetitive. If you mishandle king-and-pawn endings once, you'll mishandle them again in the same structural pattern. Drilling the specific position where you went wrong breaks the cycle.
+
+## Common Endgame Mistakes to Watch For
+
+**Passive rook placement.** Your rook should be active — behind passed pawns (yours or your opponent's), on open files, cutting off the enemy king. Passive rooks on the back rank lose games.
+
+**King inactivity.** In the endgame, your king is a fighting piece. If it's sitting on g1 while pawns are being exchanged on the other side of the board, you're losing tempo that you can't recover.
+
+**Wrong pawn exchanges.** Trading pawns in a won endgame often converts a winning position into a drawn one. Fewer pawns means fewer chances to create a passed pawn. Keep the tension unless you have a concrete reason to exchange.
+
+**Ignoring the clock.** Endgames require precise calculation, but many players rush because they're low on time. If you consistently reach winning endgames with 30 seconds on your clock, the problem isn't your endgame technique — it's your time management. See our guide on [chess improvement plateaus](/learn/chess-improvement-plateaus) for more on this.
+
+## Building an Endgame Routine
+
+Spend 20% of your training time on endgames. For a 15-minute daily session, that's 3 minutes — enough for 2–3 endgame positions. Prioritise positions from your own games (available through Cassandra's personalised puzzles), then supplement with theoretical positions from the Lichess database.
+
+The return on investment is immediate. Most club players gain 50–100 rating points from endgame improvement alone, because they stop throwing away games they should have won.
+
+**[Find your endgame blunders — free game analysis →](/connect)**`,
+  },
+  {
+    slug: "chess-com-alternatives",
+    title: "Chess.com Alternatives: Free Tools That Actually Make You Better",
+    metaTitle: "Chess.com Alternatives 2026 — Free Tools for Real Improvement",
+    metaDescription:
+      "Chess.com locks game analysis and unlimited puzzles behind a paywall. Here are the best free alternatives for serious chess improvement in 2026.",
+    themes: ["fork", "pin", "mateIn1", "mateIn2"],
+    content: `Chess.com is the biggest chess platform in the world, and for good reason. The playing experience is excellent, the community is massive, and the content library is enormous. But when it comes to improvement tools, the free tier has real limitations.
+
+Free Chess.com users get one game review per day (with limited depth), a small number of puzzles, and no access to advanced features like game explorer or opening reports. Want more? That's $70–100 per year for a Diamond membership.
+
+For casual players, the free tier is fine. For players trying to improve, the paywall sits right where the useful tools begin. Here are the alternatives worth knowing about.
+
+## Lichess — The Open-Source Standard
+
+Lichess is the most important Chess.com alternative and it's not close. Everything is free. No subscriptions, no tiers, no ads. Unlimited puzzles, unlimited game analysis, unlimited tournaments, and a clean interface with no upselling.
+
+The puzzle database is the largest open-source collection in chess — over 4 million positions from real games. Game analysis runs Stockfish at full depth for every game. The opening explorer covers millions of positions. All of it is free, funded by donations.
+
+If you're leaving Chess.com because of the paywall, Lichess is the first place to go. The playing pool is slightly smaller but the improvement tools are strictly superior to Chess.com's free tier.
+
+**What Lichess doesn't do:** personalised training. Lichess gives you excellent tools, but it doesn't connect the dots between your game analysis and your puzzle training. You analyse a game, see your mistakes, and then go solve unrelated puzzles. The training gap between "knowing your weakness" and "drilling your weakness" is left for you to bridge yourself. For more on this distinction, see [Lichess puzzles vs personal puzzles](/learn/lichess-puzzles-vs-personal-puzzles).
+
+## Cassandra Chess — Personal Puzzle Training
+
+Cassandra Chess takes a different approach. Instead of being a playing platform, it focuses entirely on turning your games into targeted training.
+
+Connect your Chess.com or Lichess account (you keep playing on whichever platform you prefer), and Cassandra analyses every game with Stockfish. Each position where you made a significant mistake becomes a puzzle. The result is a personalised puzzle bank built from your actual weaknesses.
+
+This is the step that other platforms skip. Chess.com shows you where you blundered but doesn't turn it into active training. Lichess gives you excellent generic puzzles but can't target your specific blind spots. Cassandra closes the loop: analyse → extract → drill.
+
+Additional training modes include [The Prophecy](/prophecy) — a daily brilliant-move challenge, [The Scales](/scales) — a move-ranking exercise that trains positional evaluation, and [The Echo](/echo) — retrograde analysis that trains you to read positions backwards.
+
+Everything is free. No subscription, no puzzle limits, no paywalled game analysis.
+
+## ChessTempo — Tactical Depth
+
+ChessTempo has been around for over a decade and still offers some of the best puzzle curation available. The difficulty calibration is precise, and the comment system on puzzles provides community-sourced explanations.
+
+The free tier is more generous than Chess.com's — you get unlimited standard puzzles. The premium tier ($30/year) adds blitz puzzles, custom problem sets, and detailed statistics.
+
+**Best for:** players who want a large, well-calibrated puzzle database with detailed performance analytics.
+
+## Chess24/chess24.com — Video Content
+
+Now part of the Chess.com ecosystem, chess24 still has a library of instructional videos from top grandmasters. Some content is free; most requires a subscription.
+
+**Best for:** players who learn well from video content and want grandmaster-level instruction.
+
+## Which Should You Use?
+
+The honest answer: use multiple tools for different purposes.
+
+- **Play games** on Chess.com or Lichess (whichever community you prefer)
+- **Analyse games** on Lichess (free, full-depth Stockfish) or Cassandra (automatic analysis with puzzle extraction)
+- **Train tactics** on Cassandra (personal puzzles from your games) + Lichess (broad tactical vocabulary)
+- **Study openings** on Lichess opening explorer (free, comprehensive)
+
+The critical insight is that the most valuable training tool isn't the one with the most features — it's the one that targets your specific weaknesses. A [free chess tactics trainer](/learn/chess-tactics-trainer-free) that gives you positions from your own games will improve your rating faster than a premium subscription to a platform that gives you random positions from everyone's games.
+
+**[Get free personalised training →](/connect)**`,
+  },
+  {
+    slug: "how-to-get-better-at-chess-fast",
+    title: "How to Get Better at Chess Fast: What Actually Works",
+    metaTitle: "How to Get Better at Chess Fast — Proven Methods",
+    metaDescription:
+      "Want to improve at chess quickly? The fastest path isn't more games or more videos — it's fixing your specific mistakes with targeted training.",
+    themes: ["fork", "pin", "discoveredAttack", "mateIn2"],
+    content: `There are hundreds of articles about chess improvement. Most of them say the same things: solve puzzles, study openings, learn endgames, play longer time controls. This advice isn't wrong. But it's generic, and generic advice produces generic results.
+
+If you want to improve fast — measurably, within weeks — you need to do something different from what you've been doing. Here's what the research on skill acquisition and the data from thousands of improving players actually shows.
+
+## The 80/20 of Chess Improvement
+
+In any complex skill, a small number of changes produce most of the improvement. For chess, the highest-leverage activities are:
+
+**1. Stop making the same mistakes.** This sounds obvious, but most players don't do it systematically. They review their blunders, nod, and move on. The blunders come back. The fix is active drilling — putting yourself back in the position where you went wrong and finding the correct move under pressure. For the complete method, see [how to train on your blunders](/learn/chess-blunder-training).
+
+**2. Train on YOUR positions, not random ones.** Generic puzzles improve your general tactical awareness. Personal puzzles — from your own games — improve your specific weaknesses. The difference in improvement speed is significant. A player who solves 50 personal puzzles will improve faster than one who solves 200 random ones. See [why random puzzles plateau your rating](/learn/chess-improvement-plateaus).
+
+**3. Play, analyse, train — in a loop.** Most players do one of these but not all three in sequence. They play games without analysing them. Or they analyse but don't train on the mistakes. Or they train but don't play enough games to generate new material. The fastest improvers play a game, analyse it within 24 hours, and drill the positions where they went wrong.
+
+## What Doesn't Work (Despite Being Popular)
+
+**Watching chess videos for hours.** Videos are entertainment with a thin layer of education. You feel like you're learning because you're consuming information, but passive consumption doesn't build skills. Watch videos for enjoyment; don't count them as training.
+
+**Memorising opening lines past move 8.** Below 2000 Elo, your opponents won't play the main line. The time you spend memorising move 14 of the Najdorf is time you could spend learning what to do when your opponent deviates on move 6. See [why opening mistakes aren't really about openings](/learn/chess-opening-mistakes).
+
+**Playing hundreds of blitz games without analysis.** Playing is necessary, but unanalysed games are practice without feedback. You're reinforcing whatever habits you already have — good and bad. If you're going to play blitz, analyse at least one game per session.
+
+**Solving puzzle rush for 30 minutes.** Puzzle rush is addictive and fun, but it optimises for speed on random positions rather than depth on your weak positions. It's better than nothing, but it's not targeted training. See [beyond puzzle rush](/learn/chess-puzzle-rush-alternatives) for why.
+
+## The Fastest Path: A 4-Week Plan
+
+**Week 1: Baseline.** Play 5–7 games at your normal time control. Analyse each game using the 5-step method from our [game analysis guide](/learn/how-to-analyse-chess-games). Identify your top 3 recurring mistake types.
+
+**Week 2: Targeted drilling.** Connect your account to Cassandra and let us analyse your games. Start solving your personalised puzzles — focus on the mistake types you identified. Aim for 10–15 puzzles per day, spending 15–20 minutes total.
+
+**Week 3: Reinforce and expand.** Continue daily personal puzzles. Add 5 minutes of generic puzzles from the Lichess database to broaden your pattern recognition. Play 3–4 games and analyse each one.
+
+**Week 4: Measure.** Compare your blunder rate in weeks 3–4 to week 1. Most players see a 30–50% reduction in blunder frequency. Rating improvement typically follows within 1–2 weeks after the blunder rate drops.
+
+## Realistic Expectations
+
+With consistent daily training (15–20 minutes), most players can expect:
+
+- **50–100 rating points** in the first month
+- **100–200 rating points** over 3 months
+- **Measurable reduction in blunder rate** within 2 weeks
+
+These numbers vary based on starting level, time control, and consistency. Players below 1200 often improve faster because their mistakes are more concrete and fixable. Players above 1600 improve more slowly because the remaining mistakes are subtler.
+
+The key variable isn't talent or study material — it's consistency. Fifteen minutes every day beats two hours once a week. Spacing is the most powerful learning principle in cognitive science, and it applies directly to chess.
+
+## The One Thing to Do Today
+
+If you do nothing else from this article, do this: play one game, analyse it, identify your biggest mistake, and solve that position 5 times. That single cycle — play, analyse, drill — is the engine of chess improvement. Everything else is optimising around it.
+
+**[Start your first cycle — free game analysis →](/connect)**`,
+  },
+  {
+    slug: "chess-puzzle-rush-alternatives",
+    title: "Beyond Puzzle Rush: Why Random Puzzles Are Slowing Your Progress",
+    metaTitle: "Puzzle Rush Alternatives — Train Smarter Than Random Puzzles",
+    metaDescription:
+      "Puzzle rush is addictive but trains you on random positions. Here's why targeted puzzle training improves your rating faster than speed-solving random tactics.",
+    themes: ["fork", "pin", "skewer", "mateIn1"],
+    content: `Puzzle rush is one of the most popular features in online chess. The format is simple: solve as many puzzles as you can in a time limit, with puzzles getting progressively harder. Your score is the number solved before three mistakes or time runs out.
+
+It's engaging, competitive, and genuinely fun. It's also one of the least efficient ways to improve at chess.
+
+## Why Puzzle Rush Feels Like It Works
+
+Puzzle rush creates a compelling feedback loop. You see your score, you want to beat it, you try again. The leaderboard adds social motivation. The increasing difficulty creates a satisfying sense of challenge. After a 20-minute session, you feel like you've trained hard.
+
+And you have trained — but on what? Puzzle rush serves positions from a generic database, sequenced by difficulty. The positions have no connection to your opening repertoire, your playing style, or your documented weaknesses. You might spend 5 minutes solving knight fork puzzles when you already see knight forks perfectly, while the discovered attack patterns that cost you games never appear.
+
+The feeling of productive training isn't the same as actual productive training. Puzzle rush trains pattern recognition broadly; it doesn't fix your specific problems.
+
+## The Random Puzzle Problem
+
+The core issue with puzzle rush (and most generic puzzle trainers) is randomness. Each puzzle is drawn from a large database without regard to what you personally need to practice.
+
+This is like a basketball player practising shots from every position on the court in random order. It'll improve their overall shooting, but if their free throws are the specific weakness losing them games, random practice is wildly inefficient compared to 100 focused free throws.
+
+In chess terms: if you lose rating points because you miss back-rank threats in rook endings, you need back-rank and rook ending positions — not a random sample of forks, pins, and mates from all phases of the game.
+
+The research on this is clear. Psychologist Anders Ericsson's work on deliberate practice shows that improvement comes from training at the edge of your specific abilities with targeted feedback — not from general volume. For more on why this plateau happens, see our article on [chess improvement plateaus](/learn/chess-improvement-plateaus).
+
+## What Puzzle Rush Gets Right
+
+Credit where it's due: puzzle rush does some things well.
+
+**Speed training.** Solving under time pressure builds tactical fluency — the ability to see patterns quickly without deep calculation. This is valuable in blitz and bullet games where intuition dominates.
+
+**Low barrier.** You don't need to prepare or choose a training plan. Open puzzle rush, click start, go. This accessibility gets people training who might not otherwise.
+
+**Motivation.** The score and leaderboard create extrinsic motivation that keeps people coming back. Consistency is valuable even when the training is suboptimal.
+
+## Better Alternatives
+
+If you want the engagement of puzzle rush with the effectiveness of targeted training, here are better approaches:
+
+**Personal puzzle bank.** Cassandra Chess analyses your Chess.com and Lichess games and builds a puzzle bank from your actual blunders. Every puzzle is drawn from a position where you made a real mistake. This means 100% of your training time targets your documented weaknesses. Learn more in our guide to [blunder training](/learn/chess-blunder-training).
+
+**Themed puzzle sets.** Instead of random puzzles, focus on one tactical motif per session. Spend 10 minutes on discovered attacks. Tomorrow, spend 10 minutes on pins. This controlled exposure builds depth on specific patterns rather than shallow exposure to all patterns. Lichess supports filtering puzzles by theme.
+
+**The Scales.** Cassandra's [move-ranking mode](/scales) shows you a position with three candidate moves and asks you to rank them from best to worst. This trains positional evaluation — a skill that puzzle rush doesn't touch.
+
+**The Echo.** Cassandra's [retrograde analysis mode](/echo) shows you a position and asks what move was just played. This trains board reading and opponent awareness — skills that complement tactical pattern recognition.
+
+**Timed personal puzzles.** If you love the time pressure of puzzle rush, apply it to your personal puzzles. Set a 15-minute timer and solve as many personal puzzles as you can. Same adrenaline, but every position is targeting your actual weaknesses.
+
+## When Puzzle Rush Is Fine
+
+Puzzle rush isn't bad — it's just not optimal. Use it when:
+
+- You're warming up before a serious training session
+- You want a fun break from targeted training
+- You're introducing a friend to chess puzzles
+- You genuinely enjoy it and it keeps you coming back to chess
+
+Just don't mistake it for serious improvement work. The 20 minutes you spend on puzzle rush would produce more rating gains if spent on 15 personal puzzles from your own games.
+
+## The Bottom Line
+
+Puzzle rush trains you to solve random positions quickly. Personal puzzle training trains you to stop making the specific mistakes that cost you games. Both are valuable, but if you're trying to improve your rating as efficiently as possible, targeted training wins every time.
+
+The fastest path isn't solving more puzzles — it's solving the *right* puzzles. And the right puzzles are the ones from your own games, targeting your own weaknesses, drilled until the patterns become automatic.
+
+**[Build your personal puzzle bank — free →](/connect)**`,
+  },
 ];
 
 export function getArticle(slug: string): Article | undefined {

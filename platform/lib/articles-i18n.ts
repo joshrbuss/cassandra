@@ -1535,4 +1535,1283 @@ Cassandra Chess анализирует ваши реальные партии и
 
 **[Подключите аккаунт и превратите свои ошибки в тренировку →](/connect)**`,
   },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // SPANISH (batch 3)
+  // ═══════════════════════════════════════════════════════════════════════
+  "es:chess-opening-mistakes": {
+    title: "Por qué tus errores de apertura te están costando partidas (y cómo solucionarlos)",
+    metaTitle: "Errores de apertura en ajedrez — Arregla lo que pasa después de la jugada 10",
+    metaDescription: "Tu apertura no es el verdadero problema — las posiciones de medio juego a las que conduce sí lo son. Aprende a encontrar y corregir los errores de apertura que realmente te cuestan partidas.",
+    content: `Todos hemos caído en la trampa del estudio de aperturas. Pasas horas memorizando líneas de la Siciliana o la Ruy López, aprendes las variantes principales hasta la jugada 15, y luego tu oponente juega algo completamente diferente en la jugada 4. Todo ese estudio, desperdiciado.
+
+## La trampa del estudio de aperturas
+
+El problema no es que estudiar aperturas sea inútil. El problema es cómo la mayoría de los jugadores lo hacen. Memorizan secuencias de jugadas sin entender los planes detrás de ellas. Cuando el oponente se desvía — y por debajo de 2000 ELO, **siempre** se desvía — te quedas perdido en territorio desconocido.
+
+La realidad es que la mayoría de las partidas entre aficionados salen de la "teoría" antes de la jugada 10. Lo que sucede después es lo que determina quién gana.
+
+## Dónde ocurren realmente los errores
+
+Los errores más costosos no están en la apertura pura, sino en la **zona de transición entre la apertura y el medio juego** — jugadas 10 a 20. Es aquí donde los jugadores cometen errores críticos:
+
+- **Colocación incorrecta de piezas.** Desarrollas todas las piezas, pero en casillas pasivas que no contribuyen al plan.
+- **Rupturas de peones prematuras.** Avanzas peones sin preparación, debilitando tu estructura.
+- **No detectar el plan del oponente.** Estás tan concentrado en tu propio juego que ignoras las amenazas que se forman.
+- **Cambios equivocados.** Intercambias piezas que necesitas y conservas las que tu oponente quiere que mantengas.
+
+## Por qué los libros de aperturas no resuelven esto
+
+Los libros y bases de datos de aperturas te dicen qué jugar cuando todo sigue la teoría. No te preparan para las posiciones caóticas y desequilibradas que surgen cuando ambos jugadores improvisan. Y esas son exactamente las posiciones donde se ganan y pierden las partidas por debajo de 2000.
+
+Un Gran Maestro puede navegar estas posiciones por experiencia e intuición. Tú necesitas un enfoque diferente.
+
+## Entrena con tus posiciones reales
+
+Lo que realmente funciona es analizar las posiciones que surgen de **tus propias partidas**. No las posiciones teóricas de un libro, sino las posiciones concretas donde tú, personalmente, tomas malas decisiones.
+
+Cassandra Chess hace exactamente esto. Analiza tus partidas, identifica las posiciones de transición donde cometes errores recurrentes, y genera puzzles específicos para entrenar esas debilidades. En lugar de memorizar líneas que nunca verás, entrenas las posiciones que realmente encuentras.
+
+## Un marco práctico para jugadores sub-2000
+
+1. **Juega tus aperturas habituales.** No cambies de apertura constantemente — necesitas repetir posiciones para aprender de ellas.
+2. **Analiza las jugadas 10-20.** Después de cada partida, enfócate en la transición al medio juego, no en la apertura.
+3. **Identifica patrones.** ¿Siempre te quedan las torres pasivas? ¿Cambias alfiles cuando no debes? Anota los patrones.
+4. **Entrena específicamente.** Usa puzzles derivados de tus propias posiciones para trabajar esos patrones.
+
+Para aprender más sobre cómo entrenar tus errores, lee sobre [entrenamiento de errores en ajedrez](/learn/chess-blunder-training). Y para una guía completa de análisis, consulta [cómo analizar tus partidas de ajedrez](/learn/how-to-analyse-chess-games).
+
+## La conclusión
+
+Deja de memorizar aperturas y empieza a entender tus posiciones. Los puntos de ELO no se ganan en la jugada 5 — se ganan en la jugada 15, cuando la teoría se acaba y empieza el ajedrez real.
+
+**[Conecta tu cuenta y descubre tus errores reales de apertura →](/connect)**`,
+  },
+  "es:chess-endgame-training": {
+    title: "Entrenamiento de finales de ajedrez: La parte más descuidada de la mejora",
+    metaTitle: "Entrenamiento de finales de ajedrez — El camino más rápido a más victorias",
+    metaDescription: "La mayoría de los jugadores ignoran el entrenamiento de finales y desperdician partidas ganadas. Aquí explicamos por qué el estudio de finales es la mejora con mayor impacto que puedes hacer.",
+    content: `Tienes una posición ganadora. Torre y dos peones contra torre y un peón. El motor dice +3.5. Y luego, de alguna manera, empatas. O peor, pierdes. Suena familiar, ¿verdad?
+
+## Por qué los jugadores evitan los finales
+
+Seamos honestos: los finales no son emocionantes. No hay sacrificios espectaculares, no hay ataques devastadores al rey. Es ajedrez técnico, preciso, a veces tedioso. Comparados con resolver puzzles tácticos o estudiar aperturas llamativas, los finales parecen aburridos.
+
+Pero aquí está la ironía: **los finales son donde más puntos de ELO se pierden** por debajo de 2000. No porque las posiciones sean difíciles en sí mismas, sino porque los jugadores nunca han practicado los patrones básicos.
+
+## La brecha del entrenamiento de finales
+
+Las plataformas de ajedrez populares se centran en tácticas y aperturas. Te dan puzzles de mate en 3, te enseñan la Italiana y la Defensa Francesa. Pero ¿cuándo fue la última vez que una plataforma te hizo practicar un final de torre y peón?
+
+Esta brecha es enorme. Un jugador de 1400 puede conocer 20 aperturas pero no saber cómo ganar rey y peón contra rey sin la oposición.
+
+## Cómo es el entrenamiento real de finales
+
+El entrenamiento efectivo de finales tiene tres componentes:
+
+- **Conocimiento teórico.** Las posiciones base: oposición, regla del cuadrado, posiciones de Lucena y Philidor, finales básicos de alfil y caballo.
+- **Práctica activa.** No basta con leer — necesitas resolver posiciones de finales, idealmente con presión de tiempo para simular condiciones reales.
+- **Análisis de tus partidas.** Revisar los finales de tus propias partidas para identificar dónde perdiste ventaja.
+
+## Errores comunes en finales
+
+Ciertos errores aparecen constantemente en partidas de aficionados:
+
+- **Torre pasiva.** Colocar la torre detrás de tus propios peones en lugar de activarla. Las torres necesitan líneas abiertas y actividad.
+- **Rey inactivo.** En el final, el rey es una pieza de ataque. Los jugadores que lo mantienen en g1 todo el final pierden.
+- **Cambios de peones equivocados.** Cambiar peones cuando tienes ventaja material reduce tus posibilidades de ganar.
+- **Problemas de reloj.** Llegar al final con poco tiempo y no conocer los patrones significa jugar a ciegas cuando más precisión se necesita.
+
+## Construye una rutina
+
+Dedica al menos el **20% de tu tiempo de entrenamiento** a finales. Si entrenas una hora al día, eso son 12 minutos. Parece poco, pero es infinitamente más de lo que la mayoría de jugadores hacen.
+
+Para puzzles de finales personalizados, explora [puzzles de finales de ajedrez](/learn/chess-endgame-puzzles). Y si sientes que tu progreso se ha estancado, lee sobre [mesetas de mejora en ajedrez](/learn/chess-improvement-plateaus) — a menudo la solución está en los finales.
+
+## La ventaja oculta
+
+Cada final que ganas correctamente es una media victoria más que tu oponente en el mismo nivel. Multiplica eso por cientos de partidas y estamos hablando de 100-200 puntos de ELO. Todo por aprender patrones que puedes dominar en semanas, no meses.
+
+**[Conecta tu cuenta y empieza a entrenar finales desde tus propias partidas →](/connect)**`,
+  },
+  "es:chess-com-alternatives": {
+    title: "Alternativas a Chess.com: Herramientas gratuitas que realmente te hacen mejor",
+    metaTitle: "Alternativas a Chess.com 2026 — Herramientas gratuitas para mejorar de verdad",
+    metaDescription: "Chess.com bloquea el análisis de partidas y los puzzles ilimitados detrás de un muro de pago. Aquí están las mejores alternativas gratuitas para mejorar seriamente en ajedrez en 2026.",
+    content: `Chess.com es la plataforma de ajedrez más popular del mundo, y con razón: tiene una interfaz pulida, millones de jugadores y contenido abundante. Pero si quieres mejorar de verdad, te darás cuenta rápidamente de que las funciones más importantes están detrás de un muro de pago. Análisis limitado, puzzles restringidos, lecciones bloqueadas.
+
+No necesitas pagar para mejorar. Aquí están las mejores alternativas gratuitas en 2026.
+
+## Lichess — Todo gratis, siempre
+
+[Lichess](https://lichess.org) es la alternativa obvia. Es completamente gratuita, de código abierto, y ofrece todo lo que Chess.com cobra: análisis ilimitado con Stockfish, puzzles infinitos, estudios, torneos, y más.
+
+**Lo bueno:** Todo es gratis. Sin publicidad. El análisis de partidas es potente y el motor es el mismo Stockfish que usan los profesionales.
+
+**Lo que le falta:** Los puzzles son genéricos. Te dan posiciones aleatorias de partidas de otros jugadores. Aprenderás tácticas generales, pero no trabajarás tus debilidades específicas.
+
+## Cassandra Chess — Entrenamiento personalizado gratuito
+
+Cassandra Chess aborda el problema que ni Chess.com ni Lichess resuelven: el entrenamiento personalizado. En lugar de puzzles genéricos, Cassandra analiza **tus propias partidas** y genera entrenamiento específico para tus errores.
+
+- **La Profecía** — Te muestra posiciones donde jugadores de tu nivel cometen errores frecuentes.
+- **Las Escalas** — Puzzles de dificultad progresiva basados en tus patrones de error.
+- **El Eco** — Repite posiciones donde fallaste hasta que las domines.
+
+Todo gratuito. Para entender la diferencia entre puzzles genéricos y personalizados, lee [puzzles de Lichess vs puzzles personalizados](/learn/lichess-puzzles-vs-personal-puzzles).
+
+## ChessTempo — Profundidad táctica
+
+ChessTempo destaca por su sistema de calibración de puzzles. Cada puzzle tiene un rating preciso, y el sistema ajusta la dificultad según tu rendimiento. Es excelente para trabajo táctico serio.
+
+**Lo bueno:** Calibración precisa, base de datos enorme, filtros por tema táctico.
+
+**Lo que le falta:** La interfaz es anticuada y no ofrece entrenamiento personalizado basado en tus partidas.
+
+## Chess24 — Contenido en vídeo
+
+Chess24 (ahora integrado con Chess.com) ofrece comentarios de torneos y vídeos educativos de alta calidad. Es mejor como complemento que como herramienta principal de entrenamiento.
+
+## ¿Cuál usar para qué?
+
+- **Jugar partidas:** Chess.com o Lichess — donde estén tus amigos y tu historial.
+- **Analizar partidas:** Lichess (análisis con Stockfish gratuito) o Cassandra (análisis enfocado en tus errores).
+- **Entrenar:** Cassandra (puzzles personalizados) + Lichess (puzzles generales y estudios).
+
+Para más sobre entrenadores tácticos gratuitos, consulta [entrenadores tácticos gratuitos de ajedrez](/learn/chess-tactics-trainer-free).
+
+## La conclusión
+
+No necesitas una suscripción premium para mejorar en ajedrez. Necesitas las herramientas correctas usadas de la forma correcta. Juega donde quieras, pero entrena con tus propias partidas.
+
+**[Conecta tu cuenta gratis y empieza a entrenar de verdad →](/connect)**`,
+  },
+  "es:how-to-get-better-at-chess-fast": {
+    title: "Cómo mejorar en ajedrez rápidamente: Lo que realmente funciona",
+    metaTitle: "Cómo mejorar en ajedrez rápido — Métodos probados",
+    metaDescription: "¿Quieres mejorar en ajedrez rápidamente? El camino más rápido no es más partidas ni más vídeos — es corregir tus errores específicos con entrenamiento dirigido.",
+    content: `Quieres mejorar en ajedrez. Rápido. No en años — en semanas. ¿Es posible? Sí, pero probablemente no de la forma que piensas.
+
+## El 80/20 de la mejora en ajedrez
+
+El principio de Pareto aplica perfectamente al ajedrez. El 80% de tus derrotas viene del 20% de tus errores. No pierdes porque te falta conocimiento de aperturas o porque no has visto suficientes vídeos. Pierdes porque cometes los mismos errores una y otra vez.
+
+Los tres pilares de la mejora rápida:
+
+1. **Deja de cometer los mismos errores.** Identifica tus 5 patrones de error más frecuentes y trabájalos.
+2. **Entrena con TUS posiciones.** No con posiciones de libros — con las posiciones reales que encuentras en tus partidas.
+3. **Ciclo jugar-analizar-entrenar.** Juega una partida, analízala, entrena las posiciones donde fallaste. Repite.
+
+## Lo que NO funciona
+
+Seamos directos sobre lo que parece productivo pero no lo es:
+
+- **Ver vídeos de ajedrez.** Entretenido, pero el aprendizaje pasivo no se transfiere al tablero. Puedes ver 100 vídeos sobre sacrificios y seguir sin verlos en tus partidas.
+- **Memorizar aperturas después de la jugada 8.** Por debajo de 2000, tu oponente saldrá de la teoría antes. Aprende los 5-6 primeros movimientos y los planes, nada más.
+- **Jugar cientos de partidas de blitz sin analizar.** Estás reforzando malos hábitos, no mejorando. Es como practicar tiros libres con los ojos cerrados.
+- **Puzzle rush.** Adictivo pero entrena posiciones aleatorias. Lee sobre [alternativas a puzzle rush](/learn/chess-puzzle-rush-alternatives).
+
+## Plan de 4 semanas
+
+**Semana 1:** Conecta tu cuenta, analiza tus últimas 50 partidas, identifica tus 3 errores más comunes.
+
+**Semana 2:** Entrena exclusivamente esos 3 patrones. 20 minutos al día de puzzles dirigidos.
+
+**Semana 3:** Juega 5 partidas de ritmo lento (15+10 mínimo). Analiza cada una. Actualiza tu lista de errores.
+
+**Semana 4:** Combina entrenamiento de errores (60%) con puzzles generales (20%) y finales (20%).
+
+## Expectativas realistas
+
+Con este enfoque, espera ganar **50-100 puntos de ELO en el primer mes**. No es magia — es dejar de perder puntos que ya estás regalando. Los jugadores que han estado atascados en 1200 durante meses suben a 1300-1350 simplemente eliminando sus errores recurrentes.
+
+## Lo único que hacer hoy
+
+Analiza tus últimas 10 partidas perdidas. Busca el patrón. ¿Es siempre una pieza clavada que no ves? ¿Un mate en la última fila? ¿Un cambio que te deja con una estructura rota? Ese patrón es tu próximo objetivo de entrenamiento.
+
+Para más sobre entrenamiento de errores, lee [entrenamiento de errores en ajedrez](/learn/chess-blunder-training). Si sientes que estás estancado, consulta [mesetas de mejora en ajedrez](/learn/chess-improvement-plateaus). Y no olvides revisar tus [errores de apertura](/learn/chess-opening-mistakes) y [cómo analizar tus partidas](/learn/how-to-analyse-chess-games).
+
+**[Conecta tu cuenta y empieza a mejorar hoy →](/connect)**`,
+  },
+  "es:chess-puzzle-rush-alternatives": {
+    title: "Más allá de Puzzle Rush: Por qué los puzzles aleatorios frenan tu progreso",
+    metaTitle: "Alternativas a Puzzle Rush — Entrena más inteligente que con puzzles aleatorios",
+    metaDescription: "Puzzle rush es adictivo pero te entrena con posiciones aleatorias. Aquí explicamos por qué el entrenamiento de puzzles dirigido mejora tu rating más rápido que resolver tácticas al azar.",
+    content: `Tres minutos en el reloj. Vas por 28 puzzles correctos. El corazón late rápido, los dedos vuelan sobre las piezas. Fallas uno y se acabó. Tu mejor marca: 31. Mañana intentarás superarla.
+
+Puzzle Rush es adictivo. Pero ¿te está haciendo mejor jugador?
+
+## Por qué Puzzle Rush se siente efectivo
+
+Puzzle Rush tiene todo lo que un buen sistema de motivación necesita:
+
+- **Feedback inmediato.** Correcto o incorrecto, al instante.
+- **Tabla de clasificación.** Competir contra otros y contra ti mismo.
+- **Progresión clara.** Tu puntuación sube, sientes que mejoras.
+- **Baja barrera de entrada.** No necesitas preparación ni compromiso — solo 3-5 minutos.
+
+El problema es que sentirse productivo y ser productivo son cosas diferentes.
+
+## El problema de los puzzles aleatorios
+
+Imagina que quieres mejorar en baloncesto. ¿Qué sería más efectivo: lanzar 100 tiros desde posiciones aleatorias, o practicar 20 tiros desde las posiciones donde fallas más?
+
+La respuesta es obvia. Sin embargo, eso es exactamente lo que hace Puzzle Rush: te da posiciones aleatorias de partidas de desconocidos. Algunas serán relevantes para tu juego. La mayoría no.
+
+Estás entrenando la táctica en general, pero no estás entrenando **tus** debilidades tácticas. Es la diferencia entre ejercicio y rehabilitación. Ambos son útiles, pero si tienes una lesión específica, necesitas tratamiento específico.
+
+## Lo que Puzzle Rush hace bien
+
+No todo es negativo. Puzzle Rush entrena habilidades reales:
+
+- **Velocidad de cálculo.** Ver tácticas rápidamente es valioso en partidas de blitz.
+- **Reconocimiento de patrones básicos.** Los primeros 20 puzzles cubren temas fundamentales que todo jugador necesita.
+- **Motivación.** Mantiene a los jugadores practicando cuando de otra forma no lo harían.
+
+El problema no es lo que Puzzle Rush es — es que los jugadores lo usan como su **único** entrenamiento táctico.
+
+## Mejores alternativas
+
+- **Banco de puzzles personales.** Puzzles generados desde tus propias partidas. Cada posición es un error que realmente cometiste. Es la forma más directa de mejorar.
+- **Sets temáticos.** En lugar de posiciones aleatorias, trabaja un tema específico: clavadas, doble ataque, sacrificios de desviación. Profundidad sobre amplitud.
+- **Las Escalas.** El sistema de Cassandra que ordena tus puzzles por dificultad progresiva, asegurando que trabajes en la frontera de tu capacidad.
+- **El Eco.** Puzzles que repiten posiciones donde fallaste anteriormente, usando repetición espaciada para consolidar el aprendizaje.
+- **Puzzles personales con tiempo.** Combina la presión de tiempo de Puzzle Rush con posiciones relevantes para tu juego.
+
+## Cuándo Puzzle Rush está bien
+
+Puzzle Rush es perfectamente válido como calentamiento antes de jugar, como actividad casual cuando no quieres entrenamiento serio, o como competición social con amigos. No todo tiene que ser optimizado.
+
+Pero si tu objetivo es subir de ELO, no puede ser tu entrenamiento principal.
+
+## La conclusión
+
+Los puzzles aleatorios son mejor que nada, pero peor que los puzzles dirigidos. Si vas a dedicar 15 minutos al día a puzzles — y deberías — haz que esos 15 minutos cuenten.
+
+Para más sobre cómo romper mesetas, lee [mesetas de mejora en ajedrez](/learn/chess-improvement-plateaus). Y para entender el entrenamiento basado en errores, consulta [entrenamiento de errores en ajedrez](/learn/chess-blunder-training).
+
+**[Conecta tu cuenta y genera puzzles desde tus propias partidas →](/connect)**`,
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // FRENCH (batch 3)
+  // ═══════════════════════════════════════════════════════════════════════
+  "fr:chess-opening-mistakes": {
+    title: "Pourquoi vos erreurs d'ouverture vous coûtent des parties (et comment y remédier)",
+    metaTitle: "Erreurs d'ouverture aux échecs — Corrigez ce qui se passe après le coup 10",
+    metaDescription: "Votre ouverture n'est pas le vrai problème — ce sont les positions de milieu de partie qu'elle engendre. Apprenez à trouver et corriger les erreurs d'ouverture qui vous coûtent vraiment des parties.",
+    content: `Nous sommes tous tombés dans le piège de l'étude des ouvertures. Vous passez des heures à mémoriser les lignes de la Sicilienne ou de la Ruy López, vous apprenez les variantes principales jusqu'au 15e coup, puis votre adversaire joue quelque chose de complètement différent au 4e coup. Tout ce travail, gaspillé.
+
+## Le piège de l'étude des ouvertures
+
+Le problème n'est pas que l'étude des ouvertures soit inutile. Le problème, c'est la façon dont la plupart des joueurs s'y prennent. Ils mémorisent des séquences de coups sans comprendre les plans qui les sous-tendent. Quand l'adversaire dévie — et en dessous de 2000 ELO, il dévie **toujours** — vous vous retrouvez perdu en territoire inconnu.
+
+La réalité est que la plupart des parties entre amateurs sortent de la « théorie » avant le 10e coup. Ce qui se passe ensuite détermine qui gagne.
+
+## Là où les erreurs se produisent vraiment
+
+Les erreurs les plus coûteuses ne se situent pas dans l'ouverture pure, mais dans la **zone de transition entre l'ouverture et le milieu de partie** — coups 10 à 20. C'est là que les joueurs commettent des erreurs critiques :
+
+- **Mauvais placement des pièces.** Vous développez toutes vos pièces, mais sur des cases passives qui ne contribuent pas au plan.
+- **Ruptures de pions prématurées.** Vous poussez des pions sans préparation, affaiblissant votre structure.
+- **Ne pas détecter le plan adverse.** Vous êtes tellement concentré sur votre propre jeu que vous ignorez les menaces qui se forment.
+- **Échanges erronés.** Vous échangez les pièces dont vous avez besoin et gardez celles que votre adversaire veut que vous conserviez.
+
+## Pourquoi les livres d'ouvertures ne résolvent pas ce problème
+
+Les livres et bases de données d'ouvertures vous disent quoi jouer quand tout suit la théorie. Ils ne vous préparent pas aux positions chaotiques et déséquilibrées qui apparaissent quand les deux joueurs improvisent. Et ce sont exactement ces positions qui décident des parties en dessous de 2000.
+
+Un Grand Maître peut naviguer ces positions par expérience et intuition. Vous avez besoin d'une approche différente.
+
+## Entraînez-vous avec vos positions réelles
+
+Ce qui fonctionne vraiment, c'est analyser les positions issues de **vos propres parties**. Pas les positions théoriques d'un livre, mais les positions concrètes où vous, personnellement, prenez de mauvaises décisions.
+
+Cassandra Chess fait exactement cela. Le système analyse vos parties, identifie les positions de transition où vous commettez des erreurs récurrentes, et génère des exercices spécifiques pour entraîner ces faiblesses.
+
+## Un cadre pratique pour les joueurs sous 2000
+
+1. **Jouez vos ouvertures habituelles.** Ne changez pas constamment — vous devez répéter les mêmes positions pour en tirer des leçons.
+2. **Analysez les coups 10 à 20.** Après chaque partie, concentrez-vous sur la transition vers le milieu de partie.
+3. **Identifiez les schémas.** Vos tours restent-elles toujours passives ? Échangez-vous vos fous quand il ne faut pas ?
+4. **Entraînez-vous spécifiquement.** Utilisez des puzzles tirés de vos propres positions.
+
+Pour en savoir plus sur l'entraînement ciblé, lisez [l'entraînement aux erreurs aux échecs](/learn/chess-blunder-training). Pour un guide complet d'analyse, consultez [comment analyser vos parties d'échecs](/learn/how-to-analyse-chess-games).
+
+## La conclusion
+
+Arrêtez de mémoriser des ouvertures et commencez à comprendre vos positions. Les points ELO ne se gagnent pas au 5e coup — ils se gagnent au 15e, quand la théorie s'arrête et que les vrais échecs commencent.
+
+**[Connectez votre compte et découvrez vos vraies erreurs d'ouverture →](/connect)**`,
+  },
+  "fr:chess-endgame-training": {
+    title: "Entraînement aux finales d'échecs : La partie la plus négligée de la progression",
+    metaTitle: "Entraînement aux finales d'échecs — Le chemin le plus rapide vers plus de victoires",
+    metaDescription: "La plupart des joueurs ignorent l'entraînement aux finales et gaspillent des parties gagnées. Voici pourquoi le travail des finales est la progression la plus rentable que vous puissiez faire.",
+    content: `Vous avez une position gagnante. Tour et deux pions contre tour et un pion. Le moteur affiche +3.5. Et puis, d'une manière ou d'une autre, vous faites nulle. Ou pire, vous perdez. Ça vous dit quelque chose ?
+
+## Pourquoi les joueurs évitent les finales
+
+Soyons honnêtes : les finales ne sont pas excitantes. Pas de sacrifices spectaculaires, pas d'attaques dévastatrices sur le roi. C'est des échecs techniques, précis, parfois fastidieux. Comparées aux puzzles tactiques ou à l'étude d'ouvertures séduisantes, les finales semblent ennuyeuses.
+
+Mais voici l'ironie : **les finales sont là où l'on perd le plus de points ELO** en dessous de 2000. Non pas parce que les positions sont difficiles en soi, mais parce que les joueurs n'ont jamais pratiqué les schémas de base.
+
+## Le déficit d'entraînement aux finales
+
+Les plateformes d'échecs populaires se concentrent sur les tactiques et les ouvertures. Elles vous donnent des mats en 3 et vous enseignent l'Italienne et la Défense Française. Mais quand une plateforme vous a-t-elle fait pratiquer une finale de tour et pion pour la dernière fois ?
+
+Ce déficit est énorme. Un joueur à 1400 peut connaître 20 ouvertures mais ne pas savoir comment gagner roi et pion contre roi sans l'opposition.
+
+## À quoi ressemble un vrai entraînement aux finales
+
+L'entraînement efficace aux finales comporte trois composantes :
+
+- **Connaissances théoriques.** Les positions fondamentales : opposition, règle du carré, positions de Lucena et Philidor, finales élémentaires de fou et cavalier.
+- **Pratique active.** Lire ne suffit pas — vous devez résoudre des positions de finales, idéalement sous pression temporelle pour simuler les conditions réelles.
+- **Analyse de vos parties.** Revoir les finales de vos propres parties pour identifier où vous avez perdu l'avantage.
+
+## Erreurs courantes en finale
+
+Certaines erreurs reviennent constamment dans les parties d'amateurs :
+
+- **Tour passive.** Placer la tour derrière vos propres pions au lieu de l'activer. Les tours ont besoin de lignes ouvertes et d'activité.
+- **Roi inactif.** En finale, le roi est une pièce d'attaque. Les joueurs qui le laissent en g1 tout le final perdent.
+- **Mauvais échanges de pions.** Échanger des pions quand vous avez l'avantage matériel réduit vos chances de gain.
+- **Problèmes de pendule.** Arriver en finale avec peu de temps et ne pas connaître les schémas, c'est jouer à l'aveugle quand la précision est cruciale.
+
+## Construisez une routine
+
+Consacrez au moins **20 % de votre temps d'entraînement** aux finales. Si vous vous entraînez une heure par jour, cela fait 12 minutes. C'est peu, mais infiniment plus que ce que font la plupart des joueurs.
+
+Pour des puzzles de finales personnalisés, explorez [les puzzles de finales d'échecs](/learn/chess-endgame-puzzles). Et si vous sentez que votre progression stagne, lisez [les plateaux de progression aux échecs](/learn/chess-improvement-plateaus) — souvent la solution se trouve dans les finales.
+
+## L'avantage caché
+
+Chaque finale que vous gagnez correctement, c'est un demi-point de plus que votre adversaire au même niveau. Multipliez cela par des centaines de parties et on parle de 100 à 200 points ELO. Le tout en apprenant des schémas que vous pouvez maîtriser en semaines, pas en mois.
+
+**[Connectez votre compte et commencez à entraîner vos finales →](/connect)**`,
+  },
+  "fr:chess-com-alternatives": {
+    title: "Alternatives à Chess.com : Outils gratuits qui vous font vraiment progresser",
+    metaTitle: "Alternatives à Chess.com 2026 — Outils gratuits pour une vraie progression",
+    metaDescription: "Chess.com verrouille l'analyse de parties et les puzzles illimités derrière un paywall. Voici les meilleures alternatives gratuites pour une progression sérieuse aux échecs en 2026.",
+    content: `Chess.com est la plateforme d'échecs la plus populaire au monde, et à juste titre : elle offre une interface soignée, des millions de joueurs et un contenu abondant. Mais si vous voulez vraiment progresser, vous réaliserez vite que les fonctionnalités les plus importantes sont derrière un mur payant. Analyse limitée, puzzles restreints, leçons bloquées.
+
+Vous n'avez pas besoin de payer pour progresser. Voici les meilleures alternatives gratuites en 2026.
+
+## Lichess — Tout gratuit, toujours
+
+[Lichess](https://lichess.org) est l'alternative évidente. Entièrement gratuite, open source, elle offre tout ce que Chess.com facture : analyse illimitée avec Stockfish, puzzles infinis, études, tournois, et plus encore.
+
+**Le bon :** Tout est gratuit. Sans publicité. L'analyse de parties est puissante et le moteur est le même Stockfish qu'utilisent les professionnels.
+
+**Ce qui manque :** Les puzzles sont génériques. On vous donne des positions aléatoires de parties d'inconnus. Vous apprendrez des tactiques générales, mais vous ne travaillerez pas vos faiblesses spécifiques.
+
+## Cassandra Chess — Entraînement personnalisé gratuit
+
+Cassandra Chess s'attaque au problème que ni Chess.com ni Lichess ne résolvent : l'entraînement personnalisé. Au lieu de puzzles génériques, Cassandra analyse **vos propres parties** et génère un entraînement spécifique à vos erreurs.
+
+- **La Prophétie** — Vous montre les positions où les joueurs de votre niveau commettent des erreurs fréquentes.
+- **Les Gammes** — Puzzles à difficulté progressive basés sur vos schémas d'erreur.
+- **L'Écho** — Répète les positions où vous avez échoué jusqu'à ce que vous les maîtrisiez.
+
+Tout gratuit. Pour comprendre la différence entre puzzles génériques et personnalisés, lisez [puzzles Lichess vs puzzles personnalisés](/learn/lichess-puzzles-vs-personal-puzzles).
+
+## ChessTempo — Profondeur tactique
+
+ChessTempo se distingue par son système de calibration des puzzles. Chaque puzzle a un classement précis, et le système ajuste la difficulté selon votre performance. Excellent pour un travail tactique sérieux.
+
+**Le bon :** Calibration précise, base de données énorme, filtres par thème tactique.
+
+**Ce qui manque :** L'interface est datée et il n'offre pas d'entraînement personnalisé basé sur vos parties.
+
+## Chess24 — Contenu vidéo
+
+Chess24 (désormais intégré à Chess.com) propose des commentaires de tournois et des vidéos éducatives de haute qualité. C'est mieux comme complément qu'outil principal d'entraînement.
+
+## Lequel utiliser pour quoi ?
+
+- **Jouer des parties :** Chess.com ou Lichess — là où sont vos amis et votre historique.
+- **Analyser des parties :** Lichess (analyse Stockfish gratuite) ou Cassandra (analyse ciblée sur vos erreurs).
+- **S'entraîner :** Cassandra (puzzles personnalisés) + Lichess (puzzles généraux et études).
+
+Pour en savoir plus sur les entraîneurs tactiques gratuits, consultez [entraîneurs tactiques d'échecs gratuits](/learn/chess-tactics-trainer-free).
+
+## La conclusion
+
+Vous n'avez pas besoin d'un abonnement premium pour progresser aux échecs. Vous avez besoin des bons outils utilisés de la bonne manière. Jouez où vous voulez, mais entraînez-vous avec vos propres parties.
+
+**[Connectez votre compte gratuitement et commencez à vraiment progresser →](/connect)**`,
+  },
+  "fr:how-to-get-better-at-chess-fast": {
+    title: "Comment progresser rapidement aux échecs : Ce qui marche vraiment",
+    metaTitle: "Comment progresser vite aux échecs — Méthodes éprouvées",
+    metaDescription: "Vous voulez progresser vite aux échecs ? Le chemin le plus rapide n'est ni plus de parties ni plus de vidéos — c'est corriger vos erreurs spécifiques avec un entraînement ciblé.",
+    content: `Vous voulez progresser aux échecs. Vite. Pas en années — en semaines. Est-ce possible ? Oui, mais probablement pas de la manière dont vous pensez.
+
+## Le 80/20 de la progression aux échecs
+
+Le principe de Pareto s'applique parfaitement aux échecs. 80 % de vos défaites viennent de 20 % de vos erreurs. Vous ne perdez pas parce qu'il vous manque des connaissances d'ouverture ou parce que vous n'avez pas regardé assez de vidéos. Vous perdez parce que vous commettez les mêmes erreurs encore et encore.
+
+Les trois piliers de la progression rapide :
+
+1. **Arrêtez de commettre les mêmes erreurs.** Identifiez vos 5 schémas d'erreur les plus fréquents et travaillez-les.
+2. **Entraînez-vous avec VOS positions.** Pas celles des livres — les positions réelles que vous rencontrez dans vos parties.
+3. **Cycle jouer-analyser-entraîner.** Jouez une partie, analysez-la, entraînez les positions où vous avez échoué. Répétez.
+
+## Ce qui NE fonctionne PAS
+
+Soyons directs sur ce qui semble productif mais ne l'est pas :
+
+- **Regarder des vidéos d'échecs.** Divertissant, mais l'apprentissage passif ne se transfère pas sur l'échiquier. Vous pouvez regarder 100 vidéos sur les sacrifices et ne toujours pas les voir dans vos parties.
+- **Mémoriser des ouvertures au-delà du 8e coup.** En dessous de 2000, votre adversaire sortira de la théorie avant. Apprenez les 5-6 premiers coups et les plans, rien de plus.
+- **Jouer des centaines de blitz sans analyser.** Vous renforcez de mauvaises habitudes. C'est comme s'entraîner aux lancers francs les yeux fermés.
+- **Le puzzle rush.** Addictif mais vous entraîne sur des positions aléatoires. Lisez [alternatives au puzzle rush](/learn/chess-puzzle-rush-alternatives).
+
+## Plan de 4 semaines
+
+**Semaine 1 :** Connectez votre compte, analysez vos 50 dernières parties, identifiez vos 3 erreurs les plus courantes.
+
+**Semaine 2 :** Entraînez-vous exclusivement sur ces 3 schémas. 20 minutes par jour de puzzles ciblés.
+
+**Semaine 3 :** Jouez 5 parties à cadence lente (15+10 minimum). Analysez chacune. Mettez à jour votre liste d'erreurs.
+
+**Semaine 4 :** Combinez entraînement sur erreurs (60 %) avec puzzles généraux (20 %) et finales (20 %).
+
+## Attentes réalistes
+
+Avec cette approche, attendez-vous à gagner **50 à 100 points ELO le premier mois**. Ce n'est pas de la magie — c'est arrêter de perdre des points que vous offrez déjà. Les joueurs bloqués à 1200 depuis des mois montent à 1300-1350 simplement en éliminant leurs erreurs récurrentes.
+
+## La seule chose à faire aujourd'hui
+
+Analysez vos 10 dernières parties perdues. Cherchez le schéma. Est-ce toujours un clouage que vous ne voyez pas ? Un mat sur la dernière rangée ? Un échange qui vous laisse avec une structure brisée ? Ce schéma est votre prochain objectif d'entraînement.
+
+Pour en savoir plus, lisez [l'entraînement aux erreurs](/learn/chess-blunder-training), [les plateaux de progression](/learn/chess-improvement-plateaus), [les erreurs d'ouverture](/learn/chess-opening-mistakes) et [comment analyser vos parties](/learn/how-to-analyse-chess-games).
+
+**[Connectez votre compte et commencez à progresser dès aujourd'hui →](/connect)**`,
+  },
+  "fr:chess-puzzle-rush-alternatives": {
+    title: "Au-delà du Puzzle Rush : Pourquoi les puzzles aléatoires freinent votre progression",
+    metaTitle: "Alternatives au Puzzle Rush — Entraînez-vous plus intelligemment",
+    metaDescription: "Le puzzle rush est addictif mais vous entraîne sur des positions aléatoires. Voici pourquoi l'entraînement ciblé améliore votre classement plus vite que la résolution de tactiques au hasard.",
+    content: `Trois minutes au compteur. Vous en êtes à 28 puzzles corrects. Le cœur bat vite, les doigts volent sur les pièces. Vous en ratez un, c'est fini. Votre meilleur score : 31. Demain vous essaierez de le battre.
+
+Le Puzzle Rush est addictif. Mais est-ce qu'il vous rend meilleur ?
+
+## Pourquoi le Puzzle Rush semble efficace
+
+Le Puzzle Rush a tout ce qu'un bon système de motivation requiert :
+
+- **Feedback immédiat.** Correct ou incorrect, instantanément.
+- **Classement.** Rivaliser avec d'autres et avec soi-même.
+- **Progression claire.** Votre score monte, vous sentez que vous progressez.
+- **Faible barrière d'entrée.** Pas besoin de préparation — juste 3 à 5 minutes.
+
+Le problème, c'est que se sentir productif et être productif sont deux choses différentes.
+
+## Le problème des puzzles aléatoires
+
+Imaginez que vous voulez progresser au basketball. Qu'est-ce qui serait plus efficace : tirer 100 lancers depuis des positions aléatoires, ou pratiquer 20 tirs depuis les positions où vous échouez le plus ?
+
+La réponse est évidente. Pourtant, c'est exactement ce que fait le Puzzle Rush : il vous donne des positions aléatoires tirées de parties d'inconnus. Certaines seront pertinentes pour votre jeu. La plupart ne le seront pas.
+
+Vous entraînez la tactique en général, mais vous n'entraînez pas **vos** faiblesses tactiques. C'est la différence entre l'exercice physique et la rééducation. Les deux sont utiles, mais si vous avez une blessure spécifique, vous avez besoin d'un traitement spécifique.
+
+## Ce que le Puzzle Rush fait bien
+
+Tout n'est pas négatif. Le Puzzle Rush entraîne des compétences réelles :
+
+- **Vitesse de calcul.** Voir les tactiques rapidement est précieux en blitz.
+- **Reconnaissance des schémas de base.** Les 20 premiers puzzles couvrent des thèmes fondamentaux que tout joueur doit connaître.
+- **Motivation.** Il maintient les joueurs en activité quand ils ne s'entraîneraient pas autrement.
+
+Le problème n'est pas ce que le Puzzle Rush est — c'est que les joueurs l'utilisent comme leur **seul** entraînement tactique.
+
+## De meilleures alternatives
+
+- **Banque de puzzles personnels.** Des puzzles générés à partir de vos propres parties. Chaque position est une erreur que vous avez réellement commise.
+- **Sets thématiques.** Au lieu de positions aléatoires, travaillez un thème spécifique : clouages, double attaque, sacrifices de déviation.
+- **Les Gammes.** Le système de Cassandra qui ordonne vos puzzles par difficulté progressive.
+- **L'Écho.** Des puzzles qui répètent les positions où vous avez échoué, utilisant la répétition espacée pour consolider l'apprentissage.
+- **Puzzles personnels chronométrés.** Combinez la pression temporelle du Puzzle Rush avec des positions pertinentes pour votre jeu.
+
+## Quand le Puzzle Rush convient
+
+Le Puzzle Rush est parfait comme échauffement avant de jouer, comme activité décontractée, ou comme compétition amicale. Tout n'a pas besoin d'être optimisé.
+
+Mais si votre objectif est de monter en ELO, ce ne peut pas être votre entraînement principal.
+
+## La conclusion
+
+Les puzzles aléatoires, c'est mieux que rien, mais moins bien que les puzzles ciblés. Si vous consacrez 15 minutes par jour aux puzzles — et vous devriez — faites en sorte que ces 15 minutes comptent.
+
+Pour en savoir plus sur les plateaux, lisez [les plateaux de progression aux échecs](/learn/chess-improvement-plateaus). Pour l'entraînement basé sur les erreurs, consultez [l'entraînement aux erreurs](/learn/chess-blunder-training).
+
+**[Connectez votre compte et générez des puzzles à partir de vos propres parties →](/connect)**`,
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // GERMAN (batch 3)
+  // ═══════════════════════════════════════════════════════════════════════
+  "de:chess-opening-mistakes": {
+    title: "Warum Ihre Eröffnungsfehler Sie Partien kosten (und wie Sie das beheben)",
+    metaTitle: "Schacheröffnungsfehler — Beheben Sie, was nach Zug 10 passiert",
+    metaDescription: "Ihre Eröffnung ist nicht das eigentliche Problem — die Mittelspielstellungen, zu denen sie führt, sind es. Lernen Sie, die Eröffnungsfehler zu finden und zu beheben, die Sie wirklich Partien kosten.",
+    content: `Wir sind alle in die Falle des Eröffnungsstudiums getappt. Sie verbringen Stunden damit, Varianten der Sizilianischen oder der Spanischen Partie auswendig zu lernen, beherrschen die Hauptvarianten bis zum 15. Zug, und dann spielt Ihr Gegner im 4. Zug etwas völlig anderes. Die ganze Arbeit — umsonst.
+
+## Die Falle des Eröffnungsstudiums
+
+Das Problem ist nicht, dass Eröffnungsstudium nutzlos wäre. Das Problem ist, wie die meisten Spieler es angehen. Sie memorieren Zugfolgen, ohne die Pläne dahinter zu verstehen. Wenn der Gegner abweicht — und unter 2000 ELO weicht er **immer** ab — stehen Sie verloren in unbekanntem Terrain.
+
+Die Realität: Die meisten Amateurpartien verlassen die „Theorie" vor dem 10. Zug. Was danach passiert, entscheidet, wer gewinnt.
+
+## Wo die Fehler wirklich passieren
+
+Die teuersten Fehler liegen nicht in der reinen Eröffnung, sondern in der **Übergangszone zwischen Eröffnung und Mittelspiel** — Züge 10 bis 20. Hier passieren die kritischen Fehler:
+
+- **Falsche Figurenaufstellung.** Sie entwickeln alle Figuren, aber auf passive Felder, die nicht zum Plan beitragen.
+- **Vorzeitige Bauernbrüche.** Sie stoßen Bauern ohne Vorbereitung vor und schwächen Ihre Struktur.
+- **Den gegnerischen Plan übersehen.** Sie sind so auf Ihr eigenes Spiel konzentriert, dass Sie die sich bildenden Drohungen ignorieren.
+- **Falsche Abtausche.** Sie tauschen die Figuren, die Sie brauchen, und behalten die, die Ihr Gegner Ihnen lassen will.
+
+## Warum Eröffnungsbücher das nicht lösen
+
+Eröffnungsbücher und Datenbanken sagen Ihnen, was Sie spielen sollen, wenn alles der Theorie folgt. Sie bereiten Sie nicht auf die chaotischen, unausgeglichenen Stellungen vor, die entstehen, wenn beide Spieler improvisieren. Und genau diese Stellungen entscheiden Partien unter 2000.
+
+## Trainieren Sie mit Ihren echten Stellungen
+
+Was wirklich funktioniert, ist die Analyse der Stellungen aus **Ihren eigenen Partien**. Nicht die theoretischen Stellungen aus einem Buch, sondern die konkreten Stellungen, in denen Sie persönlich schlechte Entscheidungen treffen.
+
+Cassandra Chess macht genau das. Das System analysiert Ihre Partien, identifiziert die Übergangsstellungen, in denen Sie wiederholt Fehler machen, und generiert spezifische Puzzles, um diese Schwächen zu trainieren.
+
+## Ein praktischer Rahmen für Spieler unter 2000
+
+1. **Spielen Sie Ihre gewohnten Eröffnungen.** Wechseln Sie nicht ständig — Sie müssen Stellungen wiederholen, um aus ihnen zu lernen.
+2. **Analysieren Sie die Züge 10-20.** Konzentrieren Sie sich nach jeder Partie auf den Übergang ins Mittelspiel.
+3. **Identifizieren Sie Muster.** Bleiben Ihre Türme immer passiv? Tauschen Sie Läufer, wenn Sie es nicht sollten?
+4. **Trainieren Sie gezielt.** Verwenden Sie Puzzles aus Ihren eigenen Stellungen.
+
+Mehr zum gezielten Training finden Sie unter [Fehlertraining im Schach](/learn/chess-blunder-training). Einen vollständigen Analyse-Leitfaden gibt es unter [Schachpartien analysieren](/learn/how-to-analyse-chess-games).
+
+## Das Fazit
+
+Hören Sie auf, Eröffnungen auswendig zu lernen, und fangen Sie an, Ihre Stellungen zu verstehen. ELO-Punkte gewinnt man nicht im 5. Zug — sondern im 15., wenn die Theorie endet und das echte Schach beginnt.
+
+**[Verbinden Sie Ihr Konto und entdecken Sie Ihre echten Eröffnungsfehler →](/connect)**`,
+  },
+  "de:chess-endgame-training": {
+    title: "Endspieltraining im Schach: Der am meisten vernachlässigte Teil der Verbesserung",
+    metaTitle: "Schach-Endspieltraining — Der schnellste Weg zu mehr Siegen",
+    metaDescription: "Die meisten Spieler überspringen Endspieltraining und verschenken gewonnene Partien. Hier erfahren Sie, warum Endspieltraining die wirkungsvollste Verbesserung ist, die Sie machen können.",
+    content: `Sie haben eine Gewinnstellung. Turm und zwei Bauern gegen Turm und einen Bauern. Der Motor zeigt +3.5. Und dann schaffen Sie es irgendwie nur remis. Oder schlimmer, Sie verlieren. Kommt Ihnen bekannt vor?
+
+## Warum Spieler Endspiele meiden
+
+Seien wir ehrlich: Endspiele sind nicht aufregend. Keine spektakulären Opfer, keine verheerenden Königsangriffe. Es ist technisches, präzises, manchmal mühsames Schach. Verglichen mit Taktikpuzzles oder dem Studium glamouröser Eröffnungen wirken Endspiele langweilig.
+
+Aber hier ist die Ironie: **Endspiele sind der Bereich, in dem unter 2000 die meisten ELO-Punkte verloren gehen.** Nicht weil die Stellungen an sich schwierig wären, sondern weil die Spieler die grundlegenden Muster nie geübt haben.
+
+## Die Lücke im Endspieltraining
+
+Populäre Schachplattformen konzentrieren sich auf Taktik und Eröffnungen. Sie geben Ihnen Matt-in-3-Aufgaben und lehren die Italienische und die Französische Verteidigung. Aber wann hat eine Plattform Sie zuletzt ein Turm-und-Bauern-Endspiel üben lassen?
+
+Diese Lücke ist enorm. Ein 1400er Spieler kennt vielleicht 20 Eröffnungen, weiß aber nicht, wie man König und Bauer gegen König ohne Opposition gewinnt.
+
+## Wie echtes Endspieltraining aussieht
+
+Effektives Endspieltraining hat drei Komponenten:
+
+- **Theoretisches Wissen.** Die Grundstellungen: Opposition, Quadratregel, Lucena- und Philidor-Stellung, elementare Läufer- und Springerendspiele.
+- **Aktives Üben.** Lesen reicht nicht — Sie müssen Endspielstellungen lösen, idealerweise unter Zeitdruck, um reale Bedingungen zu simulieren.
+- **Analyse Ihrer Partien.** Die Endspiele Ihrer eigenen Partien durchgehen, um herauszufinden, wo Sie den Vorteil verloren haben.
+
+## Häufige Endspielfehler
+
+Bestimmte Fehler tauchen in Amateurpartien immer wieder auf:
+
+- **Passiver Turm.** Den Turm hinter die eigenen Bauern stellen, statt ihn zu aktivieren. Türme brauchen offene Linien und Aktivität.
+- **Inaktiver König.** Im Endspiel ist der König eine Angriffsfigur. Spieler, die ihn das ganze Endspiel auf g1 lassen, verlieren.
+- **Falsche Bauernabtausche.** Bauern abtauschen, wenn man materiellen Vorteil hat, reduziert die Gewinnchancen.
+- **Zeitprobleme.** Mit wenig Zeit ins Endspiel kommen und die Muster nicht kennen — das bedeutet Blindflug, wenn Präzision am wichtigsten ist.
+
+## Bauen Sie eine Routine auf
+
+Widmen Sie mindestens **20 % Ihrer Trainingszeit** den Endspielen. Bei einer Stunde Training pro Tag sind das 12 Minuten. Klingt wenig, ist aber unendlich mehr als das, was die meisten Spieler tun.
+
+Für personalisierte Endspielpuzzles besuchen Sie [Schach-Endspielpuzzles](/learn/chess-endgame-puzzles). Und wenn Ihre Fortschritte stagnieren, lesen Sie über [Verbesserungsplateaus im Schach](/learn/chess-improvement-plateaus) — oft liegt die Lösung in den Endspielen.
+
+## Der versteckte Vorteil
+
+Jedes Endspiel, das Sie korrekt gewinnen, ist ein halber Punkt mehr als Ihr Gegner auf gleichem Niveau. Multiplizieren Sie das mit Hunderten von Partien, und wir sprechen von 100-200 ELO-Punkten. Alles durch das Erlernen von Mustern, die Sie in Wochen meistern können, nicht in Monaten.
+
+**[Verbinden Sie Ihr Konto und beginnen Sie mit Endspieltraining aus Ihren eigenen Partien →](/connect)**`,
+  },
+  "de:chess-com-alternatives": {
+    title: "Chess.com-Alternativen: Kostenlose Tools, die Sie wirklich besser machen",
+    metaTitle: "Chess.com-Alternativen 2026 — Kostenlose Tools für echte Verbesserung",
+    metaDescription: "Chess.com sperrt Partieanalyse und unbegrenzte Puzzles hinter einer Paywall. Hier sind die besten kostenlosen Alternativen für ernsthafte Schachverbesserung 2026.",
+    content: `Chess.com ist die beliebteste Schachplattform der Welt, und das zu Recht: eine polierte Oberfläche, Millionen Spieler und reichlich Inhalte. Aber wenn Sie wirklich besser werden wollen, merken Sie schnell, dass die wichtigsten Funktionen hinter einer Bezahlschranke stecken. Begrenzte Analyse, eingeschränkte Puzzles, gesperrte Lektionen.
+
+Sie brauchen nicht zu bezahlen, um sich zu verbessern. Hier sind die besten kostenlosen Alternativen 2026.
+
+## Lichess — Alles kostenlos, immer
+
+[Lichess](https://lichess.org) ist die offensichtliche Alternative. Komplett kostenlos, Open Source, und bietet alles, wofür Chess.com Geld verlangt: unbegrenzte Analyse mit Stockfish, endlose Puzzles, Studien, Turniere und mehr.
+
+**Das Gute:** Alles ist gratis. Keine Werbung. Die Partieanalyse ist leistungsfähig, und der Motor ist derselbe Stockfish, den die Profis nutzen.
+
+**Was fehlt:** Die Puzzles sind generisch. Sie bekommen zufällige Stellungen aus Partien anderer Spieler. Sie lernen allgemeine Taktik, aber arbeiten nicht an Ihren spezifischen Schwächen.
+
+## Cassandra Chess — Kostenloses personalisiertes Training
+
+Cassandra Chess geht das Problem an, das weder Chess.com noch Lichess lösen: personalisiertes Training. Statt generischer Puzzles analysiert Cassandra **Ihre eigenen Partien** und generiert Training, das auf Ihre Fehler zugeschnitten ist.
+
+- **Die Prophezeiung** — Zeigt Stellungen, in denen Spieler Ihres Niveaus häufig Fehler machen.
+- **Die Tonleitern** — Puzzles mit progressiver Schwierigkeit, basierend auf Ihren Fehlermustern.
+- **Das Echo** — Wiederholt Stellungen, in denen Sie gescheitert sind, bis Sie sie beherrschen.
+
+Alles kostenlos. Um den Unterschied zwischen generischen und personalisierten Puzzles zu verstehen, lesen Sie [Lichess-Puzzles vs. personalisierte Puzzles](/learn/lichess-puzzles-vs-personal-puzzles).
+
+## ChessTempo — Taktische Tiefe
+
+ChessTempo zeichnet sich durch sein Puzzle-Kalibrierungssystem aus. Jedes Puzzle hat eine präzise Bewertung, und das System passt die Schwierigkeit an Ihre Leistung an. Hervorragend für ernsthaftes Taktiktraining.
+
+**Das Gute:** Präzise Kalibrierung, riesige Datenbank, Filter nach taktischen Themen.
+
+**Was fehlt:** Die Oberfläche ist veraltet, und personalisiertes Training basierend auf Ihren Partien gibt es nicht.
+
+## Chess24 — Videoinhalte
+
+Chess24 (jetzt in Chess.com integriert) bietet Turnierkommentare und hochwertige Lehrvideos. Besser als Ergänzung denn als Haupttrainingstool.
+
+## Was wofür verwenden?
+
+- **Partien spielen:** Chess.com oder Lichess — wo Ihre Freunde und Ihr Verlauf sind.
+- **Partien analysieren:** Lichess (kostenlose Stockfish-Analyse) oder Cassandra (fehlerorientierte Analyse).
+- **Trainieren:** Cassandra (personalisierte Puzzles) + Lichess (allgemeine Puzzles und Studien).
+
+Mehr über kostenlose Taktiktrainer unter [kostenlose Schach-Taktiktrainer](/learn/chess-tactics-trainer-free).
+
+## Das Fazit
+
+Sie brauchen kein Premium-Abo, um im Schach besser zu werden. Sie brauchen die richtigen Werkzeuge, richtig eingesetzt. Spielen Sie, wo Sie wollen, aber trainieren Sie mit Ihren eigenen Partien.
+
+**[Verbinden Sie Ihr Konto kostenlos und fangen Sie an, wirklich zu trainieren →](/connect)**`,
+  },
+  "de:how-to-get-better-at-chess-fast": {
+    title: "Schnell besser im Schach werden: Was wirklich funktioniert",
+    metaTitle: "Schnell besser im Schach — Bewährte Methoden",
+    metaDescription: "Sie wollen sich im Schach schnell verbessern? Der schnellste Weg sind nicht mehr Partien oder Videos — sondern das Beheben Ihrer spezifischen Fehler mit gezieltem Training.",
+    content: `Sie wollen besser im Schach werden. Schnell. Nicht in Jahren — in Wochen. Ist das möglich? Ja, aber wahrscheinlich nicht so, wie Sie denken.
+
+## Das 80/20 der Schachverbesserung
+
+Das Pareto-Prinzip gilt perfekt für Schach. 80 % Ihrer Niederlagen kommen von 20 % Ihrer Fehler. Sie verlieren nicht, weil Ihnen Eröffnungswissen fehlt oder weil Sie nicht genug Videos gesehen haben. Sie verlieren, weil Sie die gleichen Fehler immer wieder machen.
+
+Die drei Säulen schneller Verbesserung:
+
+1. **Hören Sie auf, die gleichen Fehler zu machen.** Identifizieren Sie Ihre 5 häufigsten Fehlermuster und arbeiten Sie daran.
+2. **Trainieren Sie mit IHREN Stellungen.** Nicht mit Buchstellungen — mit den realen Stellungen, die in Ihren Partien vorkommen.
+3. **Spielen-Analysieren-Trainieren-Zyklus.** Spielen Sie eine Partie, analysieren Sie sie, trainieren Sie die Stellungen, in denen Sie versagt haben. Wiederholen.
+
+## Was NICHT funktioniert
+
+Seien wir direkt über das, was produktiv aussieht, es aber nicht ist:
+
+- **Schachvideos schauen.** Unterhaltsam, aber passives Lernen überträgt sich nicht aufs Brett. Sie können 100 Videos über Opfer sehen und sie trotzdem in Ihren Partien nicht erkennen.
+- **Eröffnungen jenseits des 8. Zugs memorieren.** Unter 2000 weicht Ihr Gegner vorher ab. Lernen Sie die ersten 5-6 Züge und die Pläne, mehr nicht.
+- **Hunderte Blitzpartien ohne Analyse spielen.** Sie verstärken schlechte Gewohnheiten. Wie Freiwurftraining mit geschlossenen Augen.
+- **Puzzle Rush.** Süchtig machend, trainiert aber zufällige Stellungen. Lesen Sie über [Puzzle-Rush-Alternativen](/learn/chess-puzzle-rush-alternatives).
+
+## 4-Wochen-Plan
+
+**Woche 1:** Konto verbinden, letzte 50 Partien analysieren, 3 häufigste Fehler identifizieren.
+
+**Woche 2:** Ausschließlich diese 3 Muster trainieren. 20 Minuten pro Tag gezieltes Puzzletraining.
+
+**Woche 3:** 5 Partien mit langsamerer Bedenkzeit spielen (mindestens 15+10). Jede analysieren. Fehlerliste aktualisieren.
+
+**Woche 4:** Fehlertraining (60 %) mit allgemeinen Puzzles (20 %) und Endspielen (20 %) kombinieren.
+
+## Realistische Erwartungen
+
+Mit diesem Ansatz können Sie im ersten Monat **50-100 ELO-Punkte gewinnen**. Das ist keine Magie — es ist, aufzuhören, Punkte zu verschenken, die Sie bereits hergeben. Spieler, die monatelang bei 1200 feststeckten, steigen auf 1300-1350, einfach indem sie ihre wiederkehrenden Fehler eliminieren.
+
+## Die eine Sache, die Sie heute tun sollten
+
+Analysieren Sie Ihre letzten 10 verlorenen Partien. Suchen Sie das Muster. Ist es immer eine Fesselung, die Sie nicht sehen? Ein Grundreihenmatt? Ein Abtausch, der Ihre Struktur ruiniert? Dieses Muster ist Ihr nächstes Trainingsziel.
+
+Mehr dazu unter [Fehlertraining im Schach](/learn/chess-blunder-training), [Verbesserungsplateaus](/learn/chess-improvement-plateaus), [Eröffnungsfehler](/learn/chess-opening-mistakes) und [Partien analysieren](/learn/how-to-analyse-chess-games).
+
+**[Verbinden Sie Ihr Konto und fangen Sie heute an, sich zu verbessern →](/connect)**`,
+  },
+  "de:chess-puzzle-rush-alternatives": {
+    title: "Jenseits von Puzzle Rush: Warum zufällige Puzzles Ihren Fortschritt bremsen",
+    metaTitle: "Puzzle-Rush-Alternativen — Trainieren Sie klüger als mit zufälligen Puzzles",
+    metaDescription: "Puzzle Rush macht süchtig, trainiert aber zufällige Stellungen. Hier erfahren Sie, warum gezieltes Puzzletraining Ihr Rating schneller verbessert als Speed-Taktik.",
+    content: `Drei Minuten auf der Uhr. Sie haben 28 Puzzles richtig gelöst. Das Herz schlägt schnell, die Finger fliegen über die Figuren. Sie verfehlen eines und es ist vorbei. Ihr Rekord: 31. Morgen versuchen Sie ihn zu brechen.
+
+Puzzle Rush macht süchtig. Aber macht es Sie zu einem besseren Spieler?
+
+## Warum sich Puzzle Rush effektiv anfühlt
+
+Puzzle Rush hat alles, was ein gutes Motivationssystem braucht:
+
+- **Sofortiges Feedback.** Richtig oder falsch, im Moment.
+- **Rangliste.** Gegen andere und gegen sich selbst antreten.
+- **Klare Progression.** Ihr Score steigt, Sie fühlen sich, als würden Sie besser.
+- **Niedrige Einstiegshürde.** Keine Vorbereitung nötig — nur 3-5 Minuten.
+
+Das Problem: Sich produktiv zu fühlen und produktiv zu sein, sind zwei verschiedene Dinge.
+
+## Das Problem mit zufälligen Puzzles
+
+Stellen Sie sich vor, Sie wollen im Basketball besser werden. Was wäre effektiver: 100 Würfe aus zufälligen Positionen, oder 20 Würfe aus den Positionen, wo Sie am meisten verfehlen?
+
+Die Antwort liegt auf der Hand. Doch genau das macht Puzzle Rush: Es gibt Ihnen zufällige Stellungen aus Partien Unbekannter. Manche werden für Ihr Spiel relevant sein. Die meisten nicht.
+
+Sie trainieren Taktik im Allgemeinen, aber nicht **Ihre** taktischen Schwächen. Es ist der Unterschied zwischen Sport und Rehabilitation. Beides ist nützlich, aber bei einer spezifischen Verletzung brauchen Sie eine spezifische Behandlung.
+
+## Was Puzzle Rush richtig macht
+
+Nicht alles ist negativ. Puzzle Rush trainiert reale Fähigkeiten:
+
+- **Berechnungsgeschwindigkeit.** Taktik schnell zu sehen ist wertvoll im Blitz.
+- **Grundlegende Mustererkennung.** Die ersten 20 Puzzles decken fundamentale Themen ab.
+- **Motivation.** Es hält Spieler am Üben, die sonst nicht üben würden.
+
+Das Problem ist nicht, was Puzzle Rush ist — sondern dass Spieler es als ihr **einziges** Taktiktraining nutzen.
+
+## Bessere Alternativen
+
+- **Persönliche Puzzle-Bank.** Puzzles aus Ihren eigenen Partien generiert. Jede Stellung ist ein Fehler, den Sie wirklich gemacht haben.
+- **Thematische Sets.** Statt zufälliger Stellungen ein bestimmtes Thema bearbeiten: Fesselungen, Doppelangriffe, Ablenkungsopfer.
+- **Die Tonleitern.** Cassandras System, das Ihre Puzzles nach progressiver Schwierigkeit ordnet.
+- **Das Echo.** Puzzles, die Stellungen wiederholen, in denen Sie gescheitert sind, mit Spaced Repetition.
+- **Persönliche Puzzles auf Zeit.** Den Zeitdruck von Puzzle Rush mit spielrelevanten Stellungen kombinieren.
+
+## Wann Puzzle Rush in Ordnung ist
+
+Puzzle Rush ist prima als Aufwärmübung vor dem Spielen, als lockere Aktivität, oder als freundschaftlicher Wettbewerb. Nicht alles muss optimiert werden.
+
+Aber wenn Ihr Ziel ELO-Punkte sind, kann es nicht Ihr Haupttraining sein.
+
+## Das Fazit
+
+Zufällige Puzzles sind besser als nichts, aber schlechter als gezielte Puzzles. Wenn Sie 15 Minuten am Tag für Puzzles investieren — und das sollten Sie — sorgen Sie dafür, dass diese 15 Minuten zählen.
+
+Mehr über Plateaus unter [Verbesserungsplateaus im Schach](/learn/chess-improvement-plateaus). Zum fehlerbasiertem Training: [Fehlertraining im Schach](/learn/chess-blunder-training).
+
+**[Verbinden Sie Ihr Konto und generieren Sie Puzzles aus Ihren eigenen Partien →](/connect)**`,
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // PORTUGUESE (batch 3)
+  // ═══════════════════════════════════════════════════════════════════════
+  "pt:chess-opening-mistakes": {
+    title: "Por que seus erros de abertura estão custando partidas (e como corrigi-los)",
+    metaTitle: "Erros de abertura no xadrez — Corrija o que acontece depois do lance 10",
+    metaDescription: "Sua abertura não é o verdadeiro problema — as posições de meio-jogo a que ela leva são. Aprenda a encontrar e corrigir os erros de abertura que realmente custam partidas.",
+    content: `Todos nós já caímos na armadilha do estudo de aberturas. Você passa horas memorizando linhas da Siciliana ou da Ruy López, aprende as variantes principais até o lance 15, e então seu oponente joga algo completamente diferente no lance 4. Todo aquele estudo, desperdiçado.
+
+## A armadilha do estudo de aberturas
+
+O problema não é que estudar aberturas seja inútil. O problema é como a maioria dos jogadores faz isso. Memorizam sequências de lances sem entender os planos por trás delas. Quando o oponente desvia — e abaixo de 2000 ELO, ele **sempre** desvia — você fica perdido em território desconhecido.
+
+A realidade é que a maioria das partidas entre amadores sai da "teoria" antes do lance 10. O que acontece depois é o que determina quem vence.
+
+## Onde os erros realmente acontecem
+
+Os erros mais custosos não estão na abertura pura, mas na **zona de transição entre abertura e meio-jogo** — lances 10 a 20. É aqui que os jogadores cometem erros críticos:
+
+- **Colocação incorreta de peças.** Você desenvolve todas as peças, mas em casas passivas que não contribuem para o plano.
+- **Rupturas de peões prematuras.** Avança peões sem preparação, enfraquecendo sua estrutura.
+- **Não detectar o plano adversário.** Você está tão focado no seu próprio jogo que ignora as ameaças se formando.
+- **Trocas erradas.** Troca peças de que precisa e mantém as que seu oponente quer que você mantenha.
+
+## Por que livros de abertura não resolvem isso
+
+Livros e bancos de dados de aberturas dizem o que jogar quando tudo segue a teoria. Não preparam para as posições caóticas e desequilibradas que surgem quando ambos os jogadores improvisam. E essas são exatamente as posições que decidem partidas abaixo de 2000.
+
+## Treine com suas posições reais
+
+O que realmente funciona é analisar as posições de **suas próprias partidas**. Não as posições teóricas de um livro, mas as posições concretas onde você, pessoalmente, toma decisões ruins.
+
+Cassandra Chess faz exatamente isso. Analisa suas partidas, identifica as posições de transição onde você comete erros recorrentes, e gera puzzles específicos para treinar essas fraquezas.
+
+## Um quadro prático para jogadores abaixo de 2000
+
+1. **Jogue suas aberturas habituais.** Não mude de abertura constantemente — você precisa repetir posições para aprender com elas.
+2. **Analise os lances 10-20.** Após cada partida, foque na transição para o meio-jogo.
+3. **Identifique padrões.** Suas torres ficam sempre passivas? Troca bispos quando não deveria?
+4. **Treine especificamente.** Use puzzles derivados de suas próprias posições.
+
+Para saber mais sobre treinamento direcionado, leia sobre [treinamento de erros no xadrez](/learn/chess-blunder-training). Para um guia completo de análise, consulte [como analisar suas partidas de xadrez](/learn/how-to-analyse-chess-games).
+
+## A conclusão
+
+Pare de memorizar aberturas e comece a entender suas posições. Pontos de ELO não são ganhos no lance 5 — são ganhos no lance 15, quando a teoria acaba e o xadrez de verdade começa.
+
+**[Conecte sua conta e descubra seus erros reais de abertura →](/connect)**`,
+  },
+  "pt:chess-endgame-training": {
+    title: "Treinamento de finais de xadrez: A parte mais negligenciada da melhoria",
+    metaTitle: "Treinamento de finais de xadrez — O caminho mais rápido para mais vitórias",
+    metaDescription: "A maioria dos jogadores pula o treinamento de finais e desperdiça partidas ganhas. Veja por que o treino de finais é a melhoria de maior impacto que você pode fazer.",
+    content: `Você tem uma posição vencedora. Torre e dois peões contra torre e um peão. O motor mostra +3.5. E então, de alguma forma, você empata. Ou pior, perde. Parece familiar?
+
+## Por que jogadores evitam finais
+
+Sejamos honestos: finais não são empolgantes. Não há sacrifícios espetaculares, não há ataques devastadores ao rei. É xadrez técnico, preciso, às vezes tedioso. Comparados com puzzles táticos ou estudo de aberturas chamativas, finais parecem entediantes.
+
+Mas aqui está a ironia: **finais são onde mais pontos de ELO se perdem** abaixo de 2000. Não porque as posições sejam difíceis em si, mas porque os jogadores nunca praticaram os padrões básicos.
+
+## A lacuna do treinamento de finais
+
+As plataformas populares de xadrez focam em táticas e aberturas. Dão puzzles de mate em 3, ensinam a Italiana e a Defesa Francesa. Mas quando foi a última vez que uma plataforma fez você praticar um final de torre e peão?
+
+Essa lacuna é enorme. Um jogador de 1400 pode conhecer 20 aberturas mas não saber ganhar rei e peão contra rei sem a oposição.
+
+## Como é o treinamento real de finais
+
+O treinamento eficaz de finais tem três componentes:
+
+- **Conhecimento teórico.** As posições fundamentais: oposição, regra do quadrado, posições de Lucena e Philidor, finais básicos de bispo e cavalo.
+- **Prática ativa.** Não basta ler — você precisa resolver posições de finais, idealmente sob pressão de tempo para simular condições reais.
+- **Análise das suas partidas.** Revisar os finais das suas próprias partidas para identificar onde perdeu vantagem.
+
+## Erros comuns em finais
+
+Certos erros aparecem constantemente em partidas de amadores:
+
+- **Torre passiva.** Colocar a torre atrás dos seus próprios peões em vez de ativá-la. Torres precisam de linhas abertas e atividade.
+- **Rei inativo.** No final, o rei é uma peça de ataque. Jogadores que mantêm o rei em g1 o final inteiro perdem.
+- **Trocas de peões erradas.** Trocar peões quando tem vantagem material reduz suas chances de vitória.
+- **Problemas de relógio.** Chegar ao final com pouco tempo e não conhecer os padrões é jogar no escuro quando precisão é fundamental.
+
+## Construa uma rotina
+
+Dedique pelo menos **20% do seu tempo de treino** a finais. Se treina uma hora por dia, são 12 minutos. Parece pouco, mas é infinitamente mais do que a maioria dos jogadores faz.
+
+Para puzzles de finais personalizados, explore [puzzles de finais de xadrez](/learn/chess-endgame-puzzles). E se sente que seu progresso estagnou, leia sobre [platôs de melhoria no xadrez](/learn/chess-improvement-plateaus) — frequentemente a solução está nos finais.
+
+## A vantagem escondida
+
+Cada final que você vence corretamente é meio ponto a mais que seu oponente no mesmo nível. Multiplique por centenas de partidas e estamos falando de 100-200 pontos de ELO. Tudo por aprender padrões que você pode dominar em semanas, não meses.
+
+**[Conecte sua conta e comece a treinar finais das suas próprias partidas →](/connect)**`,
+  },
+  "pt:chess-com-alternatives": {
+    title: "Alternativas ao Chess.com: Ferramentas gratuitas que realmente fazem você melhorar",
+    metaTitle: "Alternativas ao Chess.com 2026 — Ferramentas gratuitas para melhoria real",
+    metaDescription: "Chess.com bloqueia análise de partidas e puzzles ilimitados atrás de um paywall. Aqui estão as melhores alternativas gratuitas para melhoria séria no xadrez em 2026.",
+    content: `Chess.com é a plataforma de xadrez mais popular do mundo, e com razão: tem uma interface polida, milhões de jogadores e conteúdo abundante. Mas se você quer melhorar de verdade, vai perceber rapidamente que as funções mais importantes estão atrás de um muro de pagamento. Análise limitada, puzzles restritos, lições bloqueadas.
+
+Você não precisa pagar para melhorar. Aqui estão as melhores alternativas gratuitas em 2026.
+
+## Lichess — Tudo grátis, sempre
+
+[Lichess](https://lichess.org) é a alternativa óbvia. Completamente gratuito, código aberto, e oferece tudo que Chess.com cobra: análise ilimitada com Stockfish, puzzles infinitos, estudos, torneios e mais.
+
+**O bom:** Tudo é grátis. Sem publicidade. A análise de partidas é potente e o motor é o mesmo Stockfish que os profissionais usam.
+
+**O que falta:** Os puzzles são genéricos. Dão posições aleatórias de partidas de desconhecidos. Você aprende táticas gerais, mas não trabalha suas fraquezas específicas.
+
+## Cassandra Chess — Treinamento personalizado gratuito
+
+Cassandra Chess aborda o problema que nem Chess.com nem Lichess resolvem: treinamento personalizado. Em vez de puzzles genéricos, Cassandra analisa **suas próprias partidas** e gera treinamento específico para seus erros.
+
+- **A Profecia** — Mostra posições onde jogadores do seu nível cometem erros frequentes.
+- **As Escalas** — Puzzles de dificuldade progressiva baseados nos seus padrões de erro.
+- **O Eco** — Repete posições onde você falhou até que domine.
+
+Tudo gratuito. Para entender a diferença entre puzzles genéricos e personalizados, leia [puzzles do Lichess vs puzzles personalizados](/learn/lichess-puzzles-vs-personal-puzzles).
+
+## ChessTempo — Profundidade tática
+
+ChessTempo se destaca pelo sistema de calibração de puzzles. Cada puzzle tem um rating preciso, e o sistema ajusta a dificuldade conforme seu desempenho. Excelente para trabalho tático sério.
+
+**O bom:** Calibração precisa, base de dados enorme, filtros por tema tático.
+
+**O que falta:** A interface é antiquada e não oferece treinamento personalizado baseado nas suas partidas.
+
+## Chess24 — Conteúdo em vídeo
+
+Chess24 (agora integrado ao Chess.com) oferece comentários de torneios e vídeos educativos de alta qualidade. Melhor como complemento do que como ferramenta principal de treino.
+
+## Qual usar para quê?
+
+- **Jogar partidas:** Chess.com ou Lichess — onde estão seus amigos e seu histórico.
+- **Analisar partidas:** Lichess (análise com Stockfish gratuita) ou Cassandra (análise focada nos seus erros).
+- **Treinar:** Cassandra (puzzles personalizados) + Lichess (puzzles gerais e estudos).
+
+Para mais sobre treinadores táticos gratuitos, consulte [treinadores táticos de xadrez gratuitos](/learn/chess-tactics-trainer-free).
+
+## A conclusão
+
+Você não precisa de assinatura premium para melhorar no xadrez. Precisa das ferramentas certas usadas da forma certa. Jogue onde quiser, mas treine com suas próprias partidas.
+
+**[Conecte sua conta grátis e comece a treinar de verdade →](/connect)**`,
+  },
+  "pt:how-to-get-better-at-chess-fast": {
+    title: "Como melhorar no xadrez rápido: O que realmente funciona",
+    metaTitle: "Como melhorar no xadrez rápido — Métodos comprovados",
+    metaDescription: "Quer melhorar no xadrez rapidamente? O caminho mais rápido não são mais partidas ou vídeos — é corrigir seus erros específicos com treinamento direcionado.",
+    content: `Você quer melhorar no xadrez. Rápido. Não em anos — em semanas. É possível? Sim, mas provavelmente não da forma que você imagina.
+
+## O 80/20 da melhoria no xadrez
+
+O princípio de Pareto se aplica perfeitamente ao xadrez. 80% das suas derrotas vêm de 20% dos seus erros. Você não perde porque falta conhecimento de aberturas ou porque não assistiu vídeos suficientes. Perde porque comete os mesmos erros repetidamente.
+
+Os três pilares da melhoria rápida:
+
+1. **Pare de cometer os mesmos erros.** Identifique seus 5 padrões de erro mais frequentes e trabalhe neles.
+2. **Treine com SUAS posições.** Não com posições de livros — com as posições reais que encontra nas suas partidas.
+3. **Ciclo jogar-analisar-treinar.** Jogue uma partida, analise, treine as posições onde falhou. Repita.
+
+## O que NÃO funciona
+
+Sejamos diretos sobre o que parece produtivo mas não é:
+
+- **Assistir vídeos de xadrez.** Entretenido, mas aprendizado passivo não se transfere para o tabuleiro. Você pode assistir 100 vídeos sobre sacrifícios e continuar sem vê-los nas suas partidas.
+- **Memorizar aberturas além do lance 8.** Abaixo de 2000, seu oponente sairá da teoria antes. Aprenda os 5-6 primeiros lances e os planos, nada mais.
+- **Jogar centenas de blitz sem analisar.** Está reforçando maus hábitos. É como treinar lances livres de olhos fechados.
+- **Puzzle rush.** Viciante mas treina posições aleatórias. Leia sobre [alternativas ao puzzle rush](/learn/chess-puzzle-rush-alternatives).
+
+## Plano de 4 semanas
+
+**Semana 1:** Conecte sua conta, analise suas últimas 50 partidas, identifique seus 3 erros mais comuns.
+
+**Semana 2:** Treine exclusivamente esses 3 padrões. 20 minutos por dia de puzzles direcionados.
+
+**Semana 3:** Jogue 5 partidas de ritmo lento (15+10 mínimo). Analise cada uma. Atualize sua lista de erros.
+
+**Semana 4:** Combine treinamento de erros (60%) com puzzles gerais (20%) e finais (20%).
+
+## Expectativas realistas
+
+Com essa abordagem, espere ganhar **50-100 pontos de ELO no primeiro mês**. Não é mágica — é parar de perder pontos que já está entregando. Jogadores presos em 1200 há meses sobem para 1300-1350 simplesmente eliminando seus erros recorrentes.
+
+## A única coisa a fazer hoje
+
+Analise suas últimas 10 partidas perdidas. Procure o padrão. É sempre uma cravada que não vê? Um mate na última fileira? Uma troca que deixa sua estrutura quebrada? Esse padrão é seu próximo objetivo de treino.
+
+Para mais sobre treinamento de erros, leia [treinamento de erros no xadrez](/learn/chess-blunder-training). Se sente que está estagnado, consulte [platôs de melhoria no xadrez](/learn/chess-improvement-plateaus). E não esqueça de revisar seus [erros de abertura](/learn/chess-opening-mistakes) e [como analisar suas partidas](/learn/how-to-analyse-chess-games).
+
+**[Conecte sua conta e comece a melhorar hoje →](/connect)**`,
+  },
+  "pt:chess-puzzle-rush-alternatives": {
+    title: "Além do Puzzle Rush: Por que puzzles aleatórios estão freando seu progresso",
+    metaTitle: "Alternativas ao Puzzle Rush — Treine de forma mais inteligente",
+    metaDescription: "Puzzle rush é viciante mas treina com posições aleatórias. Veja por que o treino de puzzles direcionado melhora seu rating mais rápido que resolver táticas aleatórias.",
+    content: `Três minutos no relógio. Você está em 28 puzzles corretos. O coração bate rápido, os dedos voam sobre as peças. Erra um e acabou. Seu recorde: 31. Amanhã tentará bater.
+
+Puzzle Rush é viciante. Mas está fazendo de você um jogador melhor?
+
+## Por que Puzzle Rush parece eficaz
+
+Puzzle Rush tem tudo que um bom sistema de motivação precisa:
+
+- **Feedback imediato.** Correto ou incorreto, instantaneamente.
+- **Ranking.** Competir contra outros e contra si mesmo.
+- **Progressão clara.** Sua pontuação sobe, você sente que está melhorando.
+- **Baixa barreira de entrada.** Sem necessidade de preparação — apenas 3-5 minutos.
+
+O problema é que se sentir produtivo e ser produtivo são coisas diferentes.
+
+## O problema dos puzzles aleatórios
+
+Imagine que quer melhorar no basquete. O que seria mais eficaz: arremessar 100 vezes de posições aleatórias, ou praticar 20 arremessos das posições onde mais erra?
+
+A resposta é óbvia. No entanto, é exatamente isso que o Puzzle Rush faz: dá posições aleatórias de partidas de desconhecidos. Algumas serão relevantes para seu jogo. A maioria não.
+
+Você treina tática em geral, mas não treina **suas** fraquezas táticas. É a diferença entre exercício e reabilitação. Ambos são úteis, mas se tem uma lesão específica, precisa de tratamento específico.
+
+## O que Puzzle Rush faz bem
+
+Nem tudo é negativo. Puzzle Rush treina habilidades reais:
+
+- **Velocidade de cálculo.** Ver táticas rapidamente é valioso no blitz.
+- **Reconhecimento de padrões básicos.** Os primeiros 20 puzzles cobrem temas fundamentais que todo jogador precisa conhecer.
+- **Motivação.** Mantém jogadores praticando quando de outra forma não praticariam.
+
+O problema não é o que Puzzle Rush é — é que jogadores o usam como seu **único** treinamento tático.
+
+## Melhores alternativas
+
+- **Banco de puzzles pessoais.** Puzzles gerados das suas próprias partidas. Cada posição é um erro que você realmente cometeu.
+- **Sets temáticos.** Em vez de posições aleatórias, trabalhe um tema específico: cravadas, ataque duplo, sacrifícios de desvio.
+- **As Escalas.** O sistema de Cassandra que ordena seus puzzles por dificuldade progressiva.
+- **O Eco.** Puzzles que repetem posições onde você falhou, usando repetição espaçada para consolidar o aprendizado.
+- **Puzzles pessoais com tempo.** Combine a pressão de tempo do Puzzle Rush com posições relevantes para seu jogo.
+
+## Quando Puzzle Rush está bem
+
+Puzzle Rush é perfeitamente válido como aquecimento antes de jogar, como atividade casual, ou como competição amigável. Nem tudo precisa ser otimizado.
+
+Mas se seu objetivo é subir de ELO, não pode ser seu treinamento principal.
+
+## A conclusão
+
+Puzzles aleatórios são melhor que nada, mas piores que puzzles direcionados. Se vai dedicar 15 minutos por dia a puzzles — e deveria — faça esses 15 minutos valerem.
+
+Para mais sobre platôs, leia [platôs de melhoria no xadrez](/learn/chess-improvement-plateaus). Para treinamento baseado em erros, consulte [treinamento de erros no xadrez](/learn/chess-blunder-training).
+
+**[Conecte sua conta e gere puzzles das suas próprias partidas →](/connect)**`,
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // RUSSIAN (batch 3)
+  // ═══════════════════════════════════════════════════════════════════════
+  "ru:chess-opening-mistakes": {
+    title: "Почему ваши дебютные ошибки стоят вам партий (и как это исправить)",
+    metaTitle: "Дебютные ошибки в шахматах — Исправьте то, что происходит после 10-го хода",
+    metaDescription: "Ваш дебют — не главная проблема. Проблема — миттельшпильные позиции, к которым он ведёт. Узнайте, как найти и исправить дебютные ошибки, которые действительно стоят вам партий.",
+    content: `Все мы попадали в ловушку дебютной подготовки. Вы часами заучиваете варианты Сицилианской или Испанской партии, осваиваете главные линии до 15-го хода, а потом противник играет что-то совершенно другое на 4-м ходу. Вся работа — впустую.
+
+## Ловушка дебютной подготовки
+
+Проблема не в том, что изучение дебютов бесполезно. Проблема в том, как большинство шахматистов это делают. Они запоминают последовательности ходов, не понимая планов, стоящих за ними. Когда противник отклоняется — а ниже 2000 ELO он отклоняется **всегда** — вы оказываетесь потеряны на незнакомой территории.
+
+Реальность такова: большинство любительских партий выходят из «теории» до 10-го хода. То, что происходит дальше, определяет победителя.
+
+## Где ошибки происходят на самом деле
+
+Самые дорогие ошибки — не в чистом дебюте, а в **зоне перехода от дебюта к миттельшпилю** — ходы с 10-го по 20-й. Именно здесь игроки совершают критические ошибки:
+
+- **Неправильная расстановка фигур.** Вы развиваете все фигуры, но на пассивные поля, которые не работают на план.
+- **Преждевременные пешечные прорывы.** Двигаете пешки без подготовки, ослабляя структуру.
+- **Не замечаете план противника.** Вы настолько сосредоточены на своей игре, что игнорируете формирующиеся угрозы.
+- **Неправильные размены.** Меняете фигуры, которые вам нужны, и оставляете те, которые хочет оставить противник.
+
+## Почему дебютные книги не решают проблему
+
+Дебютные книги и базы данных говорят, что играть, когда всё идёт по теории. Они не готовят к хаотичным, несбалансированным позициям, возникающим, когда оба игрока импровизируют. А именно эти позиции решают партии ниже 2000.
+
+## Тренируйтесь на своих реальных позициях
+
+Что действительно работает — анализ позиций из **ваших собственных партий**. Не теоретических позиций из книги, а конкретных позиций, где вы лично принимаете плохие решения.
+
+Cassandra Chess делает именно это. Система анализирует ваши партии, находит переходные позиции, в которых вы допускаете повторяющиеся ошибки, и создаёт целевые задачи для тренировки этих слабостей.
+
+## Практический подход для игроков ниже 2000
+
+1. **Играйте привычные дебюты.** Не меняйте дебют постоянно — нужно повторять позиции, чтобы учиться на них.
+2. **Анализируйте ходы 10-20.** После каждой партии сосредоточьтесь на переходе к миттельшпилю.
+3. **Выявляйте паттерны.** Ваши ладьи всегда пассивны? Размениваете слонов, когда не надо?
+4. **Тренируйтесь целенаправленно.** Используйте задачи из ваших собственных позиций.
+
+Подробнее о целенаправленной тренировке читайте в статье [тренировка ошибок в шахматах](/learn/chess-blunder-training). Полное руководство по анализу — [как анализировать шахматные партии](/learn/how-to-analyse-chess-games).
+
+## Вывод
+
+Перестаньте зубрить дебюты и начните понимать свои позиции. Очки ELO выигрываются не на 5-м ходу — а на 15-м, когда теория заканчивается и начинаются настоящие шахматы.
+
+**[Подключите аккаунт и узнайте свои настоящие дебютные ошибки →](/connect)**`,
+  },
+  "ru:chess-endgame-training": {
+    title: "Тренировка эндшпиля: Самая недооценённая часть шахматного прогресса",
+    metaTitle: "Тренировка шахматного эндшпиля — Самый быстрый путь к победам",
+    metaDescription: "Большинство шахматистов пропускают тренировку эндшпиля и упускают выигранные партии. Узнайте, почему работа над эндшпилем — самое эффективное улучшение, которое вы можете сделать.",
+    content: `У вас выигранная позиция. Ладья и два пешки против ладьи и одной пешки. Движок показывает +3.5. А потом, каким-то образом, вы делаете ничью. Или хуже — проигрываете. Знакомо?
+
+## Почему игроки избегают эндшпилей
+
+Будем честны: эндшпили — не захватывающее зрелище. Нет эффектных жертв, нет разрушительных атак на короля. Это техничные, точные, иногда утомительные шахматы. По сравнению с тактическими задачами или изучением красивых дебютов, эндшпили кажутся скучными.
+
+Но вот ирония: **эндшпиль — это область, где теряется больше всего очков ELO** ниже 2000. Не потому что позиции сложны сами по себе, а потому что игроки никогда не тренировали базовые паттерны.
+
+## Пробел в тренировке эндшпиля
+
+Популярные шахматные платформы сосредоточены на тактике и дебютах. Дают задачи на мат в 3 хода, учат Итальянскую партию и Французскую защиту. Но когда в последний раз платформа заставляла вас практиковать ладейный эндшпиль?
+
+Этот пробел огромен. Игрок с рейтингом 1400 может знать 20 дебютов, но не уметь выигрывать короля и пешку против короля без оппозиции.
+
+## Как выглядит настоящая тренировка эндшпиля
+
+Эффективная тренировка эндшпиля включает три компонента:
+
+- **Теоретические знания.** Базовые позиции: оппозиция, правило квадрата, позиции Лусены и Филидора, элементарные слоновые и коневые окончания.
+- **Активная практика.** Чтения недостаточно — нужно решать эндшпильные позиции, желательно с ограничением по времени для имитации реальных условий.
+- **Анализ ваших партий.** Разбор эндшпилей из собственных партий, чтобы понять, где вы потеряли преимущество.
+
+## Типичные ошибки в эндшпиле
+
+Определённые ошибки встречаются в любительских партиях снова и снова:
+
+- **Пассивная ладья.** Ставить ладью за собственными пешками вместо активации. Ладьи нуждаются в открытых линиях и активности.
+- **Пассивный король.** В эндшпиле король — атакующая фигура. Игроки, оставляющие его на g1 весь эндшпиль, проигрывают.
+- **Неправильные размены пешек.** Менять пешки при материальном преимуществе — уменьшать шансы на победу.
+- **Проблемы с часами.** Приходить в эндшпиль с малым запасом времени, не зная паттернов, — это играть вслепую, когда точность важнее всего.
+
+## Постройте рутину
+
+Уделяйте хотя бы **20% тренировочного времени** эндшпилям. При часе тренировки в день это 12 минут. Кажется мало, но это бесконечно больше, чем делает большинство игроков.
+
+Для персонализированных эндшпильных задач загляните в [шахматные задачи на эндшпиль](/learn/chess-endgame-puzzles). Если чувствуете, что прогресс остановился, читайте о [плато улучшения в шахматах](/learn/chess-improvement-plateaus) — часто решение кроется в эндшпилях.
+
+## Скрытое преимущество
+
+Каждый правильно выигранный эндшпиль — это пол-очка больше, чем у вашего соперника на том же уровне. Умножьте на сотни партий — и мы говорим о 100-200 очках ELO. И всё это за счёт паттернов, которые можно освоить за недели, а не месяцы.
+
+**[Подключите аккаунт и начните тренировать эндшпили из ваших партий →](/connect)**`,
+  },
+  "ru:chess-com-alternatives": {
+    title: "Альтернативы Chess.com: Бесплатные инструменты, которые реально делают вас сильнее",
+    metaTitle: "Альтернативы Chess.com 2026 — Бесплатные инструменты для реального прогресса",
+    metaDescription: "Chess.com прячет анализ партий и неограниченные задачи за платной подпиской. Вот лучшие бесплатные альтернативы для серьёзного улучшения в шахматах в 2026 году.",
+    content: `Chess.com — самая популярная шахматная платформа в мире, и заслуженно: красивый интерфейс, миллионы игроков, обилие контента. Но если вы хотите по-настоящему расти, вы быстро обнаружите, что самые важные функции закрыты платной подпиской. Ограниченный анализ, лимитированные задачи, заблокированные уроки.
+
+Платить необязательно. Вот лучшие бесплатные альтернативы в 2026 году.
+
+## Lichess — Всё бесплатно, всегда
+
+[Lichess](https://lichess.org) — очевидная альтернатива. Полностью бесплатный, с открытым кодом, предлагает всё, за что Chess.com берёт деньги: безлимитный анализ со Stockfish, бесконечные задачи, исследования, турниры и многое другое.
+
+**Плюсы:** Всё бесплатно. Без рекламы. Анализ партий мощный, а движок — тот самый Stockfish, которым пользуются профессионалы.
+
+**Чего не хватает:** Задачи генерические. Вам дают случайные позиции из чужих партий. Вы научитесь общей тактике, но не проработаете свои конкретные слабости.
+
+## Cassandra Chess — Бесплатная персонализированная тренировка
+
+Cassandra Chess решает проблему, которую не решают ни Chess.com, ни Lichess: персонализированная тренировка. Вместо генерических задач Cassandra анализирует **ваши собственные партии** и создаёт тренировку, нацеленную на ваши ошибки.
+
+- **Пророчество** — Показывает позиции, в которых игроки вашего уровня часто ошибаются.
+- **Гаммы** — Задачи с нарастающей сложностью, основанные на ваших паттернах ошибок.
+- **Эхо** — Повторяет позиции, в которых вы ошиблись, пока вы их не освоите.
+
+Всё бесплатно. Чтобы понять разницу между генерическими и персонализированными задачами, читайте [задачи Lichess vs персонализированные задачи](/learn/lichess-puzzles-vs-personal-puzzles).
+
+## ChessTempo — Тактическая глубина
+
+ChessTempo выделяется системой калибровки задач. Каждая задача имеет точный рейтинг, и система подстраивает сложность под ваш уровень. Отлично для серьёзной тактической работы.
+
+**Плюсы:** Точная калибровка, огромная база данных, фильтры по тактическим темам.
+
+**Чего не хватает:** Интерфейс устаревший, нет персонализированной тренировки на основе ваших партий.
+
+## Chess24 — Видеоконтент
+
+Chess24 (теперь интегрирован в Chess.com) предлагает комментарии турниров и качественные обучающие видео. Лучше как дополнение, чем как основной инструмент тренировки.
+
+## Что для чего использовать?
+
+- **Играть партии:** Chess.com или Lichess — где ваши друзья и история.
+- **Анализировать партии:** Lichess (бесплатный анализ Stockfish) или Cassandra (анализ, нацеленный на ваши ошибки).
+- **Тренироваться:** Cassandra (персонализированные задачи) + Lichess (общие задачи и исследования).
+
+Подробнее о бесплатных тактических тренажёрах: [бесплатные шахматные тактические тренажёры](/learn/chess-tactics-trainer-free).
+
+## Вывод
+
+Вам не нужна премиум-подписка, чтобы расти в шахматах. Нужны правильные инструменты, используемые правильно. Играйте где хотите, но тренируйтесь на своих собственных партиях.
+
+**[Подключите аккаунт бесплатно и начните настоящую тренировку →](/connect)**`,
+  },
+  "ru:how-to-get-better-at-chess-fast": {
+    title: "Как быстро улучшиться в шахматах: Что действительно работает",
+    metaTitle: "Как быстро стать лучше в шахматах — Проверенные методы",
+    metaDescription: "Хотите быстро улучшиться в шахматах? Самый быстрый путь — не больше партий и видео, а исправление конкретных ошибок целенаправленной тренировкой.",
+    content: `Вы хотите стать лучше в шахматах. Быстро. Не за годы — за недели. Возможно ли это? Да, но, скорее всего, не так, как вы думаете.
+
+## 80/20 шахматного прогресса
+
+Принцип Парето идеально применим к шахматам. 80% ваших поражений происходят из-за 20% ваших ошибок. Вы проигрываете не потому, что вам не хватает дебютных знаний или вы не смотрели достаточно видео. Вы проигрываете, потому что совершаете одни и те же ошибки снова и снова.
+
+Три столпа быстрого прогресса:
+
+1. **Перестаньте совершать одни и те же ошибки.** Определите 5 самых частых паттернов ошибок и работайте над ними.
+2. **Тренируйтесь на ВАШИХ позициях.** Не из книг — из реальных позиций, возникающих в ваших партиях.
+3. **Цикл: играть — анализировать — тренировать.** Сыграйте партию, проанализируйте, потренируйте позиции, где ошиблись. Повторите.
+
+## Что НЕ работает
+
+Скажем прямо о том, что кажется продуктивным, но таковым не является:
+
+- **Смотреть шахматные видео.** Развлекательно, но пассивное обучение не переносится на доску. Можно посмотреть 100 видео о жертвах и по-прежнему не видеть их в своих партиях.
+- **Заучивать дебюты дальше 8-го хода.** Ниже 2000 противник отклонится раньше. Выучите первые 5-6 ходов и планы, не более.
+- **Играть сотни блиц-партий без анализа.** Вы закрепляете дурные привычки. Как тренировать штрафные броски с закрытыми глазами.
+- **Puzzle Rush.** Затягивает, но тренирует на случайных позициях. Читайте об [альтернативах Puzzle Rush](/learn/chess-puzzle-rush-alternatives).
+
+## План на 4 недели
+
+**Неделя 1:** Подключите аккаунт, проанализируйте последние 50 партий, выявите 3 самые частые ошибки.
+
+**Неделя 2:** Тренируйте исключительно эти 3 паттерна. 20 минут в день целевых задач.
+
+**Неделя 3:** Сыграйте 5 партий с медленным контролем (минимум 15+10). Проанализируйте каждую. Обновите список ошибок.
+
+**Неделя 4:** Комбинируйте тренировку ошибок (60%) с общими задачами (20%) и эндшпилями (20%).
+
+## Реалистичные ожидания
+
+При таком подходе ожидайте набрать **50-100 очков ELO за первый месяц**. Это не магия — это прекращение потери очков, которые вы и так отдаёте. Игроки, застрявшие на 1200 месяцами, поднимаются до 1300-1350, просто устраняя повторяющиеся ошибки.
+
+## Одна вещь, которую стоит сделать сегодня
+
+Проанализируйте 10 последних проигранных партий. Ищите паттерн. Это всегда связка, которую вы не видите? Мат по последней горизонтали? Размен, разрушающий структуру? Этот паттерн — ваша следующая цель тренировки.
+
+Подробнее: [тренировка ошибок в шахматах](/learn/chess-blunder-training), [плато улучшения](/learn/chess-improvement-plateaus), [дебютные ошибки](/learn/chess-opening-mistakes) и [как анализировать партии](/learn/how-to-analyse-chess-games).
+
+**[Подключите аккаунт и начните улучшаться уже сегодня →](/connect)**`,
+  },
+  "ru:chess-puzzle-rush-alternatives": {
+    title: "За пределами Puzzle Rush: Почему случайные задачи тормозят ваш прогресс",
+    metaTitle: "Альтернативы Puzzle Rush — Тренируйтесь умнее, чем на случайных задачах",
+    metaDescription: "Puzzle Rush затягивает, но тренирует на случайных позициях. Узнайте, почему целевая тренировка задачами улучшает рейтинг быстрее, чем скоростное решение случайной тактики.",
+    content: `Три минуты на часах. 28 задач решены правильно. Сердце колотится, пальцы летают по фигурам. Ошибаетесь — и конец. Ваш рекорд: 31. Завтра попробуете побить.
+
+Puzzle Rush затягивает. Но делает ли он вас сильнее?
+
+## Почему Puzzle Rush кажется эффективным
+
+У Puzzle Rush есть всё, что нужно хорошей мотивационной системе:
+
+- **Мгновенная обратная связь.** Правильно или неправильно — сразу.
+- **Рейтинговая таблица.** Соревнование с другими и с самим собой.
+- **Ясная прогрессия.** Счёт растёт, вы чувствуете прогресс.
+- **Низкий порог входа.** Не нужна подготовка — всего 3-5 минут.
+
+Проблема в том, что чувствовать себя продуктивным и быть продуктивным — разные вещи.
+
+## Проблема случайных задач
+
+Представьте, что хотите улучшиться в баскетболе. Что эффективнее: 100 бросков с произвольных позиций или 20 бросков с позиций, где вы промахиваетесь чаще всего?
+
+Ответ очевиден. Но именно это делает Puzzle Rush: даёт случайные позиции из чужих партий. Некоторые будут релевантны вашей игре. Большинство — нет.
+
+Вы тренируете тактику в целом, но не тренируете **ваши** тактические слабости. Это разница между фитнесом и реабилитацией. Оба полезны, но при конкретной травме нужно конкретное лечение.
+
+## Что Puzzle Rush делает правильно
+
+Не всё негативно. Puzzle Rush тренирует реальные навыки:
+
+- **Скорость расчёта.** Быстро видеть тактику ценно в блице.
+- **Распознавание базовых паттернов.** Первые 20 задач покрывают фундаментальные темы, которые должен знать каждый игрок.
+- **Мотивация.** Держит игроков в тренировочном режиме, когда иначе они бы не тренировались.
+
+Проблема не в том, чем является Puzzle Rush, а в том, что игроки используют его как **единственную** тактическую тренировку.
+
+## Лучшие альтернативы
+
+- **Банк персональных задач.** Задачи, сгенерированные из ваших собственных партий. Каждая позиция — ошибка, которую вы реально совершили.
+- **Тематические наборы.** Вместо случайных позиций работайте над конкретной темой: связки, двойной удар, жертвы отвлечения.
+- **Гаммы.** Система Cassandra, упорядочивающая задачи по нарастающей сложности.
+- **Эхо.** Задачи, повторяющие позиции, где вы ошиблись, с использованием интервального повторения.
+- **Персональные задачи на время.** Совмещайте временное давление Puzzle Rush с позициями, релевантными вашей игре.
+
+## Когда Puzzle Rush уместен
+
+Puzzle Rush отлично подходит как разминка перед игрой, как расслабленное занятие или как дружеское соревнование. Не всё должно быть оптимизировано.
+
+Но если ваша цель — рост ELO, это не может быть основной тренировкой.
+
+## Вывод
+
+Случайные задачи лучше, чем ничего, но хуже, чем целевые. Если вы уделяете задачам 15 минут в день — а стоит, — сделайте так, чтобы эти 15 минут считались.
+
+О плато читайте в статье [плато улучшения в шахматах](/learn/chess-improvement-plateaus). О тренировке ошибок — [тренировка ошибок в шахматах](/learn/chess-blunder-training).
+
+**[Подключите аккаунт и создайте задачи из ваших собственных партий →](/connect)**`,
+  },
 };
