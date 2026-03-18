@@ -129,12 +129,12 @@ export default function EchoShell({
   function showSelectionHints(square: string) {
     const hints = getRetrogradeHints(square);
     const styles: Record<string, React.CSSProperties> = {
-      [square]: { backgroundColor: "rgba(200, 148, 42, 0.5)" },
+      [square]: { backgroundColor: "rgba(200, 148, 42, 0.6)" },
     };
     for (const from of hints) {
       styles[from] = {
         background:
-          "radial-gradient(circle, rgba(200, 148, 42, 0.4) 25%, transparent 25%)",
+          "radial-gradient(circle, rgba(200, 148, 42, 0.85) 25%, transparent 25%)",
         borderRadius: "50%",
       };
     }
