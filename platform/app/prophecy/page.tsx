@@ -10,9 +10,16 @@ export const metadata = {
   description: "Find the brilliant move that Cassandra saw. A new puzzle every day.",
 };
 
-export default async function ProphecyPage() {
+export default async function ProphecyPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ replay?: string }>;
+}) {
   const session = await auth();
   if (!session?.userId) redirect("/connect");
+
+  const params = await searchParams;
+  const isReplay = params.replay === "true";
 
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
@@ -46,6 +53,9 @@ export default async function ProphecyPage() {
     select: { success: true, solveTimeMs: true },
   });
 
+  // If ?replay=true, bypass the completion gate
+  const showAsCompleted = !!existingAttempt && !isReplay;
+
   return (
     <ProphecyShell
       puzzleId={puzzle.id}
@@ -53,7 +63,7 @@ export default async function ProphecyPage() {
       solutionMoves={puzzle.solutionMoves}
       themes={puzzle.themes}
       rating={puzzle.rating}
-      alreadySolved={!!existingAttempt}
+      alreadySolved={showAsCompleted}
       alreadySolvedSuccess={existingAttempt?.success ?? false}
     />
   );

@@ -22,11 +22,13 @@ export default function HomepageStats({
       <StatCell label={t("landing.stats.puzzlesSolved")} value={puzzlesSolved.toLocaleString()} />
       <StatCell label={t("landing.stats.fromRealGames")} value={fromRealGames.toLocaleString()} />
       <StatCell label={t("landing.stats.totalPlayers")} value={totalPlayers.toLocaleString()} />
-      <StatCell
-        label={t("landing.stats.onlineNow")}
-        value={onlineNow.toLocaleString()}
-        greenDot
-      />
+      {onlineNow >= 1 && (
+        <StatCell
+          label={t("landing.stats.onlineNow")}
+          value={onlineNow.toLocaleString()}
+          greenDot
+        />
+      )}
     </div>
   );
 }

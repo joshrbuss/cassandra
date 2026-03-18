@@ -297,7 +297,7 @@ export default async function DashboardPage() {
 
         {/* ── Cassandra's Prophecy card ── */}
         <Link
-          href="/prophecy"
+          href={prophecyDoneToday ? "/prophecy?replay=true" : "/prophecy"}
           className={`flex items-center justify-between rounded-xl p-5 mb-4 transition-colors border ${
             prophecyDoneToday
               ? "bg-[#0e0e0e]/60 border-[#2a2a2a]/50 opacity-70 hover:opacity-90"

@@ -219,6 +219,38 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
     }
   }
 
+  /** Detect the tactical motif of a move (capture, check, promotion, etc.) */
+  function getMoveMotif(uci: string): string | null {
+    try {
+      const chess = new Chess(fen);
+      const result = chess.move({
+        from: uci.slice(0, 2),
+        to: uci.slice(2, 4),
+        promotion: uci[4] || undefined,
+      });
+      if (!result) return null;
+
+      // Check for check/checkmate first (most dramatic)
+      if (result.san.includes("#")) return "Checkmate";
+      if (result.san.includes("+")) {
+        if (result.captured) return "Capture with check";
+        return "A check";
+      }
+      if (result.promotion) return "Promotion";
+      if (result.captured) return "A capture";
+
+      // Detect fork: after this move, does the piece attack 2+ opponent pieces?
+      const attacked = chess.moves({ verbose: true }).filter(
+        (m) => m.from === uci.slice(2, 4) && m.captured
+      );
+      if (attacked.length >= 2) return "A fork";
+
+      return "A quiet move";
+    } catch {
+      return null;
+    }
+  }
+
   const scoreLabels = [
     "All wrong — keep training!",
     "1 correct — getting there",
@@ -272,6 +304,7 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
                 </p>
                 {engineTop3.map((em, i) => {
                   const san = getMoveLabel(em.move);
+                  const motif = getMoveMotif(em.move);
                   const userSlot = slots.findIndex((s) => s?.uci === em.move);
                   const isCorrectPosition = userSlot === i;
                   return (
@@ -290,6 +323,11 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
                         <span className="text-white font-semibold text-sm">
                           {san}
                         </span>
+                        {motif && (
+                          <span className="text-[10px] text-gray-500 italic">
+                            {motif}
+                          </span>
+                        )}
                       </div>
                       <span className="text-xs font-mono text-gray-400">
                         {formatCp(em.cp)}
@@ -382,7 +420,7 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
               </p>
 
               {hasSacrifice && (
-                <p className="text-[#c8942a]/80 text-xs mt-2 italic">
+                <p className="text-[#c8942a] opacity-80 text-xs mt-2 italic">
                   One of the top moves involves a sacrifice
                 </p>
               )}
