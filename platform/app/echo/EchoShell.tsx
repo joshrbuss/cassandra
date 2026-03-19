@@ -90,56 +90,106 @@ export default function EchoShell({
   const captured = getCapturedPieces(fenAfter);
 
   /**
-   * Compute plausible "origin" squares for a piece the user clicked.
-   * To avoid leaking which piece actually moved, every piece of the
-   * same type+color shows the same hint pattern: the union of all
-   * legal destinations of ALL pieces of that type in fenBefore.
+   * Reverse move generation from fenAfter ONLY — no fenBefore usage.
+   * For a piece on `clickedSquare`, compute all squares that piece type
+   * could have legally come from in one move, based on piece movement
+   * rules and the current board. This produces genuinely ambiguous dots
+   * for every piece, leaking nothing about the actual move.
    */
   const getRetrogradeHints = useCallback(
     (clickedSquare: string): string[] => {
       try {
-        const chessAfter = new Chess(fenAfter);
-        const piece = chessAfter.get(clickedSquare as never);
+        const chess = new Chess(fenAfter);
+        const piece = chess.get(clickedSquare as never);
         if (!piece) return [];
 
-        const chessBefore = new Chess(fenBefore);
-        const allMoves = chessBefore.moves({ verbose: true });
+        const f = clickedSquare.charCodeAt(0) - 97; // 0-7
+        const r = parseInt(clickedSquare[1]) - 1;    // 0-7
+        const hints: string[] = [];
 
-        // Find ALL pieces of the same type+color in fenBefore
-        // and collect all their legal move destinations as plausible
-        // "came from" squares. This makes hints identical whether
-        // the user clicked the moved piece or a stationary one.
-        const hints = new Set<string>();
-        for (const m of allMoves) {
-          const src = chessBefore.get(m.from as never);
-          if (src && src.type === piece.type && src.color === piece.color) {
-            hints.add(m.to);
-          }
+        function toSq(file: number, rank: number): string | null {
+          if (file < 0 || file > 7 || rank < 0 || rank > 7) return null;
+          return String.fromCharCode(97 + file) + (rank + 1);
         }
 
-        // Also add the origin squares themselves (where those pieces
-        // sit in fenBefore) as plausible "came from" locations
-        const files = "abcdefgh";
-        const ranks = "12345678";
-        for (const f of files) {
-          for (const r of ranks) {
-            const sq = `${f}${r}`;
-            const p = chessBefore.get(sq as never);
-            if (p && p.type === piece.type && p.color === piece.color) {
-              hints.add(sq);
+        // A valid origin can't have a friendly piece (it was there before too)
+        function isFreeOrEnemy(sq: string): boolean {
+          const p = chess.get(sq as never);
+          return !p || p.color !== piece!.color;
+        }
+
+        // Trace a ray outward for sliding pieces (bishop/rook/queen)
+        function traceRay(df: number, dr: number) {
+          let cf = f + df, cr = r + dr;
+          while (cf >= 0 && cf <= 7 && cr >= 0 && cr <= 7) {
+            const sq = toSq(cf, cr)!;
+            const p = chess.get(sq as never);
+            if (p) {
+              if (p.color !== piece!.color) hints.push(sq);
+              break; // blocked either way
             }
+            hints.push(sq);
+            cf += df;
+            cr += dr;
           }
         }
 
-        // Remove the clicked square itself from hints (no self-dot)
-        hints.delete(clickedSquare);
+        switch (piece.type) {
+          case "n":
+            for (const [df, dr] of [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]]) {
+              const sq = toSq(f + df, r + dr);
+              if (sq && isFreeOrEnemy(sq)) hints.push(sq);
+            }
+            break;
+          case "b":
+            for (const [df, dr] of [[-1,-1],[-1,1],[1,-1],[1,1]]) traceRay(df, dr);
+            break;
+          case "r":
+            for (const [df, dr] of [[-1,0],[1,0],[0,-1],[0,1]]) traceRay(df, dr);
+            break;
+          case "q":
+            for (const [df, dr] of [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]) traceRay(df, dr);
+            break;
+          case "k":
+            for (const [df, dr] of [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]) {
+              const sq = toSq(f + df, r + dr);
+              if (sq && isFreeOrEnemy(sq)) hints.push(sq);
+            }
+            // Castling origins (king could have come from 2 squares away)
+            for (const df of [-2, 2]) {
+              const sq = toSq(f + df, r);
+              if (sq && isFreeOrEnemy(sq)) hints.push(sq);
+            }
+            break;
+          case "p": {
+            // Reverse pawn direction: white moves up so came from below
+            const back = piece.color === "w" ? -1 : 1;
+            // One square back (normal push)
+            const oneBack = toSq(f, r + back);
+            if (oneBack && !chess.get(oneBack as never)) {
+              hints.push(oneBack);
+              // Two squares back (double push landing rank)
+              const doubleLandRank = piece.color === "w" ? 3 : 4; // 0-indexed
+              if (r === doubleLandRank) {
+                const twoBack = toSq(f, r + 2 * back);
+                if (twoBack && !chess.get(twoBack as never)) hints.push(twoBack);
+              }
+            }
+            // Diagonal captures (pawn came from a diagonal behind)
+            for (const df of [-1, 1]) {
+              const diag = toSq(f + df, r + back);
+              if (diag && isFreeOrEnemy(diag)) hints.push(diag);
+            }
+            break;
+          }
+        }
 
-        return Array.from(hints);
+        return hints;
       } catch {
         return [];
       }
     },
-    [fenBefore, fenAfter]
+    [fenAfter]
   );
 
   /** Show selection highlight + retrograde from-square dots */
