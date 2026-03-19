@@ -20,15 +20,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const siteUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://cassandrachess.com";
   const canonicalUrl = `${siteUrl}/learn/${slug}`;
-  const title = `${article.metaTitle} | Cassandra Chess`;
   const description = article.metaDescription.slice(0, 155);
 
   return {
-    title,
+    title: article.metaTitle,
     description,
-    alternates: { canonical: canonicalUrl },
+    alternates: {
+      canonical: canonicalUrl,
+      languages: { "x-default": canonicalUrl, en: canonicalUrl, es: canonicalUrl, fr: canonicalUrl, de: canonicalUrl, pt: canonicalUrl, ru: canonicalUrl },
+    },
     openGraph: {
-      title,
+      title: article.metaTitle,
       description,
       type: "article",
       url: canonicalUrl,
@@ -36,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: "summary",
-      title,
+      title: article.metaTitle,
       description,
     },
   };
