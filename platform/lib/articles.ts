@@ -1456,6 +1456,43 @@ The path from beginner to intermediate isn't about learning brilliant moves. It'
 
 **[Find your specific mistakes — free game analysis →](/connect)**`,
   },
+  {
+    slug: "retrograde-analysis-chess-training",
+    title: "Retrograde Analysis: The Lesser-Known Training Method That Sharpens Your Chess Intuition",
+    metaTitle: "Retrograde Analysis Chess Training — The Echo | Cassandra Chess",
+    metaDescription:
+      "Most chess players have never tried retrograde analysis. Here's why it's one of the most effective ways to build positional intuition — and how to train with it.",
+    themes: ["retrograde"],
+    content: `Most chess training asks the same question: what's the best move from here?
+
+Retrograde analysis asks the opposite: what move just happened?
+
+It's a lesser-known training format — more common in chess composition circles than in regular study routines. But the cognitive skill it builds is genuinely different from standard puzzle training, and that difference is worth understanding.
+
+## What retrograde analysis actually is
+
+In a standard chess puzzle, you're given a position and asked to find the winning continuation. The position is the starting point, and you reason forward.
+
+In retrograde analysis, you're shown a position and asked to work backwards. Given this board state — what was the last move? Which piece moved, from where, and why does it matter?
+
+It sounds simple. It isn't. The moment you try it seriously, you realise how much of your chess thinking is forward-only. You know how to look for threats. You know how to evaluate plans. But reading a position backwards — understanding how it was constructed — is a completely different cognitive mode.
+
+## Why it makes you better
+
+The skill retrograde analysis builds is positional reading. When you can look at a board and immediately understand its history — which pieces have moved, what exchanges happened, what the pawn structure implies about the middlegame that led here — you're reading chess at a deeper level than most players ever reach.
+
+Strong players do this automatically. They look at a position and understand it structurally, not just tactically. Retrograde training builds exactly that skill.
+
+## The Echo
+
+Cassandra's Echo mode is built entirely around retrograde analysis. You're shown a position and asked to identify the move that was just played. Not the best move from here — the move that created this position.
+
+The positions come from real games. The moves are meaningful — not random, but instructive. Each one teaches you something about how positions are constructed and why certain structures appear.
+
+It's the training method serious players have used for generations, now available as an interactive mode you can do in five minutes a day.
+
+**[Start training with The Echo →](/echo)**`,
+  },
 ];
 
 export function getArticle(slug: string): Article | undefined {

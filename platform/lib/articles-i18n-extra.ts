@@ -1163,4 +1163,181 @@ Cassandra показывает, в каком контроле времени в
 
 Игроки, практикующие предсказание ходов соперника, становятся более трудными противниками. Они видят угрозы заранее, защищаются точно и избегают панических реакций, ведущих к потере рейтинга. Со временем это улучшает и атакующую игру — потому что понимание угроз с точки зрения соперника помогает строить более неотразимые комбинации.`,
   },
+
+  // ── retrograde-analysis-chess-training ──────────────────────────────
+
+  "es:retrograde-analysis-chess-training": {
+    title: "Análisis Retrógrado: El Método de Entrenamiento Poco Conocido Que Agudiza Tu Intuición Ajedrecística",
+    metaTitle: "Entrenamiento de Análisis Retrógrado en Ajedrez — The Echo | Cassandra Chess",
+    metaDescription: "La mayoría de los ajedrecistas nunca han probado el análisis retrógrado. Descubre por qué es uno de los métodos más efectivos para desarrollar la intuición posicional — y cómo entrenar con él.",
+    content: `La mayoría del entrenamiento de ajedrez plantea la misma pregunta: ¿cuál es la mejor jugada desde aquí?
+
+El análisis retrógrado pregunta lo opuesto: ¿qué jugada acaba de ocurrir?
+
+Es un formato de entrenamiento poco conocido — más común en los círculos de composición ajedrecística que en las rutinas de estudio habituales. Pero la habilidad cognitiva que desarrolla es genuinamente diferente del entrenamiento con puzzles estándar, y esa diferencia merece ser comprendida.
+
+## Qué es realmente el análisis retrógrado
+
+En un puzzle de ajedrez estándar, te dan una posición y te piden encontrar la continuación ganadora. La posición es el punto de partida, y razonas hacia adelante.
+
+En el análisis retrógrado, te muestran una posición y te piden trabajar hacia atrás. Dado este estado del tablero — ¿cuál fue la última jugada? ¿Qué pieza se movió, desde dónde, y por qué importa?
+
+Suena simple. No lo es. En el momento en que lo intentas en serio, te das cuenta de cuánto de tu pensamiento ajedrecístico es solo hacia adelante. Sabes buscar amenazas. Sabes evaluar planes. Pero leer una posición al revés — entender cómo fue construida — es un modo cognitivo completamente diferente.
+
+## Por qué te hace mejor
+
+La habilidad que desarrolla el análisis retrógrado es la lectura posicional. Cuando puedes mirar un tablero y entender inmediatamente su historia — qué piezas se han movido, qué intercambios ocurrieron, qué implica la estructura de peones sobre el medio juego que llevó hasta aquí — estás leyendo ajedrez a un nivel más profundo del que la mayoría de los jugadores alcanzan jamás.
+
+Los jugadores fuertes hacen esto automáticamente. Miran una posición y la entienden estructuralmente, no solo tácticamente. El entrenamiento retrógrado desarrolla exactamente esa habilidad.
+
+## The Echo
+
+El modo Echo de Cassandra está construido enteramente alrededor del análisis retrógrado. Te muestran una posición y te piden identificar la jugada que acaba de jugarse. No la mejor jugada desde aquí — la jugada que creó esta posición.
+
+Las posiciones provienen de partidas reales. Las jugadas son significativas — no aleatorias, sino instructivas. Cada una te enseña algo sobre cómo se construyen las posiciones y por qué aparecen ciertas estructuras.
+
+Es el método de entrenamiento que los jugadores serios han usado durante generaciones, ahora disponible como un modo interactivo que puedes hacer en cinco minutos al día.
+
+**[Empieza a entrenar con The Echo →](/echo)**`,
+  },
+
+  "fr:retrograde-analysis-chess-training": {
+    title: "L'analyse rétrograde : la méthode d'entraînement méconnue qui aiguise votre intuition aux échecs",
+    metaTitle: "Entraînement par analyse rétrograde aux échecs — The Echo | Cassandra Chess",
+    metaDescription: "La plupart des joueurs d'échecs n'ont jamais essayé l'analyse rétrograde. Découvrez pourquoi c'est l'une des méthodes les plus efficaces pour développer l'intuition positionnelle — et comment s'y entraîner.",
+    content: `La plupart des entraînements aux échecs posent la même question : quel est le meilleur coup à jouer ici ?
+
+L'analyse rétrograde pose la question inverse : quel coup vient d'être joué ?
+
+C'est un format d'entraînement peu connu — plus courant dans les cercles de composition échiquéenne que dans les routines d'étude habituelles. Mais la compétence cognitive qu'il développe est véritablement différente de l'entraînement standard par puzzles, et cette différence mérite d'être comprise.
+
+## Ce qu'est réellement l'analyse rétrograde
+
+Dans un puzzle d'échecs classique, on vous donne une position et on vous demande de trouver la continuation gagnante. La position est le point de départ, et vous raisonnez en avant.
+
+Dans l'analyse rétrograde, on vous montre une position et on vous demande de raisonner en arrière. Étant donné cet état de l'échiquier — quel était le dernier coup ? Quelle pièce a bougé, d'où, et pourquoi est-ce important ?
+
+Cela semble simple. Ce ne l'est pas. Dès que vous essayez sérieusement, vous réalisez à quel point votre réflexion échiquéenne fonctionne uniquement vers l'avant. Vous savez chercher des menaces. Vous savez évaluer des plans. Mais lire une position à rebours — comprendre comment elle a été construite — est un mode cognitif totalement différent.
+
+## Pourquoi cela vous rend meilleur
+
+La compétence que développe l'analyse rétrograde est la lecture positionnelle. Quand vous pouvez regarder un échiquier et comprendre immédiatement son histoire — quelles pièces ont bougé, quels échanges ont eu lieu, ce que la structure de pions implique sur le milieu de partie qui y a mené — vous lisez les échecs à un niveau plus profond que la plupart des joueurs n'atteindront jamais.
+
+Les joueurs forts font cela automatiquement. Ils regardent une position et la comprennent structurellement, pas seulement tactiquement. L'entraînement rétrograde développe exactement cette compétence.
+
+## The Echo
+
+Le mode Echo de Cassandra est entièrement construit autour de l'analyse rétrograde. On vous montre une position et on vous demande d'identifier le coup qui vient d'être joué. Pas le meilleur coup à partir d'ici — le coup qui a créé cette position.
+
+Les positions proviennent de vraies parties. Les coups sont significatifs — pas aléatoires, mais instructifs. Chacun vous apprend quelque chose sur la façon dont les positions sont construites et pourquoi certaines structures apparaissent.
+
+C'est la méthode d'entraînement que les joueurs sérieux utilisent depuis des générations, désormais disponible sous forme de mode interactif que vous pouvez pratiquer en cinq minutes par jour.
+
+**[Commencer l'entraînement avec The Echo →](/echo)**`,
+  },
+
+  "de:retrograde-analysis-chess-training": {
+    title: "Retrograde Analyse: Die wenig bekannte Trainingsmethode, die Ihre Schachintuition schärft",
+    metaTitle: "Retrograde Analyse im Schachtraining — The Echo | Cassandra Chess",
+    metaDescription: "Die meisten Schachspieler haben retrograde Analyse nie ausprobiert. Erfahren Sie, warum sie eine der effektivsten Methoden ist, um positionelle Intuition aufzubauen — und wie Sie damit trainieren.",
+    content: `Die meisten Schachtrainings stellen dieselbe Frage: Was ist der beste Zug von hier aus?
+
+Retrograde Analyse stellt die gegenteilige Frage: Welcher Zug ist gerade passiert?
+
+Es ist ein wenig bekanntes Trainingsformat — in Kreisen der Schachkomposition verbreiteter als in regulären Studienroutinen. Aber die kognitive Fähigkeit, die es aufbaut, unterscheidet sich grundlegend vom Standard-Puzzletraining, und dieser Unterschied verdient es, verstanden zu werden.
+
+## Was retrograde Analyse wirklich ist
+
+In einem Standard-Schachpuzzle erhalten Sie eine Stellung und sollen die Gewinnfortsetzung finden. Die Stellung ist der Ausgangspunkt, und Sie denken vorwärts.
+
+Bei der retrograden Analyse wird Ihnen eine Stellung gezeigt, und Sie sollen rückwärts arbeiten. Angesichts dieser Brettstellung — was war der letzte Zug? Welche Figur hat sich bewegt, von wo, und warum ist das wichtig?
+
+Es klingt einfach. Ist es aber nicht. Sobald Sie es ernsthaft versuchen, merken Sie, wie sehr Ihr Schachdenken ausschließlich vorwärtsgerichtet ist. Sie wissen, wie man nach Drohungen sucht. Sie wissen, wie man Pläne bewertet. Aber eine Stellung rückwärts zu lesen — zu verstehen, wie sie entstanden ist — ist ein völlig anderer kognitiver Modus.
+
+## Warum es Sie besser macht
+
+Die Fähigkeit, die retrograde Analyse aufbaut, ist das positionelle Lesen. Wenn Sie ein Brett anschauen und sofort seine Geschichte verstehen können — welche Figuren gezogen haben, welche Abtausche stattfanden, was die Bauernstruktur über das Mittelspiel aussagt, das hierher geführt hat — lesen Sie Schach auf einer tieferen Ebene, als die meisten Spieler jemals erreichen.
+
+Starke Spieler machen das automatisch. Sie schauen sich eine Stellung an und verstehen sie strukturell, nicht nur taktisch. Retrogrades Training baut genau diese Fähigkeit auf.
+
+## The Echo
+
+Cassandras Echo-Modus ist vollständig um retrograde Analyse aufgebaut. Ihnen wird eine Stellung gezeigt, und Sie sollen den Zug identifizieren, der gerade gespielt wurde. Nicht den besten Zug von hier — den Zug, der diese Stellung geschaffen hat.
+
+Die Stellungen stammen aus echten Partien. Die Züge sind bedeutsam — nicht zufällig, sondern lehrreich. Jeder einzelne lehrt Sie etwas darüber, wie Stellungen aufgebaut werden und warum bestimmte Strukturen entstehen.
+
+Es ist die Trainingsmethode, die ernsthafte Spieler seit Generationen verwenden, jetzt verfügbar als interaktiver Modus, den Sie in fünf Minuten pro Tag absolvieren können.
+
+**[Training mit The Echo starten →](/echo)**`,
+  },
+
+  "pt:retrograde-analysis-chess-training": {
+    title: "Análise Retrógrada: O Método de Treino Pouco Conhecido Que Aguça Sua Intuição no Xadrez",
+    metaTitle: "Treino de Análise Retrógrada no Xadrez — The Echo | Cassandra Chess",
+    metaDescription: "A maioria dos jogadores de xadrez nunca experimentou a análise retrógrada. Descubra por que é uma das formas mais eficazes de desenvolver a intuição posicional — e como treinar com ela.",
+    content: `A maioria dos treinos de xadrez faz a mesma pergunta: qual é o melhor lance daqui?
+
+A análise retrógrada pergunta o oposto: que lance acabou de acontecer?
+
+É um formato de treino pouco conhecido — mais comum nos círculos de composição enxadrística do que nas rotinas de estudo habituais. Mas a habilidade cognitiva que ele desenvolve é genuinamente diferente do treino padrão com puzzles, e essa diferença merece ser compreendida.
+
+## O que é realmente a análise retrógrada
+
+Num puzzle de xadrez padrão, você recebe uma posição e deve encontrar a continuação vencedora. A posição é o ponto de partida, e você raciocina para a frente.
+
+Na análise retrógrada, mostra-se uma posição e pede-se para trabalhar de trás para a frente. Dado este estado do tabuleiro — qual foi o último lance? Que peça se moveu, de onde, e por que isso importa?
+
+Parece simples. Não é. No momento em que você tenta a sério, percebe quanto do seu pensamento enxadrístico é apenas para a frente. Você sabe procurar ameaças. Sabe avaliar planos. Mas ler uma posição ao contrário — entender como ela foi construída — é um modo cognitivo completamente diferente.
+
+## Por que te torna melhor
+
+A habilidade que a análise retrógrada desenvolve é a leitura posicional. Quando você pode olhar para um tabuleiro e entender imediatamente a sua história — quais peças se moveram, que trocas aconteceram, o que a estrutura de peões implica sobre o meio-jogo que levou até aqui — você está lendo xadrez num nível mais profundo do que a maioria dos jogadores jamais alcança.
+
+Jogadores fortes fazem isso automaticamente. Olham para uma posição e a entendem estruturalmente, não apenas taticamente. O treino retrógrado desenvolve exatamente essa habilidade.
+
+## The Echo
+
+O modo Echo da Cassandra é construído inteiramente em torno da análise retrógrada. Mostra-se uma posição e pede-se para identificar o lance que acabou de ser jogado. Não o melhor lance daqui — o lance que criou esta posição.
+
+As posições vêm de partidas reais. Os lances são significativos — não aleatórios, mas instrutivos. Cada um ensina algo sobre como as posições são construídas e por que certas estruturas aparecem.
+
+É o método de treino que jogadores sérios usam há gerações, agora disponível como um modo interativo que você pode fazer em cinco minutos por dia.
+
+**[Comece a treinar com The Echo →](/echo)**`,
+  },
+
+  "ru:retrograde-analysis-chess-training": {
+    title: "Ретроградный анализ: малоизвестный метод тренировки, который обостряет вашу шахматную интуицию",
+    metaTitle: "Тренировка ретроградного анализа в шахматах — The Echo | Cassandra Chess",
+    metaDescription: "Большинство шахматистов никогда не пробовали ретроградный анализ. Узнайте, почему это один из самых эффективных способов развить позиционную интуицию — и как с ним тренироваться.",
+    content: `Большинство шахматных тренировок задают один и тот же вопрос: какой лучший ход отсюда?
+
+Ретроградный анализ задаёт противоположный вопрос: какой ход только что был сделан?
+
+Это малоизвестный формат тренировки — более распространённый в кругах шахматной композиции, чем в обычных учебных программах. Но когнитивный навык, который он развивает, принципиально отличается от стандартной тренировки на задачах, и эту разницу стоит понять.
+
+## Что такое ретроградный анализ на самом деле
+
+В стандартной шахматной задаче вам дают позицию и просят найти выигрывающее продолжение. Позиция — это отправная точка, и вы рассуждаете вперёд.
+
+В ретроградном анализе вам показывают позицию и просят работать в обратном направлении. Глядя на это состояние доски — какой был последний ход? Какая фигура двигалась, откуда, и почему это важно?
+
+Звучит просто. Это не так. Как только вы пробуете серьёзно, вы осознаёте, насколько ваше шахматное мышление направлено только вперёд. Вы умеете искать угрозы. Умеете оценивать планы. Но читать позицию в обратном направлении — понимать, как она была построена — это совершенно другой когнитивный режим.
+
+## Почему это делает вас лучше
+
+Навык, который развивает ретроградный анализ, — это позиционное чтение. Когда вы можете посмотреть на доску и мгновенно понять её историю — какие фигуры двигались, какие размены произошли, что пешечная структура говорит о миттельшпиле, который привёл сюда — вы читаете шахматы на более глубоком уровне, чем большинство игроков когда-либо достигают.
+
+Сильные игроки делают это автоматически. Они смотрят на позицию и понимают её структурно, а не только тактически. Ретроградная тренировка развивает именно этот навык.
+
+## The Echo
+
+Режим Echo в Cassandra полностью построен вокруг ретроградного анализа. Вам показывают позицию и просят определить ход, который только что был сделан. Не лучший ход отсюда — а ход, который создал эту позицию.
+
+Позиции взяты из реальных партий. Ходы значимые — не случайные, а поучительные. Каждый из них учит чему-то о том, как строятся позиции и почему возникают определённые структуры.
+
+Это метод тренировки, который серьёзные игроки используют на протяжении поколений, теперь доступный как интерактивный режим, который можно проходить за пять минут в день.
+
+**[Начните тренировку с The Echo →](/echo)**`,
+  },
 };
