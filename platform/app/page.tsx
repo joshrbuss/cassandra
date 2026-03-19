@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { cookies } from "next/headers";
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
 import ConfirmedToast from "@/components/marketing/ConfirmedToast";
@@ -9,31 +10,35 @@ import HomepageStats from "@/components/HomepageStats";
 import SocialLinks from "@/components/SocialLinks";
 import CookiePreferencesLink from "@/components/CookiePreferencesLink";
 
-async function getStats() {
-  const fifteenMinAgo = new Date(Date.now() - 15 * 60 * 1000);
+const getStats = unstable_cache(
+  async () => {
+    const fifteenMinAgo = new Date(Date.now() - 15 * 60 * 1000);
 
-  const [siteStats, userImportCount, totalUsers, recentActiveUsers] =
-    await Promise.all([
-      prisma.siteStats.findUnique({ where: { id: 1 } }),
-      prisma.puzzle.count({ where: { source: "user_import" } }),
-      prisma.user.count(),
-      prisma.puzzleAttempt.findMany({
-        where: {
-          userId: { not: null },
-          createdAt: { gte: fifteenMinAgo },
-        },
-        select: { userId: true },
-        distinct: ["userId"],
-      }),
-    ]);
+    const [siteStats, userImportCount, totalUsers, recentActiveUsers] =
+      await Promise.all([
+        prisma.siteStats.findUnique({ where: { id: 1 } }),
+        prisma.puzzle.count({ where: { source: "user_import" } }),
+        prisma.user.count(),
+        prisma.puzzleAttempt.findMany({
+          where: {
+            userId: { not: null },
+            createdAt: { gte: fifteenMinAgo },
+          },
+          select: { userId: true },
+          distinct: ["userId"],
+        }),
+      ]);
 
-  return {
-    puzzlesSolved: Number(siteStats?.totalPuzzlesSolved ?? 0),
-    fromRealGames: userImportCount,
-    totalPlayers: totalUsers,
-    onlineNow: recentActiveUsers.length,
-  };
-}
+    return {
+      puzzlesSolved: Number(siteStats?.totalPuzzlesSolved ?? 0),
+      fromRealGames: userImportCount,
+      totalPlayers: totalUsers,
+      onlineNow: recentActiveUsers.length,
+    };
+  },
+  ["homepage-stats"],
+  { revalidate: 60 }
+);
 
 export default async function Home() {
   // Redirect logged-in users straight to their dashboard
