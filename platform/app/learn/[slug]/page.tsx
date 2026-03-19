@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { cookies } from "next/headers";
 import { ARTICLES, getArticle, getLocalizedArticle, getLocalizedArticles } from "@/lib/articles";
-import { resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
+
+export const dynamic = "force-static";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -114,9 +114,7 @@ function renderContent(content: string) {
 
 export default async function ArticlePage({ params }: Props) {
   const { slug } = await params;
-  const cookieStore = await cookies();
-  const locale = resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value);
-  const article = getLocalizedArticle(slug, locale);
+  const article = getLocalizedArticle(slug, "en");
   if (!article) notFound();
 
   const readTime = estimateReadTime(article.content);
@@ -124,7 +122,7 @@ export default async function ArticlePage({ params }: Props) {
   const siteUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://cassandrachess.com";
 
   // Find related articles for internal linking (exclude current)
-  const allArticles = getLocalizedArticles(locale);
+  const allArticles = getLocalizedArticles("en");
   const relatedArticles = allArticles
     .filter((a) => a.slug !== slug)
     .filter((a) => a.themes.some((t) => article.themes.includes(t)))

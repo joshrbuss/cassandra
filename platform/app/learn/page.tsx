@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { cookies } from "next/headers";
 import { getLocalizedArticles } from "@/lib/articles";
-import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
+import { getT } from "@/lib/i18n";
 import SocialLinks from "@/components/SocialLinks";
 import CookiePreferencesLink from "@/components/CookiePreferencesLink";
+
+export const dynamic = "force-static";
 
 export const metadata: Metadata = {
   title: "Learn Chess Tactics — Cassandra Chess",
@@ -24,10 +25,8 @@ function estimateReadTime(content: string): number {
 }
 
 export default async function LearnPage() {
-  const cookieStore = await cookies();
-  const locale = resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value);
-  const t = getT(locale);
-  const articles = getLocalizedArticles(locale);
+  const t = getT("en");
+  const articles = getLocalizedArticles("en");
 
   const siteUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://cassandrachess.com";
 
