@@ -18,19 +18,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = getArticle(slug);
   if (!article) return {};
 
+  const siteUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://cassandrachess.com";
+  const canonicalUrl = `${siteUrl}/learn/${slug}`;
+  const title = `${article.metaTitle} | Cassandra Chess`;
+  const description = article.metaDescription.slice(0, 155);
+
   return {
-    title: article.metaTitle,
-    description: article.metaDescription,
+    title,
+    description,
+    alternates: { canonical: canonicalUrl },
     openGraph: {
-      title: article.metaTitle,
-      description: article.metaDescription,
+      title,
+      description,
       type: "article",
+      url: canonicalUrl,
       siteName: "Cassandra Chess",
     },
     twitter: {
       card: "summary",
-      title: article.metaTitle,
-      description: article.metaDescription,
+      title,
+      description,
     },
   };
 }
