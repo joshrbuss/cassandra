@@ -5,10 +5,11 @@
  */
 
 import type { Article } from "./articles";
+import { ARTICLE_TRANSLATIONS_EXTRA } from "./articles-i18n-extra";
 
 type ArticleOverride = Omit<Article, "slug" | "themes">;
 
-export const ARTICLE_TRANSLATIONS: Record<string, ArticleOverride> = {
+const BASE_TRANSLATIONS: Record<string, ArticleOverride> = {
   // ═══════════════════════════════════════════════════════════════════════
   // SPANISH
   // ═══════════════════════════════════════════════════════════════════════
@@ -4206,3 +4207,10 @@ Cassandra подключается к вашему аккаунту Chess.com и
 **[Найдите свои ошибки — бесплатный анализ партий →](/connect)**`,
   },
 };
+
+export const ARTICLE_TRANSLATIONS: Record<string, ArticleOverride> = {
+  ...BASE_TRANSLATIONS,
+  ...ARTICLE_TRANSLATIONS_EXTRA,
+};
+
+

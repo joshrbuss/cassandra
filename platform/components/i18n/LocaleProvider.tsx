@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import type { Locale } from "@/lib/i18n/locales";
-import { LOCALE_COOKIE, isLocale } from "@/lib/i18n/locales";
+import { LOCALES, LOCALE_COOKIE, isLocale } from "@/lib/i18n/locales";
 import { loadLocale, makeT } from "@/lib/i18n";
 
 type TFunc = (key: string, vars?: Record<string, string | number>) => string;
@@ -41,10 +41,21 @@ export default function LocaleProvider({ initialLocale, children }: LocaleProvid
     setT(() => makeT(dict));
   }, []);
 
-  // On mount: sync with localStorage, then load translations
+  // On mount: check URL locale prefix (for /fr/learn etc.), then localStorage
   useEffect(() => {
-    const stored = localStorage.getItem(LOCALE_COOKIE);
-    const resolvedLocale = isLocale(stored) && stored !== locale ? stored : locale;
+    // URL-based locale takes priority on locale-prefixed routes (e.g. /fr/learn/...)
+    const pathSegment = window.location.pathname.split("/")[1];
+    const urlLocale = LOCALES.find((l) => l === pathSegment && l !== "en");
+
+    let resolvedLocale = locale;
+    if (urlLocale) {
+      resolvedLocale = urlLocale;
+    } else {
+      const stored = localStorage.getItem(LOCALE_COOKIE);
+      if (isLocale(stored) && stored !== locale) {
+        resolvedLocale = stored;
+      }
+    }
     if (resolvedLocale !== locale) {
       setLocaleState(resolvedLocale);
     }
@@ -53,8 +64,10 @@ export default function LocaleProvider({ initialLocale, children }: LocaleProvid
   }, []);
 
   // When locale changes (e.g. user switches language), load new translations
+  // and sync the <html lang> attribute
   useEffect(() => {
     loadTranslations(locale);
+    document.documentElement.lang = locale;
   }, [locale, loadTranslations]);
 
   function setLocale(l: Locale) {
