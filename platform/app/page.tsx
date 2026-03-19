@@ -3,7 +3,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
+import { getT, resolveLocale, LOCALE_COOKIE, preloadLocale } from "@/lib/i18n";
 import ConfirmedToast from "@/components/marketing/ConfirmedToast";
 import NavLanguageToggle from "@/components/NavLanguageToggle";
 import HomepageStats from "@/components/HomepageStats";
@@ -50,7 +50,9 @@ export default async function Home() {
   }
 
   const cookieStore = await cookies();
-  const t = getT(resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value));
+  const locale = resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  await preloadLocale(locale);
+  const t = getT(locale);
 
   const stats = await getStats().catch(() => ({
     puzzlesSolved: 0,

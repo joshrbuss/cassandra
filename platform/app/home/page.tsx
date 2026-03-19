@@ -9,7 +9,7 @@ import EmailSignup from "@/components/marketing/EmailSignup";
 import AdSlot from "@/components/AdSlot";
 import ReferralBar from "@/components/ReferralBar";
 import { ensureReferralCode } from "@/lib/referral";
-import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
+import { getT, resolveLocale, LOCALE_COOKIE, preloadLocale } from "@/lib/i18n";
 import SocialLinks from "@/components/SocialLinks";
 import { countryToFlag } from "@/lib/countryFlag";
 import CookiePreferencesLink from "@/components/CookiePreferencesLink";
@@ -124,7 +124,9 @@ export default async function DashboardPage() {
   const stripeLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
 
   const cookieStore = await cookies();
-  const t = getT(resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value));
+  const locale = resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  await preloadLocale(locale);
+  const t = getT(locale);
 
   return (
     <main className="min-h-screen bg-white">

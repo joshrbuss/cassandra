@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
-import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
+import { getT, resolveLocale, LOCALE_COOKIE, preloadLocale } from "@/lib/i18n";
 
 export const metadata: Metadata = {
   title: "You're invited to Cassandra Chess",
@@ -20,7 +20,9 @@ export default async function InvitePage({
 }) {
   const { code } = await params;
   const cookieStore = await cookies();
-  const t = getT(resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value));
+  const locale = resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  await preloadLocale(locale);
+  const t = getT(locale);
 
   // Look up the referrer by their referral code
   const referrer = await prisma.user.findUnique({

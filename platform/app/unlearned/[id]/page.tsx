@@ -12,7 +12,7 @@ import { redirect, notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import TrainPuzzleClient from "./TrainPuzzleClient";
 import AdSlot from "@/components/AdSlot";
-import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
+import { getT, resolveLocale, LOCALE_COOKIE, preloadLocale } from "@/lib/i18n";
 
 export const metadata = {
   title: "The Unlearned — Cassandra Chess",
@@ -54,7 +54,9 @@ export default async function UnlearnedPuzzlePage({ params }: PageProps) {
   if (!puzzle) notFound();
 
   const cookieStore = await cookies();
-  const t = getT(resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value));
+  const locale = resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  await preloadLocale(locale);
+  const t = getT(locale);
   const stripeLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
   const paidUser = await prisma.user.findUnique({
     where: { id: session.userId },

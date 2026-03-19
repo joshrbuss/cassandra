@@ -6,7 +6,11 @@ import { type Puzzle } from "@prisma/client";
 import RetrogradePuzzle from "@/components/RetrogradePuzzle";
 import OpponentPredictionPuzzle from "@/components/OpponentPredictionPuzzle";
 import StandardPuzzle from "@/components/StandardPuzzle";
-import MoveRankingPuzzle from "@/components/puzzles/MoveRankingPuzzle";
+import dynamic from "next/dynamic";
+const MoveRankingPuzzle = dynamic(() => import("@/components/puzzles/MoveRankingPuzzle"), {
+  ssr: false,
+  loading: () => <div className="w-full aspect-square bg-gray-100 rounded animate-pulse" />,
+});
 import WeaknessSpotPuzzle from "@/components/puzzles/WeaknessSpotPuzzle";
 import TimeControlPicker from "@/components/TimeControlPicker";
 import type { TimeControl } from "@/lib/benchmarks";
