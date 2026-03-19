@@ -40,9 +40,7 @@ Cassandra's puzzle trainer starts the clock the moment the board loads, so you g
 
 ## The Next Step
 
-Once you're comfortable with mates in 1 and basic tactics, move to multi-move combinations. These require you to calculate several moves ahead—a skill that separates 600-rated players from 1000-rated players.
-
-Try the interactive puzzles below to get started. Each one is drawn from real games.`,
+Once you're comfortable with mates in 1 and basic tactics, move to multi-move combinations. These require you to calculate several moves ahead—a skill that separates 600-rated players from 1000-rated players.`,
   },
   {
     slug: "chess-tactics-trainer",

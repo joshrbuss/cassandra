@@ -31,9 +31,7 @@ El entrenador de puzzles de Cassandra inicia el cronómetro en el momento en que
 
 ## El Siguiente Paso
 
-Una vez que te sientas cómodo con mates en 1 y tácticas básicas, pasa a combinaciones de varias jugadas. Estas requieren que calcules varias jugadas por adelantado —una habilidad que separa a los jugadores de 600 de rating de los de 1000.
-
-Prueba los puzzles interactivos a continuación para empezar. Cada uno está extraído de partidas reales.`,
+Una vez que te sientas cómodo con mates en 1 y tácticas básicas, pasa a combinaciones de varias jugadas. Estas requieren que calcules varias jugadas por adelantado —una habilidad que separa a los jugadores de 600 de rating de los de 1000.`,
   },
   "es:chess-tactics-trainer": {
     title: "Entrenador de Tácticas de Ajedrez: Cómo la Práctica Deliberada Construye el Reconocimiento de Patrones",
@@ -263,9 +261,7 @@ L'entraîneur de puzzles de Cassandra lance le chronomètre dès que l'échiquie
 
 ## L'étape suivante
 
-Une fois que vous maîtrisez les mats en 1 et les tactiques de base, passez aux combinaisons en plusieurs coups. Celles-ci exigent de calculer plusieurs coups à l'avance — une compétence qui sépare les joueurs classés 600 de ceux classés 1000.
-
-Essayez les problèmes interactifs ci-dessous pour commencer. Chacun est tiré de parties réelles.`,
+Une fois que vous maîtrisez les mats en 1 et les tactiques de base, passez aux combinaisons en plusieurs coups. Celles-ci exigent de calculer plusieurs coups à l'avance — une compétence qui sépare les joueurs classés 600 de ceux classés 1000.`,
   },
   "fr:chess-tactics-trainer": {
     title: "Entraîneur de tactiques aux échecs : comment la pratique délibérée développe la reconnaissance de motifs",
@@ -495,9 +491,7 @@ Cassandras Aufgabentrainer startet die Uhr in dem Moment, in dem das Brett gelad
 
 ## Der nächste Schritt
 
-Sobald du mit Matt in 1 und grundlegenden Taktiken vertraut bist, gehe zu mehrzügigen Kombinationen über. Diese erfordern, dass du mehrere Züge vorausberechnest – eine Fähigkeit, die Spieler mit 600 Elo von Spielern mit 1000 Elo unterscheidet.
-
-Probiere die interaktiven Aufgaben unten aus, um loszulegen. Jede stammt aus einer echten Partie.`,
+Sobald du mit Matt in 1 und grundlegenden Taktiken vertraut bist, gehe zu mehrzügigen Kombinationen über. Diese erfordern, dass du mehrere Züge vorausberechnest – eine Fähigkeit, die Spieler mit 600 Elo von Spielern mit 1000 Elo unterscheidet.`,
   },
   "de:chess-tactics-trainer": {
     title: "Schach-Taktiktrainer: Wie bewusstes Üben Mustererkennung aufbaut",
@@ -727,9 +721,7 @@ O treinador de problemas do Cassandra inicia o cronômetro no momento em que o t
 
 ## O Próximo Passo
 
-Quando estiver confortável com mates em 1 e táticas básicas, passe para combinações de múltiplos lances. Elas exigem que você calcule vários lances à frente — uma habilidade que separa jogadores de 600 de rating dos de 1000.
-
-Experimente os problemas interativos abaixo para começar. Cada um foi extraído de partidas reais.`,
+Quando estiver confortável com mates em 1 e táticas básicas, passe para combinações de múltiplos lances. Elas exigem que você calcule vários lances à frente — uma habilidade que separa jogadores de 600 de rating dos de 1000.`,
   },
   "pt:chess-tactics-trainer": {
     title: "Treinador de Táticas de Xadrez: Como a Prática Deliberada Constrói o Reconhecimento de Padrões",
@@ -959,9 +951,7 @@ Jogadores que praticam previsão do oponente se tornam mais difíceis de vencer.
 
 ## Следующий шаг
 
-Когда вы освоитесь с матами в 1 ход и базовой тактикой, переходите к многоходовым комбинациям. Они требуют расчёта на несколько ходов вперёд — навыка, который отделяет игроков с рейтингом 600 от игроков с рейтингом 1000.
-
-Попробуйте интерактивные задачи ниже, чтобы начать. Каждая из них взята из реальных партий.`,
+Когда вы освоитесь с матами в 1 ход и базовой тактикой, переходите к многоходовым комбинациям. Они требуют расчёта на несколько ходов вперёд — навыка, который отделяет игроков с рейтингом 600 от игроков с рейтингом 1000.`,
   },
   "ru:chess-tactics-trainer": {
     title: "Тренажёр шахматной тактики: как целенаправленная практика формирует распознавание паттернов",
