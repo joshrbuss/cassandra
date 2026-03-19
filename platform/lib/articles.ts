@@ -1514,19 +1514,17 @@ Most positions don't have a forcing sequence. Most positions require you to eval
 
 ## Move ranking as a training format
 
-Move ranking gives you a position with three or four candidate moves — all engine-selected, all reasonable — and asks you to rank them from best to worst.
+The Scales works like this: you're given a position and asked to find your three best moves. Not from a pre-selected list — from scratch, the same way you'd think in a real game.
 
-This is a fundamentally different cognitive task. You can't just pattern-match to a known tactic. You have to actually evaluate. You have to understand why one move is stronger than another — what plans it enables, what weaknesses it creates, how it compares to the alternatives.
+Your three candidates are then compared against Stockfish's top three moves, with centipawn evaluations showing exactly how close your choices were to the engine's assessment. Did you find the best move? Did you find it but rank it third? Did you miss it entirely in favour of something reasonable but weaker?
 
-It's the closest thing to real game thinking that puzzle training can offer.
+The feedback is immediate and precise. You're not just told you were wrong — you're shown the centipawn score for each of your candidates, how they compare to Stockfish's top three, and the follow up Stockfish would do.
 
 ## What The Scales trains
 
-Cassandra's Scales mode uses engine-generated move rankings from real positions. The top three moves are presented — ranked by Stockfish evaluation — and your job is to order them correctly.
+This is a fundamentally harder task than standard puzzle training. You're not pattern matching to a known tactic. You're generating a candidate list from the position itself — which is exactly what you do in every real game you play.
 
-Getting it exactly right matters less than the process. When you rank moves incorrectly, you see immediately where your evaluation diverged from the engine's and why. That gap between your assessment and the engine's is precisely where your chess understanding can grow.
-
-Over time, move ranking builds the evaluative instinct that separates improving players from plateauing ones. It teaches you not just what the best move is, but how to think about the moves around it.
+Over time it builds the evaluative instinct that separates improving players from plateauing ones. Not just what the best move is, but how to think about everything around it.
 
 That's the skill that wins games.
 

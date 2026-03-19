@@ -1361,19 +1361,17 @@ La mayoría de las posiciones no tienen una secuencia forzada. La mayoría requi
 
 ## La clasificación de jugadas como formato de entrenamiento
 
-La clasificación de jugadas te da una posición con tres o cuatro jugadas candidatas — todas seleccionadas por el motor, todas razonables — y te pide ordenarlas de mejor a peor.
+The Scales funciona así: te dan una posición y te piden encontrar tus tres mejores jugadas. No de una lista preseleccionada — desde cero, de la misma forma en que pensarías en una partida real.
 
-Es una tarea cognitiva fundamentalmente diferente. No puedes simplemente asociar patrones con una táctica conocida. Tienes que evaluar de verdad. Tienes que entender por qué una jugada es más fuerte que otra — qué planes habilita, qué debilidades crea, cómo se compara con las alternativas.
+Tus tres candidatas se comparan luego con las tres mejores jugadas de Stockfish, con evaluaciones en centipeones que muestran exactamente cuán cerca estuvieron tus elecciones de la valoración del motor. ¿Encontraste la mejor jugada? ¿La encontraste pero la clasificaste tercera? ¿La pasaste por alto completamente a favor de algo razonable pero más débil?
 
-Es lo más cercano al pensamiento real de una partida que el entrenamiento con puzzles puede ofrecer.
+La retroalimentación es inmediata y precisa. No solo te dicen que te equivocaste — te muestran la puntuación en centipeones de cada una de tus candidatas, cómo se comparan con las tres mejores de Stockfish, y la continuación que Stockfish haría.
 
 ## Qué entrena The Scales
 
-El modo Scales de Cassandra utiliza clasificaciones de jugadas generadas por motor a partir de posiciones reales. Se presentan las tres mejores jugadas — clasificadas por la evaluación de Stockfish — y tu trabajo es ordenarlas correctamente.
+Esta es una tarea fundamentalmente más difícil que el entrenamiento estándar con puzzles. No estás asociando patrones con una táctica conocida. Estás generando una lista de candidatas desde la posición misma — que es exactamente lo que haces en cada partida real que juegas.
 
-Acertar exactamente importa menos que el proceso. Cuando clasificas las jugadas incorrectamente, ves inmediatamente dónde tu evaluación divergió de la del motor y por qué. Esa brecha entre tu valoración y la del motor es precisamente donde tu comprensión ajedrecística puede crecer.
-
-Con el tiempo, la clasificación de jugadas construye el instinto evaluativo que separa a los jugadores que mejoran de los que se estancan. Te enseña no solo cuál es la mejor jugada, sino cómo pensar sobre las jugadas que la rodean.
+Con el tiempo, construye el instinto evaluativo que separa a los jugadores que mejoran de los que se estancan. No solo cuál es la mejor jugada, sino cómo pensar sobre todo lo que la rodea.
 
 Esa es la habilidad que gana partidas.
 
@@ -1398,19 +1396,17 @@ La plupart des positions n'ont pas de séquence forcée. La plupart exigent d'é
 
 ## Le classement des coups comme format d'entraînement
 
-Le classement des coups vous donne une position avec trois ou quatre coups candidats — tous sélectionnés par le moteur, tous raisonnables — et vous demande de les classer du meilleur au pire.
+The Scales fonctionne comme ceci : on vous donne une position et on vous demande de trouver vos trois meilleurs coups. Pas à partir d'une liste présélectionnée — à partir de zéro, exactement comme vous réfléchiriez dans une vraie partie.
 
-C'est une tâche cognitive fondamentalement différente. Vous ne pouvez pas simplement associer un pattern à une tactique connue. Vous devez réellement évaluer. Vous devez comprendre pourquoi un coup est plus fort qu'un autre — quels plans il permet, quelles faiblesses il crée, comment il se compare aux alternatives.
+Vos trois candidats sont ensuite comparés aux trois meilleurs coups de Stockfish, avec des évaluations en centipions montrant exactement à quel point vos choix étaient proches de l'évaluation du moteur. Avez-vous trouvé le meilleur coup ? L'avez-vous trouvé mais classé troisième ? L'avez-vous complètement manqué au profit de quelque chose de raisonnable mais plus faible ?
 
-C'est ce qui se rapproche le plus de la réflexion en partie réelle que l'entraînement par puzzles puisse offrir.
+Le retour est immédiat et précis. On ne vous dit pas simplement que vous aviez tort — on vous montre le score en centipions de chacun de vos candidats, comment ils se comparent aux trois meilleurs de Stockfish, et la suite que Stockfish jouerait.
 
 ## Ce que The Scales entraîne
 
-Le mode Scales de Cassandra utilise des classements de coups générés par moteur à partir de positions réelles. Les trois meilleurs coups sont présentés — classés par l'évaluation Stockfish — et votre travail est de les ordonner correctement.
+C'est une tâche fondamentalement plus difficile que l'entraînement standard par puzzles. Vous n'associez pas des patterns à une tactique connue. Vous générez une liste de candidats à partir de la position elle-même — ce qui est exactement ce que vous faites dans chaque vraie partie que vous jouez.
 
-Trouver l'ordre exact compte moins que le processus. Quand vous classez les coups incorrectement, vous voyez immédiatement où votre évaluation a divergé de celle du moteur et pourquoi. Cet écart entre votre estimation et celle du moteur est précisément là où votre compréhension des échecs peut progresser.
-
-Avec le temps, le classement des coups construit l'instinct évaluatif qui sépare les joueurs qui progressent de ceux qui stagnent. Il vous apprend non seulement quel est le meilleur coup, mais comment réfléchir aux coups qui l'entourent.
+Avec le temps, cela construit l'instinct évaluatif qui sépare les joueurs qui progressent de ceux qui stagnent. Pas seulement quel est le meilleur coup, mais comment réfléchir à tout ce qui l'entoure.
 
 C'est la compétence qui fait gagner des parties.
 
@@ -1435,19 +1431,17 @@ Die meisten Stellungen haben keine Zwangsfolge. Die meisten erfordern, dass Sie 
 
 ## Zugbewertung als Trainingsformat
 
-Zugbewertung gibt Ihnen eine Stellung mit drei oder vier Kandidatenzügen — alle von der Engine ausgewählt, alle vernünftig — und bittet Sie, sie vom besten zum schlechtesten zu ordnen.
+The Scales funktioniert so: Sie erhalten eine Stellung und werden gebeten, Ihre drei besten Züge zu finden. Nicht aus einer vorgegebenen Liste — von Grund auf, genauso wie Sie in einer echten Partie denken würden.
 
-Das ist eine grundlegend andere kognitive Aufgabe. Sie können nicht einfach ein Muster mit einer bekannten Taktik abgleichen. Sie müssen tatsächlich bewerten. Sie müssen verstehen, warum ein Zug stärker ist als ein anderer — welche Pläne er ermöglicht, welche Schwächen er schafft, wie er sich im Vergleich zu den Alternativen verhält.
+Ihre drei Kandidaten werden dann mit Stockfishs drei besten Zügen verglichen, mit Centipawn-Bewertungen, die genau zeigen, wie nah Ihre Auswahl an der Einschätzung der Engine war. Haben Sie den besten Zug gefunden? Haben Sie ihn gefunden, aber an dritter Stelle eingeordnet? Haben Sie ihn komplett übersehen zugunsten von etwas Vernünftigem, aber Schwächerem?
 
-Es ist das Nächste am echten Partidenken, was Puzzletraining bieten kann.
+Das Feedback ist sofort und präzise. Man sagt Ihnen nicht nur, dass Sie falsch lagen — Sie sehen den Centipawn-Score jedes Ihrer Kandidaten, wie sie sich im Vergleich zu Stockfishs Top-Drei verhalten, und die Fortsetzung, die Stockfish spielen würde.
 
 ## Was The Scales trainiert
 
-Cassandras Scales-Modus verwendet engine-generierte Zugbewertungen aus echten Stellungen. Die drei besten Züge werden präsentiert — nach Stockfish-Bewertung geordnet — und Ihre Aufgabe ist es, sie korrekt zu ordnen.
+Dies ist eine grundlegend schwierigere Aufgabe als Standard-Puzzletraining. Sie gleichen keine Muster mit einer bekannten Taktik ab. Sie erstellen eine Kandidatenliste aus der Stellung selbst — was genau das ist, was Sie in jeder echten Partie tun.
 
-Die exakte Reihenfolge zu treffen zählt weniger als der Prozess. Wenn Sie die Züge falsch ordnen, sehen Sie sofort, wo Ihre Bewertung von der der Engine abwich und warum. Diese Lücke zwischen Ihrer Einschätzung und der der Engine ist genau dort, wo Ihr Schachverständnis wachsen kann.
-
-Mit der Zeit baut Zugbewertung den bewertenden Instinkt auf, der sich verbessernde Spieler von stagnierenden unterscheidet. Es lehrt Sie nicht nur, welcher der beste Zug ist, sondern wie Sie über die Züge drumherum nachdenken.
+Mit der Zeit baut es den bewertenden Instinkt auf, der sich verbessernde Spieler von stagnierenden unterscheidet. Nicht nur welcher der beste Zug ist, sondern wie man über alles drumherum nachdenkt.
 
 Das ist die Fähigkeit, die Partien gewinnt.
 
@@ -1472,19 +1466,17 @@ A maioria das posições não tem uma sequência forçada. A maioria exige que v
 
 ## Classificação de lances como formato de treino
 
-A classificação de lances dá-lhe uma posição com três ou quatro lances candidatos — todos selecionados pelo motor, todos razoáveis — e pede para ordená-los do melhor ao pior.
+The Scales funciona assim: você recebe uma posição e deve encontrar seus três melhores lances. Não a partir de uma lista pré-selecionada — do zero, da mesma forma como pensaria numa partida real.
 
-É uma tarefa cognitiva fundamentalmente diferente. Você não pode simplesmente associar padrões a uma tática conhecida. Tem que avaliar de verdade. Tem que entender por que um lance é mais forte que outro — que planos ele possibilita, que fraquezas cria, como se compara às alternativas.
+Seus três candidatos são então comparados com os três melhores lances do Stockfish, com avaliações em centipeões mostrando exatamente quão próximas suas escolhas estavam da avaliação do motor. Você encontrou o melhor lance? Encontrou mas classificou em terceiro? Passou completamente por ele em favor de algo razoável mas mais fraco?
 
-É o mais próximo do pensamento real de uma partida que o treino com puzzles pode oferecer.
+O feedback é imediato e preciso. Não apenas dizem que você errou — mostram a pontuação em centipeões de cada um dos seus candidatos, como se comparam com os três melhores do Stockfish, e a continuação que o Stockfish faria.
 
 ## O que The Scales treina
 
-O modo Scales da Cassandra usa classificações de lances geradas por motor a partir de posições reais. Os três melhores lances são apresentados — classificados pela avaliação do Stockfish — e seu trabalho é ordená-los corretamente.
+Esta é uma tarefa fundamentalmente mais difícil que o treino padrão com puzzles. Você não está associando padrões a uma tática conhecida. Está gerando uma lista de candidatos a partir da posição em si — que é exatamente o que faz em cada partida real que joga.
 
-Acertar a ordem exata importa menos que o processo. Quando você classifica os lances incorretamente, vê imediatamente onde sua avaliação divergiu da do motor e porquê. Essa lacuna entre sua avaliação e a do motor é precisamente onde sua compreensão enxadrística pode crescer.
-
-Com o tempo, a classificação de lances constrói o instinto avaliativo que separa jogadores que melhoram dos que estagnam. Ensina não apenas qual é o melhor lance, mas como pensar sobre os lances ao redor dele.
+Com o tempo, constrói o instinto avaliativo que separa jogadores que melhoram dos que estagnam. Não apenas qual é o melhor lance, mas como pensar sobre tudo ao redor dele.
 
 Essa é a habilidade que vence partidas.
 
@@ -1509,19 +1501,17 @@ Essa é a habilidade que vence partidas.
 
 ## Ранжирование ходов как формат тренировки
 
-Ранжирование ходов даёт вам позицию с тремя или четырьмя ходами-кандидатами — все выбраны движком, все разумные — и просит расположить их от лучшего к худшему.
+The Scales работает так: вам дают позицию и просят найти ваши три лучших хода. Не из заранее подобранного списка — с нуля, точно так же, как вы думали бы в реальной партии.
 
-Это принципиально иная когнитивная задача. Вы не можете просто сопоставить паттерн с известной тактикой. Вам нужно по-настоящему оценивать. Нужно понимать, почему один ход сильнее другого — какие планы он открывает, какие слабости создаёт, как он соотносится с альтернативами.
+Ваши три кандидата затем сравниваются с тремя лучшими ходами Stockfish, с оценками в сантипешках, показывающими, насколько близки были ваши выборы к оценке движка. Вы нашли лучший ход? Нашли его, но поставили третьим? Полностью его пропустили в пользу чего-то разумного, но более слабого?
 
-Это наиболее близкое к реальному игровому мышлению, что может предложить тренировка на задачах.
+Обратная связь мгновенная и точная. Вам не просто говорят, что вы ошиблись — вам показывают оценку в сантипешках каждого вашего кандидата, как они соотносятся с тремя лучшими ходами Stockfish, и продолжение, которое сыграл бы Stockfish.
 
 ## Что тренирует The Scales
 
-Режим Scales в Cassandra использует ранжирование ходов, сгенерированное движком из реальных позиций. Три лучших хода представлены — ранжированные по оценке Stockfish — и ваша задача расположить их правильно.
+Это принципиально более сложная задача, чем стандартная тренировка на задачах. Вы не сопоставляете паттерны с известной тактикой. Вы генерируете список кандидатов из самой позиции — а это именно то, что вы делаете в каждой реальной партии.
 
-Точное попадание в порядок менее важно, чем сам процесс. Когда вы ранжируете ходы неправильно, вы сразу видите, где ваша оценка разошлась с оценкой движка и почему. Этот разрыв между вашей оценкой и оценкой движка — именно то место, где ваше шахматное понимание может расти.
-
-Со временем ранжирование ходов формирует оценочный инстинкт, который отличает прогрессирующих игроков от тех, кто застрял на плато. Оно учит не только тому, какой ход лучший, но и тому, как думать о ходах вокруг него.
+Со временем это формирует оценочный инстинкт, который отличает прогрессирующих игроков от тех, кто застрял на плато. Не только какой ход лучший, но как думать обо всём вокруг него.
 
 Это навык, который выигрывает партии.
 
