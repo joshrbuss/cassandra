@@ -234,6 +234,8 @@ export default function EchoShell({
         styles[fromSquare] = { backgroundColor: "rgba(244, 67, 54, 0.4)" };
       }
       setHighlightSquares(styles);
+      setShowBeforePosition(true);
+      setTimeout(() => setShowBeforePosition(false), 2000);
     }
   }
 
@@ -379,9 +381,15 @@ export default function EchoShell({
                 <span className="text-white font-semibold">{moveSan}</span>{" "}
                 &mdash; {explanation}.
               </p>
-              <p className="text-gray-500 text-xs mt-2">
-                The correct squares are highlighted in green.
-              </p>
+              {showBeforePosition ? (
+                <p className="text-[10px] text-gray-500 mt-2 italic">
+                  Showing the position before the move...
+                </p>
+              ) : (
+                <p className="text-gray-500 text-xs mt-2">
+                  The correct squares are highlighted in green.
+                </p>
+              )}
               <div className="flex gap-3 mt-4">
                 <button
                   onClick={() => {
