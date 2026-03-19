@@ -69,7 +69,6 @@ export default function EchoShell({
   fenAfter,
   moveSan,
   moveUci,
-  explanation,
 }: Props) {
   // Determine who just moved (opposite of whose turn it is in fenAfter)
   const sideToMove = fenAfter.split(" ")[1]; // "w" or "b"
@@ -86,6 +85,28 @@ export default function EchoShell({
 
   const correctTo = moveUci.slice(2, 4);
   const correctFrom = moveUci.slice(0, 2);
+
+  // Generate accurate explanation from the move itself
+  const moveExplanation = useMemo(() => {
+    try {
+      const chess = new Chess(fenBefore);
+      const piece = chess.get(correctFrom as never);
+      if (!piece) return `${moveSan}`;
+      const pieceNames: Record<string, string> = {
+        k: "King", q: "Queen", r: "Rook", b: "Bishop", n: "Knight", p: "Pawn",
+      };
+      const name = pieceNames[piece.type] ?? "piece";
+      const isCapture = moveSan.includes("x");
+      const isCheck = moveSan.includes("+") || moveSan.includes("#");
+      if (moveSan === "O-O" || moveSan === "O-O-O") return `${name} castles`;
+      if (isCapture && isCheck) return `${name} captures on ${correctTo} with check`;
+      if (isCapture) return `${name} captures on ${correctTo}`;
+      if (isCheck) return `${name} moves to ${correctTo} with check`;
+      return `${name} moves from ${correctFrom} to ${correctTo}`;
+    } catch {
+      return moveSan;
+    }
+  }, [fenBefore, moveSan, correctFrom, correctTo]);
 
   const captured = getCapturedPieces(fenAfter);
 
@@ -349,7 +370,7 @@ export default function EchoShell({
               <p className="text-gray-400 text-sm mt-1">
                 The move was{" "}
                 <span className="text-white font-semibold">{moveSan}</span>{" "}
-                &mdash; {explanation}.
+                &mdash; {moveExplanation}.
               </p>
               {showBeforePosition && (
                 <p className="text-[10px] text-gray-500 mt-2 italic">
@@ -379,7 +400,7 @@ export default function EchoShell({
               <p className="text-gray-400 text-sm mt-1">
                 The move was{" "}
                 <span className="text-white font-semibold">{moveSan}</span>{" "}
-                &mdash; {explanation}.
+                &mdash; {moveExplanation}.
               </p>
               {showBeforePosition ? (
                 <p className="text-[10px] text-gray-500 mt-2 italic">
