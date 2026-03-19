@@ -18,7 +18,7 @@ export default function HomepageStats({
   const { t } = useTranslation();
 
   return (
-    <div className={`grid grid-cols-2 ${onlineNow >= 1 ? "sm:grid-cols-4" : "sm:grid-cols-3"} gap-3 max-w-2xl mx-auto`}>
+    <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
       <StatCell label={t("landing.stats.puzzlesSolved")} value={puzzlesSolved.toLocaleString()} />
       <StatCell label={t("landing.stats.fromRealGames")} value={fromRealGames.toLocaleString()} />
       <StatCell label={t("landing.stats.totalPlayers")} value={totalPlayers.toLocaleString()} />
@@ -43,7 +43,7 @@ function StatCell({
   greenDot?: boolean;
 }) {
   return (
-    <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4 text-center">
+    <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4 text-center w-[calc(50%-6px)] sm:w-[calc(25%-9px)]">
       <p className="text-2xl font-extrabold text-white tabular-nums flex items-center justify-center gap-1.5">
         {value}
         {greenDot && (

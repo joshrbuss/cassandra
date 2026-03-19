@@ -7,7 +7,6 @@ import { getTotalImportedCount } from "@/lib/jobs/importGames";
 import LockedFeature from "@/components/LockedFeature";
 import EmailSignup from "@/components/marketing/EmailSignup";
 import AdSlot from "@/components/AdSlot";
-import SyncButton from "@/components/SyncButton";
 import ReferralBar from "@/components/ReferralBar";
 import { ensureReferralCode } from "@/lib/referral";
 import { getT, resolveLocale, LOCALE_COOKIE } from "@/lib/i18n";
@@ -15,10 +14,9 @@ import SocialLinks from "@/components/SocialLinks";
 import { countryToFlag } from "@/lib/countryFlag";
 import CookiePreferencesLink from "@/components/CookiePreferencesLink";
 import LazySection from "@/components/LazySection";
-import BackgroundAnalysisBar from "@/components/BackgroundAnalysisBar";
 import { hasCompletedProphecyToday, todayUtcMidnight } from "@/lib/prophecy";
 
-import { GutterAds, EmailPopup } from "./ClientShells";
+import { GutterAds, EmailPopup, SyncButton, BackgroundAnalysisBar } from "./ClientShells";
 
 export const metadata = {
   title: "Home — Cassandra Chess",
