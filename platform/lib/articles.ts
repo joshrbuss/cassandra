@@ -1493,6 +1493,45 @@ It's the training method serious players have used for generations, now availabl
 
 **[Start training with The Echo →](/echo)**`,
   },
+  {
+    slug: "chess-move-ranking-training",
+    title: "Move Ranking: The Training Method That Teaches You to Think Like a Chess Engine",
+    metaTitle: "Chess Move Ranking Training — The Scales | Cassandra Chess",
+    metaDescription:
+      "Most puzzles are binary — right or wrong. Move ranking trains the skill that actually matters in real games: evaluating which moves are better than others.",
+    themes: ["move_ranking"],
+    content: `Most chess puzzles have one right answer.
+
+Real chess doesn't work that way.
+
+In a real game, you're rarely choosing between a brilliant move and a blunder. You're choosing between three or four reasonable moves — and the skill is knowing which one is best, and why.
+
+## The problem with binary puzzle training
+
+Standard tactics training is binary: you either find the winning move or you don't. That's a valuable skill. Pattern recognition matters. But it trains a narrow version of chess thinking — the kind that works when there's a forcing sequence available.
+
+Most positions don't have a forcing sequence. Most positions require you to evaluate candidate moves, weigh their merits, and choose the strongest plan. Binary puzzles don't train that at all.
+
+## Move ranking as a training format
+
+Move ranking gives you a position with three or four candidate moves — all engine-selected, all reasonable — and asks you to rank them from best to worst.
+
+This is a fundamentally different cognitive task. You can't just pattern-match to a known tactic. You have to actually evaluate. You have to understand why one move is stronger than another — what plans it enables, what weaknesses it creates, how it compares to the alternatives.
+
+It's the closest thing to real game thinking that puzzle training can offer.
+
+## What The Scales trains
+
+Cassandra's Scales mode uses engine-generated move rankings from real positions. The top three moves are presented — ranked by Stockfish evaluation — and your job is to order them correctly.
+
+Getting it exactly right matters less than the process. When you rank moves incorrectly, you see immediately where your evaluation diverged from the engine's and why. That gap between your assessment and the engine's is precisely where your chess understanding can grow.
+
+Over time, move ranking builds the evaluative instinct that separates improving players from plateauing ones. It teaches you not just what the best move is, but how to think about the moves around it.
+
+That's the skill that wins games.
+
+**[Train with The Scales →](/scales)**`,
+  },
 ];
 
 export function getArticle(slug: string): Article | undefined {

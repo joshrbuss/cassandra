@@ -1340,4 +1340,191 @@ As posições vêm de partidas reais. Os lances são significativos — não ale
 
 **[Начните тренировку с The Echo →](/echo)**`,
   },
+
+  // ── chess-move-ranking-training ────────────────────────────────────
+
+  "es:chess-move-ranking-training": {
+    title: "Clasificación de Jugadas: El Método de Entrenamiento Que Te Enseña a Pensar Como un Motor de Ajedrez",
+    metaTitle: "Entrenamiento de Clasificación de Jugadas — The Scales | Cassandra Chess",
+    metaDescription: "La mayoría de los puzzles son binarios — correcto o incorrecto. La clasificación de jugadas entrena la habilidad que realmente importa en partidas reales: evaluar qué jugadas son mejores que otras.",
+    content: `La mayoría de los puzzles de ajedrez tienen una sola respuesta correcta.
+
+El ajedrez real no funciona así.
+
+En una partida real, rara vez eliges entre una jugada brillante y un error garrafal. Eliges entre tres o cuatro jugadas razonables — y la habilidad está en saber cuál es la mejor, y por qué.
+
+## El problema del entrenamiento binario con puzzles
+
+El entrenamiento táctico estándar es binario: o encuentras la jugada ganadora o no. Es una habilidad valiosa. El reconocimiento de patrones importa. Pero entrena una versión limitada del pensamiento ajedrecístico — la que funciona cuando hay una secuencia forzada disponible.
+
+La mayoría de las posiciones no tienen una secuencia forzada. La mayoría requieren que evalúes jugadas candidatas, sopeses sus méritos y elijas el plan más fuerte. Los puzzles binarios no entrenan eso en absoluto.
+
+## La clasificación de jugadas como formato de entrenamiento
+
+La clasificación de jugadas te da una posición con tres o cuatro jugadas candidatas — todas seleccionadas por el motor, todas razonables — y te pide ordenarlas de mejor a peor.
+
+Es una tarea cognitiva fundamentalmente diferente. No puedes simplemente asociar patrones con una táctica conocida. Tienes que evaluar de verdad. Tienes que entender por qué una jugada es más fuerte que otra — qué planes habilita, qué debilidades crea, cómo se compara con las alternativas.
+
+Es lo más cercano al pensamiento real de una partida que el entrenamiento con puzzles puede ofrecer.
+
+## Qué entrena The Scales
+
+El modo Scales de Cassandra utiliza clasificaciones de jugadas generadas por motor a partir de posiciones reales. Se presentan las tres mejores jugadas — clasificadas por la evaluación de Stockfish — y tu trabajo es ordenarlas correctamente.
+
+Acertar exactamente importa menos que el proceso. Cuando clasificas las jugadas incorrectamente, ves inmediatamente dónde tu evaluación divergió de la del motor y por qué. Esa brecha entre tu valoración y la del motor es precisamente donde tu comprensión ajedrecística puede crecer.
+
+Con el tiempo, la clasificación de jugadas construye el instinto evaluativo que separa a los jugadores que mejoran de los que se estancan. Te enseña no solo cuál es la mejor jugada, sino cómo pensar sobre las jugadas que la rodean.
+
+Esa es la habilidad que gana partidas.
+
+**[Entrena con The Scales →](/scales)**`,
+  },
+
+  "fr:chess-move-ranking-training": {
+    title: "Classement des coups : la méthode d'entraînement qui vous apprend à penser comme un moteur d'échecs",
+    metaTitle: "Entraînement au classement des coups — The Scales | Cassandra Chess",
+    metaDescription: "La plupart des puzzles sont binaires — juste ou faux. Le classement des coups entraîne la compétence qui compte vraiment en partie réelle : évaluer quels coups sont meilleurs que d'autres.",
+    content: `La plupart des puzzles d'échecs ont une seule bonne réponse.
+
+Le vrai jeu d'échecs ne fonctionne pas comme ça.
+
+Dans une vraie partie, vous choisissez rarement entre un coup brillant et une gaffe. Vous choisissez entre trois ou quatre coups raisonnables — et la compétence consiste à savoir lequel est le meilleur, et pourquoi.
+
+## Le problème de l'entraînement binaire par puzzles
+
+L'entraînement tactique standard est binaire : soit vous trouvez le coup gagnant, soit non. C'est une compétence précieuse. La reconnaissance des patterns compte. Mais elle entraîne une version étroite de la réflexion échiquéenne — celle qui fonctionne quand une séquence forcée est disponible.
+
+La plupart des positions n'ont pas de séquence forcée. La plupart exigent d'évaluer des coups candidats, de peser leurs mérites et de choisir le plan le plus fort. Les puzzles binaires n'entraînent pas du tout cette compétence.
+
+## Le classement des coups comme format d'entraînement
+
+Le classement des coups vous donne une position avec trois ou quatre coups candidats — tous sélectionnés par le moteur, tous raisonnables — et vous demande de les classer du meilleur au pire.
+
+C'est une tâche cognitive fondamentalement différente. Vous ne pouvez pas simplement associer un pattern à une tactique connue. Vous devez réellement évaluer. Vous devez comprendre pourquoi un coup est plus fort qu'un autre — quels plans il permet, quelles faiblesses il crée, comment il se compare aux alternatives.
+
+C'est ce qui se rapproche le plus de la réflexion en partie réelle que l'entraînement par puzzles puisse offrir.
+
+## Ce que The Scales entraîne
+
+Le mode Scales de Cassandra utilise des classements de coups générés par moteur à partir de positions réelles. Les trois meilleurs coups sont présentés — classés par l'évaluation Stockfish — et votre travail est de les ordonner correctement.
+
+Trouver l'ordre exact compte moins que le processus. Quand vous classez les coups incorrectement, vous voyez immédiatement où votre évaluation a divergé de celle du moteur et pourquoi. Cet écart entre votre estimation et celle du moteur est précisément là où votre compréhension des échecs peut progresser.
+
+Avec le temps, le classement des coups construit l'instinct évaluatif qui sépare les joueurs qui progressent de ceux qui stagnent. Il vous apprend non seulement quel est le meilleur coup, mais comment réfléchir aux coups qui l'entourent.
+
+C'est la compétence qui fait gagner des parties.
+
+**[S'entraîner avec The Scales →](/scales)**`,
+  },
+
+  "de:chess-move-ranking-training": {
+    title: "Zugbewertung: Die Trainingsmethode, die Sie lehrt wie eine Schach-Engine zu denken",
+    metaTitle: "Schach-Zugbewertungstraining — The Scales | Cassandra Chess",
+    metaDescription: "Die meisten Puzzles sind binär — richtig oder falsch. Zugbewertung trainiert die Fähigkeit, die in echten Partien wirklich zählt: beurteilen, welche Züge besser sind als andere.",
+    content: `Die meisten Schachpuzzles haben eine einzige richtige Antwort.
+
+Echtes Schach funktioniert nicht so.
+
+In einer echten Partie wählen Sie selten zwischen einem brillanten Zug und einem Patzer. Sie wählen zwischen drei oder vier vernünftigen Zügen — und die Kunst besteht darin zu wissen, welcher der beste ist und warum.
+
+## Das Problem mit binärem Puzzletraining
+
+Standard-Taktiktraining ist binär: Entweder finden Sie den Gewinnzug oder nicht. Das ist eine wertvolle Fähigkeit. Mustererkennung zählt. Aber es trainiert eine enge Version des Schachdenkens — die Art, die funktioniert, wenn eine Zwangsfolge verfügbar ist.
+
+Die meisten Stellungen haben keine Zwangsfolge. Die meisten erfordern, dass Sie Kandidatenzüge bewerten, ihre Vorzüge abwägen und den stärksten Plan wählen. Binäre Puzzles trainieren das überhaupt nicht.
+
+## Zugbewertung als Trainingsformat
+
+Zugbewertung gibt Ihnen eine Stellung mit drei oder vier Kandidatenzügen — alle von der Engine ausgewählt, alle vernünftig — und bittet Sie, sie vom besten zum schlechtesten zu ordnen.
+
+Das ist eine grundlegend andere kognitive Aufgabe. Sie können nicht einfach ein Muster mit einer bekannten Taktik abgleichen. Sie müssen tatsächlich bewerten. Sie müssen verstehen, warum ein Zug stärker ist als ein anderer — welche Pläne er ermöglicht, welche Schwächen er schafft, wie er sich im Vergleich zu den Alternativen verhält.
+
+Es ist das Nächste am echten Partidenken, was Puzzletraining bieten kann.
+
+## Was The Scales trainiert
+
+Cassandras Scales-Modus verwendet engine-generierte Zugbewertungen aus echten Stellungen. Die drei besten Züge werden präsentiert — nach Stockfish-Bewertung geordnet — und Ihre Aufgabe ist es, sie korrekt zu ordnen.
+
+Die exakte Reihenfolge zu treffen zählt weniger als der Prozess. Wenn Sie die Züge falsch ordnen, sehen Sie sofort, wo Ihre Bewertung von der der Engine abwich und warum. Diese Lücke zwischen Ihrer Einschätzung und der der Engine ist genau dort, wo Ihr Schachverständnis wachsen kann.
+
+Mit der Zeit baut Zugbewertung den bewertenden Instinkt auf, der sich verbessernde Spieler von stagnierenden unterscheidet. Es lehrt Sie nicht nur, welcher der beste Zug ist, sondern wie Sie über die Züge drumherum nachdenken.
+
+Das ist die Fähigkeit, die Partien gewinnt.
+
+**[Mit The Scales trainieren →](/scales)**`,
+  },
+
+  "pt:chess-move-ranking-training": {
+    title: "Classificação de Lances: O Método de Treino Que Ensina Você a Pensar Como um Motor de Xadrez",
+    metaTitle: "Treino de Classificação de Lances — The Scales | Cassandra Chess",
+    metaDescription: "A maioria dos puzzles é binária — certo ou errado. A classificação de lances treina a habilidade que realmente importa em partidas reais: avaliar quais lances são melhores que outros.",
+    content: `A maioria dos puzzles de xadrez tem uma única resposta certa.
+
+O xadrez real não funciona assim.
+
+Numa partida real, você raramente escolhe entre um lance brilhante e um erro grosseiro. Você escolhe entre três ou quatro lances razoáveis — e a habilidade está em saber qual é o melhor, e porquê.
+
+## O problema do treino binário com puzzles
+
+O treino tático padrão é binário: ou você encontra o lance vencedor ou não. É uma habilidade valiosa. O reconhecimento de padrões importa. Mas treina uma versão limitada do pensamento enxadrístico — aquela que funciona quando há uma sequência forçada disponível.
+
+A maioria das posições não tem uma sequência forçada. A maioria exige que você avalie lances candidatos, pese seus méritos e escolha o plano mais forte. Puzzles binários não treinam isso de forma alguma.
+
+## Classificação de lances como formato de treino
+
+A classificação de lances dá-lhe uma posição com três ou quatro lances candidatos — todos selecionados pelo motor, todos razoáveis — e pede para ordená-los do melhor ao pior.
+
+É uma tarefa cognitiva fundamentalmente diferente. Você não pode simplesmente associar padrões a uma tática conhecida. Tem que avaliar de verdade. Tem que entender por que um lance é mais forte que outro — que planos ele possibilita, que fraquezas cria, como se compara às alternativas.
+
+É o mais próximo do pensamento real de uma partida que o treino com puzzles pode oferecer.
+
+## O que The Scales treina
+
+O modo Scales da Cassandra usa classificações de lances geradas por motor a partir de posições reais. Os três melhores lances são apresentados — classificados pela avaliação do Stockfish — e seu trabalho é ordená-los corretamente.
+
+Acertar a ordem exata importa menos que o processo. Quando você classifica os lances incorretamente, vê imediatamente onde sua avaliação divergiu da do motor e porquê. Essa lacuna entre sua avaliação e a do motor é precisamente onde sua compreensão enxadrística pode crescer.
+
+Com o tempo, a classificação de lances constrói o instinto avaliativo que separa jogadores que melhoram dos que estagnam. Ensina não apenas qual é o melhor lance, mas como pensar sobre os lances ao redor dele.
+
+Essa é a habilidade que vence partidas.
+
+**[Treine com The Scales →](/scales)**`,
+  },
+
+  "ru:chess-move-ranking-training": {
+    title: "Ранжирование ходов: метод тренировки, который учит думать как шахматный движок",
+    metaTitle: "Тренировка ранжирования ходов в шахматах — The Scales | Cassandra Chess",
+    metaDescription: "Большинство задач бинарные — правильно или неправильно. Ранжирование ходов тренирует навык, который действительно важен в реальных партиях: оценку того, какие ходы лучше других.",
+    content: `У большинства шахматных задач есть один правильный ответ.
+
+Реальные шахматы работают иначе.
+
+В реальной партии вы редко выбираете между блестящим ходом и грубой ошибкой. Вы выбираете между тремя или четырьмя разумными ходами — и мастерство заключается в том, чтобы знать, какой из них лучший, и почему.
+
+## Проблема бинарного тренинга на задачах
+
+Стандартная тактическая тренировка бинарна: вы либо находите выигрывающий ход, либо нет. Это ценный навык. Распознавание паттернов важно. Но оно тренирует узкую версию шахматного мышления — ту, которая работает, когда доступна форсированная последовательность.
+
+В большинстве позиций нет форсированной последовательности. Большинство позиций требуют оценки ходов-кандидатов, взвешивания их достоинств и выбора сильнейшего плана. Бинарные задачи не тренируют это вообще.
+
+## Ранжирование ходов как формат тренировки
+
+Ранжирование ходов даёт вам позицию с тремя или четырьмя ходами-кандидатами — все выбраны движком, все разумные — и просит расположить их от лучшего к худшему.
+
+Это принципиально иная когнитивная задача. Вы не можете просто сопоставить паттерн с известной тактикой. Вам нужно по-настоящему оценивать. Нужно понимать, почему один ход сильнее другого — какие планы он открывает, какие слабости создаёт, как он соотносится с альтернативами.
+
+Это наиболее близкое к реальному игровому мышлению, что может предложить тренировка на задачах.
+
+## Что тренирует The Scales
+
+Режим Scales в Cassandra использует ранжирование ходов, сгенерированное движком из реальных позиций. Три лучших хода представлены — ранжированные по оценке Stockfish — и ваша задача расположить их правильно.
+
+Точное попадание в порядок менее важно, чем сам процесс. Когда вы ранжируете ходы неправильно, вы сразу видите, где ваша оценка разошлась с оценкой движка и почему. Этот разрыв между вашей оценкой и оценкой движка — именно то место, где ваше шахматное понимание может расти.
+
+Со временем ранжирование ходов формирует оценочный инстинкт, который отличает прогрессирующих игроков от тех, кто застрял на плато. Оно учит не только тому, какой ход лучший, но и тому, как думать о ходах вокруг него.
+
+Это навык, который выигрывает партии.
+
+**[Тренируйтесь с The Scales →](/scales)**`,
+  },
 };
