@@ -90,40 +90,56 @@ export default function EchoShell({
   const captured = getCapturedPieces(fenAfter);
 
   /**
-   * Compute plausible "from" squares for a piece on the given square.
-   * Uses fenBefore to find all legal moves that land on `toSquare`.
+   * Compute plausible "origin" squares for a piece the user clicked.
+   * To avoid leaking which piece actually moved, every piece of the
+   * same type+color shows the same hint pattern: the union of all
+   * legal destinations of ALL pieces of that type in fenBefore.
    */
   const getRetrogradeHints = useCallback(
-    (toSquare: string): string[] => {
+    (clickedSquare: string): string[] => {
       try {
-        const chess = new Chess(fenBefore);
-        const allMoves = chess.moves({ verbose: true });
+        const chessAfter = new Chess(fenAfter);
+        const piece = chessAfter.get(clickedSquare as never);
+        if (!piece) return [];
 
-        // Moves that land on this square (piece moved here)
-        const movesToSquare = allMoves
-          .filter((m) => m.to === toSquare)
-          .map((m) => m.from);
+        const chessBefore = new Chess(fenBefore);
+        const allMoves = chessBefore.moves({ verbose: true });
 
-        if (movesToSquare.length > 0) {
-          return movesToSquare;
+        // Find ALL pieces of the same type+color in fenBefore
+        // and collect all their legal move destinations as plausible
+        // "came from" squares. This makes hints identical whether
+        // the user clicked the moved piece or a stationary one.
+        const hints = new Set<string>();
+        for (const m of allMoves) {
+          const src = chessBefore.get(m.from as never);
+          if (src && src.type === piece.type && src.color === piece.color) {
+            hints.add(m.to);
+          }
         }
 
-        // Piece was already on this square — show its legal destinations
-        // as plausible "could have come from" squares so every piece
-        // displays dots and the answer isn't revealed
-        const piece = chess.get(toSquare as never);
-        if (piece) {
-          return allMoves
-            .filter((m) => m.from === toSquare)
-            .map((m) => m.to);
+        // Also add the origin squares themselves (where those pieces
+        // sit in fenBefore) as plausible "came from" locations
+        const files = "abcdefgh";
+        const ranks = "12345678";
+        for (const f of files) {
+          for (const r of ranks) {
+            const sq = `${f}${r}`;
+            const p = chessBefore.get(sq as never);
+            if (p && p.type === piece.type && p.color === piece.color) {
+              hints.add(sq);
+            }
+          }
         }
 
-        return [];
+        // Remove the clicked square itself from hints (no self-dot)
+        hints.delete(clickedSquare);
+
+        return Array.from(hints);
       } catch {
         return [];
       }
     },
-    [fenBefore]
+    [fenBefore, fenAfter]
   );
 
   /** Show selection highlight + retrograde from-square dots */
