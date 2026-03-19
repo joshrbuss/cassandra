@@ -1,41 +1,52 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ARTICLES, getArticle, getLocalizedArticle, getLocalizedArticles } from "@/lib/articles";
+import { ARTICLES, getLocalizedArticle, getLocalizedArticles } from "@/lib/articles";
+import { isLocale } from "@/lib/i18n/locales";
+import { getT, preloadLocale } from "@/lib/i18n";
 
 export const dynamic = "force-static";
 
+const NON_EN_LOCALES = ["fr", "es", "de", "pt", "ru"] as const;
+
 interface Props {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 export async function generateStaticParams() {
-  return ARTICLES.map((a) => ({ slug: a.slug }));
+  return NON_EN_LOCALES.flatMap((locale) =>
+    ARTICLES.map((a) => ({ locale, slug: a.slug }))
+  );
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const article = getArticle(slug);
+  const { locale, slug } = await params;
+  if (!isLocale(locale) || locale === "en") return {};
+
+  await preloadLocale(locale);
+  const article = getLocalizedArticle(slug, locale);
   if (!article) return {};
 
   const siteUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://cassandrachess.com";
-  const canonicalUrl = `${siteUrl}/learn/${slug}`;
+  const canonicalUrl = `${siteUrl}/${locale}/learn/${slug}`;
+  const enUrl = `${siteUrl}/learn/${slug}`;
   const description = article.metaDescription.slice(0, 155);
+
+  // Build hreflang alternates: x-default + en → /learn/slug, others → /locale/learn/slug
+  const languages: Record<string, string> = {
+    "x-default": enUrl,
+    en: enUrl,
+  };
+  for (const l of NON_EN_LOCALES) {
+    languages[l] = `${siteUrl}/${l}/learn/${slug}`;
+  }
 
   return {
     title: article.metaTitle,
     description,
     alternates: {
       canonical: canonicalUrl,
-      languages: {
-        "x-default": canonicalUrl,
-        en: canonicalUrl,
-        fr: `${siteUrl}/fr/learn/${slug}`,
-        es: `${siteUrl}/es/learn/${slug}`,
-        de: `${siteUrl}/de/learn/${slug}`,
-        pt: `${siteUrl}/pt/learn/${slug}`,
-        ru: `${siteUrl}/ru/learn/${slug}`,
-      },
+      languages,
     },
     openGraph: {
       title: article.metaTitle,
@@ -43,6 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "article",
       url: canonicalUrl,
       siteName: "Cassandra Chess",
+      locale,
     },
     twitter: {
       card: "summary",
@@ -120,29 +132,33 @@ function renderContent(content: string) {
   });
 }
 
-export default async function ArticlePage({ params }: Props) {
-  const { slug } = await params;
-  const article = getLocalizedArticle(slug, "en");
+export default async function LocaleArticlePage({ params }: Props) {
+  const { locale, slug } = await params;
+  if (!isLocale(locale) || locale === "en") notFound();
+
+  await preloadLocale(locale);
+  const t = getT(locale);
+  const article = getLocalizedArticle(slug, locale);
   if (!article) notFound();
 
   const readTime = estimateReadTime(article.content);
-
   const siteUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://cassandrachess.com";
 
-  // Find related articles for internal linking (exclude current)
-  const allArticles = getLocalizedArticles("en");
+  // Related articles for internal linking (exclude current)
+  const allArticles = getLocalizedArticles(locale);
   const relatedArticles = allArticles
     .filter((a) => a.slug !== slug)
-    .filter((a) => a.themes.some((t) => article.themes.includes(t)))
+    .filter((a) => a.themes.some((th) => article.themes.includes(th)))
     .slice(0, 3);
 
-  // JSON-LD structured data for rich snippets
+  // JSON-LD structured data
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: article.title,
     description: article.metaDescription,
-    url: `${siteUrl}/learn/${slug}`,
+    url: `${siteUrl}/${locale}/learn/${slug}`,
+    inLanguage: locale,
     datePublished: "2026-01-15",
     dateModified: "2026-03-17",
     author: {
@@ -157,7 +173,7 @@ export default async function ArticlePage({ params }: Props) {
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `${siteUrl}/learn/${slug}`,
+      "@id": `${siteUrl}/${locale}/learn/${slug}`,
     },
     wordCount: article.content.split(/\s+/).length,
     timeRequired: `PT${readTime}M`,
@@ -165,7 +181,6 @@ export default async function ArticlePage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-white">
-      {/* JSON-LD structured data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -175,14 +190,14 @@ export default async function ArticlePage({ params }: Props) {
       <header className="bg-[#0e0e0e] px-4 sm:px-6 py-10">
         <div className="max-w-3xl mx-auto">
           <nav className="flex items-center gap-2 text-xs text-gray-500 mb-4">
-            <Link href="/" className="text-[#c8942a] hover:underline">Home</Link>
+            <Link href="/" className="text-[#c8942a] hover:underline">{t("nav.home")}</Link>
             <span>/</span>
-            <Link href="/learn" className="text-[#c8942a] hover:underline">Learn</Link>
+            <Link href={`/${locale}/learn`} className="text-[#c8942a] hover:underline">{t("learn.title")}</Link>
           </nav>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white leading-snug">
             {article.title}
           </h1>
-          <p className="text-xs text-gray-500 mt-3">{readTime} min read</p>
+          <p className="text-xs text-gray-500 mt-3">{readTime} {t("learn.minRead")}</p>
         </div>
       </header>
 
@@ -195,12 +210,12 @@ export default async function ArticlePage({ params }: Props) {
         {/* Related articles */}
         {relatedArticles.length > 0 && (
           <section className="mt-12 pt-8 border-t border-[#eee]">
-            <h2 className="text-lg font-bold text-[#1a1a1a] mb-4">Keep reading</h2>
+            <h2 className="text-lg font-bold text-[#1a1a1a] mb-4">{t("learn.keepReading")}</h2>
             <div className="space-y-3">
               {relatedArticles.map((a) => (
                 <Link
                   key={a.slug}
-                  href={`/learn/${a.slug}`}
+                  href={`/${locale}/learn/${a.slug}`}
                   className="block bg-[#f8f7f4] rounded-xl border border-[#eee] p-4 hover:border-[#c8942a] transition-colors"
                 >
                   <p className="font-semibold text-[#1a1a1a] text-sm">{a.title}</p>
@@ -213,22 +228,22 @@ export default async function ArticlePage({ params }: Props) {
 
         {/* CTA + footer nav */}
         <div className="mt-10 bg-[#0e0e0e] rounded-xl p-6 text-center">
-          <p className="text-white font-semibold mb-1">Ready to train on your own blunders?</p>
-          <p className="text-gray-400 text-xs mb-4">Connect your Chess.com or Lichess account — free, no paywall.</p>
+          <p className="text-white font-semibold mb-1">{t("learn.ctaTitle")}</p>
+          <p className="text-gray-400 text-xs mb-4">{t("learn.ctaDesc")}</p>
           <Link
             href="/connect"
             className="inline-flex items-center justify-center h-10 px-6 rounded-full bg-[#c8942a] text-white font-semibold hover:bg-[#b5852a] transition-colors text-sm"
           >
-            Connect your account →
+            {t("learn.ctaButton")}
           </Link>
         </div>
 
         <div className="mt-6 flex items-center justify-between text-sm">
-          <Link href="/learn" className="text-[#c8942a] hover:underline">
-            ← All articles
+          <Link href={`/${locale}/learn`} className="text-[#c8942a] hover:underline">
+            ← {t("learn.allArticles")}
           </Link>
           <Link href="/connect" className="text-[#c8942a] hover:underline">
-            Start training →
+            {t("learn.startTraining")} →
           </Link>
         </div>
       </div>

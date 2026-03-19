@@ -1,13 +1,17 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { LOCALES, LOCALE_LABELS } from "@/lib/i18n/locales";
+import { usePathname, useRouter } from "next/navigation";
+import { LOCALES, LOCALE_LABELS, type Locale } from "@/lib/i18n/locales";
 import { useLocale } from "./LocaleProvider";
+import { getLearnRedirectUrl } from "@/lib/learnLocaleUrl";
 
 export default function LanguageToggle() {
   const { locale, setLocale } = useLocale();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const router = useRouter();
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -19,6 +23,18 @@ export default function LanguageToggle() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  function handleLocaleChange(l: Locale) {
+    if (l === locale) { setOpen(false); return; }
+    const learnUrl = getLearnRedirectUrl(pathname, l);
+    if (learnUrl) {
+      setLocale(l);
+      router.push(learnUrl);
+      return;
+    }
+    setLocale(l);
+    window.location.reload();
+  }
 
   const current = LOCALE_LABELS[locale];
 
@@ -43,11 +59,7 @@ export default function LanguageToggle() {
             return (
               <button
                 key={l}
-                onClick={() => {
-                  if (l === locale) { setOpen(false); return; }
-                  setLocale(l);
-                  window.location.reload();
-                }}
+                onClick={() => handleLocaleChange(l)}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${
                   l === locale ? "font-semibold text-blue-600 bg-blue-50" : "text-gray-700"
                 }`}

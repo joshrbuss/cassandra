@@ -1,14 +1,18 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { LOCALES, LOCALE_LABELS } from "@/lib/i18n/locales";
+import { usePathname, useRouter } from "next/navigation";
+import { LOCALES, LOCALE_LABELS, type Locale } from "@/lib/i18n/locales";
 import { useLocale } from "./i18n/LocaleProvider";
+import { getLearnRedirectUrl } from "@/lib/learnLocaleUrl";
 
 /** Dark-themed language toggle for obsidian nav bars. */
 export default function NavLanguageToggle() {
   const { locale, setLocale } = useLocale();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     function handler(e: MouseEvent) {
@@ -19,6 +23,18 @@ export default function NavLanguageToggle() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  function handleLocaleChange(l: Locale) {
+    if (l === locale) { setOpen(false); return; }
+    const learnUrl = getLearnRedirectUrl(pathname, l);
+    if (learnUrl) {
+      setLocale(l);
+      router.push(learnUrl);
+      return;
+    }
+    setLocale(l);
+    window.location.reload();
+  }
 
   const current = LOCALE_LABELS[locale];
 
@@ -43,11 +59,7 @@ export default function NavLanguageToggle() {
             return (
               <button
                 key={l}
-                onClick={() => {
-                  if (l === locale) { setOpen(false); return; }
-                  setLocale(l);
-                  window.location.reload();
-                }}
+                onClick={() => handleLocaleChange(l)}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left hover:bg-[#222] transition-colors ${
                   l === locale ? "font-semibold text-[#c8942a] bg-[#c8942a]/10" : "text-gray-300"
                 }`}
