@@ -112,22 +112,17 @@ export default function EchoShell({
           return String.fromCharCode(97 + file) + (rank + 1);
         }
 
-        // A valid origin can't have a friendly piece (it was there before too)
-        function isFreeOrEnemy(sq: string): boolean {
-          const p = chess.get(sq as never);
-          return !p || p.color !== piece!.color;
+        // Only empty squares are valid origins
+        function isEmpty(sq: string): boolean {
+          return !chess.get(sq as never);
         }
 
-        // Trace a ray outward for sliding pieces (bishop/rook/queen)
+        // Trace a ray outward for sliding pieces — stop at ANY piece
         function traceRay(df: number, dr: number) {
           let cf = f + df, cr = r + dr;
           while (cf >= 0 && cf <= 7 && cr >= 0 && cr <= 7) {
             const sq = toSq(cf, cr)!;
-            const p = chess.get(sq as never);
-            if (p) {
-              if (p.color !== piece!.color) hints.push(sq);
-              break; // blocked either way
-            }
+            if (chess.get(sq as never)) break; // any piece blocks
             hints.push(sq);
             cf += df;
             cr += dr;
@@ -138,7 +133,7 @@ export default function EchoShell({
           case "n":
             for (const [df, dr] of [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]]) {
               const sq = toSq(f + df, r + dr);
-              if (sq && isFreeOrEnemy(sq)) hints.push(sq);
+              if (sq && isEmpty(sq)) hints.push(sq);
             }
             break;
           case "b":
@@ -153,12 +148,12 @@ export default function EchoShell({
           case "k":
             for (const [df, dr] of [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]) {
               const sq = toSq(f + df, r + dr);
-              if (sq && isFreeOrEnemy(sq)) hints.push(sq);
+              if (sq && isEmpty(sq)) hints.push(sq);
             }
             // Castling origins (king could have come from 2 squares away)
             for (const df of [-2, 2]) {
               const sq = toSq(f + df, r);
-              if (sq && isFreeOrEnemy(sq)) hints.push(sq);
+              if (sq && isEmpty(sq)) hints.push(sq);
             }
             break;
           case "p": {
@@ -166,19 +161,19 @@ export default function EchoShell({
             const back = piece.color === "w" ? -1 : 1;
             // One square back (normal push)
             const oneBack = toSq(f, r + back);
-            if (oneBack && !chess.get(oneBack as never)) {
+            if (oneBack && isEmpty(oneBack)) {
               hints.push(oneBack);
               // Two squares back (double push landing rank)
               const doubleLandRank = piece.color === "w" ? 3 : 4; // 0-indexed
               if (r === doubleLandRank) {
                 const twoBack = toSq(f, r + 2 * back);
-                if (twoBack && !chess.get(twoBack as never)) hints.push(twoBack);
+                if (twoBack && isEmpty(twoBack)) hints.push(twoBack);
               }
             }
             // Diagonal captures (pawn came from a diagonal behind)
             for (const df of [-1, 1]) {
               const diag = toSq(f + df, r + back);
-              if (diag && isFreeOrEnemy(diag)) hints.push(diag);
+              if (diag && isEmpty(diag)) hints.push(diag);
             }
             break;
           }
