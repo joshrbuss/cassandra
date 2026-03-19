@@ -14,7 +14,7 @@ export default function CookiePreferencesLink() {
   return (
     <button
       onClick={resetPreferences}
-      className="text-xs text-[#c8942a]/70 hover:text-[#c8942a] transition-colors"
+      className="text-xs text-[#c8942a] hover:text-[#e0ad3a] transition-colors"
     >
       {t("cookie.preferences")}
     </button>

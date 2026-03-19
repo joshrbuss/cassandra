@@ -77,7 +77,7 @@ export default async function Home() {
             <NavLanguageToggle />
             <Link
               href="/connect"
-              className="text-gray-400 text-sm hover:text-white transition-colors hidden sm:inline"
+              className="text-gray-300 text-sm hover:text-white transition-colors hidden sm:inline"
             >
               {t("landing.nav.signIn")}
             </Link>
@@ -137,9 +137,9 @@ export default async function Home() {
       {/* Why Cassandra */}
       <section className="bg-white px-4 sm:px-6 py-16">
         <div className="max-w-3xl mx-auto">
-          <p className="text-xs font-semibold text-[#999] uppercase tracking-widest mb-6">
+          <h2 className="text-xs font-semibold text-[#999] uppercase tracking-widest mb-6">
             {t("landing.why.eyebrow")}
-          </p>
+          </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-[#f8f7f4] rounded-xl p-5 border border-[#eee]">
@@ -180,9 +180,9 @@ export default async function Home() {
       {/* How it works */}
       <section id="how-it-works" className="bg-white px-4 sm:px-6 pb-16">
         <div className="max-w-3xl mx-auto">
-          <p className="text-xs font-semibold text-[#999] uppercase tracking-widest mb-6">
+          <h2 className="text-xs font-semibold text-[#999] uppercase tracking-widest mb-6">
             {t("landing.how.eyebrow")}
-          </p>
+          </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="flex gap-3">
@@ -241,13 +241,13 @@ export default async function Home() {
         <div className="max-w-5xl mx-auto flex flex-col items-center gap-3">
           <SocialLinks variant="dark" />
           <div className="flex items-center justify-center gap-3 text-xs">
-            <Link href="/privacy" className="text-[#c8942a]/70 hover:text-[#c8942a] transition-colors">{t("legal.privacy")}</Link>
+            <Link href="/privacy" className="text-[#c8942a] hover:text-[#e0ad3a] transition-colors">{t("legal.privacy")}</Link>
             <span className="text-[#444]">·</span>
-            <Link href="/terms" className="text-[#c8942a]/70 hover:text-[#c8942a] transition-colors">{t("legal.terms")}</Link>
+            <Link href="/terms" className="text-[#c8942a] hover:text-[#e0ad3a] transition-colors">{t("legal.terms")}</Link>
             <span className="text-[#444]">·</span>
             <CookiePreferencesLink />
           </div>
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#666] w-full">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#999] w-full">
             <p>{t("landing.footer.copy")}</p>
             <p>{t("landing.footer.source")}</p>
           </div>

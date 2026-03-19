@@ -50,7 +50,7 @@ function StatCell({
           <span className="w-2 h-2 rounded-full bg-green-400 inline-block animate-pulse" />
         )}
       </p>
-      <p className="text-xs text-gray-500 mt-1">{label}</p>
+      <p className="text-xs text-gray-400 mt-1">{label}</p>
     </div>
   );
 }

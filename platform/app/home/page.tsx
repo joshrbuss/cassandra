@@ -146,7 +146,7 @@ export default async function DashboardPage() {
                     {t("dashboard.owner")}
                   </span>
                   {displayElo && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-400">
                       {displayElo} {user?.eloPlatform === "lichess" ? "Lichess" : user?.eloPlatform === "chesscom" ? "Chess.com" : ""}
                     </span>
                   )}
@@ -161,9 +161,9 @@ export default async function DashboardPage() {
                       href={`https://lichess.org/@/${user.lichessUsername}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-gray-500 hover:text-white transition-colors"
+                      className="text-xs text-gray-400 hover:text-white transition-colors"
                     >
-                      Lichess: <span className="text-gray-400">{user.lichessUsername}</span>
+                      Lichess: <span className="text-gray-300">{user.lichessUsername}</span>
                     </a>
                   )}
                   {user?.chessComUsername && (
@@ -171,15 +171,15 @@ export default async function DashboardPage() {
                       href={`https://www.chess.com/member/${user.chessComUsername}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-gray-500 hover:text-white transition-colors"
+                      className="text-xs text-gray-400 hover:text-white transition-colors"
                     >
-                      Chess.com: <span className="text-gray-400">{user.chessComUsername}</span>
+                      Chess.com: <span className="text-gray-300">{user.chessComUsername}</span>
                     </a>
                   )}
-                  <Link href="/settings" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
+                  <Link href="/settings" className="text-xs text-gray-400 hover:text-gray-200 transition-colors">
                     {t("dashboard.manageAccounts")}
                   </Link>
-                  <a href="/signout" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
+                  <a href="/signout" className="text-xs text-gray-400 hover:text-gray-200 transition-colors">
                     {t("dashboard.signOut")}
                   </a>
                 </div>
@@ -390,7 +390,7 @@ export default async function DashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
             {/* Streak leaders */}
             <div className="bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4">
-              <h3 className="text-sm font-semibold text-[#1a1a1a] mb-3">{t("dashboard.streakLeaders")}</h3>
+              <h2 className="text-sm font-semibold text-[#1a1a1a] mb-3">{t("dashboard.streakLeaders")}</h2>
               {streakLeaders.length === 0 ? (
                 <p className="text-xs text-[#777] italic">{t("dashboard.noStreaksYet")}</p>
               ) : (
@@ -434,7 +434,7 @@ export default async function DashboardPage() {
 
             {/* Top referrers */}
             <div className="bg-[#eeebe6] border border-[#d8d4ce] rounded-xl p-4">
-              <h3 className="text-sm font-semibold text-[#1a1a1a] mb-3">{t("dashboard.topReferrers")}</h3>
+              <h2 className="text-sm font-semibold text-[#1a1a1a] mb-3">{t("dashboard.topReferrers")}</h2>
               {referralLeaders.length === 0 ? (
                 <p className="text-xs text-[#777] italic">{t("dashboard.noReferralsYet")}</p>
               ) : (
@@ -514,13 +514,13 @@ export default async function DashboardPage() {
         <footer className="mt-10 pt-6 border-t border-[#333] text-center space-y-3 bg-[#0e0e0e] rounded-xl p-6">
           <SocialLinks variant="dark" />
           <div className="flex items-center justify-center gap-3 text-xs">
-            <Link href="/privacy" className="text-[#c8942a]/70 hover:text-[#c8942a] transition-colors">{t("legal.privacy")}</Link>
+            <Link href="/privacy" className="text-[#c8942a] hover:text-[#e0ad3a] transition-colors">{t("legal.privacy")}</Link>
             <span className="text-[#444]">·</span>
-            <Link href="/terms" className="text-[#c8942a]/70 hover:text-[#c8942a] transition-colors">{t("legal.terms")}</Link>
+            <Link href="/terms" className="text-[#c8942a] hover:text-[#e0ad3a] transition-colors">{t("legal.terms")}</Link>
             <span className="text-[#444]">·</span>
             <CookiePreferencesLink />
           </div>
-          <p className="text-xs text-[#666]">
+          <p className="text-xs text-[#999]">
             {t("dashboard.footer")}
           </p>
         </footer>

@@ -16,7 +16,7 @@ const links = [
 ];
 
 export default function SocialLinks({ variant = "light" }: SocialLinksProps) {
-  const textColor = variant === "dark" ? "text-[#c8942a]/70 hover:text-[#c8942a]" : "text-[#c8942a]/70 hover:text-[#c8942a]";
+  const textColor = variant === "dark" ? "text-[#c8942a] hover:text-[#e0ad3a]" : "text-[#c8942a] hover:text-[#e0ad3a]";
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">

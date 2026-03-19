@@ -118,13 +118,13 @@ export default async function LearnPage() {
         <div className="max-w-5xl mx-auto flex flex-col items-center gap-3">
           <SocialLinks variant="dark" />
           <div className="flex items-center justify-center gap-3 text-xs">
-            <Link href="/privacy" className="text-[#c8942a]/70 hover:text-[#c8942a] transition-colors">{t("legal.privacy")}</Link>
+            <Link href="/privacy" className="text-[#c8942a] hover:text-[#e0ad3a] transition-colors">{t("legal.privacy")}</Link>
             <span className="text-[#444]">·</span>
-            <Link href="/terms" className="text-[#c8942a]/70 hover:text-[#c8942a] transition-colors">{t("legal.terms")}</Link>
+            <Link href="/terms" className="text-[#c8942a] hover:text-[#e0ad3a] transition-colors">{t("legal.terms")}</Link>
             <span className="text-[#444]">·</span>
             <CookiePreferencesLink />
           </div>
-          <p className="text-xs text-[#666]">© 2026 Cassandra Chess</p>
+          <p className="text-xs text-[#999]">© 2026 Cassandra Chess</p>
         </div>
       </footer>
     </main>

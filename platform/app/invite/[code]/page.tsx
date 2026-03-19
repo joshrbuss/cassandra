@@ -110,15 +110,15 @@ export default async function InvitePage({
         <div className="max-w-2xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-[#f8f7f4] rounded-xl p-5 border border-[#eee]">
-              <h3 className="font-semibold text-[#1a1a1a] text-sm mb-2">{t("invite.card1Title")}</h3>
+              <h2 className="font-semibold text-[#1a1a1a] text-sm mb-2">{t("invite.card1Title")}</h2>
               <p className="text-xs text-[#666] leading-relaxed">{t("invite.card1Desc")}</p>
             </div>
             <div className="bg-[#f8f7f4] rounded-xl p-5 border border-[#eee]">
-              <h3 className="font-semibold text-[#1a1a1a] text-sm mb-2">{t("invite.card2Title")}</h3>
+              <h2 className="font-semibold text-[#1a1a1a] text-sm mb-2">{t("invite.card2Title")}</h2>
               <p className="text-xs text-[#666] leading-relaxed">{t("invite.card2Desc")}</p>
             </div>
             <div className="bg-[#f8f7f4] rounded-xl p-5 border border-[#eee]">
-              <h3 className="font-semibold text-[#1a1a1a] text-sm mb-2">{t("invite.card3Title")}</h3>
+              <h2 className="font-semibold text-[#1a1a1a] text-sm mb-2">{t("invite.card3Title")}</h2>
               <p className="text-xs text-[#666] leading-relaxed">{t("invite.card3Desc")}</p>
             </div>
           </div>
@@ -129,11 +129,11 @@ export default async function InvitePage({
       <footer className="bg-[#0e0e0e] px-4 sm:px-6 py-6">
         <div className="max-w-5xl mx-auto text-center">
           <div className="flex items-center justify-center gap-3 text-xs mb-2">
-            <Link href="/privacy" className="text-[#c8942a]/70 hover:text-[#c8942a] transition-colors">{t("legal.privacy")}</Link>
+            <Link href="/privacy" className="text-[#c8942a] hover:text-[#e0ad3a] transition-colors">{t("legal.privacy")}</Link>
             <span className="text-[#444]">·</span>
-            <Link href="/terms" className="text-[#c8942a]/70 hover:text-[#c8942a] transition-colors">{t("legal.terms")}</Link>
+            <Link href="/terms" className="text-[#c8942a] hover:text-[#e0ad3a] transition-colors">{t("legal.terms")}</Link>
           </div>
-          <p className="text-xs text-[#666]">© 2026 Cassandra Chess</p>
+          <p className="text-xs text-[#999]">© 2026 Cassandra Chess</p>
         </div>
       </footer>
     </main>
