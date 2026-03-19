@@ -82,6 +82,12 @@
   "learn.subtitle": "Guias sobre padrões, técnicas e métodos de treino — cada um com puzzles interativos.",
   "learn.minRead": "min de leitura",
   "learn.cta": "Comece a treinar grátis →",
+  "learn.keepReading": "Continue lendo",
+  "learn.ctaTitle": "Pronto para treinar com seus próprios erros?",
+  "learn.ctaDesc": "Conecte sua conta do Chess.com ou Lichess — grátis, sem paywall.",
+  "learn.ctaButton": "Conectar sua conta →",
+  "learn.allArticles": "Todos os artigos",
+  "learn.startTraining": "Começar a treinar",
 
   "dashboard.title": "Painel — Cassandra Chess",
   "dashboard.brand": "Cassandra Chess",
