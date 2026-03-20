@@ -35,11 +35,11 @@ const hreflangAlternates = Object.fromEntries(
 
 export const metadata: Metadata = {
   title: {
-    default: "Cassandra — Train smarter. Chess On.",
+    default: "Cassandra — Turn your mistakes into progress",
     template: "%s | Cassandra",
   },
   description:
-    "Personalised chess puzzles from your own games. Connect Chess.com or Lichess and train on your actual blunders. Free, unlimited, no paywall.",
+    "Cassandra finds the positions from your real games where things went wrong and turns them into personalised puzzles. Free, unlimited, no paywall.",
   metadataBase: new URL(BASE_URL),
   alternates: {
     languages: {
@@ -48,26 +48,24 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/favicon.ico", sizes: "32x32" },
-    ],
-    shortcut: "/favicon.ico",
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
   },
   openGraph: {
     siteName: "Cassandra",
     type: "website",
     locale: "en_US",
-    title: "Cassandra — Train smarter. Chess On.",
+    title: "Cassandra — Turn your mistakes into progress",
     description:
-      "Personalised chess puzzles from your own games. Connect Chess.com or Lichess and train on your actual blunders. Free, unlimited, no paywall.",
+      "Cassandra finds the positions from your real games where things went wrong and turns them into personalised puzzles. Free, unlimited, no paywall.",
   },
   twitter: {
     card: "summary_large_image",
     site: "@joshrbuss",
-    title: "Cassandra — Train smarter. Chess On.",
+    title: "Cassandra — Turn your mistakes into progress",
     description:
-      "Personalised chess puzzles from your own games. Connect Chess.com or Lichess and train on your actual blunders. Free, unlimited, no paywall.",
+      "Cassandra finds the positions from your real games where things went wrong and turns them into personalised puzzles. Free, unlimited, no paywall.",
   },
   robots: {
     index: true,
