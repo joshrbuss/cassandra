@@ -498,7 +498,7 @@ export default function EchoShell({
         {/* Footer */}
         <footer className="mt-10 pt-6 border-t border-[#1a1a1a] text-center">
           <p className="text-xs text-gray-600">
-            Cassandra Chess &middot; Positions from real games
+            Cassandra &middot; Positions from real games
           </p>
         </footer>
       </div>

@@ -14,7 +14,7 @@ import TrainPuzzleClient from "./TrainPuzzleClient";
 import { getT, resolveLocale, LOCALE_COOKIE, preloadLocale } from "@/lib/i18n";
 
 export const metadata = {
-  title: "Train — Cassandra Chess",
+  title: "Train — Cassandra",
 };
 
 interface PageProps {

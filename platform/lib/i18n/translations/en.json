@@ -1,5 +1,5 @@
 {
-  "home.title": "Cassandra Chess Puzzles",
+  "home.title": "Cassandra Puzzles",
   "home.subtitle": "Train deeper pattern recognition with retrograde analysis and opponent prediction puzzles.",
   "home.stats.puzzlesSolved": "puzzles solved",
   "home.stats.players": "players",
@@ -60,7 +60,7 @@
   "leaderboard.pageDesc": "Solve puzzles, keep your streak, and invite friends.",
 
   "creator.title": "About the Creator",
-  "creator.desc": "Meet the creator of Cassandra Chess — chess ratings, recent games, and more.",
+  "creator.desc": "Meet the creator of Cassandra — chess ratings, recent games, and more.",
   "creator.follow": "Follow on Chess.com",
   "creator.challenge": "Challenge me ⚔️",
   "creator.games.title": "Recent Games",
@@ -89,8 +89,8 @@
   "learn.allArticles": "All articles",
   "learn.startTraining": "Start training",
 
-  "dashboard.title": "Dashboard — Cassandra Chess",
-  "dashboard.brand": "Cassandra Chess",
+  "dashboard.title": "Dashboard — Cassandra",
+  "dashboard.brand": "Cassandra",
   "dashboard.greeting": "Chess On, {name}!",
   "dashboard.goAdFree": "Go ad-free",
   "dashboard.connectedAccounts": "Connected accounts",
@@ -319,12 +319,12 @@
   "cookie.privacyLink": "Privacy Policy →",
   "cookie.preferences": "Cookie Preferences",
 
-  "changelog.message": "🆕 Cassandra Chess v1.4 — The Echo retrograde analysis, 5 new chess improvement articles, session recordings, and your language preference is now saved automatically. Chess On! 🏆",
+  "changelog.message": "🆕 Cassandra v1.4 — The Echo retrograde analysis, 5 new chess improvement articles, session recordings, and your language preference is now saved automatically. Chess On! 🏆",
   "changelog.seeMore": "See what's new →",
 
   "landing.hero.sellingPoint": "Tired of paying for game reviews? We analyse your games for free and turn your mistakes into puzzles.",
 
-  "invite.title": "{name} invited you to Cassandra Chess",
+  "invite.title": "{name} invited you to Cassandra",
   "invite.someone": "A friend",
   "invite.statStreak": "Day streak",
   "invite.statAccuracy": "Accuracy",

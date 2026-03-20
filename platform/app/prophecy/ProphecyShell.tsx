@@ -513,7 +513,7 @@ export default function ProphecyShell({
         {/* ━━ Footer ━━ */}
         <footer className="mt-10 pt-6 border-t border-[#1a1a1a] text-center">
           <p className="text-xs text-gray-600">
-            Cassandra Chess &middot; Puzzles from the Lichess open database (CC0)
+            Cassandra &middot; Puzzles from the Lichess open database (CC0)
           </p>
         </footer>
       </div>

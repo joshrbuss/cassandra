@@ -1,5 +1,5 @@
 {
-  "home.title": "Cassandra Chess Puzzles",
+  "home.title": "Cassandra Puzzles",
   "home.subtitle": "Trainiere Mustererkennung mit retrograder Analyse und Gegnerzugvorhersage.",
   "home.stats.puzzlesSolved": "Rätsel gelöst",
   "home.stats.players": "Spieler",
@@ -60,7 +60,7 @@
   "leaderboard.pageDesc": "Löse Rätsel, halte deine Serie und lade Freunde ein.",
 
   "creator.title": "Über den Ersteller",
-  "creator.desc": "Lerne den Ersteller von Cassandra Chess kennen — Wertungen, letzte Partien und mehr.",
+  "creator.desc": "Lerne den Ersteller von Cassandra kennen — Wertungen, letzte Partien und mehr.",
   "creator.follow": "Auf Chess.com folgen",
   "creator.challenge": "Fordere mich heraus ⚔️",
   "creator.games.title": "Letzte Partien",
@@ -89,8 +89,8 @@
   "learn.allArticles": "Alle Artikel",
   "learn.startTraining": "Training starten",
 
-  "dashboard.title": "Dashboard — Cassandra Chess",
-  "dashboard.brand": "Cassandra Chess",
+  "dashboard.title": "Dashboard — Cassandra",
+  "dashboard.brand": "Cassandra",
   "dashboard.greeting": "Weiter so, {name}!",
   "dashboard.goAdFree": "Werbefrei nutzen",
   "dashboard.connectedAccounts": "Verbundene Konten",
@@ -319,12 +319,12 @@
   "cookie.privacyLink": "Datenschutzrichtlinie →",
   "cookie.preferences": "Cookie-Einstellungen",
 
-  "changelog.message": "🆕 Cassandra Chess v1.4 — The Echo retrograde Analyse, 5 neue Artikel zur Schachverbesserung, Sitzungsaufzeichnungen und Ihre Spracheinstellung wird automatisch gespeichert. Chess On! 🏆",
+  "changelog.message": "🆕 Cassandra v1.4 — The Echo retrograde Analyse, 5 neue Artikel zur Schachverbesserung, Sitzungsaufzeichnungen und Ihre Spracheinstellung wird automatisch gespeichert. Chess On! 🏆",
   "changelog.seeMore": "Neuigkeiten ansehen →",
 
   "landing.hero.sellingPoint": "Keine Lust mehr, für Partieanalysen zu zahlen? Wir analysieren deine Partien kostenlos und verwandeln deine Fehler in Rätsel.",
 
-  "invite.title": "{name} hat dich zu Cassandra Chess eingeladen",
+  "invite.title": "{name} hat dich zu Cassandra eingeladen",
   "invite.someone": "Ein Freund",
   "invite.statStreak": "Tages-Serie",
   "invite.statAccuracy": "Genauigkeit",

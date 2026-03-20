@@ -33,7 +33,7 @@ export function renderWeeklyDigest(data: WeeklyDigestData): {
   const html = `
     <div style="font-family:sans-serif;max-width:520px;margin:auto;color:#1a1a1a">
       <div style="background:#0e0e0e;padding:24px;border-radius:12px 12px 0 0">
-        <h1 style="color:#c8942a;margin:0;font-size:20px">Cassandra Chess</h1>
+        <h1 style="color:#c8942a;margin:0;font-size:20px">Cassandra</h1>
         <p style="color:#999;margin:8px 0 0;font-size:13px">Weekly Digest</p>
       </div>
 
@@ -55,7 +55,7 @@ export function renderWeeklyDigest(data: WeeklyDigestData): {
 
         <p style="color:#666;font-size:12px;margin-top:24px">
           Chess On!<br/>
-          — Cassandra Chess
+          — Cassandra
         </p>
       </div>
 

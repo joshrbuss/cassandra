@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import CassandraLogo from "@/components/CassandraLogo";
 import { extractBlundersFromPgn, type ClientPuzzle } from "@/lib/chess-client/extractBlundersFromPgn";
 import { terminateEngine } from "@/lib/chess-client/stockfishBrowser";
 import { gtagEvent } from "@/lib/gtag";
@@ -146,7 +147,7 @@ export default function AnalysingClient({ platform, username, libraryPuzzleId, l
   return (
     <div className="max-w-md w-full">
       <div className="text-center mb-10">
-        <span className="w-10 h-10 rounded-lg bg-[#c8942a] inline-flex items-center justify-center text-white font-bold text-lg mb-4">C</span>
+        <CassandraLogo className="w-10 h-10 mb-4 inline-block" />
         <h1 className="text-xl font-bold text-white">{noPuzzles ? "No puzzles found" : "Analysing your games..."}</h1>
         {noPuzzles && <p className="text-gray-400 text-sm mt-2">Cassandra couldn&apos;t find any recent games.</p>}
       </div>

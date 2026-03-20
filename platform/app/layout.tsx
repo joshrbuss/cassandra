@@ -35,8 +35,8 @@ const hreflangAlternates = Object.fromEntries(
 
 export const metadata: Metadata = {
   title: {
-    default: "Cassandra Chess — Train smarter. Chess On.",
-    template: "%s | Cassandra Chess",
+    default: "Cassandra — Train smarter. Chess On.",
+    template: "%s | Cassandra",
   },
   description:
     "Personalised chess puzzles from your own games. Connect Chess.com or Lichess and train on your actual blunders. Free, unlimited, no paywall.",
@@ -48,21 +48,24 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "32x32" },
+    ],
     shortcut: "/favicon.ico",
   },
   openGraph: {
-    siteName: "Cassandra Chess",
+    siteName: "Cassandra",
     type: "website",
     locale: "en_US",
-    title: "Cassandra Chess — Train smarter. Chess On.",
+    title: "Cassandra — Train smarter. Chess On.",
     description:
       "Personalised chess puzzles from your own games. Connect Chess.com or Lichess and train on your actual blunders. Free, unlimited, no paywall.",
   },
   twitter: {
     card: "summary_large_image",
     site: "@joshrbuss",
-    title: "Cassandra Chess — Train smarter. Chess On.",
+    title: "Cassandra — Train smarter. Chess On.",
     description:
       "Personalised chess puzzles from your own games. Connect Chess.com or Lichess and train on your actual blunders. Free, unlimited, no paywall.",
   },

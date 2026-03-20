@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import CassandraLogo from "@/components/CassandraLogo";
 
 interface GutterAdsProps {
   stripeLink?: string | null;
@@ -68,9 +69,7 @@ export default function GutterAds({ stripeLink }: GutterAdsProps) {
 
   const card = (
     <div className="w-[160px] h-[600px] bg-[#0e0e0e] border border-[#2a2a2a] rounded-xl flex flex-col items-center justify-center px-4 text-center transition-opacity duration-700">
-      <div className="w-8 h-8 rounded-lg bg-[#c8942a] flex items-center justify-center text-white font-bold text-sm mb-4">
-        C
-      </div>
+      <CassandraLogo className="w-8 h-8 mb-4" />
       <p className="text-[#c8942a] font-semibold text-sm leading-tight mb-2">
         {promo.text}
       </p>

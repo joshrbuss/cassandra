@@ -1,5 +1,5 @@
 {
-  "home.title": "Cassandra Chess Puzzles",
+  "home.title": "Cassandra Puzzles",
   "home.subtitle": "Entrena el reconocimiento de patrones con análisis retrógrado y predicción de movimientos del oponente.",
   "home.stats.puzzlesSolved": "puzzles resueltos",
   "home.stats.players": "jugadores",
@@ -60,7 +60,7 @@
   "leaderboard.pageDesc": "Resuelve puzzles, mantén tu racha e invita amigos.",
 
   "creator.title": "Sobre el creador",
-  "creator.desc": "Conoce al creador de Cassandra Chess — ratings, partidas recientes y más.",
+  "creator.desc": "Conoce al creador de Cassandra — ratings, partidas recientes y más.",
   "creator.follow": "Seguir en Chess.com",
   "creator.challenge": "Desafíame ⚔️",
   "creator.games.title": "Partidas recientes",
@@ -89,8 +89,8 @@
   "learn.allArticles": "Todos los artículos",
   "learn.startTraining": "Empezar a entrenar",
 
-  "dashboard.title": "Panel — Cassandra Chess",
-  "dashboard.brand": "Cassandra Chess",
+  "dashboard.title": "Panel — Cassandra",
+  "dashboard.brand": "Cassandra",
   "dashboard.greeting": "¡Adelante, {name}!",
   "dashboard.goAdFree": "Quitar anuncios",
   "dashboard.connectedAccounts": "Cuentas conectadas",
@@ -319,12 +319,12 @@
   "cookie.privacyLink": "Política de privacidad →",
   "cookie.preferences": "Preferencias de cookies",
 
-  "changelog.message": "🆕 Cassandra Chess v1.4 — The Echo análisis retrógrado, 5 nuevos artículos sobre mejora en ajedrez, grabaciones de sesión y tu idioma preferido se guarda automáticamente. ¡Chess On! 🏆",
+  "changelog.message": "🆕 Cassandra v1.4 — The Echo análisis retrógrado, 5 nuevos artículos sobre mejora en ajedrez, grabaciones de sesión y tu idioma preferido se guarda automáticamente. ¡Chess On! 🏆",
   "changelog.seeMore": "Ver novedades →",
 
   "landing.hero.sellingPoint": "¿Cansado de pagar por análisis de partidas? Analizamos tus partidas gratis y convertimos tus errores en puzzles.",
 
-  "invite.title": "{name} te invitó a Cassandra Chess",
+  "invite.title": "{name} te invitó a Cassandra",
   "invite.someone": "Un amigo",
   "invite.statStreak": "Racha diaria",
   "invite.statAccuracy": "Precisión",

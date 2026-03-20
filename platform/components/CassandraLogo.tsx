@@ -1,0 +1,11 @@
+export default function CassandraLogo({ className = "w-8 h-8" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <path d="M4 22 L6 12 L11 17 L15 6 L19 17 L24 12 L26 22 Z" fill="none" stroke="#c8942a" strokeWidth="1.5" strokeLinejoin="round"/>
+      <line x1="4" y1="22" x2="26" y2="22" stroke="#c8942a" strokeWidth="2.5" strokeLinecap="round"/>
+      <path d="M9 18 Q15 13.5 21 18 Q15 22.5 9 18 Z" fill="none" stroke="#c8942a" strokeWidth="1.1"/>
+      <circle cx="15" cy="18" r="1.9" fill="#c8942a"/>
+      <circle cx="15" cy="18" r="0.8" fill="#0e0e0e"/>
+    </svg>
+  );
+}

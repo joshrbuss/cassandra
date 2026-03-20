@@ -19,10 +19,10 @@ import { hasCompletedProphecyToday, todayUtcMidnight } from "@/lib/prophecy";
 import { GutterAds, EmailPopup, SyncButton, BackgroundAnalysisBar } from "./ClientShells";
 
 export const metadata = {
-  title: "Home — Cassandra Chess",
+  title: "Home — Cassandra",
   description: "Your personalised chess puzzle dashboard. Train on your blunders, track your streak, and improve your game.",
-  openGraph: { title: "Home — Cassandra Chess", description: "Your personalised chess puzzle dashboard." },
-  twitter: { title: "Home — Cassandra Chess", description: "Your personalised chess puzzle dashboard." },
+  openGraph: { title: "Home — Cassandra", description: "Your personalised chess puzzle dashboard." },
+  twitter: { title: "Home — Cassandra", description: "Your personalised chess puzzle dashboard." },
 };
 
 function displayName(u: { lichessUsername: string | null; chessComUsername: string | null }): string {

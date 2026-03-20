@@ -66,7 +66,7 @@ export default function AdSlot({
     return (
       <div className={`w-full rounded-xl bg-[#0e0e0e] border border-[#2a2a2a] p-5 text-center ${className}`}>
         <p className="text-[#c8942a] font-semibold text-sm">
-          Thank you for supporting Cassandra Chess &#9823;
+          Thank you for supporting Cassandra &#9823;
         </p>
       </div>
     );
@@ -78,7 +78,7 @@ export default function AdSlot({
       className={`w-full rounded-lg border border-[#c8942a]/40 overflow-hidden ${className}`}
     >
       <p className="text-[11px] text-[#999] px-3 pt-2 pb-1">
-        Ads keep Cassandra Chess free
+        Ads keep Cassandra free
       </p>
       <div className="px-2 pb-2" style={{ minHeight: adLoaded ? undefined : "90px" }}>
         <ins

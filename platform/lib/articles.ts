@@ -293,7 +293,7 @@ Each time you successfully recall the pattern, the interval grows. Each time you
 
 Applied to chess: the blunders you keep making should resurface as puzzles more often than the ones you've already corrected. This is targeted training — not random puzzle solving.
 
-## How Cassandra Chess Automates This
+## How Cassandra Automates This
 
 Cassandra analyses your actual games from Chess.com and Lichess. When you make a blunder — a move that drops 60+ centipawns — we extract that position and turn it into a puzzle. The puzzle shows you the position before your mistake and asks: what should you have played?
 
@@ -318,7 +318,7 @@ Lichess maintains the largest open-source chess puzzle database in the world —
 
 This is genuinely remarkable. A decade ago, high-quality chess puzzles were locked inside expensive books. Today, millions of them are freely available to anyone with an internet connection.
 
-Cassandra Chess draws from this database for its general puzzle library. Every puzzle you solve in our library comes from a real game position, rated and themed by the Lichess community.
+Cassandra draws from this database for its general puzzle library. Every puzzle you solve in our library comes from a real game position, rated and themed by the Lichess community.
 
 ## The Chess.com Paywall Problem
 
@@ -338,13 +338,13 @@ Random puzzles improve your tactics generally. But targeted puzzles — ones tha
 
 What if your puzzle training was built from your own games? Every blunder you make becomes a puzzle. Every position where you went wrong becomes a drill. Your training set is unique to you, targeting exactly the patterns where you lose rating points.
 
-This is what Cassandra Chess does. Connect your Chess.com or Lichess account, and we analyse your games with Stockfish — the same engine analysis that Chess.com charges for. We find your blunders and generate personalised puzzles from them.
+This is what Cassandra does. Connect your Chess.com or Lichess account, and we analyse your games with Stockfish — the same engine analysis that Chess.com charges for. We find your blunders and generate personalised puzzles from them.
 
 The result: a puzzle bank that's 100% relevant to your actual chess. No generic positions. No paying for analysis. Just targeted training on your real weaknesses.
 
 ## Unlimited, Free, No Paywall
 
-Cassandra Chess is free. No puzzle limits. No subscription tiers. No paywalled game analysis. Connect your account, and your entire game history becomes your personal training ground.
+Cassandra is free. No puzzle limits. No subscription tiers. No paywalled game analysis. Connect your account, and your entire game history becomes your personal training ground.
 
 We believe chess improvement tools should be accessible to everyone — not locked behind a paywall that gates the players who need them most.
 
@@ -383,7 +383,7 @@ The data to build a personalised training plan is sitting right there in your ga
 
 ## Training On Your Weaknesses
 
-Cassandra Chess connects to your Chess.com and Lichess accounts and analyses your actual games. We run Stockfish on every position and identify where you blundered — where your move was significantly worse than the best available move.
+Cassandra connects to your Chess.com and Lichess accounts and analyses your actual games. We run Stockfish on every position and identify where you blundered — where your move was significantly worse than the best available move.
 
 Each blunder becomes a puzzle. The position before your mistake loads on the board. Your job: find what you should have played. No hints. No arrows. Just the position and the clock.
 
@@ -434,7 +434,7 @@ Most free trainers nail none of these. They give you a database, an adaptive rat
 
 The most relevant tactical positions you can study are the ones from your own games. When you blunder a fork in the Sicilian Defence, the position involves pieces you placed, an opening you chose, and a middlegame structure you'll see again. It's not abstract — it's your chess.
 
-[Cassandra Chess](/) takes this approach. Connect your Chess.com or Lichess account, and we analyse your games with Stockfish — the same engine that powers professional chess analysis. Every position where you made a significant mistake becomes a puzzle.
+[Cassandra](/) takes this approach. Connect your Chess.com or Lichess account, and we analyse your games with Stockfish — the same engine that powers professional chess analysis. Every position where you made a significant mistake becomes a puzzle.
 
 The result is a puzzle bank that's 100% relevant to your actual weaknesses. No generic positions. No paywall. No limit on how many puzzles you can solve.
 
@@ -446,7 +446,7 @@ The result is a puzzle bank that's 100% relevant to your actual weaknesses. No g
 
 **ChessTempo** has strong puzzle quality and customisation options, but the interface is dated and there's no personal game analysis.
 
-**Cassandra Chess** is free, unlimited, and builds your puzzle bank from your actual games. We also offer [The Prophecy](/prophecy) — a daily brilliant-move challenge — and [The Scales](/scales), a move-ranking exercise that trains positional evaluation.
+**Cassandra** is free, unlimited, and builds your puzzle bank from your actual games. We also offer [The Prophecy](/prophecy) — a daily brilliant-move challenge — and [The Scales](/scales), a move-ranking exercise that trains positional evaluation.
 
 ## The Bottom Line
 
@@ -495,7 +495,7 @@ Neither platform takes the critical next step: turning your mistakes into drills
 
 ## From Analysis to Active Training
 
-Cassandra Chess bridges this gap. When you connect your Chess.com or Lichess account, we analyse every game with Stockfish and extract the positions where you blundered. Each blunder becomes a puzzle — the position before your mistake, with you finding the correct move.
+Cassandra bridges this gap. When you connect your Chess.com or Lichess account, we analyse every game with Stockfish and extract the positions where you blundered. Each blunder becomes a puzzle — the position before your mistake, with you finding the correct move.
 
 This closes the loop between analysis and training. You don't just see where you went wrong — you actively practice getting it right. And because the puzzles come from your own games, they target patterns you'll encounter again.
 
@@ -554,7 +554,7 @@ The fastest way through a plateau is to stop training randomly and start trainin
 
 **Step 2: Build a targeted training set.** Instead of solving random puzzles, focus exclusively on the patterns you identified. If you missed 5 discovered attacks in your last 20 games, solve 50 discovered attack puzzles.
 
-**Step 3: Use your own games.** The most relevant training positions come from your own games. Cassandra Chess does this automatically — connect your account and we analyse every game, turning your blunders into puzzles. Each puzzle targets a specific position where you went wrong, using your actual openings and middlegame structures.
+**Step 3: Use your own games.** The most relevant training positions come from your own games. Cassandra does this automatically — connect your account and we analyse every game, turning your blunders into puzzles. Each puzzle targets a specific position where you went wrong, using your actual openings and middlegame structures.
 
 **Step 4: Track progress.** A plateau breaks when your mistake rate drops in the specific patterns you're training. If you were blundering forks in 1 out of 5 games and now it's 1 out of 20, the training is working — even if your rating hasn't moved yet. Rating follows skill with a delay.
 
@@ -585,7 +585,7 @@ Lichess puzzles are excellent for building a broad tactical vocabulary. The data
 
 The adaptive rating system means you're always solving puzzles near your skill level. Too easy, and your rating rises to show you harder positions. Too hard, and it drops. This keeps you in the productive zone of challenge.
 
-For beginners and intermediate players building foundational pattern recognition, Lichess puzzles are genuinely hard to beat. Cassandra Chess uses the Lichess open database for its own general library — we believe in building on the best available resources.
+For beginners and intermediate players building foundational pattern recognition, Lichess puzzles are genuinely hard to beat. Cassandra uses the Lichess open database for its own general library — we believe in building on the best available resources.
 
 ## The Limitation of Generic Puzzles
 
@@ -625,7 +625,7 @@ A practical split: spend 60% of your puzzle time on personal puzzles and 40% on 
 
 ## How Cassandra Bridges the Gap
 
-Cassandra Chess gives you both. Our general library draws from the Lichess open database. Your personal puzzle bank is built by analysing your Chess.com and Lichess games with Stockfish and extracting your blunders.
+Cassandra gives you both. Our general library draws from the Lichess open database. Your personal puzzle bank is built by analysing your Chess.com and Lichess games with Stockfish and extracting your blunders.
 
 Both are free. No paywall, no daily limits. We believe the best [free chess tactics trainer](/learn/chess-tactics-trainer-free) should offer both breadth and depth.
 
@@ -681,7 +681,7 @@ Most club-level blunders fall into a small number of categories. If you can elim
 
 Manually extracting positions from your games, setting them up as puzzles, and scheduling spaced repetition is tedious. Most players who try it give up within a week.
 
-Cassandra Chess automates the entire pipeline. Connect your Chess.com or Lichess account, and we analyse every game with Stockfish. Each blunder is automatically converted into a puzzle — the position before your mistake, with you finding what you should have played.
+Cassandra automates the entire pipeline. Connect your Chess.com or Lichess account, and we analyse every game with Stockfish. Each blunder is automatically converted into a puzzle — the position before your mistake, with you finding what you should have played.
 
 Your personal puzzle bank grows with every game you play. The positions are sorted by severity, so your worst blunders get the most attention. And because the puzzles come from your own games, every minute of training targets patterns you'll actually encounter again.
 
@@ -737,7 +737,7 @@ What you need is to see the positions where *you personally* went wrong, underst
 
 ## Training on Your Actual Opening Positions
 
-Cassandra Chess analyses your real games and extracts the positions where you made significant mistakes. Many of these occur in the opening-to-middlegame transition — exactly the zone where opening books stop helping and your own judgment takes over.
+Cassandra analyses your real games and extracts the positions where you made significant mistakes. Many of these occur in the opening-to-middlegame transition — exactly the zone where opening books stop helping and your own judgment takes over.
 
 When you solve these puzzles, you're not memorising abstract opening theory. You're learning what to do in the specific positions your openings produce. After drilling 20 positions from your Sicilian games, you'll handle move 12 differently — not because you memorised a line, but because you've trained the judgment that line requires.
 
@@ -793,7 +793,7 @@ Effective endgame training has three components:
 
 ## Your Endgame Blunders Are Trainable
 
-Cassandra Chess catches endgame blunders the same way it catches middlegame ones. When you connect your account, we analyse every game with Stockfish — including the endgame. If you had a winning position on move 40 and threw it away by move 55, we extract those critical positions and turn them into puzzles.
+Cassandra catches endgame blunders the same way it catches middlegame ones. When you connect your account, we analyse every game with Stockfish — including the endgame. If you had a winning position on move 40 and threw it away by move 55, we extract those critical positions and turn them into puzzles.
 
 This is uniquely valuable for endgame improvement because endgame blunders are highly repetitive. If you mishandle king-and-pawn endings once, you'll mishandle them again in the same structural pattern. Drilling the specific position where you went wrong breaks the cycle.
 
@@ -838,9 +838,9 @@ If you're leaving Chess.com because of the paywall, Lichess is the first place t
 
 **What Lichess doesn't do:** personalised training. Lichess gives you excellent tools, but it doesn't connect the dots between your game analysis and your puzzle training. You analyse a game, see your mistakes, and then go solve unrelated puzzles. The training gap between "knowing your weakness" and "drilling your weakness" is left for you to bridge yourself. For more on this distinction, see [Lichess puzzles vs personal puzzles](/learn/lichess-puzzles-vs-personal-puzzles).
 
-## Cassandra Chess — Personal Puzzle Training
+## Cassandra — Personal Puzzle Training
 
-Cassandra Chess takes a different approach. Instead of being a playing platform, it focuses entirely on turning your games into targeted training.
+Cassandra takes a different approach. Instead of being a playing platform, it focuses entirely on turning your games into targeted training.
 
 Connect your Chess.com or Lichess account (you keep playing on whichever platform you prefer), and Cassandra analyses every game with Stockfish. Each position where you made a significant mistake becomes a puzzle. The result is a personalised puzzle bank built from your actual weaknesses.
 
@@ -979,7 +979,7 @@ Credit where it's due: puzzle rush does some things well.
 
 If you want the engagement of puzzle rush with the effectiveness of targeted training, here are better approaches:
 
-**Personal puzzle bank.** Cassandra Chess analyses your Chess.com and Lichess games and builds a puzzle bank from your actual blunders. Every puzzle is drawn from a position where you made a real mistake. This means 100% of your training time targets your documented weaknesses. Learn more in our guide to [blunder training](/learn/chess-blunder-training).
+**Personal puzzle bank.** Cassandra analyses your Chess.com and Lichess games and builds a puzzle bank from your actual blunders. Every puzzle is drawn from a position where you made a real mistake. This means 100% of your training time targets your documented weaknesses. Learn more in our guide to [blunder training](/learn/chess-blunder-training).
 
 **Themed puzzle sets.** Instead of random puzzles, focus on one tactical motif per session. Spend 10 minutes on discovered attacks. Tomorrow, spend 10 minutes on pins. This controlled exposure builds depth on specific patterns rather than shallow exposure to all patterns. Lichess supports filtering puzzles by theme.
 
@@ -1151,7 +1151,7 @@ A player with strong tactics and weak strategy will beat a player with strong st
     title: "Best Chess Apps in 2026: Ranked for Real Improvement",
     metaTitle: "Best Chess Apps 2026 — Ranked for Real Improvement",
     metaDescription:
-      "An honest comparison of Chess.com, Lichess, and Cassandra Chess in 2026 — what each is best for and where they fall short.",
+      "An honest comparison of Chess.com, Lichess, and Cassandra in 2026 — what each is best for and where they fall short.",
     themes: ["fork", "pin", "mateIn1", "mateIn2"],
     content: `The chess app market in 2026 is dominated by two giants — Chess.com and Lichess — with a growing ecosystem of specialised tools around them. If you're trying to improve, not just play, which apps deserve your time?
 
@@ -1202,7 +1202,7 @@ Chess.com is where most of the chess world plays. The largest player pool, the b
 
 **Verdict:** Great for playing, adequate for improvement if you're paying. The [free alternatives](/learn/chess-com-alternatives) cover most of what the premium tier offers.
 
-## 3. Cassandra Chess — Best Personalised Training
+## 3. Cassandra — Best Personalised Training
 
 **Price:** Free. No subscriptions.
 
@@ -1457,7 +1457,7 @@ The path from beginner to intermediate isn't about learning brilliant moves. It'
   {
     slug: "retrograde-analysis-chess-training",
     title: "Retrograde Analysis: The Lesser-Known Training Method That Sharpens Your Chess Intuition",
-    metaTitle: "Retrograde Analysis Chess Training — The Echo | Cassandra Chess",
+    metaTitle: "Retrograde Analysis Chess Training — The Echo | Cassandra",
     metaDescription:
       "Most chess players have never tried retrograde analysis. Here's why it's one of the most effective ways to build positional intuition — and how to train with it.",
     themes: ["retrograde"],
@@ -1494,7 +1494,7 @@ It's the training method serious players have used for generations, now availabl
   {
     slug: "chess-move-ranking-training",
     title: "Move Ranking: The Training Method That Teaches You to Think Like a Chess Engine",
-    metaTitle: "Chess Move Ranking Training — The Scales | Cassandra Chess",
+    metaTitle: "Chess Move Ranking Training — The Scales | Cassandra",
     metaDescription:
       "Most puzzles are binary — right or wrong. Move ranking trains the skill that actually matters in real games: evaluating which moves are better than others.",
     themes: ["move_ranking"],

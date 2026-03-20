@@ -350,7 +350,7 @@ export default function TrainPuzzleShell({
 
               <div className="mt-3 text-center">
                 <ShareButton
-                  text="I just solved a chess puzzle on Cassandra Chess!"
+                  text="I just solved a chess puzzle on Cassandra!"
                   className="inline-flex items-center gap-1.5 text-xs text-gray-600 hover:text-white transition-colors"
                 >
                   Share on <span className="text-[#c8942a] font-bold">X</span>
@@ -524,7 +524,7 @@ export default function TrainPuzzleShell({
 
         {/* Footer */}
         <footer className="mt-10 pt-6 border-t border-[#e8e4de] text-center">
-          <p className="text-xs text-[#999]">{footerText ?? "Cassandra Chess \u00b7 Puzzles from the Lichess open database (CC0)"}</p>
+          <p className="text-xs text-[#999]">{footerText ?? "Cassandra \u00b7 Puzzles from the Lichess open database (CC0)"}</p>
         </footer>
       </div>
     </div>

@@ -1,5 +1,5 @@
 {
-  "home.title": "Cassandra Chess Puzzles",
+  "home.title": "Cassandra Puzzles",
   "home.subtitle": "Тренируйте распознавание паттернов с ретроградным анализом и предсказанием ходов соперника.",
   "home.stats.puzzlesSolved": "задач решено",
   "home.stats.players": "игроков",
@@ -60,7 +60,7 @@
   "leaderboard.pageDesc": "Решайте задачи, поддерживайте серию и приглашайте друзей.",
 
   "creator.title": "Об авторе",
-  "creator.desc": "Познакомьтесь с создателем Cassandra Chess — рейтинги, недавние партии и многое другое.",
+  "creator.desc": "Познакомьтесь с создателем Cassandra — рейтинги, недавние партии и многое другое.",
   "creator.follow": "Подписаться на Chess.com",
   "creator.challenge": "Сыграть со мной ⚔️",
   "creator.games.title": "Последние партии",
@@ -89,8 +89,8 @@
   "learn.allArticles": "Все статьи",
   "learn.startTraining": "Начать тренировку",
 
-  "dashboard.title": "Панель — Cassandra Chess",
-  "dashboard.brand": "Cassandra Chess",
+  "dashboard.title": "Панель — Cassandra",
+  "dashboard.brand": "Cassandra",
   "dashboard.greeting": "Вперёд, {name}!",
   "dashboard.goAdFree": "Отключить рекламу",
   "dashboard.connectedAccounts": "Подключённые аккаунты",
@@ -319,12 +319,12 @@
   "cookie.privacyLink": "Политика конфиденциальности →",
   "cookie.preferences": "Настройки cookie",
 
-  "changelog.message": "🆕 Cassandra Chess v1.4 — The Echo ретроградный анализ, 5 новых статей об улучшении в шахматах, записи сессий и ваш языковой выбор сохраняется автоматически. Chess On! 🏆",
+  "changelog.message": "🆕 Cassandra v1.4 — The Echo ретроградный анализ, 5 новых статей об улучшении в шахматах, записи сессий и ваш языковой выбор сохраняется автоматически. Chess On! 🏆",
   "changelog.seeMore": "Смотреть новости →",
 
   "landing.hero.sellingPoint": "Устали платить за анализ партий? Мы анализируем ваши партии бесплатно и превращаем ваши ошибки в задачи.",
 
-  "invite.title": "{name} пригласил вас в Cassandra Chess",
+  "invite.title": "{name} пригласил вас в Cassandra",
   "invite.someone": "Друг",
   "invite.statStreak": "Серия дней",
   "invite.statAccuracy": "Точность",

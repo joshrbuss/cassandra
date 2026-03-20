@@ -15,7 +15,7 @@ import AdSlot from "@/components/AdSlot";
 import { getT, resolveLocale, LOCALE_COOKIE, preloadLocale } from "@/lib/i18n";
 
 export const metadata = {
-  title: "The Unlearned — Cassandra Chess",
+  title: "The Unlearned — Cassandra",
 };
 
 interface PageProps {

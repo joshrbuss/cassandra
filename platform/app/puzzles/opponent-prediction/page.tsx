@@ -44,7 +44,7 @@ export default async function OpponentPredictionLandingPage() {
 }
 
 export const metadata = {
-  title: "Opponent Prediction Puzzles — Cassandra Chess",
+  title: "Opponent Prediction Puzzles — Cassandra",
   description:
     "Predict what your opponent will play next. Train defensive awareness and tactical pattern recognition.",
 };

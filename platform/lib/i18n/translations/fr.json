@@ -1,5 +1,5 @@
 {
-  "home.title": "Cassandra Chess Puzzles",
+  "home.title": "Cassandra Puzzles",
   "home.subtitle": "Entraînez la reconnaissance de schémas avec l'analyse rétrograde et la prédiction des coups adverses.",
   "home.stats.puzzlesSolved": "puzzles résolus",
   "home.stats.players": "joueurs",
@@ -60,7 +60,7 @@
   "leaderboard.pageDesc": "Résolvez des puzzles, maintenez votre série et invitez des amis.",
 
   "creator.title": "À propos du créateur",
-  "creator.desc": "Découvrez le créateur de Cassandra Chess — classements, parties récentes et plus.",
+  "creator.desc": "Découvrez le créateur de Cassandra — classements, parties récentes et plus.",
   "creator.follow": "Suivre sur Chess.com",
   "creator.challenge": "Me défier ⚔️",
   "creator.games.title": "Parties récentes",
@@ -89,8 +89,8 @@
   "learn.allArticles": "Tous les articles",
   "learn.startTraining": "Commencer l'entraînement",
 
-  "dashboard.title": "Tableau de bord — Cassandra Chess",
-  "dashboard.brand": "Cassandra Chess",
+  "dashboard.title": "Tableau de bord — Cassandra",
+  "dashboard.brand": "Cassandra",
   "dashboard.greeting": "En avant, {name} !",
   "dashboard.goAdFree": "Supprimer les pubs",
   "dashboard.connectedAccounts": "Comptes connectés",
@@ -319,12 +319,12 @@
   "cookie.privacyLink": "Politique de confidentialité →",
   "cookie.preferences": "Préférences de cookies",
 
-  "changelog.message": "🆕 Cassandra Chess v1.4 — The Echo analyse rétrograde, 5 nouveaux articles sur l'amélioration aux échecs, enregistrements de session et votre langue préférée est sauvegardée automatiquement. Chess On ! 🏆",
+  "changelog.message": "🆕 Cassandra v1.4 — The Echo analyse rétrograde, 5 nouveaux articles sur l'amélioration aux échecs, enregistrements de session et votre langue préférée est sauvegardée automatiquement. Chess On ! 🏆",
   "changelog.seeMore": "Voir les nouveautés →",
 
   "landing.hero.sellingPoint": "Marre de payer pour les analyses de parties ? Nous analysons vos parties gratuitement et transformons vos erreurs en puzzles.",
 
-  "invite.title": "{name} vous a invité sur Cassandra Chess",
+  "invite.title": "{name} vous a invité sur Cassandra",
   "invite.someone": "Un ami",
   "invite.statStreak": "Série de jours",
   "invite.statAccuracy": "Précision",

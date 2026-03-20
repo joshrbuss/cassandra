@@ -14,7 +14,7 @@ import TrainPuzzleClient from "../../[id]/TrainPuzzleClient";
 import AdSlot from "@/components/AdSlot";
 
 export const metadata = {
-  title: "Train — Cassandra Chess",
+  title: "Train — Cassandra",
 };
 
 interface PageProps {

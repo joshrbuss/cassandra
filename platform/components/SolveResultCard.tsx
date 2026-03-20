@@ -76,7 +76,7 @@ export default function SolveResultCard({
             </p>
           </div>
           <ShareButton
-            text="I just solved a chess puzzle on Cassandra Chess!"
+            text="I just solved a chess puzzle on Cassandra!"
             className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-white transition-colors"
           >
             <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">

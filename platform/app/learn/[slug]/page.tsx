@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       type: "article",
       url: canonicalUrl,
-      siteName: "Cassandra Chess",
+      siteName: "Cassandra",
     },
     twitter: {
       card: "summary",
@@ -147,12 +147,12 @@ export default async function ArticlePage({ params }: Props) {
     dateModified: "2026-03-17",
     author: {
       "@type": "Organization",
-      name: "Cassandra Chess",
+      name: "Cassandra",
       url: siteUrl,
     },
     publisher: {
       "@type": "Organization",
-      name: "Cassandra Chess",
+      name: "Cassandra",
       url: siteUrl,
     },
     mainEntityOfPage: {

@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       type: "article",
       url: canonicalUrl,
-      siteName: "Cassandra Chess",
+      siteName: "Cassandra",
       locale,
     },
     twitter: {
@@ -163,12 +163,12 @@ export default async function LocaleArticlePage({ params }: Props) {
     dateModified: "2026-03-17",
     author: {
       "@type": "Organization",
-      name: "Cassandra Chess",
+      name: "Cassandra",
       url: siteUrl,
     },
     publisher: {
       "@type": "Organization",
-      name: "Cassandra Chess",
+      name: "Cassandra",
       url: siteUrl,
     },
     mainEntityOfPage: {

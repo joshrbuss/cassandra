@@ -11,11 +11,11 @@ export async function sendConfirmationEmail(email: string, confirmUrl: string): 
   await resend.emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: "Confirm your Cassandra Chess subscription",
+    subject: "Confirm your Cassandra subscription",
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:auto">
         <h2 style="color:#1d4ed8">Almost there!</h2>
-        <p>Click the button below to confirm your subscription to Cassandra Chess puzzle picks.</p>
+        <p>Click the button below to confirm your subscription to Cassandra puzzle picks.</p>
         <a href="${confirmUrl}"
            style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;
                   border-radius:8px;text-decoration:none;font-weight:600;margin:16px 0">
@@ -40,11 +40,11 @@ export async function sendWelcomeEmail(email: string): Promise<void> {
   await resend.emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: "Welcome to Cassandra Chess — Chess On!",
+    subject: "Welcome to Cassandra — Chess On!",
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:auto;color:#1a1a1a">
         <div style="background:#0e0e0e;padding:24px;border-radius:12px 12px 0 0">
-          <h1 style="color:#c8942a;margin:0;font-size:22px">Welcome to Cassandra Chess</h1>
+          <h1 style="color:#c8942a;margin:0;font-size:22px">Welcome to Cassandra</h1>
         </div>
         <div style="padding:24px;background:#eeebe6;border-radius:0 0 12px 12px">
           <p>You're on the list.</p>

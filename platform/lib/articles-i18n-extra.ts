@@ -1158,7 +1158,7 @@ Cassandra показывает, в каком контроле времени в
 
   "es:retrograde-analysis-chess-training": {
     title: "Análisis Retrógrado: El Método de Entrenamiento Poco Conocido Que Agudiza Tu Intuición Ajedrecística",
-    metaTitle: "Entrenamiento de Análisis Retrógrado en Ajedrez — The Echo | Cassandra Chess",
+    metaTitle: "Entrenamiento de Análisis Retrógrado en Ajedrez — The Echo | Cassandra",
     metaDescription: "La mayoría de los ajedrecistas nunca han probado el análisis retrógrado. Descubre por qué es uno de los métodos más efectivos para desarrollar la intuición posicional — y cómo entrenar con él.",
     content: `La mayoría del entrenamiento de ajedrez plantea la misma pregunta: ¿cuál es la mejor jugada desde aquí?
 
@@ -1193,7 +1193,7 @@ Es el método de entrenamiento que los jugadores serios han usado durante genera
 
   "fr:retrograde-analysis-chess-training": {
     title: "L'analyse rétrograde : la méthode d'entraînement méconnue qui aiguise votre intuition aux échecs",
-    metaTitle: "Entraînement par analyse rétrograde aux échecs — The Echo | Cassandra Chess",
+    metaTitle: "Entraînement par analyse rétrograde aux échecs — The Echo | Cassandra",
     metaDescription: "La plupart des joueurs d'échecs n'ont jamais essayé l'analyse rétrograde. Découvrez pourquoi c'est l'une des méthodes les plus efficaces pour développer l'intuition positionnelle — et comment s'y entraîner.",
     content: `La plupart des entraînements aux échecs posent la même question : quel est le meilleur coup à jouer ici ?
 
@@ -1228,7 +1228,7 @@ C'est la méthode d'entraînement que les joueurs sérieux utilisent depuis des 
 
   "de:retrograde-analysis-chess-training": {
     title: "Retrograde Analyse: Die wenig bekannte Trainingsmethode, die Ihre Schachintuition schärft",
-    metaTitle: "Retrograde Analyse im Schachtraining — The Echo | Cassandra Chess",
+    metaTitle: "Retrograde Analyse im Schachtraining — The Echo | Cassandra",
     metaDescription: "Die meisten Schachspieler haben retrograde Analyse nie ausprobiert. Erfahren Sie, warum sie eine der effektivsten Methoden ist, um positionelle Intuition aufzubauen — und wie Sie damit trainieren.",
     content: `Die meisten Schachtrainings stellen dieselbe Frage: Was ist der beste Zug von hier aus?
 
@@ -1263,7 +1263,7 @@ Es ist die Trainingsmethode, die ernsthafte Spieler seit Generationen verwenden,
 
   "pt:retrograde-analysis-chess-training": {
     title: "Análise Retrógrada: O Método de Treino Pouco Conhecido Que Aguça Sua Intuição no Xadrez",
-    metaTitle: "Treino de Análise Retrógrada no Xadrez — The Echo | Cassandra Chess",
+    metaTitle: "Treino de Análise Retrógrada no Xadrez — The Echo | Cassandra",
     metaDescription: "A maioria dos jogadores de xadrez nunca experimentou a análise retrógrada. Descubra por que é uma das formas mais eficazes de desenvolver a intuição posicional — e como treinar com ela.",
     content: `A maioria dos treinos de xadrez faz a mesma pergunta: qual é o melhor lance daqui?
 
@@ -1298,7 +1298,7 @@ As posições vêm de partidas reais. Os lances são significativos — não ale
 
   "ru:retrograde-analysis-chess-training": {
     title: "Ретроградный анализ: малоизвестный метод тренировки, который обостряет вашу шахматную интуицию",
-    metaTitle: "Тренировка ретроградного анализа в шахматах — The Echo | Cassandra Chess",
+    metaTitle: "Тренировка ретроградного анализа в шахматах — The Echo | Cassandra",
     metaDescription: "Большинство шахматистов никогда не пробовали ретроградный анализ. Узнайте, почему это один из самых эффективных способов развить позиционную интуицию — и как с ним тренироваться.",
     content: `Большинство шахматных тренировок задают один и тот же вопрос: какой лучший ход отсюда?
 
@@ -1335,7 +1335,7 @@ As posições vêm de partidas reais. Os lances são significativos — não ale
 
   "es:chess-move-ranking-training": {
     title: "Clasificación de Jugadas: El Método de Entrenamiento Que Te Enseña a Pensar Como un Motor de Ajedrez",
-    metaTitle: "Entrenamiento de Clasificación de Jugadas — The Scales | Cassandra Chess",
+    metaTitle: "Entrenamiento de Clasificación de Jugadas — The Scales | Cassandra",
     metaDescription: "La mayoría de los puzzles son binarios — correcto o incorrecto. La clasificación de jugadas entrena la habilidad que realmente importa en partidas reales: evaluar qué jugadas son mejores que otras.",
     content: `La mayoría de los puzzles de ajedrez tienen una sola respuesta correcta.
 
@@ -1370,7 +1370,7 @@ Esa es la habilidad que gana partidas.
 
   "fr:chess-move-ranking-training": {
     title: "Classement des coups : la méthode d'entraînement qui vous apprend à penser comme un moteur d'échecs",
-    metaTitle: "Entraînement au classement des coups — The Scales | Cassandra Chess",
+    metaTitle: "Entraînement au classement des coups — The Scales | Cassandra",
     metaDescription: "La plupart des puzzles sont binaires — juste ou faux. Le classement des coups entraîne la compétence qui compte vraiment en partie réelle : évaluer quels coups sont meilleurs que d'autres.",
     content: `La plupart des puzzles d'échecs ont une seule bonne réponse.
 
@@ -1405,7 +1405,7 @@ C'est la compétence qui fait gagner des parties.
 
   "de:chess-move-ranking-training": {
     title: "Zugbewertung: Die Trainingsmethode, die Sie lehrt wie eine Schach-Engine zu denken",
-    metaTitle: "Schach-Zugbewertungstraining — The Scales | Cassandra Chess",
+    metaTitle: "Schach-Zugbewertungstraining — The Scales | Cassandra",
     metaDescription: "Die meisten Puzzles sind binär — richtig oder falsch. Zugbewertung trainiert die Fähigkeit, die in echten Partien wirklich zählt: beurteilen, welche Züge besser sind als andere.",
     content: `Die meisten Schachpuzzles haben eine einzige richtige Antwort.
 
@@ -1440,7 +1440,7 @@ Das ist die Fähigkeit, die Partien gewinnt.
 
   "pt:chess-move-ranking-training": {
     title: "Classificação de Lances: O Método de Treino Que Ensina Você a Pensar Como um Motor de Xadrez",
-    metaTitle: "Treino de Classificação de Lances — The Scales | Cassandra Chess",
+    metaTitle: "Treino de Classificação de Lances — The Scales | Cassandra",
     metaDescription: "A maioria dos puzzles é binária — certo ou errado. A classificação de lances treina a habilidade que realmente importa em partidas reais: avaliar quais lances são melhores que outros.",
     content: `A maioria dos puzzles de xadrez tem uma única resposta certa.
 
@@ -1475,7 +1475,7 @@ Essa é a habilidade que vence partidas.
 
   "ru:chess-move-ranking-training": {
     title: "Ранжирование ходов: метод тренировки, который учит думать как шахматный движок",
-    metaTitle: "Тренировка ранжирования ходов в шахматах — The Scales | Cassandra Chess",
+    metaTitle: "Тренировка ранжирования ходов в шахматах — The Scales | Cassandra",
     metaDescription: "Большинство задач бинарные — правильно или неправильно. Ранжирование ходов тренирует навык, который действительно важен в реальных партиях: оценку того, какие ходы лучше других.",
     content: `У большинства шахматных задач есть один правильный ответ.
 

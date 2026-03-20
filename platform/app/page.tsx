@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getT, resolveLocale, LOCALE_COOKIE, preloadLocale } from "@/lib/i18n";
 import ConfirmedToast from "@/components/marketing/ConfirmedToast";
 import NavLanguageToggle from "@/components/NavLanguageToggle";
+import CassandraLogo from "@/components/CassandraLogo";
 import HomepageStats from "@/components/HomepageStats";
 import SocialLinks from "@/components/SocialLinks";
 import CookiePreferencesLink from "@/components/CookiePreferencesLink";
@@ -67,11 +68,9 @@ export default async function Home() {
       <nav className="bg-[#0e0e0e] px-4 sm:px-6 py-3.5">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="w-8 h-8 rounded-lg bg-[#c8942a] flex items-center justify-center text-white font-bold text-sm">
-              C
-            </span>
-            <span className="text-white font-semibold text-sm hidden sm:inline">
-              Cassandra Chess
+            <CassandraLogo />
+            <span className="text-white font-semibold text-sm hidden sm:inline" style={{ fontFamily: "Georgia, serif" }}>
+              Cassandra
             </span>
           </Link>
 

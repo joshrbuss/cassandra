@@ -13,7 +13,7 @@ import TrainPuzzleClient from "../../[id]/TrainPuzzleClient";
 import AdSlot from "@/components/AdSlot";
 
 export const metadata = {
-  title: "The Unlearned — Cassandra Chess",
+  title: "The Unlearned — Cassandra",
 };
 
 interface PageProps {

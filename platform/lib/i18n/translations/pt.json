@@ -1,5 +1,5 @@
 {
-  "home.title": "Cassandra Chess Puzzles",
+  "home.title": "Cassandra Puzzles",
   "home.subtitle": "Treine o reconhecimento de padrões com análise retrógrada e previsão de lances do adversário.",
   "home.stats.puzzlesSolved": "puzzles resolvidos",
   "home.stats.players": "jogadores",
@@ -60,7 +60,7 @@
   "leaderboard.pageDesc": "Resolva puzzles, mantenha sua sequência e convide amigos.",
 
   "creator.title": "Sobre o criador",
-  "creator.desc": "Conheça o criador do Cassandra Chess — ratings, partidas recentes e mais.",
+  "creator.desc": "Conheça o criador do Cassandra — ratings, partidas recentes e mais.",
   "creator.follow": "Seguir no Chess.com",
   "creator.challenge": "Me desafie ⚔️",
   "creator.games.title": "Partidas recentes",
@@ -89,8 +89,8 @@
   "learn.allArticles": "Todos os artigos",
   "learn.startTraining": "Começar a treinar",
 
-  "dashboard.title": "Painel — Cassandra Chess",
-  "dashboard.brand": "Cassandra Chess",
+  "dashboard.title": "Painel — Cassandra",
+  "dashboard.brand": "Cassandra",
   "dashboard.greeting": "Bora jogar, {name}!",
   "dashboard.goAdFree": "Remover anúncios",
   "dashboard.connectedAccounts": "Contas conectadas",
@@ -319,12 +319,12 @@
   "cookie.privacyLink": "Política de Privacidade →",
   "cookie.preferences": "Preferências de Cookies",
 
-  "changelog.message": "🆕 Cassandra Chess v1.4 — The Echo análise retrógrada, 5 novos artigos sobre melhoria no xadrez, gravações de sessão e o seu idioma preferido é guardado automaticamente. Chess On! 🏆",
+  "changelog.message": "🆕 Cassandra v1.4 — The Echo análise retrógrada, 5 novos artigos sobre melhoria no xadrez, gravações de sessão e o seu idioma preferido é guardado automaticamente. Chess On! 🏆",
   "changelog.seeMore": "Ver novidades →",
 
   "landing.hero.sellingPoint": "Cansado de pagar por análises de partidas? Analisamos as suas partidas de graça e transformamos os seus erros em puzzles.",
 
-  "invite.title": "{name} convidou-o para o Cassandra Chess",
+  "invite.title": "{name} convidou-o para o Cassandra",
   "invite.someone": "Um amigo",
   "invite.statStreak": "Série de dias",
   "invite.statAccuracy": "Precisão",

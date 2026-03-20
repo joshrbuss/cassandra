@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Learn Chess Tactics — Cassandra Chess",
+    title: "Learn Chess Tactics — Cassandra",
     description:
       "Free guides on chess tactics, personalised puzzles, and blunder training.",
     type: "website",
@@ -62,7 +62,7 @@ export default async function LearnPage() {
     },
     publisher: {
       "@type": "Organization",
-      name: "Cassandra Chess",
+      name: "Cassandra",
       url: siteUrl,
     },
   };

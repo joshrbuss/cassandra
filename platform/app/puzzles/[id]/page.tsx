@@ -73,5 +73,5 @@ export default async function PuzzlePage({ params, searchParams }: PageProps) {
 
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
-  return { title: `Puzzle ${id} — Cassandra Chess` };
+  return { title: `Puzzle ${id} — Cassandra` };
 }

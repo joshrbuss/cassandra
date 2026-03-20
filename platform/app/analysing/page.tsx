@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import AnalysingClient from "./AnalysingClient";
 
 export const metadata = {
-  title: "Analysing your games — Cassandra Chess",
+  title: "Analysing your games — Cassandra",
 };
 
 export default async function AnalysingPage() {

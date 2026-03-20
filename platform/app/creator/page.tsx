@@ -4,7 +4,7 @@ import ShareButton from "@/components/marketing/ShareButton";
 
 export const metadata: Metadata = {
   title: "About the Creator",
-  description: "Meet the creator of Cassandra Chess — chess ratings, recent games, and more.",
+  description: "Meet the creator of Cassandra — chess ratings, recent games, and more.",
 };
 
 // Re-fetch Chess.com data at most once per hour

@@ -5,8 +5,8 @@ import type { ReferralLeaderboardResponse, ReferralLeaderboardEntry } from "@/ap
 import { countryToFlag } from "@/lib/countryFlag";
 
 export const metadata: Metadata = {
-  title: "Leaderboard — Cassandra Chess",
-  description: "Top daily puzzle streaks and referrers on Cassandra Chess.",
+  title: "Leaderboard — Cassandra",
+  description: "Top daily puzzle streaks and referrers on Cassandra.",
 };
 
 // Revalidate every 60 seconds

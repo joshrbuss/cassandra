@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getT, resolveLocale, LOCALE_COOKIE, preloadLocale } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "You're invited to Cassandra Chess",
+  title: "You're invited to Cassandra",
   description: "Accept your invitation and start training on your own chess blunders for free.",
 };
 

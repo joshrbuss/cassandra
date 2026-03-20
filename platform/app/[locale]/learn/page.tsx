@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: t("learn.subtitle"),
       type: "website",
       url: canonicalUrl,
-      siteName: "Cassandra Chess",
+      siteName: "Cassandra",
       locale,
     },
   };
@@ -89,7 +89,7 @@ export default async function LocaleLearnPage({ params }: Props) {
     },
     publisher: {
       "@type": "Organization",
-      name: "Cassandra Chess",
+      name: "Cassandra",
       url: siteUrl,
     },
   };

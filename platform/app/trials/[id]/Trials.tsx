@@ -304,7 +304,7 @@ export default function Trials({
 
         {iWon && (
           <ShareButton
-            text={`I just won a Cassandra Chess puzzle trial ${myWins}–${oppWins}! Challenge me:`}
+            text={`I just won a Cassandra puzzle trial ${myWins}–${oppWins}! Challenge me:`}
             className="flex items-center justify-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors mx-auto"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
