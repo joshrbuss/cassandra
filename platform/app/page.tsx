@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { getT, resolveLocale, LOCALE_COOKIE, preloadLocale } from "@/lib/i18n";
 import CassandraLogo from "@/components/CassandraLogo";
 import ConfirmedToast from "@/components/marketing/ConfirmedToast";
-import HeroBoard from "./HeroBoard";
+import DemoBoard from "./DemoBoard";
 import HeroForm from "./HeroForm";
 import SocialLinks from "@/components/SocialLinks";
 import CookiePreferencesLink from "@/components/CookiePreferencesLink";
@@ -134,7 +134,7 @@ export default async function Home() {
 
           {/* Right column — animated board */}
           <div className="lg:sticky lg:top-8">
-            <HeroBoard />
+            <DemoBoard />
           </div>
         </div>
       </section>
