@@ -16,9 +16,9 @@ export const metadata = {
 export default async function ConnectPage({
   searchParams,
 }: {
-  searchParams: Promise<{ ref?: string }>;
+  searchParams: Promise<{ ref?: string; username?: string; platform?: string }>;
 }) {
-  const { ref } = await searchParams;
+  const { ref, username: prefillUsername, platform: prefillPlatform } = await searchParams;
   const session = await auth();
 
   if (session?.userId) {
@@ -49,7 +49,7 @@ export default async function ConnectPage({
           </p>
         </div>
 
-        <ConnectClient refCode={ref ?? null} />
+        <ConnectClient refCode={ref ?? null} prefillUsername={prefillUsername ?? null} prefillPlatform={prefillPlatform === "lichess" ? "lichess" : prefillPlatform === "chesscom" ? "chesscom" : null} />
 
         <p className="text-center text-xs text-gray-600 mt-8">
           {t("connect.alreadySetUp")}{" "}

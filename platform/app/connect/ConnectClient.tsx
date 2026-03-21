@@ -1,17 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useTranslation } from "@/components/i18n/LocaleProvider";
 
 interface Props {
   refCode: string | null;
+  prefillUsername?: string | null;
+  prefillPlatform?: "chesscom" | "lichess" | null;
 }
 
-export default function ConnectClient({ refCode }: Props) {
+export default function ConnectClient({ refCode, prefillUsername, prefillPlatform }: Props) {
   const { t } = useTranslation();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState<"chesscom" | "lichess" | null>(null);
+  const [autoSubmitted, setAutoSubmitted] = useState(false);
+
+  // Auto-submit when prefilled from homepage hero form
+  useEffect(() => {
+    if (prefillUsername && prefillPlatform && !autoSubmitted) {
+      setAutoSubmitted(true);
+      handleConnect(prefillPlatform, prefillUsername);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleConnect(platform: "chesscom" | "lichess", username: string) {
     setError(null);
