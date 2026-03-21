@@ -198,9 +198,9 @@ export default function DemoBoard() {
   const showOverlay = phase === "loading" || (phase === "results" && !data);
 
   return (
-    <div className="flex flex-col lg:flex-row rounded-[14px] overflow-hidden shadow-xl" style={{ border: "0.5px solid #e5e5e5" }}>
+    <div className="flex flex-col lg:flex-row lg:max-w-[760px] rounded-[14px] overflow-hidden shadow-xl" style={{ border: "0.5px solid #e5e5e5" }}>
       {/* Board area */}
-      <div className="w-full lg:w-[480px] lg:h-[480px] aspect-square lg:aspect-auto relative shrink-0">
+      <div className="relative shrink-0" style={{ width: "min(480px, 100%)", aspectRatio: "1" }}>
         <ChessBoardWrapper
           position={boardFen}
           interactive={phase === "puzzle"}
@@ -264,7 +264,7 @@ export default function DemoBoard() {
       </div>
 
       {/* Panel */}
-      <div className="w-full lg:w-[280px] lg:h-[480px] bg-white p-5 flex flex-col justify-center overflow-y-auto">
+      <div className="w-full lg:flex-1 bg-white p-5 flex flex-col justify-center overflow-y-auto">
         {/* Idle state */}
         {phase === "idle" && (
           <div>
