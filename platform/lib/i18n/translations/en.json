@@ -221,7 +221,7 @@
   "landing.hero.trustNoPaywall": "No paywall",
   "landing.hero.trustPersonalised": "Personalised",
   "landing.footer.copy": "© 2026 Cassandra Chess",
-  "landing.footer.source": "Puzzles from the Lichess open database (CC0)",
+  "landing.footer.source": "Puzzles from users' games · and the Lichess open database (CC0)",
 
   "connect.title": "Connect your chess account",
   "connect.subtitle": "We'll analyse your games and build personalised puzzles.",
