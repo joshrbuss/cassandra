@@ -2,7 +2,16 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 const DEMO_USERNAME = "J_R_B_01";
-const TACTIC_THEMES = ["fork", "pin", "backRankMate", "mateIn1"];
+
+const PUZZLE_SELECT = {
+  solvingFen: true,
+  solutionMoves: true,
+  themes: true,
+  opponentUsername: true,
+  moveNumber: true,
+  playerColor: true,
+  type: true,
+} as const;
 
 function timeAgo(date: Date): string {
   const mins = Math.floor((Date.now() - date.getTime()) / 60000);
@@ -13,9 +22,28 @@ function timeAgo(date: Date): string {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
+function serializePuzzle(p: {
+  solvingFen: string;
+  solutionMoves: string;
+  themes: string;
+  opponentUsername: string | null;
+  moveNumber: number | null;
+  playerColor: string | null;
+  type: string;
+}) {
+  return {
+    fen: p.solvingFen,
+    solution: p.solutionMoves.split(" ")[0] ?? "",
+    tacticType: p.themes.split(" ").filter(Boolean)[0] ?? p.type,
+    opponentName: p.opponentUsername ?? "Opponent",
+    moveNumber: p.moveNumber ?? 1,
+    playerColor: p.playerColor ?? "white",
+  };
+}
+
 export async function GET() {
   try {
-    // Find the demo user (case-insensitive match)
+    // Find the demo user
     const user = await prisma.user.findFirst({
       where: {
         OR: [
@@ -25,7 +53,7 @@ export async function GET() {
           { lichessUsername: DEMO_USERNAME.toLowerCase() },
         ],
       },
-      select: { id: true, chessComUsername: true, lichessUsername: true },
+      select: { id: true },
     });
 
     if (!user) {
@@ -35,76 +63,56 @@ export async function GET() {
 
     console.log("[demo] Found user:", user.id);
 
-    let puzzle = null;
-
-    // 1. Try to find the most-attempted puzzle with a tactic theme
-    const attempts = await prisma.puzzleAttempt.findMany({
-      where: {
-        userId: user.id,
-        tacticType: { in: TACTIC_THEMES },
-      },
-      orderBy: { attemptNumber: "desc" },
-      take: 10,
-      select: { puzzleId: true, tacticType: true, attemptNumber: true },
+    // Fallback puzzle — any puzzle for this user
+    const anyPuzzle = await prisma.puzzle.findFirst({
+      where: { sourceUserId: user.id },
+      orderBy: { createdAt: "desc" },
+      select: PUZZLE_SELECT,
     });
 
-    console.log("[demo] Found", attempts.length, "tactic attempts");
+    // 1. Missed tactics — standard puzzle (not retrograde/move_ranking)
+    const tacticsPuzzleRaw = await prisma.puzzle.findFirst({
+      where: {
+        sourceUserId: user.id,
+        type: "standard",
+      },
+      orderBy: { createdAt: "desc" },
+      select: PUZZLE_SELECT,
+    });
+    console.log("[demo] tacticsPuzzle:", tacticsPuzzleRaw ? "found" : "null");
 
-    for (const attempt of attempts) {
-      const p = await prisma.puzzle.findFirst({
-        where: { id: attempt.puzzleId, sourceUserId: user.id },
-        select: {
-          solvingFen: true, solutionMoves: true, themes: true,
-          opponentUsername: true, moveNumber: true, playerColor: true,
-        },
-      });
-      if (p) {
-        puzzle = { ...p, tacticType: attempt.tacticType, attemptNumber: attempt.attemptNumber };
-        break;
-      }
-    }
+    // 2. Stronger moves — move_ranking (scales) puzzle
+    const scalesPuzzleRaw = await prisma.puzzle.findFirst({
+      where: {
+        sourceUserId: user.id,
+        type: "move_ranking",
+      },
+      orderBy: { createdAt: "desc" },
+      select: PUZZLE_SELECT,
+    });
+    console.log("[demo] scalesPuzzle:", scalesPuzzleRaw ? "found" : "null");
 
-    // 2. Fallback: any puzzle with a tactic theme
-    if (!puzzle) {
-      for (const theme of TACTIC_THEMES) {
-        const p = await prisma.puzzle.findFirst({
-          where: { sourceUserId: user.id, themes: { contains: theme } },
-          select: {
-            solvingFen: true, solutionMoves: true, themes: true,
-            opponentUsername: true, moveNumber: true, playerColor: true,
-          },
-        });
-        if (p) {
-          puzzle = { ...p, tacticType: theme, attemptNumber: 1 };
-          console.log("[demo] Fallback: found puzzle with theme", theme);
-          break;
-        }
-      }
-    }
+    // 3. Positions to reconstruct — retrograde (echo) puzzle
+    const echoPuzzleRaw = await prisma.puzzle.findFirst({
+      where: {
+        sourceUserId: user.id,
+        type: "retrograde",
+      },
+      orderBy: { createdAt: "desc" },
+      select: PUZZLE_SELECT,
+    });
+    console.log("[demo] echoPuzzle:", echoPuzzleRaw ? "found" : "null");
 
-    // 3. Final fallback: ANY puzzle for this user
-    if (!puzzle) {
-      const p = await prisma.puzzle.findFirst({
-        where: { sourceUserId: user.id },
-        orderBy: { createdAt: "desc" },
-        select: {
-          solvingFen: true, solutionMoves: true, themes: true,
-          opponentUsername: true, moveNumber: true, playerColor: true,
-        },
-      });
-      if (p) {
-        const firstTheme = p.themes.split(" ").filter(Boolean)[0] ?? "tactic";
-        puzzle = { ...p, tacticType: firstTheme, attemptNumber: 1 };
-        console.log("[demo] Final fallback: any puzzle, theme:", firstTheme);
-      }
-    }
+    // Use fallback for any null puzzles
+    const fb = anyPuzzle;
+    const tacticsPuzzle = tacticsPuzzleRaw ?? fb;
+    const scalesPuzzle = scalesPuzzleRaw ?? fb;
+    const echoPuzzle = echoPuzzleRaw ?? fb;
 
-    if (!puzzle) {
-      console.warn("[demo] No puzzles found for user:", user.id);
+    if (!tacticsPuzzle) {
+      console.warn("[demo] No puzzles at all for user:", user.id);
       return NextResponse.json({ error: "No puzzles found" }, { status: 404 });
     }
-
-    console.log("[demo] Serving puzzle FEN:", puzzle.solvingFen.slice(0, 40), "...");
 
     // Count stats
     const [missedTactics, strongerMoves, retrograde] = await Promise.all([
@@ -120,11 +128,8 @@ export async function GET() {
         take: 6,
         orderBy: { createdAt: "desc" },
         where: { puzzles: { some: {} } },
-        include: {
-          _count: { select: { puzzles: true } },
-        },
+        include: { _count: { select: { puzzles: true } } },
       });
-      console.log("[demo] Recent users raw:", recentUsersRaw.length, "found");
       recentActivity = recentUsersRaw.map((u) => ({
         username: u.chessComUsername ?? u.lichessUsername ?? "anon",
         puzzleCount: u._count.puzzles,
@@ -134,15 +139,10 @@ export async function GET() {
       console.error("[demo] Recent users query failed:", err);
     }
 
-    const solution = puzzle.solutionMoves.split(" ")[0] ?? "";
-
     return NextResponse.json({
-      fen: puzzle.solvingFen,
-      solution,
-      tacticType: puzzle.tacticType,
-      opponentName: puzzle.opponentUsername ?? "Opponent",
-      moveNumber: puzzle.moveNumber ?? 1,
-      playerColor: puzzle.playerColor ?? "white",
+      tacticsPuzzle: serializePuzzle(tacticsPuzzle),
+      scalesPuzzle: scalesPuzzle ? serializePuzzle(scalesPuzzle) : serializePuzzle(tacticsPuzzle),
+      echoPuzzle: echoPuzzle ? serializePuzzle(echoPuzzle) : serializePuzzle(tacticsPuzzle),
       missedTactics,
       strongerMoves,
       retrograde: retrograde || 1,
