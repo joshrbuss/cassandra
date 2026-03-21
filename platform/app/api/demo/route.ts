@@ -4,6 +4,15 @@ import { prisma } from "@/lib/prisma";
 const DEMO_USERNAME = "J_R_B_01";
 const TACTIC_THEMES = ["fork", "pin", "backRankMate", "mateIn1"];
 
+function timeAgo(date: Date): string {
+  const mins = Math.floor((Date.now() - date.getTime()) / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
+
 export async function GET() {
   try {
     // Find the demo user (case-insensitive match)
@@ -43,17 +52,10 @@ export async function GET() {
 
     for (const attempt of attempts) {
       const p = await prisma.puzzle.findFirst({
-        where: {
-          id: attempt.puzzleId,
-          sourceUserId: user.id,
-        },
+        where: { id: attempt.puzzleId, sourceUserId: user.id },
         select: {
-          solvingFen: true,
-          solutionMoves: true,
-          themes: true,
-          opponentUsername: true,
-          moveNumber: true,
-          playerColor: true,
+          solvingFen: true, solutionMoves: true, themes: true,
+          opponentUsername: true, moveNumber: true, playerColor: true,
         },
       });
       if (p) {
@@ -62,21 +64,14 @@ export async function GET() {
       }
     }
 
-    // 2. Fallback: any puzzle with a tactic theme in its themes string
+    // 2. Fallback: any puzzle with a tactic theme
     if (!puzzle) {
       for (const theme of TACTIC_THEMES) {
         const p = await prisma.puzzle.findFirst({
-          where: {
-            sourceUserId: user.id,
-            themes: { contains: theme },
-          },
+          where: { sourceUserId: user.id, themes: { contains: theme } },
           select: {
-            solvingFen: true,
-            solutionMoves: true,
-            themes: true,
-            opponentUsername: true,
-            moveNumber: true,
-            playerColor: true,
+            solvingFen: true, solutionMoves: true, themes: true,
+            opponentUsername: true, moveNumber: true, playerColor: true,
           },
         });
         if (p) {
@@ -90,17 +85,11 @@ export async function GET() {
     // 3. Final fallback: ANY puzzle for this user
     if (!puzzle) {
       const p = await prisma.puzzle.findFirst({
-        where: {
-          sourceUserId: user.id,
-        },
+        where: { sourceUserId: user.id },
         orderBy: { createdAt: "desc" },
         select: {
-          solvingFen: true,
-          solutionMoves: true,
-          themes: true,
-          opponentUsername: true,
-          moveNumber: true,
-          playerColor: true,
+          solvingFen: true, solutionMoves: true, themes: true,
+          opponentUsername: true, moveNumber: true, playerColor: true,
         },
       });
       if (p) {
@@ -119,16 +108,29 @@ export async function GET() {
 
     // Count stats
     const [missedTactics, strongerMoves, retrograde] = await Promise.all([
-      prisma.puzzle.count({
-        where: { sourceUserId: user.id },
-      }),
-      prisma.puzzleAttempt.count({
-        where: { userId: user.id, attemptNumber: { gt: 1 } },
-      }),
-      prisma.puzzle.count({
-        where: { sourceUserId: user.id, type: "retrograde" },
-      }),
+      prisma.puzzle.count({ where: { sourceUserId: user.id } }),
+      prisma.puzzleAttempt.count({ where: { userId: user.id, attemptNumber: { gt: 1 } } }),
+      prisma.puzzle.count({ where: { sourceUserId: user.id, type: "retrograde" } }),
     ]);
+
+    // Recent users with puzzles
+    const recentUsersRaw = await prisma.user.findMany({
+      take: 6,
+      orderBy: { createdAt: "desc" },
+      where: { puzzles: { some: {} } },
+      select: {
+        chessComUsername: true,
+        lichessUsername: true,
+        createdAt: true,
+        _count: { select: { puzzles: true } },
+      },
+    });
+
+    const recentActivity = recentUsersRaw.map((u) => ({
+      username: u.chessComUsername ?? u.lichessUsername ?? "anon",
+      puzzleCount: u._count.puzzles,
+      timeAgo: timeAgo(u.createdAt),
+    }));
 
     const solution = puzzle.solutionMoves.split(" ")[0] ?? "";
 
@@ -142,6 +144,7 @@ export async function GET() {
       missedTactics,
       strongerMoves,
       retrograde: retrograde || 1,
+      recentActivity,
     });
   } catch (error) {
     console.error("[demo] Error:", error);

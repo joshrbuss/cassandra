@@ -8,6 +8,12 @@ import CassandraLogo from "@/components/CassandraLogo";
 
 /* ── Types ── */
 
+interface RecentEntry {
+  username: string;
+  puzzleCount: number;
+  timeAgo: string;
+}
+
 interface DemoData {
   fen: string;
   solution: string;
@@ -18,6 +24,7 @@ interface DemoData {
   missedTactics: number;
   strongerMoves: number;
   retrograde: number;
+  recentActivity: RecentEntry[];
 }
 
 type Phase = "gif" | "loading" | "results" | "puzzle" | "result";
@@ -27,52 +34,43 @@ type Phase = "gif" | "loading" | "results" | "puzzle" | "result";
 const LOADING_SQUARES = 8;
 const LOADING_INTERVAL = 180;
 const LOADING_DURATION = 1500;
-const GIF_FRAME_MS = 2000;
 
 const STATUS_LINES = [
-  "Fetching recent games...",
-  "Running Stockfish analysis...",
-  "Finding missed tactics...",
-  "Building your puzzles...",
+  "Fetching your recent games...",
+  "Finding your mistakes...",
+  "Building your personal puzzles...",
 ];
 
-const RECENT_ACTIVITY = [
-  { username: "j_r_b_01", mistakes: 4, time: "2 mins ago" },
-  { username: "knight_rider88", mistakes: 7, time: "5 mins ago" },
-  { username: "silentbishop", mistakes: 2, time: "8 mins ago" },
-  { username: "queenSacrifice", mistakes: 11, time: "12 mins ago" },
-  { username: "pawn_storm99", mistakes: 3, time: "15 mins ago" },
-  { username: "endgame_eric", mistakes: 6, time: "19 mins ago" },
-];
-
-const GIF_LABELS = [
-  "Your position, move 24",
-  "Blunder found \u265F",
-  "Cassandra: here\u2019s the win",
-];
+/* GIF animation timings (ms) */
+const GIF_TIMINGS = [1500, 500, 500, 1000]; // frame 0, 1, 2, 3
+// total cycle = sum of GIF_TIMINGS
 
 /* ── Component ── */
 
 export default function DemoBoard() {
   const [phase, setPhase] = useState<Phase>("gif");
   const [data, setData] = useState<DemoData | null>(null);
-  const [gifFrame, setGifFrame] = useState(0);
+  const [, setGifFrame] = useState(0);
+  const [gifFen, setGifFen] = useState<string | null>(null);
+  const [gifStyles, setGifStyles] = useState<Record<string, React.CSSProperties>>({});
+  const [gifLabel, setGifLabel] = useState("");
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [statusIndex, setStatusIndex] = useState(0);
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [resultCorrect, setResultCorrect] = useState<boolean | null>(null);
   const [squareStyles, setSquareStyles] = useState<Record<string, React.CSSProperties>>({});
   const chessRef = useRef<Chess | null>(null);
-  const fetchStartedRef = useRef(false);
+  const gifChessRef = useRef<Chess | null>(null);
 
-  /* ── Fetch demo data on mount (for GIF mode + later use) ── */
+  /* ── Fetch demo data on mount ── */
   useEffect(() => {
     fetch("/api/demo")
       .then((r) => r.json())
       .then((d) => {
-        if (d && d.fen) {
+        if (d?.fen) {
           console.log("[DemoBoard] API response:", d);
           setData(d);
+          setGifFen(d.fen);
         } else {
           console.warn("[DemoBoard] API returned no puzzle:", d);
         }
@@ -80,46 +78,67 @@ export default function DemoBoard() {
       .catch((err) => console.error("[DemoBoard] Fetch error:", err));
   }, []);
 
-  /* ── GIF cycling ── */
+  /* ── GIF animation with chess.js moves ── */
   useEffect(() => {
-    if (phase !== "gif") return;
-    const timer = setInterval(() => {
-      setGifFrame((f) => (f + 1) % 3);
-    }, GIF_FRAME_MS);
-    return () => clearInterval(timer);
-  }, [phase]);
+    if (phase !== "gif" || !data) return;
 
-  /* ── Build GIF-mode square highlights ── */
-  function getGifSquareStyles(): Record<string, React.CSSProperties> {
-    if (!data) return {};
-    const sol = data.solution;
-    const blunderSq = sol.slice(0, 2); // piece origin = where blunder was
-    const solutionSq = sol.slice(2, 4);
-    if (gifFrame === 0) return {};
-    if (gifFrame === 1) {
-      return { [blunderSq]: { backgroundColor: "rgba(255, 50, 50, 0.5)" } };
+    let frameIdx = 0;
+    let timeout: ReturnType<typeof setTimeout>;
+
+    function runFrame() {
+      const chess = new Chess(data!.fen);
+      gifChessRef.current = chess;
+      const sol = data!.solution;
+      const fromSq = sol.slice(0, 2);
+      const toSq = sol.slice(2, 4);
+
+      if (frameIdx === 0) {
+        // Frame 0: original position, no highlights
+        setGifFen(data!.fen);
+        setGifStyles({});
+        setGifLabel(`Your position, move ${data!.moveNumber}`);
+      } else if (frameIdx === 1) {
+        // Frame 1: wrong move — move a random legal piece to a bad square, highlight red
+        // Use the "from" square of the solution as the blunder piece, move it somewhere wrong
+        const moves = chess.moves({ square: fromSq as never, verbose: true });
+        const wrongMove = moves.find((m) => m.to !== toSq) ?? moves[0];
+        if (wrongMove) {
+          chess.move(wrongMove);
+          setGifFen(chess.fen());
+          setGifStyles({ [wrongMove.to]: { backgroundColor: "rgba(255, 50, 50, 0.5)" } });
+          setGifLabel(`Blunder \u2014 ${wrongMove.san}??`);
+        }
+      } else if (frameIdx === 2) {
+        // Frame 2: undo — back to original position
+        setGifFen(data!.fen);
+        setGifStyles({});
+        setGifLabel(`Your position, move ${data!.moveNumber}`);
+      } else if (frameIdx === 3) {
+        // Frame 3: correct move — piece moves to solution square, highlight green
+        const move = chess.move({ from: fromSq, to: toSq, promotion: "q" });
+        if (move) {
+          setGifFen(chess.fen());
+          setGifStyles({ [toSq]: { backgroundColor: "rgba(100, 200, 80, 0.5)" } });
+          setGifLabel("Cassandra: learn this position");
+        }
+      }
+
+      setGifFrame(frameIdx);
+      timeout = setTimeout(() => {
+        frameIdx = (frameIdx + 1) % 4;
+        runFrame();
+      }, GIF_TIMINGS[frameIdx]);
     }
-    // frame 2
-    return {
-      [blunderSq]: { backgroundColor: "rgba(255, 50, 50, 0.5)" },
-      [solutionSq]: { backgroundColor: "rgba(100, 200, 80, 0.5)" },
-    };
-  }
 
-  /* ── Start demo (button click) ── */
+    runFrame();
+    return () => clearTimeout(timeout);
+  }, [phase, data]);
+
+  /* ── Start demo ── */
   function handleStartDemo() {
     setPhase("loading");
     setLoadingProgress(0);
     setStatusIndex(0);
-
-    // Re-fetch if somehow data didn't load
-    if (!data && !fetchStartedRef.current) {
-      fetchStartedRef.current = true;
-      fetch("/api/demo")
-        .then((r) => r.json())
-        .then((d) => { if (d?.fen) setData(d); })
-        .catch(() => {});
-    }
   }
 
   /* ── Loading animation ── */
@@ -132,7 +151,7 @@ export default function DemoBoard() {
 
     const statusInterval = setInterval(() => {
       setStatusIndex((i) => (i < STATUS_LINES.length - 1 ? i + 1 : i));
-    }, 400);
+    }, 500);
 
     const timer = setTimeout(() => {
       setPhase("results");
@@ -144,13 +163,6 @@ export default function DemoBoard() {
       clearTimeout(timer);
     };
   }, [phase]);
-
-  /* ── If loading ends before data, wait ── */
-  useEffect(() => {
-    if (phase === "results" && !data) {
-      // Will show loading overlay until data arrives
-    }
-  }, [phase, data]);
 
   /* ── Puzzle interaction ── */
   const startPuzzle = useCallback(() => {
@@ -232,34 +244,56 @@ export default function DemoBoard() {
   /* ── Derived state ── */
   const showOverlay = phase === "loading" || (phase === "results" && !data);
   const boardOrientation = data?.playerColor === "black" ? "black" : "white";
-  const boardFen = data?.fen ?? "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+  const startingFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-  const currentSquareStyles =
-    phase === "gif" ? getGifSquareStyles() : squareStyles;
+  // Board FEN depends on phase
+  let boardFen: string;
+  let currentStyles: Record<string, React.CSSProperties>;
+  let orientation: "white" | "black" = "white";
+  let isInteractive = false;
 
-  const isInteractive = phase === "puzzle";
-  const orientation: "white" | "black" =
-    phase === "gif" || phase === "loading" ? "white" : (boardOrientation as "white" | "black");
+  if (phase === "gif") {
+    boardFen = gifFen ?? data?.fen ?? startingFen;
+    currentStyles = gifStyles;
+    orientation = "white";
+  } else if (phase === "loading") {
+    boardFen = data?.fen ?? startingFen;
+    currentStyles = {};
+  } else {
+    boardFen = data?.fen ?? startingFen;
+    currentStyles = squareStyles;
+    orientation = boardOrientation as "white" | "black";
+    isInteractive = phase === "puzzle";
+  }
+
+  // For results/puzzle/result, use side-by-side layout
+  const isSideBySide = phase === "results" || phase === "puzzle" || phase === "result";
 
   /* ── Render ── */
   return (
-    <div style={{ display: "flex", flexDirection: "row", gap: 24, alignItems: "flex-start" }}
-         className="flex-col lg:flex-row"
+    <div
+      style={{
+        display: "flex",
+        flexDirection: isSideBySide ? "row" : "column",
+        gap: isSideBySide ? 24 : 12,
+        alignItems: isSideBySide ? "flex-start" : "center",
+      }}
     >
       {/* ── Board column ── */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
         {/* Board wrapper */}
         <div
-          className="w-full max-w-[480px]"
           style={{
             width: 480,
             height: 480,
+            maxWidth: "100%",
             flexShrink: 0,
             borderRadius: 12,
             overflow: "hidden",
             border: "4px solid #0e0e0e",
             boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
             position: "relative",
+            aspectRatio: "1",
           }}
         >
           <ChessBoardWrapper
@@ -268,11 +302,11 @@ export default function DemoBoard() {
             boardOrientation={orientation}
             onSquareClick={handleSquareClick}
             onPieceDrop={handleDrop}
-            squareStyles={currentSquareStyles}
+            squareStyles={currentStyles}
           />
 
           {/* GIF label overlay */}
-          {phase === "gif" && (
+          {phase === "gif" && gifLabel && (
             <div
               style={{
                 position: "absolute",
@@ -281,10 +315,11 @@ export default function DemoBoard() {
                 right: 0,
                 background: "linear-gradient(transparent, rgba(0,0,0,0.7))",
                 padding: "24px 16px 12px",
+                pointerEvents: "none",
               }}
             >
               <p style={{ fontFamily: "Georgia, serif", fontSize: 14, color: "#fff", margin: 0 }}>
-                {GIF_LABELS[gifFrame]}
+                {gifLabel}
               </p>
             </div>
           )}
@@ -329,11 +364,35 @@ export default function DemoBoard() {
                   </div>
                 ))}
               </div>
+
+              {/* Loading status lines — inside the overlay */}
+              <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 8 }}>
+                {STATUS_LINES.map((line, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      opacity: i <= statusIndex ? 1 : 0,
+                      transition: "opacity 0.4s ease",
+                    }}
+                  >
+                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#c8942a", flexShrink: 0 }} />
+                    <span style={{ fontSize: 13, color: "#bbb" }}>{line}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
 
-        {/* "See it in action" button — below the board, only in GIF mode */}
+        {/* ── Recently analysed strip — GIF mode only ── */}
+        {phase === "gif" && data?.recentActivity && (
+          <RecentStrip entries={data.recentActivity} />
+        )}
+
+        {/* ── "See it in action" button — GIF mode only ── */}
         {phase === "gif" && (
           <button
             onClick={handleStartDemo}
@@ -356,142 +415,112 @@ export default function DemoBoard() {
         )}
       </div>
 
-      {/* ── Side panel ── */}
-      <div
-        style={{
-          width: 280,
-          minHeight: 480,
-          background: "#fff",
-          border: "0.5px solid #e5e5e5",
-          borderRadius: 12,
-          padding: 24,
-          display: "flex",
-          flexDirection: "column",
-          gap: 12,
-        }}
-        className="hidden lg:flex"
-      >
-        {/* GIF state — recently analysed feed */}
-        {phase === "gif" && <RecentFeed />}
+      {/* ── Side panel — results/puzzle/result states only ── */}
+      {isSideBySide && (
+        <div
+          style={{
+            width: 280,
+            minHeight: 480,
+            background: "#fff",
+            border: "0.5px solid #e5e5e5",
+            borderRadius: 12,
+            padding: 24,
+            display: "flex",
+            flexDirection: "column",
+            gap: 12,
+            justifyContent: "center",
+          }}
+          className="hidden lg:flex"
+        >
+          {/* Results */}
+          {phase === "results" && data && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 600, color: "#111", margin: 0 }}>
+                  j_r_b_01 vs {data.opponentName}
+                </p>
+                <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>
+                  Blitz &middot; Move {data.moveNumber}
+                </p>
+              </div>
+              <div style={{ height: 1, background: "#e5e5e5" }} />
 
-        {/* Loading state — status lines */}
-        {showOverlay && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {STATUS_LINES.map((line, i) => (
-              <div
-                key={i}
+              <ResultRow icon="&#9823;" count={data.missedTactics} label="missed tactics" onClick={startPuzzle} />
+              <ResultRow icon="&#9889;" count={data.strongerMoves} label="stronger moves available" onClick={startPuzzle} />
+              <ResultRow icon="&#128065;" count={data.retrograde} label="positions to reconstruct" onClick={startPuzzle} />
+
+              <div style={{ height: 1, background: "#e5e5e5" }} />
+              <p style={{ fontSize: 12, color: "#999", margin: 0 }}>Click any to try a sample puzzle</p>
+            </div>
+          )}
+
+          {/* Puzzle */}
+          {phase === "puzzle" && data && (
+            <div>
+              <p style={{ fontSize: 15, fontWeight: 600, color: "#111", margin: "0 0 8px" }}>
+                Find the winning move.
+              </p>
+              <span
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  opacity: i <= statusIndex ? 1 : 0.25,
-                  transition: "opacity 0.3s ease",
+                  display: "inline-block",
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: "#c8942a",
+                  background: "rgba(200,148,42,0.1)",
+                  border: "1px solid rgba(200,148,42,0.3)",
+                  borderRadius: 999,
+                  padding: "2px 10px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.04em",
                 }}
               >
-                <span
-                  style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: "50%",
-                    background: i <= statusIndex ? "#c8942a" : "#ddd",
-                    flexShrink: 0,
-                  }}
-                />
-                <span style={{ fontSize: 13, color: "#555" }}>{line}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Results state */}
-        {phase === "results" && data && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: "#111", margin: 0 }}>
-                j_r_b_01 vs {data.opponentName}
-              </p>
-              <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>
-                Blitz &middot; Move {data.moveNumber}
+                {data.tacticType}
+              </span>
+              <p style={{ fontSize: 13, color: "#888", margin: "12px 0 0" }}>
+                Click a piece to start.
               </p>
             </div>
-            <div style={{ height: 1, background: "#e5e5e5" }} />
+          )}
 
-            <ResultRow icon="&#9823;" count={data.missedTactics} label="missed tactics" onClick={startPuzzle} />
-            <ResultRow icon="&#9889;" count={data.strongerMoves} label="stronger moves available" onClick={startPuzzle} />
-            <ResultRow icon="&#128065;" count={data.retrograde} label="positions to reconstruct" onClick={startPuzzle} />
-
-            <div style={{ height: 1, background: "#e5e5e5" }} />
-            <p style={{ fontSize: 12, color: "#999", margin: 0 }}>Click any to try a sample puzzle</p>
-          </div>
-        )}
-
-        {/* Puzzle state */}
-        {phase === "puzzle" && data && (
-          <div>
-            <p style={{ fontSize: 15, fontWeight: 600, color: "#111", margin: "0 0 8px" }}>
-              Find the winning move.
-            </p>
-            <span
-              style={{
-                display: "inline-block",
-                fontSize: 11,
-                fontWeight: 600,
-                color: "#c8942a",
-                background: "rgba(200,148,42,0.1)",
-                border: "1px solid rgba(200,148,42,0.3)",
-                borderRadius: 999,
-                padding: "2px 10px",
-                textTransform: "uppercase",
-                letterSpacing: "0.04em",
-                marginBottom: 12,
-              }}
-            >
-              {data.tacticType}
-            </span>
-            <p style={{ fontSize: 13, color: "#888", margin: "12px 0 0" }}>
-              Click a piece to start.
-            </p>
-          </div>
-        )}
-
-        {/* Result state */}
-        {phase === "result" && data && (
-          <div>
-            {resultCorrect ? (
-              <p style={{ fontSize: 15, fontWeight: 600, color: "#16a34a", margin: "0 0 8px" }}>
-                That&apos;s it. &#10003;
-              </p>
-            ) : (
-              <>
-                <p style={{ fontSize: 14, fontWeight: 600, color: "#dc2626", margin: "0 0 4px" }}>
-                  Not quite.
+          {/* Result */}
+          {phase === "result" && data && (
+            <div>
+              {resultCorrect ? (
+                <p style={{ fontSize: 15, fontWeight: 600, color: "#16a34a", margin: "0 0 8px" }}>
+                  That&apos;s it. &#10003;
                 </p>
-                <p style={{ fontSize: 13, color: "#666", margin: "0 0 8px" }}>
-                  The winning move was <strong>{formatSolution(data.solution)}</strong>.
-                </p>
-              </>
-            )}
-            <button
-              onClick={() => { /* CTA — to be decided */ }}
-              style={{
-                marginTop: 16,
-                width: "100%",
-                fontSize: 14,
-                fontWeight: 600,
-                background: "#c8942a",
-                color: "#fff",
-                border: "none",
-                borderRadius: 8,
-                padding: "10px 0",
-                cursor: "pointer",
-              }}
-              className="hover:brightness-90 transition"
-            >
-              [CTA_PLACEHOLDER]
-            </button>
-          </div>
-        )}
-      </div>
+              ) : (
+                <>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#dc2626", margin: "0 0 4px" }}>
+                    Not quite.
+                  </p>
+                  <p style={{ fontSize: 13, color: "#666", margin: "0 0 8px" }}>
+                    The win was <strong>{formatSolution(data.solution)}</strong>.
+                  </p>
+                </>
+              )}
+              <button
+                onClick={() => { /* CTA — to be decided */ }}
+                style={{
+                  marginTop: 16,
+                  width: "100%",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  background: "#c8942a",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 8,
+                  padding: "10px 0",
+                  cursor: "pointer",
+                }}
+                className="hover:brightness-90 transition"
+              >
+                [CTA_PLACEHOLDER]
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       <style jsx>{`
         @keyframes demoFadeIn {
@@ -550,64 +579,68 @@ function ResultRow({
   );
 }
 
-/* ── Recently analysed feed ── */
+/* ── Horizontal scrolling recent activity strip ── */
 
-function RecentFeed() {
-  const [visibleStart, setVisibleStart] = useState(0);
+function RecentStrip({ entries }: { entries: RecentEntry[] }) {
+  const [offset, setOffset] = useState(0);
+  const stripRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setVisibleStart((s) => (s + 1) % RECENT_ACTIVITY.length);
+      setOffset((o) => o + 1);
     }, 3000);
     return () => clearInterval(timer);
   }, []);
 
-  // Show 6 entries cycling
-  const visible = Array.from({ length: 6 }, (_, i) => {
-    const idx = (visibleStart + i) % RECENT_ACTIVITY.length;
-    return RECENT_ACTIVITY[idx];
-  });
+  // Build a looping list
+  const looped = Array.from({ length: entries.length * 3 }, (_, i) => entries[i % entries.length]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
-      <p style={{ fontSize: 12, textTransform: "uppercase", color: "#999", letterSpacing: "0.08em", margin: 0, fontWeight: 600 }}>
-        Recently analysed
-      </p>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, flex: 1 }}>
-        {visible.map((entry, i) => (
+    <div
+      style={{
+        width: 480,
+        maxWidth: "100%",
+        background: "#fff",
+        border: "0.5px solid #e5e5e5",
+        borderRadius: 8,
+        padding: "12px 16px",
+        overflow: "hidden",
+        position: "relative",
+      }}
+    >
+      <div
+        ref={stripRef}
+        style={{
+          display: "flex",
+          gap: 16,
+          transition: "transform 0.8s ease",
+          transform: `translateX(-${offset * 200}px)`,
+        }}
+      >
+        {looped.map((entry, i) => (
           <div
-            key={`${entry.username}-${visibleStart}-${i}`}
+            key={`${entry.username}-${i}`}
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 8,
-              fontSize: 13,
+              gap: 6,
+              fontSize: 12,
               color: "#555",
-              animation: "demoFeedIn 0.4s ease-out",
-              opacity: i >= 5 ? 0.4 : 1,
-              transition: "opacity 0.3s",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
             }}
           >
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#c8942a", flexShrink: 0 }} />
             <span>
-              <strong>{entry.username}</strong> &mdash; {entry.mistakes} mistakes found &middot; {entry.time}
+              {entry.username} &mdash; {entry.puzzleCount} puzzles &middot; {entry.timeAgo}
             </span>
           </div>
         ))}
       </div>
 
-      <div style={{ height: 1, background: "#e5e5e5", margin: "8px 0" }} />
-      <p style={{ fontSize: 13, color: "#888", fontStyle: "italic", margin: 0 }}>
-        Your turn &mdash; see what Cassandra finds in your games
-      </p>
-
-      <style jsx>{`
-        @keyframes demoFeedIn {
-          from { opacity: 0; transform: translateY(-6px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
+      {/* Fade edges */}
+      <div style={{ position: "absolute", top: 0, right: 0, bottom: 0, width: 40, background: "linear-gradient(to right, transparent, white)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: 40, background: "linear-gradient(to left, transparent, white)", pointerEvents: "none" }} />
     </div>
   );
 }
