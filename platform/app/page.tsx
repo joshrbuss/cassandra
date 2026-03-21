@@ -113,14 +113,6 @@ export default async function Home() {
               </div>
             </div>
 
-            {/* Divider */}
-            <div className="h-px bg-[#e5e5e5] mb-8" />
-
-            {/* Begin training */}
-            <p className="text-[11px] uppercase tracking-[0.1em] text-[#999] font-semibold mb-4">
-              {t("landing.hero.beginTraining")}
-            </p>
-
             <HeroForm
               ctaLabel={t("landing.hero.cta")}
               chesscomPlaceholder={t("landing.hero.chesscomPlaceholder")}

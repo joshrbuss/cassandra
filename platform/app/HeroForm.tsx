@@ -40,7 +40,7 @@ export default function HeroForm({
         <button
           type="button"
           onClick={() => setPlatform("chesscom")}
-          className={`text-xs font-semibold px-4 py-1.5 rounded-full border transition-colors ${
+          className={`text-xs font-semibold px-4 py-1.5 rounded-md border transition-colors ${
             platform === "chesscom"
               ? "bg-[#111] text-white border-[#333]"
               : "bg-transparent text-[#999] border-[#ddd] hover:border-[#bbb]"
@@ -51,7 +51,7 @@ export default function HeroForm({
         <button
           type="button"
           onClick={() => setPlatform("lichess")}
-          className={`text-xs font-semibold px-4 py-1.5 rounded-full border transition-colors ${
+          className={`text-xs font-semibold px-4 py-1.5 rounded-md border transition-colors ${
             platform === "lichess"
               ? "bg-[#111] text-white border-[#333]"
               : "bg-transparent text-[#999] border-[#ddd] hover:border-[#bbb]"
@@ -62,7 +62,7 @@ export default function HeroForm({
       </div>
 
       {/* Username input + CTA */}
-      <form onSubmit={handleSubmit} className="flex gap-2">
+      <form onSubmit={handleSubmit} className="flex">
         <input
           type="text"
           value={username}
@@ -70,11 +70,11 @@ export default function HeroForm({
           placeholder={platform === "chesscom" ? chesscomPlaceholder : lichessPlaceholder}
           autoComplete="off"
           required
-          className="flex-1 text-sm text-[#111] bg-white border border-[#ddd] rounded-lg px-3.5 py-2.5 placeholder-[#aaa] focus:outline-none focus:border-[#c8942a] transition-colors"
+          className="flex-1 h-12 text-sm text-[#111] bg-white border border-[#d0d0d0] rounded-l-lg px-3.5 placeholder-[#aaa] focus:outline-none focus:border-[#c8942a] transition-colors"
         />
         <button
           type="submit"
-          className="text-sm font-semibold bg-[#c8942a] text-white px-5 py-2.5 rounded-lg hover:bg-[#b5852a] transition-colors whitespace-nowrap"
+          className="h-12 text-sm font-semibold bg-[#c8942a] text-white px-5 rounded-r-lg hover:bg-[#b5852a] transition-colors whitespace-nowrap border border-[#c8942a]"
         >
           {ctaLabel}
         </button>
