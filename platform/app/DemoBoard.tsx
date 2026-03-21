@@ -198,9 +198,9 @@ export default function DemoBoard() {
   const showOverlay = phase === "loading" || (phase === "results" && !data);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-0 rounded-[14px] overflow-hidden shadow-xl" style={{ border: "0.5px solid #e5e5e5" }}>
+    <div className="flex flex-col lg:flex-row rounded-[14px] overflow-hidden shadow-xl" style={{ border: "0.5px solid #e5e5e5" }}>
       {/* Board area */}
-      <div className="w-full lg:w-[480px] aspect-square relative shrink-0">
+      <div className="w-full lg:w-[480px] lg:h-[480px] aspect-square lg:aspect-auto relative shrink-0">
         <ChessBoardWrapper
           position={boardFen}
           interactive={phase === "puzzle"}
@@ -264,7 +264,7 @@ export default function DemoBoard() {
       </div>
 
       {/* Panel */}
-      <div className="w-full lg:w-[280px] bg-white p-5 flex flex-col justify-center min-h-[200px] lg:min-h-0">
+      <div className="w-full lg:w-[280px] lg:h-[480px] bg-white p-5 flex flex-col justify-center overflow-y-auto">
         {/* Idle state */}
         {phase === "idle" && (
           <div>
@@ -306,19 +306,19 @@ export default function DemoBoard() {
 
             <button
               onClick={startPuzzle}
-              className="w-full text-left px-3 py-2 rounded-lg hover:bg-[#f5f3f0] transition-colors cursor-pointer"
+              className="w-full text-left px-3 py-2 rounded-lg hover:bg-[#c8942a]/10 transition-colors cursor-pointer"
             >
               <span className="text-sm">&#9823; <strong>{data.missedTactics}</strong> <span className="text-[#666]">missed tactics</span></span>
             </button>
             <button
               onClick={startPuzzle}
-              className="w-full text-left px-3 py-2 rounded-lg hover:bg-[#f5f3f0] transition-colors cursor-pointer"
+              className="w-full text-left px-3 py-2 rounded-lg hover:bg-[#c8942a]/10 transition-colors cursor-pointer"
             >
               <span className="text-sm">&#9889; <strong>{data.strongerMoves}</strong> <span className="text-[#666]">stronger moves available</span></span>
             </button>
             <button
               onClick={startPuzzle}
-              className="w-full text-left px-3 py-2 rounded-lg hover:bg-[#f5f3f0] transition-colors cursor-pointer"
+              className="w-full text-left px-3 py-2 rounded-lg hover:bg-[#c8942a]/10 transition-colors cursor-pointer"
             >
               <span className="text-sm">&#128065; <strong>{data.retrograde}</strong> <span className="text-[#666]">positions to reconstruct</span></span>
             </button>
