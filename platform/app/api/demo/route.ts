@@ -68,47 +68,30 @@ export async function GET() {
       where: { sourceUserId: user.id },
       _count: true,
     });
-    console.log("[demo] Puzzle type breakdown:", JSON.stringify(typeCounts));
+    console.log("[demo] puzzle types in DB:", JSON.stringify(typeCounts));
 
-    // Fetch 3 DISTINCT standard puzzles as the primary source
-    // (since move_ranking and retrograde types may not exist for this user)
-    const standardPuzzles = await prisma.puzzle.findMany({
-      where: { sourceUserId: user.id, type: "standard" },
-      orderBy: { createdAt: "desc" },
+    // Fetch 3 different puzzles regardless of type
+    const puzzles = await prisma.puzzle.findMany({
+      where: { sourceUserId: user.id },
       take: 3,
-      select: PUZZLE_SELECT,
-    });
-    console.log("[demo] Standard puzzles found:", standardPuzzles.length);
-
-    // Also try specific types
-    const moveRankingPuzzle = await prisma.puzzle.findFirst({
-      where: { sourceUserId: user.id, type: "move_ranking" },
       orderBy: { createdAt: "desc" },
       select: PUZZLE_SELECT,
     });
-    console.log("[demo] move_ranking puzzle:", moveRankingPuzzle ? moveRankingPuzzle.id : "null");
+    console.log("[demo] Fetched", puzzles.length, "puzzles");
 
-    const retrogradePuzzle = await prisma.puzzle.findFirst({
-      where: { sourceUserId: user.id, type: "retrograde" },
-      orderBy: { createdAt: "desc" },
-      select: PUZZLE_SELECT,
-    });
-    console.log("[demo] retrograde puzzle:", retrogradePuzzle ? retrogradePuzzle.id : "null");
-
-    if (standardPuzzles.length === 0) {
+    if (puzzles.length === 0) {
       console.warn("[demo] No puzzles at all for user:", user.id);
       return NextResponse.json({ error: "No puzzles found" }, { status: 404 });
     }
 
-    // Assign puzzles — use specific types when available, otherwise use distinct standard puzzles
-    const tacticsPuzzle = standardPuzzles[0];
-    const scalesPuzzle = moveRankingPuzzle ?? standardPuzzles[1] ?? standardPuzzles[0];
-    const echoPuzzle = retrogradePuzzle ?? standardPuzzles[2] ?? standardPuzzles[1] ?? standardPuzzles[0];
+    const tacticsPuzzle = puzzles[0];
+    const scalesPuzzle = puzzles[1] ?? puzzles[0];
+    const echoPuzzle = puzzles[2] ?? puzzles[1] ?? puzzles[0];
 
-    // Log the FENs to verify they're different
-    console.log("[demo] tacticsPuzzle FEN:", tacticsPuzzle.solvingFen.slice(0, 30));
-    console.log("[demo] scalesPuzzle FEN:", scalesPuzzle.solvingFen.slice(0, 30));
-    console.log("[demo] echoPuzzle FEN:", echoPuzzle.solvingFen.slice(0, 30));
+    // Log each FEN to verify they're different
+    console.log("[demo] tacticsPuzzle FEN:", tacticsPuzzle.solvingFen.slice(0, 40));
+    console.log("[demo] scalesPuzzle FEN:", scalesPuzzle.solvingFen.slice(0, 40));
+    console.log("[demo] echoPuzzle FEN:", echoPuzzle.solvingFen.slice(0, 40));
 
     // Count stats
     const [missedTactics, strongerMoves, retrograde] = await Promise.all([
