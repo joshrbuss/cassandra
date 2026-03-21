@@ -6,23 +6,29 @@ const TACTIC_THEMES = ["fork", "pin", "backRankMate", "mateIn1"];
 
 export async function GET() {
   try {
-    // Find the demo user
+    // Find the demo user (case-insensitive match)
     const user = await prisma.user.findFirst({
       where: {
         OR: [
           { chessComUsername: DEMO_USERNAME },
+          { chessComUsername: DEMO_USERNAME.toLowerCase() },
           { lichessUsername: DEMO_USERNAME },
+          { lichessUsername: DEMO_USERNAME.toLowerCase() },
         ],
       },
-      select: { id: true },
+      select: { id: true, chessComUsername: true, lichessUsername: true },
     });
 
     if (!user) {
+      console.warn("[demo] User not found:", DEMO_USERNAME);
       return NextResponse.json({ error: "Demo user not found" }, { status: 404 });
     }
 
-    // Find the most-attempted puzzle with a tactic theme
-    // Join through PuzzleAttempt to get attemptNumber
+    console.log("[demo] Found user:", user.id);
+
+    let puzzle = null;
+
+    // 1. Try to find the most-attempted puzzle with a tactic theme
     const attempts = await prisma.puzzleAttempt.findMany({
       where: {
         userId: user.id,
@@ -33,15 +39,13 @@ export async function GET() {
       select: { puzzleId: true, tacticType: true, attemptNumber: true },
     });
 
-    let puzzle = null;
+    console.log("[demo] Found", attempts.length, "tactic attempts");
 
-    // Try to find a matching user-imported puzzle from the attempts
     for (const attempt of attempts) {
       const p = await prisma.puzzle.findFirst({
         where: {
           id: attempt.puzzleId,
           sourceUserId: user.id,
-          source: "user_import",
         },
         select: {
           solvingFen: true,
@@ -58,35 +62,38 @@ export async function GET() {
       }
     }
 
-    // Fallback: any user puzzle with a tactic theme
+    // 2. Fallback: any puzzle with a tactic theme in its themes string
     if (!puzzle) {
-      const p = await prisma.puzzle.findFirst({
-        where: {
-          sourceUserId: user.id,
-          source: "user_import",
-          themes: { contains: "fork" },
-        },
-        select: {
-          solvingFen: true,
-          solutionMoves: true,
-          themes: true,
-          opponentUsername: true,
-          moveNumber: true,
-          playerColor: true,
-        },
-      });
-      if (p) {
-        puzzle = { ...p, tacticType: "fork", attemptNumber: 1 };
+      for (const theme of TACTIC_THEMES) {
+        const p = await prisma.puzzle.findFirst({
+          where: {
+            sourceUserId: user.id,
+            themes: { contains: theme },
+          },
+          select: {
+            solvingFen: true,
+            solutionMoves: true,
+            themes: true,
+            opponentUsername: true,
+            moveNumber: true,
+            playerColor: true,
+          },
+        });
+        if (p) {
+          puzzle = { ...p, tacticType: theme, attemptNumber: 1 };
+          console.log("[demo] Fallback: found puzzle with theme", theme);
+          break;
+        }
       }
     }
 
-    // Last fallback: any user puzzle
+    // 3. Final fallback: ANY puzzle for this user
     if (!puzzle) {
       const p = await prisma.puzzle.findFirst({
         where: {
           sourceUserId: user.id,
-          source: "user_import",
         },
+        orderBy: { createdAt: "desc" },
         select: {
           solvingFen: true,
           solutionMoves: true,
@@ -97,19 +104,23 @@ export async function GET() {
         },
       });
       if (p) {
-        const firstTheme = p.themes.split(" ").find((t) => TACTIC_THEMES.includes(t)) ?? p.themes.split(" ")[0] ?? "tactic";
+        const firstTheme = p.themes.split(" ").filter(Boolean)[0] ?? "tactic";
         puzzle = { ...p, tacticType: firstTheme, attemptNumber: 1 };
+        console.log("[demo] Final fallback: any puzzle, theme:", firstTheme);
       }
     }
 
     if (!puzzle) {
+      console.warn("[demo] No puzzles found for user:", user.id);
       return NextResponse.json({ error: "No puzzles found" }, { status: 404 });
     }
+
+    console.log("[demo] Serving puzzle FEN:", puzzle.solvingFen.slice(0, 40), "...");
 
     // Count stats
     const [missedTactics, strongerMoves, retrograde] = await Promise.all([
       prisma.puzzle.count({
-        where: { sourceUserId: user.id, source: "user_import" },
+        where: { sourceUserId: user.id },
       }),
       prisma.puzzleAttempt.count({
         where: { userId: user.id, attemptNumber: { gt: 1 } },
@@ -119,7 +130,6 @@ export async function GET() {
       }),
     ]);
 
-    // First solution move is the correct move
     const solution = puzzle.solutionMoves.split(" ")[0] ?? "";
 
     return NextResponse.json({
