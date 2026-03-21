@@ -58,7 +58,7 @@ export default function HeroForm() {
           type="submit"
           className="text-sm font-semibold bg-[#c8942a] text-white px-5 py-2.5 rounded-lg hover:bg-[#b5852a] transition-colors whitespace-nowrap"
         >
-          Start improving &rarr;
+          See your mistakes &rarr;
         </button>
       </form>
 

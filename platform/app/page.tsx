@@ -101,8 +101,7 @@ export default async function Home() {
                   3
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-[#111]">Train until it sticks</p>
-                  <p className="text-xs text-[#888] mt-0.5">[PLACEHOLDER]</p>
+                  <p className="text-sm font-semibold text-[#111]">Start training</p>
                 </div>
               </div>
             </div>
