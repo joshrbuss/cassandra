@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 const DEMO_USERNAME = "J_R_B_01";
 
 const PUZZLE_SELECT = {
+  id: true,
   solvingFen: true,
   solutionMoves: true,
   themes: true,
@@ -23,6 +24,7 @@ function timeAgo(date: Date): string {
 }
 
 function serializePuzzle(p: {
+  id: string;
   solvingFen: string;
   solutionMoves: string;
   themes: string;
@@ -43,7 +45,6 @@ function serializePuzzle(p: {
 
 export async function GET() {
   try {
-    // Find the demo user
     const user = await prisma.user.findFirst({
       where: {
         OR: [
@@ -61,58 +62,53 @@ export async function GET() {
       return NextResponse.json({ error: "Demo user not found" }, { status: 404 });
     }
 
-    console.log("[demo] Found user:", user.id);
-
-    // Fallback puzzle — any puzzle for this user
-    const anyPuzzle = await prisma.puzzle.findFirst({
+    // Debug: log all puzzle types for this user
+    const typeCounts = await prisma.puzzle.groupBy({
+      by: ["type"],
       where: { sourceUserId: user.id },
+      _count: true,
+    });
+    console.log("[demo] Puzzle type breakdown:", JSON.stringify(typeCounts));
+
+    // Fetch 3 DISTINCT standard puzzles as the primary source
+    // (since move_ranking and retrograde types may not exist for this user)
+    const standardPuzzles = await prisma.puzzle.findMany({
+      where: { sourceUserId: user.id, type: "standard" },
+      orderBy: { createdAt: "desc" },
+      take: 3,
+      select: PUZZLE_SELECT,
+    });
+    console.log("[demo] Standard puzzles found:", standardPuzzles.length);
+
+    // Also try specific types
+    const moveRankingPuzzle = await prisma.puzzle.findFirst({
+      where: { sourceUserId: user.id, type: "move_ranking" },
       orderBy: { createdAt: "desc" },
       select: PUZZLE_SELECT,
     });
+    console.log("[demo] move_ranking puzzle:", moveRankingPuzzle ? moveRankingPuzzle.id : "null");
 
-    // 1. Missed tactics — standard puzzle (not retrograde/move_ranking)
-    const tacticsPuzzleRaw = await prisma.puzzle.findFirst({
-      where: {
-        sourceUserId: user.id,
-        type: "standard",
-      },
+    const retrogradePuzzle = await prisma.puzzle.findFirst({
+      where: { sourceUserId: user.id, type: "retrograde" },
       orderBy: { createdAt: "desc" },
       select: PUZZLE_SELECT,
     });
-    console.log("[demo] tacticsPuzzle:", tacticsPuzzleRaw ? "found" : "null");
+    console.log("[demo] retrograde puzzle:", retrogradePuzzle ? retrogradePuzzle.id : "null");
 
-    // 2. Stronger moves — move_ranking (scales) puzzle
-    const scalesPuzzleRaw = await prisma.puzzle.findFirst({
-      where: {
-        sourceUserId: user.id,
-        type: "move_ranking",
-      },
-      orderBy: { createdAt: "desc" },
-      select: PUZZLE_SELECT,
-    });
-    console.log("[demo] scalesPuzzle:", scalesPuzzleRaw ? "found" : "null");
-
-    // 3. Positions to reconstruct — retrograde (echo) puzzle
-    const echoPuzzleRaw = await prisma.puzzle.findFirst({
-      where: {
-        sourceUserId: user.id,
-        type: "retrograde",
-      },
-      orderBy: { createdAt: "desc" },
-      select: PUZZLE_SELECT,
-    });
-    console.log("[demo] echoPuzzle:", echoPuzzleRaw ? "found" : "null");
-
-    // Use fallback for any null puzzles
-    const fb = anyPuzzle;
-    const tacticsPuzzle = tacticsPuzzleRaw ?? fb;
-    const scalesPuzzle = scalesPuzzleRaw ?? fb;
-    const echoPuzzle = echoPuzzleRaw ?? fb;
-
-    if (!tacticsPuzzle) {
+    if (standardPuzzles.length === 0) {
       console.warn("[demo] No puzzles at all for user:", user.id);
       return NextResponse.json({ error: "No puzzles found" }, { status: 404 });
     }
+
+    // Assign puzzles — use specific types when available, otherwise use distinct standard puzzles
+    const tacticsPuzzle = standardPuzzles[0];
+    const scalesPuzzle = moveRankingPuzzle ?? standardPuzzles[1] ?? standardPuzzles[0];
+    const echoPuzzle = retrogradePuzzle ?? standardPuzzles[2] ?? standardPuzzles[1] ?? standardPuzzles[0];
+
+    // Log the FENs to verify they're different
+    console.log("[demo] tacticsPuzzle FEN:", tacticsPuzzle.solvingFen.slice(0, 30));
+    console.log("[demo] scalesPuzzle FEN:", scalesPuzzle.solvingFen.slice(0, 30));
+    console.log("[demo] echoPuzzle FEN:", echoPuzzle.solvingFen.slice(0, 30));
 
     // Count stats
     const [missedTactics, strongerMoves, retrograde] = await Promise.all([
@@ -121,7 +117,7 @@ export async function GET() {
       prisma.puzzle.count({ where: { sourceUserId: user.id, type: "retrograde" } }),
     ]);
 
-    // Recent users with puzzles
+    // Recent users
     let recentActivity: { username: string; puzzleCount: number; timeAgo: string }[] = [];
     try {
       const recentUsersRaw = await prisma.user.findMany({
@@ -141,8 +137,8 @@ export async function GET() {
 
     return NextResponse.json({
       tacticsPuzzle: serializePuzzle(tacticsPuzzle),
-      scalesPuzzle: scalesPuzzle ? serializePuzzle(scalesPuzzle) : serializePuzzle(tacticsPuzzle),
-      echoPuzzle: echoPuzzle ? serializePuzzle(echoPuzzle) : serializePuzzle(tacticsPuzzle),
+      scalesPuzzle: serializePuzzle(scalesPuzzle),
+      echoPuzzle: serializePuzzle(echoPuzzle),
       missedTactics,
       strongerMoves,
       retrograde: retrograde || 1,

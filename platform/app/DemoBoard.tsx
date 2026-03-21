@@ -141,9 +141,10 @@ export default function DemoBoard() {
 
   /* ── Select puzzle from row click ── */
   const selectPuzzle = useCallback((puzzle: PuzzleData) => {
+    console.log("[DemoBoard] selectPuzzle called, FEN:", puzzle.fen.slice(0, 30), "solution:", puzzle.solution);
     const chess = new Chess(puzzle.fen);
     chessRef.current = chess;
-    setActivePuzzle(puzzle);
+    setActivePuzzle({ ...puzzle }); // spread to ensure new object reference
     setSelectedSquare(null);
     setSquareStyles({});
     setResultCorrect(null);
@@ -330,22 +331,20 @@ export default function DemoBoard() {
             {/* Results */}
             {phase === "results" && data && (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <div>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: "#111", margin: 0 }}>j_r_b_01 vs {data.tacticsPuzzle.opponentName}</p>
-                  <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>Blitz &middot; Move {data.tacticsPuzzle.moveNumber}</p>
-                </div>
-                <div style={{ height: 1, background: "#e5e5e5" }} />
-                <ResultRow icon="&#9823;" count={data.missedTactics} label="missed tactics" onClick={() => selectPuzzle(data.tacticsPuzzle)} />
-                <ResultRow icon="&#9889;" count={data.strongerMoves} label="stronger moves available" onClick={() => selectPuzzle(data.scalesPuzzle)} />
-                <ResultRow icon="&#128065;" count={data.retrograde} label="positions to reconstruct" onClick={() => selectPuzzle(data.echoPuzzle)} />
-                <div style={{ height: 1, background: "#e5e5e5" }} />
                 <p style={{ fontSize: 12, color: "#999", margin: 0 }}>Click any to try a sample puzzle</p>
+                <div style={{ height: 1, background: "#e5e5e5" }} />
+                <ResultRow icon="&#9823;" count={data.missedTactics} label="missed tactics" onClick={() => { console.log("[DemoBoard] Row 1 clicked, FEN:", data.tacticsPuzzle.fen.slice(0, 30)); selectPuzzle(data.tacticsPuzzle); }} />
+                <ResultRow icon="&#9889;" count={data.strongerMoves} label="stronger moves available" onClick={() => { console.log("[DemoBoard] Row 2 clicked, FEN:", data.scalesPuzzle.fen.slice(0, 30)); selectPuzzle(data.scalesPuzzle); }} />
+                <ResultRow icon="&#128065;" count={data.retrograde} label="positions to reconstruct" onClick={() => { console.log("[DemoBoard] Row 3 clicked, FEN:", data.echoPuzzle.fen.slice(0, 30)); selectPuzzle(data.echoPuzzle); }} />
               </div>
             )}
 
             {/* Puzzle */}
             {phase === "puzzle" && activePuzzle && (
               <div>
+                <p style={{ fontSize: 14, fontWeight: 600, color: "#111", margin: "0 0 2px" }}>j_r_b_01 vs {activePuzzle.opponentName}</p>
+                <p style={{ fontSize: 12, color: "#999", margin: "0 0 12px" }}>Blitz &middot; Move {activePuzzle.moveNumber}</p>
+                <div style={{ height: 1, background: "#e5e5e5", marginBottom: 12 }} />
                 <p style={{ fontSize: 15, fontWeight: 600, color: "#111", margin: "0 0 8px" }}>Find the winning move.</p>
                 <span style={{ display: "inline-block", fontSize: 11, fontWeight: 600, color: "#c8942a", background: "rgba(200,148,42,0.1)", border: "1px solid rgba(200,148,42,0.3)", borderRadius: 999, padding: "2px 10px", textTransform: "uppercase", letterSpacing: "0.04em" }}>
                   {activePuzzle.tacticType}
@@ -357,6 +356,9 @@ export default function DemoBoard() {
             {/* Result */}
             {phase === "result" && activePuzzle && (
               <div>
+                <p style={{ fontSize: 14, fontWeight: 600, color: "#111", margin: "0 0 2px" }}>j_r_b_01 vs {activePuzzle.opponentName}</p>
+                <p style={{ fontSize: 12, color: "#999", margin: "0 0 12px" }}>Blitz &middot; Move {activePuzzle.moveNumber}</p>
+                <div style={{ height: 1, background: "#e5e5e5", marginBottom: 12 }} />
                 {resultCorrect ? (
                   <p style={{ fontSize: 15, fontWeight: 600, color: "#16a34a", margin: "0 0 8px" }}>That&apos;s it. &#10003;</p>
                 ) : (
