@@ -93,11 +93,11 @@ export async function GET() {
     console.log("[demo] scalesPuzzle FEN:", scalesPuzzle.solvingFen.slice(0, 40));
     console.log("[demo] echoPuzzle FEN:", echoPuzzle.solvingFen.slice(0, 40));
 
-    // Count stats
+    // Count stats from the full database (not user-specific)
     const [missedTactics, strongerMoves, retrograde] = await Promise.all([
-      prisma.puzzle.count({ where: { sourceUserId: user.id } }),
-      prisma.puzzleAttempt.count({ where: { userId: user.id, attemptNumber: { gt: 1 } } }),
-      prisma.puzzle.count({ where: { sourceUserId: user.id, type: "retrograde" } }),
+      prisma.puzzle.count(),
+      prisma.puzzleAttempt.count({ where: { attemptNumber: { gt: 1 } } }),
+      prisma.puzzle.count({ where: { type: "retrograde" } }),
     ]);
 
     // Recent users
