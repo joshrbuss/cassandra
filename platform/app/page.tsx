@@ -67,7 +67,7 @@ export default async function Home() {
             </h1>
 
             <p className="text-[#666] text-[15px] leading-relaxed mb-8 max-w-md">
-              [PLACEHOLDER — copy to be updated]
+              Cassandra finds the mistakes in your games and turns them into puzzles personalised to you.
             </p>
 
             {/* How it works */}
@@ -82,7 +82,7 @@ export default async function Home() {
                 </span>
                 <div>
                   <p className="text-sm font-semibold text-[#111]">Connect your account</p>
-                  <p className="text-xs text-[#888] mt-0.5">[PLACEHOLDER]</p>
+                  <p className="text-xs text-[#888] mt-0.5">Link your Chess.com or Lichess username. No payment required.</p>
                 </div>
               </div>
 
@@ -92,7 +92,7 @@ export default async function Home() {
                 </span>
                 <div>
                   <p className="text-sm font-semibold text-[#111]">We do the work</p>
-                  <p className="text-xs text-[#888] mt-0.5">[PLACEHOLDER]</p>
+                  <p className="text-xs text-[#888] mt-0.5">Cassandra scans your recent games and pinpoints exactly where things went wrong — missed tactics, miscalculations, and positions that slipped away.</p>
                 </div>
               </div>
 
