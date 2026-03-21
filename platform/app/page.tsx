@@ -109,19 +109,23 @@ export default async function Home() {
                 </span>
                 <div>
                   <p className="text-sm font-semibold text-[#111]">{t("landing.hero.step3.title")}</p>
+                  <p className="text-[13px] text-[#888] mt-0.5">Enter your username below</p>
                 </div>
               </div>
             </div>
 
-            <HeroForm
-              ctaLabel={t("landing.hero.cta")}
-              chesscomPlaceholder={t("landing.hero.chesscomPlaceholder")}
-              lichessPlaceholder={t("landing.hero.lichessPlaceholder")}
-              trustFree={t("landing.hero.trustFree")}
-              trustUnlimited={t("landing.hero.trustUnlimited")}
-              trustNoPaywall={t("landing.hero.trustNoPaywall")}
-              trustPersonalised={t("landing.hero.trustPersonalised")}
-            />
+            <div className="bg-[#0e0e0e] rounded-xl p-5 px-6">
+              <HeroForm
+                dark
+                ctaLabel={t("landing.hero.cta")}
+                chesscomPlaceholder={t("landing.hero.chesscomPlaceholder")}
+                lichessPlaceholder={t("landing.hero.lichessPlaceholder")}
+                trustFree={t("landing.hero.trustFree")}
+                trustUnlimited={t("landing.hero.trustUnlimited")}
+                trustNoPaywall={t("landing.hero.trustNoPaywall")}
+                trustPersonalised={t("landing.hero.trustPersonalised")}
+              />
+            </div>
           </div>
 
           {/* Right column — animated board */}

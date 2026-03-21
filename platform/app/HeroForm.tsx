@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface Props {
+  dark?: boolean;
   ctaLabel: string;
   chesscomPlaceholder: string;
   lichessPlaceholder: string;
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export default function HeroForm({
+  dark = false,
   ctaLabel,
   chesscomPlaceholder,
   lichessPlaceholder,
@@ -42,8 +44,8 @@ export default function HeroForm({
           onClick={() => setPlatform("chesscom")}
           className={`text-xs font-semibold px-4 py-1.5 rounded-md border transition-colors ${
             platform === "chesscom"
-              ? "bg-[#111] text-white border-[#333]"
-              : "bg-transparent text-[#999] border-[#ddd] hover:border-[#bbb]"
+              ? dark ? "bg-[#c8942a] text-[#0e0e0e] border-[#c8942a]" : "bg-[#111] text-white border-[#333]"
+              : dark ? "bg-[#1a1a1a] text-[#888] border-[#333] hover:border-[#555]" : "bg-transparent text-[#999] border-[#ddd] hover:border-[#bbb]"
           }`}
         >
           Chess.com
@@ -53,8 +55,8 @@ export default function HeroForm({
           onClick={() => setPlatform("lichess")}
           className={`text-xs font-semibold px-4 py-1.5 rounded-md border transition-colors ${
             platform === "lichess"
-              ? "bg-[#111] text-white border-[#333]"
-              : "bg-transparent text-[#999] border-[#ddd] hover:border-[#bbb]"
+              ? dark ? "bg-[#c8942a] text-[#0e0e0e] border-[#c8942a]" : "bg-[#111] text-white border-[#333]"
+              : dark ? "bg-[#1a1a1a] text-[#888] border-[#333] hover:border-[#555]" : "bg-transparent text-[#999] border-[#ddd] hover:border-[#bbb]"
           }`}
         >
           Lichess
@@ -70,7 +72,11 @@ export default function HeroForm({
           placeholder={platform === "chesscom" ? chesscomPlaceholder : lichessPlaceholder}
           autoComplete="off"
           required
-          className="flex-1 h-12 text-sm text-[#111] bg-white border border-[#d0d0d0] rounded-l-lg px-3.5 placeholder-[#aaa] focus:outline-none focus:border-[#c8942a] transition-colors"
+          className={`flex-1 h-12 text-sm rounded-l-lg px-3.5 focus:outline-none focus:border-[#c8942a] transition-colors ${
+            dark
+              ? "bg-[#1a1a1a] border border-[#333] text-[#eee] placeholder-[#666]"
+              : "bg-white border border-[#d0d0d0] text-[#111] placeholder-[#aaa]"
+          }`}
         />
         <button
           type="submit"
@@ -81,7 +87,7 @@ export default function HeroForm({
       </form>
 
       {/* Trust row */}
-      <div className="flex items-center gap-2 mt-3 text-xs text-[#aaa]">
+      <div className={`flex items-center gap-2 mt-3 text-xs ${dark ? "text-[#666]" : "text-[#aaa]"}`}>
         <span>{trustFree}</span>
         <span className="text-[#c8942a]">&middot;</span>
         <span>{trustUnlimited}</span>
