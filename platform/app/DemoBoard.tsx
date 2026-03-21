@@ -388,7 +388,7 @@ export default function DemoBoard() {
         </div>
 
         {/* ── Recently analysed strip — GIF mode only ── */}
-        {phase === "gif" && data?.recentActivity && (
+        {phase === "gif" && data?.recentActivity && data.recentActivity.length > 0 && (
           <RecentStrip entries={data.recentActivity} />
         )}
 
@@ -582,18 +582,39 @@ function ResultRow({
 /* ── Horizontal scrolling recent activity strip ── */
 
 function RecentStrip({ entries }: { entries: RecentEntry[] }) {
-  const [offset, setOffset] = useState(0);
-  const stripRef = useRef<HTMLDivElement>(null);
+  const [step, setStep] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(true);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  // Each entry is ~200px wide. Show 3 at a time in 480px.
+  const ENTRY_W = 200;
+  const count = entries.length;
+
+  // Triple the entries for seamless looping
+  const tripled = [...entries, ...entries, ...entries];
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setOffset((o) => o + 1);
+      setStep((s) => s + 1);
     }, 3000);
     return () => clearInterval(timer);
   }, []);
 
-  // Build a looping list
-  const looped = Array.from({ length: entries.length * 3 }, (_, i) => entries[i % entries.length]);
+  // When we've scrolled past the first full set, jump back seamlessly
+  useEffect(() => {
+    if (step >= count) {
+      // Let the transition finish, then snap back
+      const snap = setTimeout(() => {
+        setIsTransitioning(false);
+        setStep((s) => s - count);
+        // Re-enable transition after the snap
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => setIsTransitioning(true));
+        });
+      }, 800); // match transition duration
+      return () => clearTimeout(snap);
+    }
+  }, [step, count]);
 
   return (
     <div
@@ -603,23 +624,22 @@ function RecentStrip({ entries }: { entries: RecentEntry[] }) {
         background: "#fff",
         border: "0.5px solid #e5e5e5",
         borderRadius: 8,
-        padding: "12px 16px",
+        padding: "12px 0",
         overflow: "hidden",
         position: "relative",
       }}
     >
       <div
-        ref={stripRef}
+        ref={trackRef}
         style={{
           display: "flex",
-          gap: 16,
-          transition: "transform 0.8s ease",
-          transform: `translateX(-${offset * 200}px)`,
+          transition: isTransitioning ? "transform 0.8s ease" : "none",
+          transform: `translateX(-${step * ENTRY_W}px)`,
         }}
       >
-        {looped.map((entry, i) => (
+        {tripled.map((entry, i) => (
           <div
-            key={`${entry.username}-${i}`}
+            key={`strip-${i}`}
             style={{
               display: "flex",
               alignItems: "center",
@@ -628,19 +648,22 @@ function RecentStrip({ entries }: { entries: RecentEntry[] }) {
               color: "#555",
               whiteSpace: "nowrap",
               flexShrink: 0,
+              width: ENTRY_W,
+              padding: "0 16px",
+              boxSizing: "border-box",
             }}
           >
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#c8942a", flexShrink: 0 }} />
             <span>
-              {entry.username} &mdash; {entry.puzzleCount} puzzles &middot; {entry.timeAgo}
+              {entry.username} &mdash; {entry.puzzleCount} puzzles <span style={{ color: "#ccc" }}>&middot;</span> {entry.timeAgo}
             </span>
           </div>
         ))}
       </div>
 
       {/* Fade edges */}
-      <div style={{ position: "absolute", top: 0, right: 0, bottom: 0, width: 40, background: "linear-gradient(to right, transparent, white)", pointerEvents: "none" }} />
-      <div style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: 40, background: "linear-gradient(to left, transparent, white)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", top: 0, right: 0, bottom: 0, width: 32, background: "linear-gradient(to right, transparent, white)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: 32, background: "linear-gradient(to left, transparent, white)", pointerEvents: "none" }} />
     </div>
   );
 }

@@ -114,23 +114,25 @@ export async function GET() {
     ]);
 
     // Recent users with puzzles
-    const recentUsersRaw = await prisma.user.findMany({
-      take: 6,
-      orderBy: { createdAt: "desc" },
-      where: { puzzles: { some: {} } },
-      select: {
-        chessComUsername: true,
-        lichessUsername: true,
-        createdAt: true,
-        _count: { select: { puzzles: true } },
-      },
-    });
-
-    const recentActivity = recentUsersRaw.map((u) => ({
-      username: u.chessComUsername ?? u.lichessUsername ?? "anon",
-      puzzleCount: u._count.puzzles,
-      timeAgo: timeAgo(u.createdAt),
-    }));
+    let recentActivity: { username: string; puzzleCount: number; timeAgo: string }[] = [];
+    try {
+      const recentUsersRaw = await prisma.user.findMany({
+        take: 6,
+        orderBy: { createdAt: "desc" },
+        where: { puzzles: { some: {} } },
+        include: {
+          _count: { select: { puzzles: true } },
+        },
+      });
+      console.log("[demo] Recent users raw:", recentUsersRaw.length, "found");
+      recentActivity = recentUsersRaw.map((u) => ({
+        username: u.chessComUsername ?? u.lichessUsername ?? "anon",
+        puzzleCount: u._count.puzzles,
+        timeAgo: timeAgo(u.createdAt),
+      }));
+    } catch (err) {
+      console.error("[demo] Recent users query failed:", err);
+    }
 
     const solution = puzzle.solutionMoves.split(" ")[0] ?? "";
 
