@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { getT, resolveLocale, LOCALE_COOKIE, preloadLocale } from "@/lib/i18n";
 import CassandraLogo from "@/components/CassandraLogo";
 import ConfirmedToast from "@/components/marketing/ConfirmedToast";
 import HeroBoard from "./HeroBoard";
@@ -15,6 +17,11 @@ export default async function Home() {
     const { redirect } = await import("next/navigation");
     redirect("/home");
   }
+
+  const cookieStore = await cookies();
+  const locale = resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  await preloadLocale(locale);
+  const t = getT(locale);
 
   return (
     <main className="min-h-screen flex flex-col">
@@ -33,20 +40,20 @@ export default async function Home() {
               href="/learn"
               className="text-gray-300 text-sm hover:text-white transition-colors hidden sm:inline"
             >
-              Learn
+              {t("landing.nav.learn")}
             </Link>
             <Link
               href="/connect"
               className="text-gray-300 text-sm hover:text-white transition-colors hidden sm:inline"
             >
-              Sign in
+              {t("landing.nav.signIn")}
             </Link>
             <Link
               href="/connect"
               className="text-[#c8942a] text-sm font-semibold px-4 py-1.5 rounded-full hover:bg-[#c8942a]/10 transition-colors"
               style={{ border: "0.5px solid #c8942a" }}
             >
-              Get started free
+              {t("landing.nav.getStarted")}
             </Link>
           </div>
         </div>
@@ -62,17 +69,17 @@ export default async function Home() {
               className="text-[32px] sm:text-[40px] leading-[1.15] font-normal text-[#111] mb-5"
               style={{ fontFamily: "Georgia, serif", letterSpacing: "-0.02em" }}
             >
-              Turn your mistakes{"\n"}into progress.{" "}
+              {t("landing.hero.h1")}{" "}
               <span className="inline-block">&#9823;</span>
             </h1>
 
             <p className="text-[#666] text-[15px] leading-relaxed mb-8 max-w-md">
-              Cassandra finds the mistakes in your games and turns them into puzzles personalised to you.
+              {t("landing.hero.value")}
             </p>
 
             {/* How it works */}
             <p className="text-[11px] uppercase tracking-[0.1em] text-[#999] font-semibold mb-4">
-              How it works
+              {t("landing.hero.howItWorks")}
             </p>
 
             <div className="space-y-4 mb-8">
@@ -81,8 +88,8 @@ export default async function Home() {
                   1
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-[#111]">Connect your account</p>
-                  <p className="text-xs text-[#888] mt-0.5">Link your Chess.com or Lichess username. No payment required.</p>
+                  <p className="text-sm font-semibold text-[#111]">{t("landing.hero.step1.title")}</p>
+                  <p className="text-xs text-[#888] mt-0.5">{t("landing.hero.step1.desc")}</p>
                 </div>
               </div>
 
@@ -91,8 +98,8 @@ export default async function Home() {
                   2
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-[#111]">We do the work</p>
-                  <p className="text-xs text-[#888] mt-0.5">Cassandra scans your recent games and pinpoints exactly where things went wrong — missed tactics, miscalculations, and positions that slipped away.</p>
+                  <p className="text-sm font-semibold text-[#111]">{t("landing.hero.step2.title")}</p>
+                  <p className="text-xs text-[#888] mt-0.5">{t("landing.hero.step2.desc")}</p>
                 </div>
               </div>
 
@@ -101,7 +108,7 @@ export default async function Home() {
                   3
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-[#111]">Start training</p>
+                  <p className="text-sm font-semibold text-[#111]">{t("landing.hero.step3.title")}</p>
                 </div>
               </div>
             </div>
@@ -111,10 +118,18 @@ export default async function Home() {
 
             {/* Begin training */}
             <p className="text-[11px] uppercase tracking-[0.1em] text-[#999] font-semibold mb-4">
-              Begin training
+              {t("landing.hero.beginTraining")}
             </p>
 
-            <HeroForm />
+            <HeroForm
+              ctaLabel={t("landing.hero.cta")}
+              chesscomPlaceholder={t("landing.hero.chesscomPlaceholder")}
+              lichessPlaceholder={t("landing.hero.lichessPlaceholder")}
+              trustFree={t("landing.hero.trustFree")}
+              trustUnlimited={t("landing.hero.trustUnlimited")}
+              trustNoPaywall={t("landing.hero.trustNoPaywall")}
+              trustPersonalised={t("landing.hero.trustPersonalised")}
+            />
           </div>
 
           {/* Right column — animated board */}
@@ -129,15 +144,15 @@ export default async function Home() {
         <div className="max-w-5xl mx-auto flex flex-col items-center gap-3">
           <SocialLinks variant="dark" />
           <div className="flex items-center justify-center gap-3 text-xs">
-            <Link href="/privacy" className="text-[#c8942a] hover:text-[#e0ad3a] transition-colors">Privacy</Link>
+            <Link href="/privacy" className="text-[#c8942a] hover:text-[#e0ad3a] transition-colors">{t("legal.privacy")}</Link>
             <span className="text-[#444]">&middot;</span>
-            <Link href="/terms" className="text-[#c8942a] hover:text-[#e0ad3a] transition-colors">Terms</Link>
+            <Link href="/terms" className="text-[#c8942a] hover:text-[#e0ad3a] transition-colors">{t("legal.terms")}</Link>
             <span className="text-[#444]">&middot;</span>
             <CookiePreferencesLink />
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#999] w-full">
-            <p>&copy; 2026 Cassandra Chess</p>
-            <p>Puzzles from the Lichess open database (CC0)</p>
+            <p>{t("landing.footer.copy")}</p>
+            <p>{t("landing.footer.source")}</p>
           </div>
         </div>
       </footer>

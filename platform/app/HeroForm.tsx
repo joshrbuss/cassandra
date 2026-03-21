@@ -3,7 +3,25 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function HeroForm() {
+interface Props {
+  ctaLabel: string;
+  chesscomPlaceholder: string;
+  lichessPlaceholder: string;
+  trustFree: string;
+  trustUnlimited: string;
+  trustNoPaywall: string;
+  trustPersonalised: string;
+}
+
+export default function HeroForm({
+  ctaLabel,
+  chesscomPlaceholder,
+  lichessPlaceholder,
+  trustFree,
+  trustUnlimited,
+  trustNoPaywall,
+  trustPersonalised,
+}: Props) {
   const [platform, setPlatform] = useState<"chesscom" | "lichess">("chesscom");
   const [username, setUsername] = useState("");
   const router = useRouter();
@@ -49,7 +67,7 @@ export default function HeroForm() {
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          placeholder={platform === "chesscom" ? "Chess.com username" : "Lichess username"}
+          placeholder={platform === "chesscom" ? chesscomPlaceholder : lichessPlaceholder}
           autoComplete="off"
           required
           className="flex-1 text-sm text-[#111] bg-white border border-[#ddd] rounded-lg px-3.5 py-2.5 placeholder-[#aaa] focus:outline-none focus:border-[#c8942a] transition-colors"
@@ -58,19 +76,19 @@ export default function HeroForm() {
           type="submit"
           className="text-sm font-semibold bg-[#c8942a] text-white px-5 py-2.5 rounded-lg hover:bg-[#b5852a] transition-colors whitespace-nowrap"
         >
-          See your mistakes &rarr;
+          {ctaLabel}
         </button>
       </form>
 
       {/* Trust row */}
       <div className="flex items-center gap-2 mt-3 text-xs text-[#aaa]">
-        <span>Free</span>
+        <span>{trustFree}</span>
         <span className="text-[#c8942a]">&middot;</span>
-        <span>Unlimited</span>
+        <span>{trustUnlimited}</span>
         <span className="text-[#c8942a]">&middot;</span>
-        <span>No paywall</span>
+        <span>{trustNoPaywall}</span>
         <span className="text-[#c8942a]">&middot;</span>
-        <span>Personalised</span>
+        <span>{trustPersonalised}</span>
       </div>
     </div>
   );
