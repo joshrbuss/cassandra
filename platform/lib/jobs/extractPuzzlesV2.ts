@@ -746,17 +746,34 @@ export async function extractPuzzlesV2(
   let prevCp: number | null = null;
   let prevBestMove: string | null = null;
   let positionsEvaluated = 0;
+  let engineNulls = 0;
+
+  // ── Stockfish health check: test one position before the loop ──
+  const healthCheck = await getBestMove(positions[0].fen);
+  if (!healthCheck) {
+    console.error(`[extract-v2] ⚠️  STOCKFISH HEALTH CHECK FAILED — getBestMove returned null for starting position`);
+    console.error(`[extract-v2] ⚠️  Engine is not available. All evals will be null. Aborting game.`);
+    return { candidates: [], moveEvals: [], accuracy: EMPTY_ACCURACY, gameUrl, stoppedAt: 0, totalPositions: positions.length, complete: false };
+  }
+  console.log(`[extract-v2] ✓ Stockfish health check passed: bestMove=${healthCheck.move} cp=${healthCheck.cp}`);
 
   for (let i = 0; i < positions.length; i++) {
     const { fen } = positions[i];
     const result = await getBestMove(fen);
     if (!result) {
+      engineNulls++;
+      if (engineNulls <= 3) {
+        console.warn(`[extract-v2] Engine returned null for position ${i} (FEN: ${fen.slice(0, 40)}...)`);
+      }
       prevCp = null;
       prevBestMove = null;
       continue;
     }
 
     positionsEvaluated++;
+    if (positionsEvaluated <= 3 || positionsEvaluated % 20 === 0) {
+      console.log(`[extract-v2]   pos ${i}/${positions.length}: bestMove=${result.move} cp=${result.cp}`);
+    }
     const currentCp = result.cp;
 
     if (prevCp !== null && prevBestMove !== null) {
@@ -844,7 +861,20 @@ export async function extractPuzzlesV2(
   const playerSide = gameContext.playerColor ?? "white";
   const accuracy = computeAccuracy(moveEvals, playerSide as "white" | "black");
 
-  console.log(`[extract-v2] Summary: evaluated=${positionsEvaluated} puzzlesFound=${candidates.length} accuracy=${accuracy.overall}% avgCPL=${accuracy.averageCpl}`);
+  console.log(`[extract-v2] ── Game summary ──`);
+  console.log(`[extract-v2]   Positions: ${positions.length} total, ${positionsEvaluated} evaluated, ${engineNulls} engine nulls`);
+  console.log(`[extract-v2]   MoveEvals collected: ${moveEvals.length}`);
+  console.log(`[extract-v2]   Puzzles found: ${candidates.length}`);
+  console.log(`[extract-v2]   Player side: ${playerSide} | playerTurn filter: ${playerTurn}`);
+  console.log(`[extract-v2]   Accuracy: ${accuracy.overall}% | avgCPL: ${accuracy.averageCpl} | moves: ${accuracy.moveCount}`);
+  if (moveEvals.length > 0) {
+    const maxCpl = Math.max(...moveEvals.map((e) => e.cpl));
+    const bigSwings = moveEvals.filter((e) => e.cpl >= BLUNDER_THRESHOLD);
+    console.log(`[extract-v2]   Max CPL: ${maxCpl} | Swings >= ${BLUNDER_THRESHOLD}cp: ${bigSwings.length}`);
+    for (const s of bigSwings.slice(0, 5)) {
+      console.log(`[extract-v2]     move ${s.moveNumber} (${s.side}): cpl=${s.cpl} played=${s.movePlayed} best=${s.bestMove} [${s.phase}]`);
+    }
+  }
 
   return {
     candidates,

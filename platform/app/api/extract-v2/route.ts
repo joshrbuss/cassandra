@@ -61,8 +61,12 @@ export async function POST(request: Request) {
 
     for (let g = 0; g < pgns.length; g++) {
       console.log(`\n[extract-v2] ─── Game ${g + 1}/${pgns.length} ───`);
+      // Log PGN snippet for debugging
+      const pgnSnippet = pgns[g].slice(0, 200).replace(/\n/g, " ");
+      console.log(`[extract-v2] PGN preview: ${pgnSnippet}...`);
 
       const result = await extractPuzzlesV2(pgns[g], userId, username);
+      console.log(`[extract-v2] Game ${g + 1} result: puzzles=${result.candidates.length} moveEvals=${result.moveEvals.length} accuracy=${result.accuracy.overall}% complete=${result.complete}`);
       allCandidates.push(...result.candidates);
       totalPositionsAnalysed += result.stoppedAt;
 
