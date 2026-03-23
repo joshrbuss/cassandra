@@ -38,6 +38,18 @@ export default async function Home() {
 
           <div className="flex items-center gap-4">
             <Link
+              href="/about"
+              className="text-gray-300 text-sm hover:text-white transition-colors hidden sm:inline"
+            >
+              {t("nav.about")}
+            </Link>
+            <Link
+              href="/feedback"
+              className="text-gray-300 text-sm hover:text-white transition-colors hidden sm:inline"
+            >
+              {t("nav.feedback")}
+            </Link>
+            <Link
               href="/learn"
               className="text-gray-300 text-sm hover:text-white transition-colors hidden sm:inline"
             >

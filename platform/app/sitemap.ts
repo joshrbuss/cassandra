@@ -36,6 +36,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { ...withCookieAlternates(`${BASE_URL}/trials`), lastModified: now, changeFrequency: "daily", priority: 0.8 },
     { ...withCookieAlternates(`${BASE_URL}/leaderboard`), lastModified: now, changeFrequency: "hourly", priority: 0.7 },
     { ...withCookieAlternates(`${BASE_URL}/creator`), lastModified: now, changeFrequency: "daily", priority: 0.6 },
+    { ...withCookieAlternates(`${BASE_URL}/about`), lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { ...withCookieAlternates(`${BASE_URL}/privacy`), lastModified: now, changeFrequency: "monthly", priority: 0.3 },
     { ...withCookieAlternates(`${BASE_URL}/terms`), lastModified: now, changeFrequency: "monthly", priority: 0.3 },
   ];
