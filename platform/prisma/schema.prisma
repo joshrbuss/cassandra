@@ -317,6 +317,37 @@ model SearchConsoleKeyword {
   @@index([date])
 }
 
+/// Per-move evaluation data from v2 extraction pipeline
+model MoveEval {
+  id         String @id @default(cuid())
+  /// Game URL or identifier linking evals to a specific game
+  gameId     String
+  /// Full move number (1-based)
+  moveNumber Int
+  /// "white" | "black" — which side made this move
+  side       String
+  /// Centipawn eval of the position AFTER this move was played
+  evalCp     Int
+  /// Centipawn eval of the best move from the position BEFORE this move
+  bestMoveCp Int
+  /// Centipawn loss = bestMoveCp - evalCp (0 = played the best move)
+  cpl        Int
+  /// "opening" | "middlegame" | "endgame"
+  phase      String  @default("middlegame")
+  /// UCI notation of the move played
+  movePlayed String?
+  /// UCI notation of the best move (engine recommendation)
+  bestMove   String?
+  /// Extraction version tag
+  subtype    String  @default("v2")
+
+  createdAt DateTime @default(now())
+
+  @@index([gameId])
+  @@index([gameId, side])
+  @@index([subtype])
+}
+
 /// Resend email webhook events (opened, clicked, etc.)
 model ResendEvent {
   id             String   @id @default(cuid())

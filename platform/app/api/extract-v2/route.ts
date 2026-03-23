@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fetchRecentGames } from "@/lib/chess-apis/chesscom";
-import { extractPuzzlesV2 } from "@/lib/jobs/extractPuzzlesV2";
+import { extractPuzzlesV2, type ExtractResultV2 } from "@/lib/jobs/extractPuzzlesV2";
 
 /**
  * V2 puzzle extraction — internal testing endpoint.
@@ -10,7 +10,8 @@ import { extractPuzzlesV2 } from "@/lib/jobs/extractPuzzlesV2";
  * Body: { username?: string, maxGames?: number }
  *
  * Defaults to j_r_b_01 on Chess.com. Fetches recent games,
- * runs the v2 extraction pipeline, and stores puzzles.
+ * runs the v2 extraction pipeline, stores puzzles + MoveEvals,
+ * and returns accuracy data.
  */
 export async function POST(request: Request) {
   const start = Date.now();
@@ -18,11 +19,10 @@ export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
     const username = (body.username as string) || "j_r_b_01";
-    const maxGames = Math.min((body.maxGames as number) || 3, 10); // cap at 10
+    const maxGames = Math.min((body.maxGames as number) || 3, 10);
 
     console.log(`\n[extract-v2] ═══ Starting V2 extraction for ${username} (max ${maxGames} games) ═══\n`);
 
-    // Find or identify the user
     const user = await prisma.user.findFirst({
       where: {
         OR: [
@@ -35,7 +35,6 @@ export async function POST(request: Request) {
     const userId = user?.id ?? `v2-test-${username}`;
     console.log(`[extract-v2] User: ${user ? `found (${user.id})` : `not in DB, using temp ID: ${userId}`}`);
 
-    // Fetch recent games from Chess.com
     console.log(`[extract-v2] Fetching up to ${maxGames} games from Chess.com...`);
     const pgns = await fetchRecentGames(username, maxGames);
     console.log(`[extract-v2] Fetched ${pgns.length} games`);
@@ -48,8 +47,16 @@ export async function POST(request: Request) {
       });
     }
 
-    // Extract puzzles from each game
-    const allCandidates = [];
+    // Process each game
+    const gameResults: {
+      gameUrl?: string;
+      accuracy: ExtractResultV2["accuracy"];
+      puzzles: ExtractResultV2["candidates"];
+      moveEvals: ExtractResultV2["moveEvals"];
+      totalMoves: number;
+    }[] = [];
+
+    let allCandidates: ExtractResultV2["candidates"] = [];
     let totalPositionsAnalysed = 0;
 
     for (let g = 0; g < pgns.length; g++) {
@@ -58,28 +65,52 @@ export async function POST(request: Request) {
       const result = await extractPuzzlesV2(pgns[g], userId, username);
       allCandidates.push(...result.candidates);
       totalPositionsAnalysed += result.stoppedAt;
+
+      gameResults.push({
+        gameUrl: result.gameUrl,
+        accuracy: result.accuracy,
+        puzzles: result.candidates,
+        moveEvals: result.moveEvals,
+        totalMoves: result.totalPositions,
+      });
+
+      // Store MoveEvals for this game
+      const gameId = result.gameUrl ?? `game-${g}-${Date.now()}`;
+      if (result.moveEvals.length > 0) {
+        await prisma.moveEval.createMany({
+          data: result.moveEvals.map((e) => ({
+            gameId,
+            moveNumber: e.moveNumber,
+            side: e.side,
+            evalCp: e.evalCp,
+            bestMoveCp: e.bestMoveCp,
+            cpl: e.cpl,
+            phase: e.phase,
+            movePlayed: e.movePlayed,
+            bestMove: e.bestMove,
+            subtype: "v2",
+          })),
+        });
+        console.log(`[extract-v2] Stored ${result.moveEvals.length} MoveEvals for ${gameId}`);
+      }
     }
 
     console.log(`\n[extract-v2] ═══ Extraction complete: ${allCandidates.length} puzzles from ${pgns.length} games ═══`);
 
-    // Store puzzles (skip duplicates by solvingFen for this user)
+    // Store puzzles (skip duplicates)
     let stored = 0;
     let skipped = 0;
 
     for (const c of allCandidates) {
-      // Check for duplicate
       const existing = await prisma.puzzle.findFirst({
         where: { solvingFen: c.solvingFen, sourceUserId: user?.id ?? undefined },
       });
 
       if (existing) {
-        console.log(`[extract-v2] Skipped duplicate: ${c.solvingFen.slice(0, 30)}...`);
         skipped++;
         continue;
       }
 
-      // Store — use Prisma create, omitting extractionVersion from DB
-      // (store it in themes or a separate field)
       await prisma.puzzle.create({
         data: {
           id: c.id,
@@ -100,7 +131,6 @@ export async function POST(request: Request) {
           moveNumber: c.moveNumber,
           evalCp: c.evalCp,
           playerColor: c.playerColor,
-          // Mark as v2 via subtype field (exists in schema)
           subtype: "v2",
         },
       });
@@ -118,21 +148,34 @@ export async function POST(request: Request) {
       puzzlesStored: stored,
       puzzlesSkipped: skipped,
       elapsedSeconds: parseFloat(elapsed),
-      puzzles: allCandidates.map((c) => ({
-        id: c.id,
-        moveNumber: c.moveNumber,
-        solutionMoves: c.solutionMoves,
-        solutionDepth: c.solutionMoves.split(" ").length,
-        themes: c.themes,
-        rating: c.rating,
-        evalCp: c.evalCp,
-        gameUrl: c.gameUrl,
-        fen: c.solvingFen,
+      games: gameResults.map((gr) => ({
+        gameUrl: gr.gameUrl,
+        accuracy: gr.accuracy,
+        totalMoves: gr.totalMoves,
+        puzzleCount: gr.puzzles.length,
+        puzzles: gr.puzzles.map((c) => ({
+          id: c.id,
+          moveNumber: c.moveNumber,
+          solutionMoves: c.solutionMoves,
+          solutionDepth: c.solutionMoves.split(" ").length,
+          themes: c.themes,
+          rating: c.rating,
+          evalCp: c.evalCp,
+          fen: c.solvingFen,
+        })),
+        moveEvals: gr.moveEvals.map((e) => ({
+          move: e.moveNumber,
+          side: e.side,
+          cpl: e.cpl,
+          phase: e.phase,
+          played: e.movePlayed,
+          best: e.bestMove,
+        })),
       })),
     };
 
     console.log(`\n[extract-v2] ═══ FINAL SUMMARY ═══`);
-    console.log(JSON.stringify(summary, null, 2));
+    console.log(JSON.stringify({ ...summary, games: summary.games.map(g => ({ ...g, moveEvals: `[${g.moveEvals.length} evals]` })) }, null, 2));
 
     return NextResponse.json(summary);
   } catch (error) {

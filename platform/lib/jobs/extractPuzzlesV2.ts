@@ -46,8 +46,31 @@ export interface PuzzleCandidateV2 {
   extractionVersion: "v2";
 }
 
+export interface MoveEvalData {
+  moveNumber: number;
+  side: "white" | "black";
+  evalCp: number;
+  bestMoveCp: number;
+  cpl: number;
+  phase: "opening" | "middlegame" | "endgame";
+  movePlayed: string;
+  bestMove: string;
+}
+
+export interface GameAccuracy {
+  overall: number; // 0-100
+  opening: number;
+  middlegame: number;
+  endgame: number;
+  averageCpl: number;
+  moveCount: number;
+}
+
 export interface ExtractResultV2 {
   candidates: PuzzleCandidateV2[];
+  moveEvals: MoveEvalData[];
+  accuracy: GameAccuracy;
+  gameUrl?: string;
   stoppedAt: number;
   totalPositions: number;
   complete: boolean;
@@ -575,6 +598,62 @@ function findFriendlySlidingPiecesThrough(
   return result;
 }
 
+// ─── Accuracy calculation ───────────────────────────────────────────────────
+
+/**
+ * Determines game phase based on move number and material.
+ * Rough heuristic: moves 1-10 = opening, 11-25 = middlegame, 26+ = endgame.
+ * Could be improved with material counting but this is sufficient for v2.
+ */
+function getPhase(moveNumber: number, fen: string): "opening" | "middlegame" | "endgame" {
+  // Count non-pawn, non-king pieces for material-based endgame detection
+  const piecePart = fen.split(" ")[0];
+  const majorMinor = (piecePart.match(/[qrbnQRBN]/g) || []).length;
+  if (majorMinor <= 4 || moveNumber >= 30) return "endgame";
+  if (moveNumber <= 10) return "opening";
+  return "middlegame";
+}
+
+/**
+ * Convert average centipawn loss to an accuracy percentage.
+ * Uses a formula approximating Chess.com's accuracy metric:
+ *   accuracy = 103.1668 * exp(-0.04354 * ACPL) - 3.1668
+ * Clamped to [0, 100].
+ */
+function cplToAccuracy(avgCpl: number): number {
+  if (avgCpl <= 0) return 100;
+  const acc = 103.1668 * Math.exp(-0.04354 * avgCpl) - 3.1668;
+  return Math.round(Math.max(0, Math.min(100, acc)) * 10) / 10;
+}
+
+function computeAccuracy(evals: MoveEvalData[], side: "white" | "black"): GameAccuracy {
+  const playerEvals = evals.filter((e) => e.side === side);
+  if (playerEvals.length === 0) {
+    return { overall: 0, opening: 0, middlegame: 0, endgame: 0, averageCpl: 0, moveCount: 0 };
+  }
+
+  const totalCpl = playerEvals.reduce((sum, e) => sum + e.cpl, 0);
+  const avgCpl = totalCpl / playerEvals.length;
+
+  const byPhase = (phase: "opening" | "middlegame" | "endgame") => {
+    const phaseEvals = playerEvals.filter((e) => e.phase === phase);
+    if (phaseEvals.length === 0) return 0;
+    const phaseAvg = phaseEvals.reduce((s, e) => s + e.cpl, 0) / phaseEvals.length;
+    return cplToAccuracy(phaseAvg);
+  };
+
+  return {
+    overall: cplToAccuracy(avgCpl),
+    opening: byPhase("opening"),
+    middlegame: byPhase("middlegame"),
+    endgame: byPhase("endgame"),
+    averageCpl: Math.round(avgCpl * 10) / 10,
+    moveCount: playerEvals.length,
+  };
+}
+
+const EMPTY_ACCURACY: GameAccuracy = { overall: 0, opening: 0, middlegame: 0, endgame: 0, averageCpl: 0, moveCount: 0 };
+
 // ─── PGN helpers (shared with v1) ───────────────────────────────────────────
 
 function parsePgn(pgn: string): Chess | null {
@@ -654,7 +733,7 @@ export async function extractPuzzlesV2(
 
   if (positions.length < 5) {
     console.log(`[extract-v2] Skipped — too few positions (${positions.length})`);
-    return { candidates: [], stoppedAt: positions.length, totalPositions: positions.length, complete: true };
+    return { candidates: [], moveEvals: [], accuracy: EMPTY_ACCURACY, gameUrl, stoppedAt: positions.length, totalPositions: positions.length, complete: true };
   }
 
   const playerTurn: "w" | "b" | null =
@@ -663,13 +742,12 @@ export async function extractPuzzlesV2(
     : null;
 
   const candidates: PuzzleCandidateV2[] = [];
+  const moveEvals: MoveEvalData[] = [];
   let prevCp: number | null = null;
   let prevBestMove: string | null = null;
   let positionsEvaluated = 0;
 
   for (let i = 0; i < positions.length; i++) {
-    if (candidates.length >= MAX_PER_GAME) break;
-
     const { fen } = positions[i];
     const result = await getBestMove(fen);
     if (!result) {
@@ -682,17 +760,39 @@ export async function extractPuzzlesV2(
     const currentCp = result.cp;
 
     if (prevCp !== null && prevBestMove !== null) {
-      const blunderTurn = positions[i - 1].fen.split(" ")[1];
+      // Record per-move eval for the move that was played from positions[i-1]
+      const moveSide: "white" | "black" = positions[i - 1].fen.split(" ")[1] === "w" ? "white" : "black";
+      const moveNum = Math.floor((i - 1) / 2) + 1;
+      const phase = getPhase(moveNum, positions[i - 1].fen);
 
+      // CPL: how much worse the played move was vs the best move
+      // prevCp = best eval from position before move (from mover's perspective, positive = good)
+      // -currentCp = eval after the move was played (from mover's perspective)
+      const evalAfterMove = -currentCp; // flip because currentCp is from next side's perspective
+      const cpl = Math.max(0, prevCp - evalAfterMove);
+
+      moveEvals.push({
+        moveNumber: moveNum,
+        side: moveSide,
+        evalCp: evalAfterMove,
+        bestMoveCp: prevCp,
+        cpl,
+        phase,
+        movePlayed: positions[i - 1].uci,
+        bestMove: prevBestMove,
+      });
+
+      // Only extract puzzles from the player's moves
+      const blunderTurn = positions[i - 1].fen.split(" ")[1];
       if (playerTurn && blunderTurn !== playerTurn) {
         prevCp = currentCp;
         prevBestMove = result.move;
         continue;
       }
 
-      const swing = prevCp - -currentCp;
+      const swing = prevCp - evalAfterMove;
 
-      if (swing >= BLUNDER_THRESHOLD) {
+      if (swing >= BLUNDER_THRESHOLD && candidates.length < MAX_PER_GAME) {
         const { fen: blunderFen } = positions[i - 1];
         const lastMove = i >= 2 ? positions[i - 2].uci : "";
 
@@ -703,8 +803,6 @@ export async function extractPuzzlesV2(
         // Recursive forcing extension
         const solutionMoves = await extendForcingSequence(blunderFen, prevBestMove);
         const solutionDepth = solutionMoves.split(" ").length;
-
-        const moveNumber = Math.floor((i - 1) / 2) + 1;
 
         const candidate: PuzzleCandidateV2 = {
           id: cuid(),
@@ -720,7 +818,7 @@ export async function extractPuzzlesV2(
           isPublic: false,
           gameUrl,
           ...gameContext,
-          moveNumber,
+          moveNumber: moveNum,
           evalCp: prevCp,
           extractionVersion: "v2",
         };
@@ -729,7 +827,7 @@ export async function extractPuzzlesV2(
 
         console.log(
           `[extract-v2] PUZZLE #${candidates.length}: ` +
-          `move ${moveNumber} | swing=${swing}cp | ` +
+          `move ${moveNum} | swing=${swing}cp | ` +
           `solution="${solutionMoves}" (${solutionDepth} ply) | ` +
           `themes=[${themes.join(", ")}] | ` +
           `rating=${candidate.rating} | ` +
@@ -742,10 +840,17 @@ export async function extractPuzzlesV2(
     prevBestMove = result.move;
   }
 
-  console.log(`[extract-v2] Summary: evaluated=${positionsEvaluated} puzzlesFound=${candidates.length}`);
+  // Compute accuracy for the player's side
+  const playerSide = gameContext.playerColor ?? "white";
+  const accuracy = computeAccuracy(moveEvals, playerSide as "white" | "black");
+
+  console.log(`[extract-v2] Summary: evaluated=${positionsEvaluated} puzzlesFound=${candidates.length} accuracy=${accuracy.overall}% avgCPL=${accuracy.averageCpl}`);
 
   return {
     candidates,
+    moveEvals,
+    accuracy,
+    gameUrl,
     stoppedAt: positions.length,
     totalPositions: positions.length,
     complete: true,
