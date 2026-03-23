@@ -105,12 +105,24 @@ export async function GET() {
     // Recent users
     let recentActivity: { username: string; puzzleCount: number; timeAgo: string }[] = [];
     try {
-      const recentUsersRaw = await prisma.user.findMany({
+      // Try users with lastSyncedAt first, fall back to createdAt
+      let recentUsersRaw = await prisma.user.findMany({
         take: 6,
         orderBy: { lastSyncedAt: "desc" },
         where: { puzzles: { some: {} }, lastSyncedAt: { not: null } },
         include: { _count: { select: { puzzles: true } } },
       });
+      // If not enough users have synced, fill with recently created users
+      if (recentUsersRaw.length < 6) {
+        const existingIds = recentUsersRaw.map((u) => u.id);
+        const fallback = await prisma.user.findMany({
+          take: 6 - recentUsersRaw.length,
+          orderBy: { createdAt: "desc" },
+          where: { puzzles: { some: {} }, id: { notIn: existingIds } },
+          include: { _count: { select: { puzzles: true } } },
+        });
+        recentUsersRaw = [...recentUsersRaw, ...fallback];
+      }
       recentActivity = recentUsersRaw.map((u) => ({
         username: u.chessComUsername ?? u.lichessUsername ?? "anon",
         puzzleCount: u._count.puzzles,

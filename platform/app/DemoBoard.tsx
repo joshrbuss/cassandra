@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import ChessBoardWrapper from "@/components/ChessBoardWrapper";
 import type { PieceDropHandlerArgs } from "@/components/ChessBoardWrapper";
 import CassandraLogo from "@/components/CassandraLogo";
+import { useTranslation } from "@/components/i18n/LocaleProvider";
 
 /* ── Types ── */
 
@@ -40,15 +41,12 @@ const LOADING_INTERVAL = 180;
 const LOADING_DURATION = 1500;
 const GIF_TIMINGS = [1500, 500, 500, 1000];
 
-const STATUS_LINES = [
-  "Fetching your recent games...",
-  "Finding your mistakes...",
-  "Building your personal puzzles...",
-];
-
 /* ── Component ── */
 
 export default function DemoBoard() {
+  const { t } = useTranslation();
+  const STATUS_LINES = [t("demo.statusFetching"), t("demo.statusFinding"), t("demo.statusBuilding")];
+
   const [phase, setPhase] = useState<Phase>("gif");
   const [data, setData] = useState<DemoData | null>(null);
   const [activePuzzle, setActivePuzzle] = useState<PuzzleData | null>(null);
@@ -95,7 +93,7 @@ export default function DemoBoard() {
       if (frameIdx === 0) {
         setGifFen(p.fen);
         setGifStyles({});
-        setGifLabel(`Your position, move ${p.moveNumber}`);
+        setGifLabel(t("demo.gifYourPosition").replace("{n}", String(p.moveNumber)));
       } else if (frameIdx === 1) {
         const moves = chess.moves({ square: fromSq as never, verbose: true });
         const wrongMove = moves.find((m) => m.to !== toSq) ?? moves[0];
@@ -103,18 +101,18 @@ export default function DemoBoard() {
           chess.move(wrongMove);
           setGifFen(chess.fen());
           setGifStyles({ [wrongMove.to]: { backgroundColor: "rgba(255, 50, 50, 0.5)" } });
-          setGifLabel(`Blunder \u2014 ${wrongMove.san}??`);
+          setGifLabel(t("demo.gifBlunder").replace("{move}", wrongMove.san));
         }
       } else if (frameIdx === 2) {
         setGifFen(p.fen);
         setGifStyles({});
-        setGifLabel(`Your position, move ${p.moveNumber}`);
+        setGifLabel(t("demo.gifYourPosition").replace("{n}", String(p.moveNumber)));
       } else {
         const move = chess.move({ from: fromSq, to: toSq, promotion: "q" });
         if (move) {
           setGifFen(chess.fen());
           setGifStyles({ [toSq]: { backgroundColor: "rgba(100, 200, 80, 0.5)" } });
-          setGifLabel("Cassandra: learn this position");
+          setGifLabel(t("demo.gifLearn"));
         }
       }
       timeout = setTimeout(() => { frameIdx = (frameIdx + 1) % 4; runFrame(); }, GIF_TIMINGS[frameIdx]);
@@ -291,7 +289,7 @@ export default function DemoBoard() {
             {showOverlay && (
               <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", zIndex: 10 }}>
                 <CassandraLogo className="w-12 h-12 mb-4 animate-pulse" />
-                <p style={{ fontFamily: "Georgia, serif", fontSize: 18, color: "#fff", marginBottom: 20 }}>Sample analysis...</p>
+                <p style={{ fontFamily: "Georgia, serif", fontSize: 18, color: "#fff", marginBottom: 20 }}>{t("demo.sampleAnalysis")}</p>
                 <div style={{ display: "flex" }}>
                   {Array.from({ length: LOADING_SQUARES }).map((_, i) => (
                     <div key={i} style={{ width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: i % 2 === 0 ? "#f0d9b5" : "#b58863" }}>
@@ -313,13 +311,13 @@ export default function DemoBoard() {
 
           {/* Recent strip — GIF only */}
           {phase === "gif" && data?.recentActivity && data.recentActivity.length > 0 && (
-            <RecentStrip entries={data.recentActivity} />
+            <RecentStrip entries={data.recentActivity} t={t} />
           )}
 
           {/* Button — GIF only */}
           {phase === "gif" && (
             <button onClick={handleStartDemo} style={{ background: "#c8942a", color: "#fff", border: "none", borderRadius: 8, padding: "12px 32px", fontSize: 14, fontWeight: 500, cursor: "pointer", width: "100%", maxWidth: 480 }} className="hover:brightness-90 transition">
-              See it in action &rarr;
+              {t("demo.seeItInAction")}
             </button>
           )}
         </div>
@@ -331,40 +329,40 @@ export default function DemoBoard() {
             {/* Results */}
             {phase === "results" && data && (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <p style={{ fontSize: 12, color: "#999", margin: 0 }}>Click any to try a sample puzzle</p>
+                <p style={{ fontSize: 12, color: "#999", margin: 0 }}>{t("demo.clickAny")}</p>
                 <div style={{ height: 1, background: "#e5e5e5" }} />
-                <ResultRow icon="&#9823;" count={data.missedTactics} label="missed tactics" onClick={() => { console.log("[DemoBoard] Row 1 clicked, FEN:", data.tacticsPuzzle.fen.slice(0, 30)); selectPuzzle(data.tacticsPuzzle); }} />
-                <ResultRow icon="&#9889;" count={data.strongerMoves} label="stronger moves available" onClick={() => { console.log("[DemoBoard] Row 2 clicked, FEN:", data.scalesPuzzle.fen.slice(0, 30)); selectPuzzle(data.scalesPuzzle); }} />
-                <ResultRow icon="&#128065;" count={data.retrograde} label="positions to reconstruct" onClick={() => { console.log("[DemoBoard] Row 3 clicked, FEN:", data.echoPuzzle.fen.slice(0, 30)); selectPuzzle(data.echoPuzzle); }} />
+                <ResultRow icon="&#9823;" count={data.missedTactics} label={t("demo.missedTactics")} onClick={() => { console.log("[DemoBoard] Row 1 clicked, FEN:", data.tacticsPuzzle.fen.slice(0, 30)); selectPuzzle(data.tacticsPuzzle); }} />
+                <ResultRow icon="&#9889;" count={data.strongerMoves} label={t("demo.strongerMoves")} onClick={() => { console.log("[DemoBoard] Row 2 clicked, FEN:", data.scalesPuzzle.fen.slice(0, 30)); selectPuzzle(data.scalesPuzzle); }} />
+                <ResultRow icon="&#128065;" count={data.retrograde} label={t("demo.positionsToReconstruct")} onClick={() => { console.log("[DemoBoard] Row 3 clicked, FEN:", data.echoPuzzle.fen.slice(0, 30)); selectPuzzle(data.echoPuzzle); }} />
               </div>
             )}
 
             {/* Puzzle */}
             {phase === "puzzle" && activePuzzle && (
               <div>
-                <p style={{ fontSize: 14, fontWeight: 600, color: "#111", margin: "0 0 2px" }}>Sample puzzle</p>
-                <p style={{ fontSize: 12, color: "#999", margin: "0 0 12px" }}>From our puzzle database</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: "#111", margin: "0 0 2px" }}>{t("demo.samplePuzzle")}</p>
+                <p style={{ fontSize: 12, color: "#999", margin: "0 0 12px" }}>{t("demo.fromDatabase")}</p>
                 <div style={{ height: 1, background: "#e5e5e5", marginBottom: 12 }} />
-                <p style={{ fontSize: 15, fontWeight: 600, color: "#111", margin: "0 0 8px" }}>Find the winning move.</p>
+                <p style={{ fontSize: 15, fontWeight: 600, color: "#111", margin: "0 0 8px" }}>{t("demo.findWinningMove")}</p>
                 <span style={{ display: "inline-block", fontSize: 11, fontWeight: 600, color: "#c8942a", background: "rgba(200,148,42,0.1)", border: "1px solid rgba(200,148,42,0.3)", borderRadius: 999, padding: "2px 10px", textTransform: "uppercase", letterSpacing: "0.04em" }}>
                   {activePuzzle.tacticType}
                 </span>
-                <p style={{ fontSize: 13, color: "#888", margin: "12px 0 0" }}>Click a piece to start.</p>
+                <p style={{ fontSize: 13, color: "#888", margin: "12px 0 0" }}>{t("demo.clickPieceToStart")}</p>
               </div>
             )}
 
             {/* Result */}
             {phase === "result" && activePuzzle && (
               <div>
-                <p style={{ fontSize: 14, fontWeight: 600, color: "#111", margin: "0 0 2px" }}>Sample puzzle</p>
-                <p style={{ fontSize: 12, color: "#999", margin: "0 0 12px" }}>From our puzzle database</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: "#111", margin: "0 0 2px" }}>{t("demo.samplePuzzle")}</p>
+                <p style={{ fontSize: 12, color: "#999", margin: "0 0 12px" }}>{t("demo.fromDatabase")}</p>
                 <div style={{ height: 1, background: "#e5e5e5", marginBottom: 12 }} />
                 {resultCorrect ? (
-                  <p style={{ fontSize: 15, fontWeight: 600, color: "#16a34a", margin: "0 0 8px" }}>That&apos;s it. &#10003;</p>
+                  <p style={{ fontSize: 15, fontWeight: 600, color: "#16a34a", margin: "0 0 8px" }}>{t("demo.correct")}</p>
                 ) : (
                   <>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: "#dc2626", margin: "0 0 4px" }}>Not quite.</p>
-                    <p style={{ fontSize: 13, color: "#666", margin: "0 0 8px" }}>The win was <strong>{formatSolution(activePuzzle.solution, data?.tacticsPuzzle.fen ?? activePuzzle.fen)}</strong>.</p>
+                    <p style={{ fontSize: 14, fontWeight: 600, color: "#dc2626", margin: "0 0 4px" }}>{t("demo.notQuite")}</p>
+                    <p style={{ fontSize: 13, color: "#666", margin: "0 0 8px" }}>{t("demo.theWinWas")} <strong>{formatSolution(activePuzzle.solution, data?.tacticsPuzzle.fen ?? activePuzzle.fen)}</strong>.</p>
                   </>
                 )}
                 {showCta && (
@@ -373,7 +371,7 @@ export default function DemoBoard() {
                     style={{ marginTop: 16, width: "100%", fontSize: 14, fontWeight: 500, background: "#c8942a", color: "#fff", border: "none", borderRadius: 8, padding: "12px 20px", cursor: "pointer" }}
                     className="hover:brightness-90 transition"
                   >
-                    Find mistakes in my games &rarr;
+                    {t("demo.findMistakes")}
                   </button>
                 )}
               </div>
@@ -413,7 +411,7 @@ function ResultRow({ icon, count, label, onClick }: { icon: string; count: numbe
 
 /* ── Recent strip ── */
 
-function RecentStrip({ entries }: { entries: RecentEntry[] }) {
+function RecentStrip({ entries, t }: { entries: RecentEntry[]; t: (key: string) => string }) {
   const [step, setStep] = useState(0);
   const [transitioning, setTransitioning] = useState(true);
   const ENTRY_W = 260;
@@ -442,7 +440,7 @@ function RecentStrip({ entries }: { entries: RecentEntry[] }) {
         {tripled.map((entry, i) => (
           <div key={`s-${i}`} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#555", whiteSpace: "nowrap", flexShrink: 0, width: ENTRY_W, padding: "0 16px", boxSizing: "border-box" }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#c8942a", flexShrink: 0 }} />
-            <span style={{ overflow: "hidden", textOverflow: "ellipsis", maxWidth: ENTRY_W - 46 }}>{entry.username} — {entry.puzzleCount} puzzles <span style={{ color: "#ccc" }}>·</span> {entry.timeAgo}</span>
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", maxWidth: ENTRY_W - 46 }}>{entry.username} — {entry.puzzleCount} {t("demo.puzzles")} <span style={{ color: "#ccc" }}>·</span> {entry.timeAgo}</span>
           </div>
         ))}
       </div>
@@ -455,6 +453,7 @@ function RecentStrip({ entries }: { entries: RecentEntry[] }) {
 /* ── Connect modal ── */
 
 function ConnectModal({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation();
   const [platform, setPlatform] = useState<"chesscom" | "lichess">("chesscom");
   const [username, setUsername] = useState("");
   const router = useRouter();
@@ -482,8 +481,8 @@ function ConnectModal({ onClose }: { onClose: () => void }) {
         <CassandraLogo className="w-7 h-7 mb-4" />
 
         {/* Title */}
-        <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: "#fff", margin: "0 0 8px" }}>Your turn.</p>
-        <p style={{ fontSize: 14, color: "#888", margin: "0 0 24px" }}>Enter your username and see what Cassandra finds.</p>
+        <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: "#fff", margin: "0 0 8px" }}>{t("demo.modalTitle")}</p>
+        <p style={{ fontSize: 14, color: "#888", margin: "0 0 24px" }}>{t("demo.modalSubtitle")}</p>
 
         {/* Platform toggle */}
         <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
@@ -526,19 +525,19 @@ function ConnectModal({ onClose }: { onClose: () => void }) {
             type="submit"
             style={{ height: 48, fontSize: 14, fontWeight: 500, background: "#c8942a", color: "#fff", border: "none", borderRadius: "0 8px 8px 0", padding: "0 20px", cursor: "pointer", whiteSpace: "nowrap" }}
           >
-            See your mistakes &rarr;
+            {t("demo.modalSubmit")}
           </button>
         </form>
 
         {/* Trust row */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#666" }}>
-          <span>Free</span>
+          <span>{t("landing.hero.trustFree")}</span>
           <span style={{ color: "#c8942a" }}>&middot;</span>
-          <span>Unlimited</span>
+          <span>{t("landing.hero.trustUnlimited")}</span>
           <span style={{ color: "#c8942a" }}>&middot;</span>
-          <span>No paywall</span>
+          <span>{t("landing.hero.trustNoPaywall")}</span>
           <span style={{ color: "#c8942a" }}>&middot;</span>
-          <span>Personalised</span>
+          <span>{t("landing.hero.trustPersonalised")}</span>
         </div>
       </div>
     </div>
