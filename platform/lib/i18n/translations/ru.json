@@ -205,7 +205,7 @@
   "landing.nav.signIn": "Войти",
   "landing.nav.getStarted": "Начать бесплатно",
   "landing.hero.h1": "Превратите свои ошибки в прогресс.",
-  "landing.hero.value": "Cassandra находит ошибки в ваших партиях и превращает их в персонализированные задачи для вас.",
+  "landing.hero.value": "Анализ находит ошибки. Обычные задачи исправляют чужие. Cassandra исправляет ваши.",
   "landing.hero.howItWorks": "Как это работает",
   "landing.hero.step1.title": "Подключите аккаунт",
   "landing.hero.step1.desc": "Укажите имя пользователя Chess.com или Lichess. Оплата не требуется.",

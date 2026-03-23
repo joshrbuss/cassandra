@@ -30,7 +30,7 @@ export default async function Home() {
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <CassandraLogo className="w-7 h-7" />
-            <span className="text-white text-[17px]" style={{ fontFamily: "Georgia, serif" }}>
+            <span className="text-white text-[22px]" style={{ fontFamily: "Georgia, serif" }}>
               Cassandra
             </span>
           </Link>
@@ -63,58 +63,66 @@ export default async function Home() {
       <section className="bg-[#f9f7f4] px-4 sm:px-6 py-14 sm:py-20 flex-1">
         <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
 
-          {/* Left column */}
-          <div>
-            <h1
-              className="text-[32px] sm:text-[40px] leading-[1.15] font-normal text-[#111] mb-5"
-              style={{ fontFamily: "Georgia, serif", letterSpacing: "-0.02em" }}
-            >
-              {t("landing.hero.h1")}{" "}
-              <span className="inline-block">&#9823;</span>
-            </h1>
+          {/* Left column — floating card */}
+          <div className="bg-white rounded-2xl border border-[#e8e5e0] shadow-[0_2px_20px_rgba(0,0,0,0.06)] overflow-hidden">
+            <div className="p-6 sm:p-8 pb-0">
+              {/* Eyebrow */}
+              <p className="text-[11px] uppercase tracking-[0.12em] text-[#c49e45] font-semibold mb-3">
+                Personalised chess training
+              </p>
 
-            <p className="text-[#666] text-[15px] leading-relaxed mb-8 max-w-md">
-              {t("landing.hero.value")}
-            </p>
+              <h1
+                className="text-[36px] sm:text-[46px] leading-[1.1] font-normal text-[#111] mb-5"
+                style={{ fontFamily: "Georgia, serif", letterSpacing: "-0.02em" }}
+              >
+                {t("landing.hero.h1")}{" "}
+                <span className="inline-block">&#9823;</span>
+              </h1>
 
-            {/* How it works */}
-            <p className="text-[11px] uppercase tracking-[0.1em] text-[#999] font-semibold mb-4">
-              {t("landing.hero.howItWorks")}
-            </p>
+              <p className="text-[#555] text-[17px] leading-relaxed mb-8 max-w-lg">
+                {t("landing.hero.value")}
+              </p>
 
-            <div className="space-y-4 mb-8">
-              <div className="flex gap-3.5 items-start">
-                <span className="w-6 h-6 rounded-full bg-[#c8942a] text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
-                  1
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-[#111]">{t("landing.hero.step1.title")}</p>
-                  <p className="text-xs text-[#888] mt-0.5">{t("landing.hero.step1.desc")}</p>
+              {/* How it works */}
+              <p className="text-[11px] uppercase tracking-[0.1em] text-[#999] font-semibold mb-4">
+                {t("landing.hero.howItWorks")}
+              </p>
+
+              <div className="space-y-5 mb-8">
+                <div className="flex gap-3.5 items-start">
+                  <span className="w-7 h-7 rounded-full bg-[#c8942a] text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                    1
+                  </span>
+                  <div>
+                    <p className="text-[15px] font-semibold text-[#111]">{t("landing.hero.step1.title")}</p>
+                    <p className="text-[14px] text-[#777] mt-0.5">{t("landing.hero.step1.desc")}</p>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex gap-3.5 items-start">
-                <span className="w-6 h-6 rounded-full bg-[#c8942a] text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
-                  2
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-[#111]">{t("landing.hero.step2.title")}</p>
-                  <p className="text-xs text-[#888] mt-0.5">{t("landing.hero.step2.desc")}</p>
+                <div className="flex gap-3.5 items-start">
+                  <span className="w-7 h-7 rounded-full bg-[#c8942a] text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                    2
+                  </span>
+                  <div>
+                    <p className="text-[15px] font-semibold text-[#111]">{t("landing.hero.step2.title")}</p>
+                    <p className="text-[14px] text-[#777] mt-0.5">{t("landing.hero.step2.desc")}</p>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex gap-3.5 items-start">
-                <span className="w-6 h-6 rounded-full bg-[#c8942a] text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
-                  3
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-[#111]">{t("landing.hero.step3.title")}</p>
-                  <p className="text-[13px] text-[#888] mt-0.5">Enter your username below</p>
+                <div className="flex gap-3.5 items-start">
+                  <span className="w-7 h-7 rounded-full bg-[#c8942a] text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                    3
+                  </span>
+                  <div>
+                    <p className="text-[15px] font-semibold text-[#111]">{t("landing.hero.step3.title")}</p>
+                    <p className="text-[14px] text-[#777] mt-0.5">Enter your username below</p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-[#0e0e0e] rounded-xl p-5 px-6">
+            {/* Obsidian input card — flush to bottom of white card */}
+            <div className="bg-[#0e0e0e] rounded-b-2xl p-5 px-6">
               <HeroForm
                 dark
                 ctaLabel={t("landing.hero.cta")}
