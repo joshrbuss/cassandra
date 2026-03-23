@@ -1528,6 +1528,62 @@ That's the skill that wins games.
 
 **[Train with The Scales →](/scales)**`,
   },
+  {
+    slug: "why-chess-accuracy-scores-dont-make-you-better",
+    title: "Why Chess Accuracy Scores Don't Make You Better (And What Does)",
+    metaTitle: "Why Chess Accuracy Scores Don't Make You Better — Cassandra",
+    metaDescription:
+      "Everyone checks their accuracy score after a game. But does it actually help you improve? Here's what the research says — and what to do instead.",
+    themes: ["improvement", "analysis", "training"],
+    content: `Every chess player knows the ritual. The game ends, you click "Analysis," and the first thing you look at is your accuracy score. 94% — great game. 71% — rough one. You nod, close the tab, and queue another game.
+
+But here's the thing: that number didn't make you any better.
+
+## The accuracy score trap
+
+Accuracy scores tell you what happened — but not what to do about it. Seeing a red move on the analysis board doesn't mean you'll recognise that pattern next time it appears. Recognition in review and recognition under game pressure are completely different cognitive skills.
+
+The score gives you a feeling — satisfaction or frustration — but feelings aren't training. You can check your accuracy after a thousand games and still make the same mistakes in the same types of positions.
+
+The trap is that it *feels* like you're learning. You saw the mistake. You understand why it was wrong. Surely that counts for something? It does — but far less than you think.
+
+## The problem with move-by-move review
+
+Most players' post-game routine looks like this: click through the moves, pause on the red ones, read the engine's suggestion, think "ah, I should have seen that," and move on.
+
+This is passive review. It's the chess equivalent of re-reading your textbook highlights before an exam. Research on learning and memory is unambiguous: passive review produces a feeling of familiarity, not actual recall ability.
+
+The difference matters enormously. Familiarity means you recognise the pattern when someone shows it to you. Recall means you spot it yourself, under time pressure, with no hint that it's there. Every blunder you make in a real game is a recall failure — and passive review doesn't fix recall failures.
+
+## What actually makes you better
+
+The research on skill acquisition — from Ericsson's deliberate practice to Bjork's desirable difficulties — points to one mechanism that reliably converts mistakes into improvement: active recall with spaced repetition.
+
+The process is simple:
+
+- Take a position where you made a mistake
+- Turn it into a puzzle — the position is the prompt, the correct move is the answer
+- Solve it. Not today, when you still remember it. Solve it three days later, then a week later, then a month later
+- Each time you solve it, the pattern gets encoded more deeply
+
+This is how flashcards work for language learning, and it's how chess patterns get fixed. The key is that you're actively retrieving the answer from memory, not passively recognising it when shown.
+
+## How to actually use your game analysis
+
+Stop checking your accuracy score. Or check it if you want — but don't confuse that with training.
+
+Instead, take your three worst mistakes from each game and turn them into puzzles. Come back to them. Solve them again when you've forgotten the answer. That's when the real learning happens — at the point of difficulty, not the point of comfort.
+
+Over time, you build a personal puzzle bank weighted toward your specific weaknesses. Not random tactics from a generic database — your tactics, from your games, targeting the exact patterns you struggle with.
+
+## Cassandra does this automatically
+
+Connect your Chess.com or Lichess account, and Cassandra scans your games for mistakes — missed tactics, miscalculations, positions that slipped away. Each one becomes a personalised puzzle that you train on until the pattern sticks.
+
+No accuracy scores. No passive review. Just the positions where you went wrong, drilled until you get them right.
+
+**[Connect your account — free, no paywall →](/connect)**`,
+  },
 ];
 
 export function getArticle(slug: string): Article | undefined {

@@ -1507,4 +1507,281 @@ The Scales работает так: вам дают позицию и прося
 
 **[Тренируйтесь с The Scales →](/scales)**`,
   },
+
+  // ─── why-chess-accuracy-scores-dont-make-you-better ───
+
+  "es:why-chess-accuracy-scores-dont-make-you-better": {
+    title: "Por qué las puntuaciones de precisión en ajedrez no te hacen mejorar (y qué sí funciona)",
+    metaTitle: "Por qué las puntuaciones de precisión no te hacen mejorar — Cassandra",
+    metaDescription:
+      "Todos revisan su puntuación de precisión después de una partida. Pero, ¿realmente ayuda a mejorar? Esto dice la investigación — y qué hacer en su lugar.",
+    content: `Todos los ajedrecistas conocen el ritual. La partida termina, haces clic en "Análisis" y lo primero que miras es tu puntuación de precisión. 94% — gran partida. 71% — partida difícil. Asientes, cierras la pestaña y buscas otra partida.
+
+Pero la cuestión es: ese número no te hizo mejorar nada.
+
+## La trampa de la puntuación de precisión
+
+Las puntuaciones de precisión te dicen qué pasó — pero no qué hacer al respecto. Ver una jugada en rojo en el tablero de análisis no significa que reconocerás ese patrón la próxima vez que aparezca. El reconocimiento en la revisión y el reconocimiento bajo la presión de una partida son habilidades cognitivas completamente diferentes.
+
+La puntuación te da un sentimiento — satisfacción o frustración — pero los sentimientos no son entrenamiento. Puedes revisar tu precisión después de mil partidas y seguir cometiendo los mismos errores en los mismos tipos de posiciones.
+
+La trampa es que *parece* que estás aprendiendo. Viste el error. Entiendes por qué estaba mal. Seguramente eso cuenta, ¿no? Cuenta — pero mucho menos de lo que piensas.
+
+## El problema de la revisión jugada por jugada
+
+La rutina post-partida de la mayoría de los jugadores es así: pasar las jugadas, detenerse en las rojas, leer la sugerencia del motor, pensar "ah, debería haberlo visto" y continuar.
+
+Esto es revisión pasiva. Es el equivalente ajedrecístico de releer los subrayados del libro antes de un examen. La investigación sobre aprendizaje y memoria es inequívoca: la revisión pasiva produce una sensación de familiaridad, no capacidad real de recuerdo.
+
+La diferencia es enorme. Familiaridad significa que reconoces el patrón cuando alguien te lo muestra. Recuerdo significa que lo detectas tú mismo, bajo presión de tiempo, sin ninguna pista de que está ahí. Cada error que cometes en una partida real es un fallo de recuerdo — y la revisión pasiva no arregla los fallos de recuerdo.
+
+## Qué es lo que realmente te hace mejorar
+
+La investigación sobre adquisición de habilidades — desde la práctica deliberada de Ericsson hasta las dificultades deseables de Bjork — señala un mecanismo que convierte errores en mejora de forma fiable: el recuerdo activo con repetición espaciada.
+
+El proceso es simple:
+
+- Toma una posición donde cometiste un error
+- Conviértela en un puzzle — la posición es el enunciado, la jugada correcta es la respuesta
+- Resuélvelo. No hoy, cuando aún lo recuerdas. Resuélvelo tres días después, luego una semana después, luego un mes después
+- Cada vez que lo resuelves, el patrón se codifica más profundamente
+
+Así funcionan las tarjetas de memoria para el aprendizaje de idiomas, y así es como se fijan los patrones de ajedrez. La clave es que estás recuperando activamente la respuesta de la memoria, no reconociéndola pasivamente cuando te la muestran.
+
+## Cómo usar realmente tu análisis de partida
+
+Deja de revisar tu puntuación de precisión. O revísala si quieres — pero no confundas eso con entrenar.
+
+En su lugar, toma tus tres peores errores de cada partida y conviértelos en puzzles. Vuelve a ellos. Resuélvelos de nuevo cuando hayas olvidado la respuesta. Ahí es cuando ocurre el aprendizaje real — en el punto de dificultad, no en el de comodidad.
+
+Con el tiempo, construyes un banco de puzzles personal orientado a tus debilidades específicas. No tácticas aleatorias de una base de datos genérica — tus tácticas, de tus partidas, dirigidas a los patrones exactos con los que luchas.
+
+## Cassandra hace esto automáticamente
+
+Conecta tu cuenta de Chess.com o Lichess, y Cassandra analiza tus partidas en busca de errores — tácticas perdidas, cálculos incorrectos, posiciones que se escaparon. Cada uno se convierte en un puzzle personalizado que entrenas hasta que el patrón se fija.
+
+Sin puntuaciones de precisión. Sin revisión pasiva. Solo las posiciones donde te equivocaste, entrenadas hasta que las aciertes.
+
+**[Conecta tu cuenta — gratis, sin muro de pago →](/connect)**`,
+  },
+
+  "fr:why-chess-accuracy-scores-dont-make-you-better": {
+    title: "Pourquoi les scores de précision aux échecs ne vous font pas progresser (et ce qui fonctionne vraiment)",
+    metaTitle: "Pourquoi les scores de précision ne vous font pas progresser — Cassandra",
+    metaDescription:
+      "Tout le monde vérifie son score de précision après une partie. Mais est-ce que cela aide vraiment à progresser ? Voici ce que dit la recherche — et ce qu'il faut faire à la place.",
+    content: `Chaque joueur d'échecs connaît le rituel. La partie se termine, vous cliquez sur « Analyse » et la première chose que vous regardez est votre score de précision. 94 % — belle partie. 71 % — partie difficile. Vous hochez la tête, fermez l'onglet et lancez une autre partie.
+
+Mais voilà : ce chiffre ne vous a pas du tout fait progresser.
+
+## Le piège du score de précision
+
+Les scores de précision vous disent ce qui s'est passé — mais pas quoi faire. Voir un coup en rouge sur le tableau d'analyse ne signifie pas que vous reconnaîtrez ce schéma la prochaine fois qu'il apparaîtra. La reconnaissance en révision et la reconnaissance sous la pression d'une partie sont des compétences cognitives complètement différentes.
+
+Le score vous donne un sentiment — satisfaction ou frustration — mais les sentiments ne sont pas de l'entraînement. Vous pouvez vérifier votre précision après mille parties et continuer à faire les mêmes erreurs dans les mêmes types de positions.
+
+Le piège est que vous avez *l'impression* d'apprendre. Vous avez vu l'erreur. Vous comprenez pourquoi c'était mauvais. Ça compte sûrement ? Ça compte — mais bien moins que vous ne le pensez.
+
+## Le problème de la révision coup par coup
+
+La routine post-partie de la plupart des joueurs ressemble à ceci : parcourir les coups, s'arrêter sur les rouges, lire la suggestion du moteur, penser « ah, j'aurais dû voir ça » et passer à la suite.
+
+C'est de la révision passive. C'est l'équivalent échiquéen de relire vos passages surlignés avant un examen. La recherche sur l'apprentissage et la mémoire est sans ambiguïté : la révision passive produit un sentiment de familiarité, pas une véritable capacité de rappel.
+
+La différence est considérable. La familiarité signifie que vous reconnaissez le schéma quand on vous le montre. Le rappel signifie que vous le repérez vous-même, sous pression temporelle, sans aucun indice qu'il est là. Chaque gaffe que vous faites en partie réelle est un échec de rappel — et la révision passive ne corrige pas les échecs de rappel.
+
+## Ce qui vous fait vraiment progresser
+
+La recherche sur l'acquisition des compétences — de la pratique délibérée d'Ericsson aux difficultés souhaitables de Bjork — pointe vers un mécanisme qui convertit de manière fiable les erreurs en progrès : le rappel actif avec répétition espacée.
+
+Le processus est simple :
+
+- Prenez une position où vous avez fait une erreur
+- Transformez-la en puzzle — la position est l'énoncé, le bon coup est la réponse
+- Résolvez-le. Pas aujourd'hui, quand vous vous en souvenez encore. Résolvez-le trois jours plus tard, puis une semaine plus tard, puis un mois plus tard
+- À chaque résolution, le schéma s'encode plus profondément
+
+C'est ainsi que fonctionnent les cartes mémoire pour l'apprentissage des langues, et c'est ainsi que les schémas d'échecs se fixent. La clé est que vous récupérez activement la réponse en mémoire, au lieu de la reconnaître passivement quand on vous la montre.
+
+## Comment utiliser vraiment votre analyse de partie
+
+Arrêtez de vérifier votre score de précision. Ou vérifiez-le si vous voulez — mais ne confondez pas cela avec de l'entraînement.
+
+À la place, prenez vos trois pires erreurs de chaque partie et transformez-les en puzzles. Revenez-y. Résolvez-les à nouveau quand vous aurez oublié la réponse. C'est là que le vrai apprentissage se produit — au point de difficulté, pas au point de confort.
+
+Avec le temps, vous construisez une banque de puzzles personnelle orientée vers vos faiblesses spécifiques. Pas des tactiques aléatoires d'une base de données générique — vos tactiques, de vos parties, ciblant les schémas exacts avec lesquels vous luttez.
+
+## Cassandra fait cela automatiquement
+
+Connectez votre compte Chess.com ou Lichess, et Cassandra analyse vos parties à la recherche d'erreurs — tactiques manquées, erreurs de calcul, positions qui vous ont échappé. Chacune devient un puzzle personnalisé que vous entraînez jusqu'à ce que le schéma se fixe.
+
+Pas de scores de précision. Pas de révision passive. Juste les positions où vous vous êtes trompé, travaillées jusqu'à ce que vous les réussissiez.
+
+**[Connectez votre compte — gratuit, sans paywall →](/connect)**`,
+  },
+
+  "de:why-chess-accuracy-scores-dont-make-you-better": {
+    title: "Warum Genauigkeitswerte im Schach dich nicht besser machen (und was wirklich hilft)",
+    metaTitle: "Warum Genauigkeitswerte dich nicht besser machen — Cassandra",
+    metaDescription:
+      "Jeder prüft nach einer Partie seinen Genauigkeitswert. Aber hilft das wirklich beim Verbessern? Das sagt die Forschung — und was du stattdessen tun solltest.",
+    content: `Jeder Schachspieler kennt das Ritual. Die Partie endet, du klickst auf „Analyse" und das Erste, was du dir anschaust, ist dein Genauigkeitswert. 94 % — starke Partie. 71 % — schwierige Partie. Du nickst, schließt den Tab und suchst die nächste Partie.
+
+Aber die Sache ist: Diese Zahl hat dich kein bisschen besser gemacht.
+
+## Die Falle des Genauigkeitswerts
+
+Genauigkeitswerte sagen dir, was passiert ist — aber nicht, was du dagegen tun sollst. Einen roten Zug auf dem Analysebrett zu sehen bedeutet nicht, dass du dieses Muster beim nächsten Mal erkennst, wenn es auftaucht. Erkennung bei der Nachbesprechung und Erkennung unter Partiedruck sind völlig verschiedene kognitive Fähigkeiten.
+
+Der Wert gibt dir ein Gefühl — Zufriedenheit oder Frust — aber Gefühle sind kein Training. Du kannst deinen Genauigkeitswert nach tausend Partien prüfen und trotzdem die gleichen Fehler in den gleichen Stellungstypen machen.
+
+Die Falle ist, dass es sich *anfühlt*, als würdest du lernen. Du hast den Fehler gesehen. Du verstehst, warum er falsch war. Das zählt doch sicher? Es zählt — aber viel weniger als du denkst.
+
+## Das Problem mit der Zug-für-Zug-Analyse
+
+Die Nachpartie-Routine der meisten Spieler sieht so aus: Züge durchklicken, bei den roten anhalten, den Vorschlag der Engine lesen, denken „ah, das hätte ich sehen müssen" und weitergehen.
+
+Das ist passive Wiederholung. Es ist das Schach-Äquivalent zum Nachlesen deiner Textmarker-Stellen vor einer Prüfung. Die Forschung zu Lernen und Gedächtnis ist eindeutig: Passive Wiederholung erzeugt ein Gefühl der Vertrautheit, nicht tatsächliche Abruffähigkeit.
+
+Der Unterschied ist enorm. Vertrautheit bedeutet, dass du das Muster erkennst, wenn jemand es dir zeigt. Abruf bedeutet, dass du es selbst entdeckst, unter Zeitdruck, ohne einen Hinweis, dass es da ist. Jeder Patzer, den du in einer echten Partie machst, ist ein Abrufversagen — und passive Wiederholung behebt keine Abrufversagen.
+
+## Was dich wirklich besser macht
+
+Die Forschung zum Fertigkeitserwerb — von Ericssons deliberatem Üben bis zu Bjorks wünschenswerten Schwierigkeiten — weist auf einen Mechanismus hin, der Fehler zuverlässig in Verbesserung umwandelt: aktiver Abruf mit verteilter Wiederholung.
+
+Der Prozess ist einfach:
+
+- Nimm eine Stellung, in der du einen Fehler gemacht hast
+- Mach ein Puzzle daraus — die Stellung ist die Aufgabe, der richtige Zug ist die Lösung
+- Löse es. Nicht heute, wenn du dich noch erinnerst. Löse es drei Tage später, dann eine Woche später, dann einen Monat später
+- Jedes Mal, wenn du es löst, wird das Muster tiefer kodiert
+
+So funktionieren Karteikarten beim Sprachenlernen, und so werden Schachmuster gefestigt. Der Schlüssel ist, dass du die Antwort aktiv aus dem Gedächtnis abrufst, anstatt sie passiv zu erkennen, wenn man sie dir zeigt.
+
+## Wie du deine Partieanalyse wirklich nutzt
+
+Hör auf, deinen Genauigkeitswert zu prüfen. Oder prüfe ihn, wenn du willst — aber verwechsle das nicht mit Training.
+
+Nimm stattdessen deine drei schlimmsten Fehler aus jeder Partie und mach Puzzles daraus. Komm darauf zurück. Löse sie erneut, wenn du die Antwort vergessen hast. Dann findet das echte Lernen statt — am Punkt der Schwierigkeit, nicht am Punkt des Komforts.
+
+Mit der Zeit baust du eine persönliche Puzzle-Bank auf, die auf deine spezifischen Schwächen ausgerichtet ist. Keine zufälligen Taktiken aus einer generischen Datenbank — deine Taktiken, aus deinen Partien, auf die genauen Muster ausgerichtet, mit denen du kämpfst.
+
+## Cassandra macht das automatisch
+
+Verbinde dein Chess.com- oder Lichess-Konto, und Cassandra durchsucht deine Partien nach Fehlern — verpasste Taktiken, Fehlberechnungen, Stellungen, die dir entglitten sind. Jeder Fehler wird zu einem personalisierten Puzzle, das du trainierst, bis das Muster sitzt.
+
+Keine Genauigkeitswerte. Keine passive Wiederholung. Nur die Stellungen, in denen du falsch lagst, trainiert, bis du sie richtig machst.
+
+**[Verbinde dein Konto — kostenlos, ohne Paywall →](/connect)**`,
+  },
+
+  "pt:why-chess-accuracy-scores-dont-make-you-better": {
+    title: "Por que as pontuações de precisão no xadrez não te fazem melhorar (e o que realmente funciona)",
+    metaTitle: "Por que as pontuações de precisão não te fazem melhorar — Cassandra",
+    metaDescription:
+      "Todo mundo verifica sua pontuação de precisão após uma partida. Mas isso realmente ajuda a melhorar? Veja o que a pesquisa diz — e o que fazer em vez disso.",
+    content: `Todo jogador de xadrez conhece o ritual. A partida termina, você clica em "Análise" e a primeira coisa que olha é sua pontuação de precisão. 94% — grande partida. 71% — partida difícil. Você acena, fecha a aba e procura outra partida.
+
+Mas a questão é: esse número não te fez melhorar em nada.
+
+## A armadilha da pontuação de precisão
+
+Pontuações de precisão dizem o que aconteceu — mas não o que fazer a respeito. Ver um lance vermelho no tabuleiro de análise não significa que você reconhecerá esse padrão na próxima vez que aparecer. Reconhecimento na revisão e reconhecimento sob pressão de partida são habilidades cognitivas completamente diferentes.
+
+A pontuação te dá um sentimento — satisfação ou frustração — mas sentimentos não são treino. Você pode verificar sua precisão depois de mil partidas e continuar cometendo os mesmos erros nos mesmos tipos de posição.
+
+A armadilha é que *parece* que você está aprendendo. Você viu o erro. Entende por que estava errado. Com certeza isso conta? Conta — mas muito menos do que você pensa.
+
+## O problema com a revisão lance por lance
+
+A rotina pós-partida da maioria dos jogadores é assim: passar pelos lances, pausar nos vermelhos, ler a sugestão do motor, pensar "ah, eu deveria ter visto isso" e seguir em frente.
+
+Isso é revisão passiva. É o equivalente enxadrístico de reler os trechos grifados do livro antes de uma prova. A pesquisa sobre aprendizagem e memória é inequívoca: a revisão passiva produz uma sensação de familiaridade, não capacidade real de recordação.
+
+A diferença é enorme. Familiaridade significa que você reconhece o padrão quando alguém te mostra. Recordação significa que você o identifica sozinho, sob pressão de tempo, sem nenhuma dica de que está lá. Cada erro grave que você comete em uma partida real é uma falha de recordação — e a revisão passiva não corrige falhas de recordação.
+
+## O que realmente te faz melhorar
+
+A pesquisa sobre aquisição de habilidades — da prática deliberada de Ericsson às dificuldades desejáveis de Bjork — aponta para um mecanismo que converte erros em melhoria de forma confiável: recordação ativa com repetição espaçada.
+
+O processo é simples:
+
+- Pegue uma posição onde você cometeu um erro
+- Transforme-a em um puzzle — a posição é o enunciado, o lance correto é a resposta
+- Resolva. Não hoje, quando você ainda lembra. Resolva três dias depois, uma semana depois, um mês depois
+- A cada vez que resolve, o padrão se codifica mais profundamente
+
+É assim que funcionam os flashcards para aprendizado de idiomas, e é assim que padrões de xadrez se fixam. A chave é que você está recuperando ativamente a resposta da memória, não reconhecendo-a passivamente quando te mostram.
+
+## Como realmente usar sua análise de partida
+
+Pare de verificar sua pontuação de precisão. Ou verifique se quiser — mas não confunda isso com treino.
+
+Em vez disso, pegue seus três piores erros de cada partida e transforme-os em puzzles. Volte a eles. Resolva-os novamente quando tiver esquecido a resposta. É aí que o aprendizado real acontece — no ponto de dificuldade, não no de conforto.
+
+Com o tempo, você constrói um banco de puzzles pessoal voltado para suas fraquezas específicas. Não táticas aleatórias de um banco de dados genérico — suas táticas, das suas partidas, direcionadas aos padrões exatos com os quais você luta.
+
+## Cassandra faz isso automaticamente
+
+Conecte sua conta do Chess.com ou Lichess, e a Cassandra analisa suas partidas em busca de erros — táticas perdidas, cálculos errados, posições que escaparam. Cada um se torna um puzzle personalizado que você treina até o padrão se fixar.
+
+Sem pontuações de precisão. Sem revisão passiva. Apenas as posições onde você errou, treinadas até você acertar.
+
+**[Conecte sua conta — grátis, sem paywall →](/connect)**`,
+  },
+
+  "ru:why-chess-accuracy-scores-dont-make-you-better": {
+    title: "Почему показатели точности в шахматах не делают вас сильнее (и что действительно работает)",
+    metaTitle: "Почему показатели точности не делают вас сильнее — Cassandra",
+    metaDescription:
+      "Все проверяют свой показатель точности после партии. Но действительно ли это помогает улучшиться? Вот что говорят исследования — и что делать вместо этого.",
+    content: `Каждый шахматист знает этот ритуал. Партия заканчивается, вы нажимаете «Анализ», и первое, на что смотрите — ваш показатель точности. 94% — отличная партия. 71% — тяжёлая. Вы киваете, закрываете вкладку и ищете следующую партию.
+
+Но вот в чём дело: это число не сделало вас ни капли сильнее.
+
+## Ловушка показателя точности
+
+Показатели точности говорят вам, что произошло — но не что с этим делать. Увидеть красный ход на аналитической доске не значит, что вы распознаете этот паттерн в следующий раз, когда он появится. Распознавание при разборе и распознавание под давлением партии — это совершенно разные когнитивные навыки.
+
+Показатель даёт вам чувство — удовлетворение или разочарование — но чувства это не тренировка. Вы можете проверять точность после тысячи партий и всё равно делать те же ошибки в тех же типах позиций.
+
+Ловушка в том, что *кажется*, будто вы учитесь. Вы видели ошибку. Понимаете, почему это было плохо. Наверняка это что-то значит? Значит — но гораздо меньше, чем вы думаете.
+
+## Проблема с разбором ход за ходом
+
+Послепартийная рутина большинства игроков выглядит так: пролистать ходы, остановиться на красных, прочитать предложение движка, подумать «ах, надо было это увидеть» и двигаться дальше.
+
+Это пассивный разбор. Это шахматный эквивалент перечитывания выделенных мест в учебнике перед экзаменом. Исследования обучения и памяти однозначны: пассивный разбор создаёт ощущение знакомства, а не реальную способность вспоминать.
+
+Разница огромна. Знакомство означает, что вы узнаёте паттерн, когда вам его показывают. Вспоминание означает, что вы находите его сами, под давлением времени, без подсказки, что он есть. Каждый зевок в реальной партии — это провал вспоминания, а пассивный разбор не исправляет провалы вспоминания.
+
+## Что действительно делает вас сильнее
+
+Исследования приобретения навыков — от осознанной практики Эрикссона до желательных трудностей Бьорка — указывают на один механизм, который надёжно превращает ошибки в улучшение: активное вспоминание с интервальным повторением.
+
+Процесс прост:
+
+- Возьмите позицию, где вы допустили ошибку
+- Превратите её в задачу — позиция это условие, правильный ход это ответ
+- Решите её. Не сегодня, когда вы ещё помните. Решите через три дня, потом через неделю, потом через месяц
+- С каждым решением паттерн кодируется глубже
+
+Так работают карточки для изучения языков, и так закрепляются шахматные паттерны. Ключ в том, что вы активно извлекаете ответ из памяти, а не пассивно узнаёте его, когда вам показывают.
+
+## Как на самом деле использовать анализ партии
+
+Перестаньте проверять показатель точности. Или проверяйте, если хотите — но не путайте это с тренировкой.
+
+Вместо этого возьмите три худших ошибки из каждой партии и превратите их в задачи. Вернитесь к ним. Решите их снова, когда забудете ответ. Именно тогда происходит настоящее обучение — в точке трудности, а не в точке комфорта.
+
+Со временем вы создаёте личный банк задач, направленный на ваши конкретные слабости. Не случайная тактика из общей базы данных — ваша тактика, из ваших партий, нацеленная на те самые паттерны, с которыми вы боретесь.
+
+## Cassandra делает это автоматически
+
+Подключите свой аккаунт Chess.com или Lichess, и Cassandra проанализирует ваши партии на предмет ошибок — упущенная тактика, просчёты, позиции, которые ускользнули. Каждая ошибка становится персональной задачей, которую вы тренируете, пока паттерн не закрепится.
+
+Никаких показателей точности. Никакого пассивного разбора. Только позиции, где вы ошиблись, отработанные до тех пор, пока вы не начнёте их решать правильно.
+
+**[Подключите аккаунт — бесплатно, без paywall →](/connect)**`,
+  },
 };
