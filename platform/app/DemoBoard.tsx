@@ -265,10 +265,10 @@ export default function DemoBoard() {
 
   return (
     <>
-      <div style={{ display: "flex", flexDirection: isSideBySide ? "row" : "column", gap: isSideBySide ? 24 : 12, alignItems: isSideBySide ? "flex-start" : "center" }}>
+      <div style={{ display: "flex", flexDirection: isSideBySide ? "row" : "column", gap: isSideBySide ? 16 : 12, alignItems: isSideBySide ? "flex-start" : "center", maxWidth: "100%" }}>
         {/* ── Board column ── */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-          <div style={{ width: 480, height: 480, maxWidth: "100%", flexShrink: 0, borderRadius: 12, overflow: "hidden", border: "4px solid #0e0e0e", boxShadow: "0 4px 24px rgba(0,0,0,0.12)", position: "relative", aspectRatio: "1" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, flex: isSideBySide ? "1 1 0%" : undefined, minWidth: 0, maxWidth: "100%" }}>
+          <div style={{ width: "100%", maxWidth: 480, aspectRatio: "1", flexShrink: 0, borderRadius: 12, overflow: "hidden", border: "4px solid #0e0e0e", boxShadow: "0 4px 24px rgba(0,0,0,0.12)", position: "relative" }}>
             <ChessBoardWrapper
               position={boardFen}
               interactive={isInteractive}
@@ -316,7 +316,7 @@ export default function DemoBoard() {
 
           {/* Button — GIF only */}
           {phase === "gif" && (
-            <button onClick={handleStartDemo} style={{ background: "#c8942a", color: "#fff", border: "none", borderRadius: 8, padding: "12px 32px", fontSize: 14, fontWeight: 500, cursor: "pointer", width: "100%", maxWidth: 480 }} className="hover:brightness-90 transition">
+            <button onClick={handleStartDemo} style={{ background: "#c8942a", color: "#fff", border: "none", borderRadius: 8, padding: "12px 32px", fontSize: 14, fontWeight: 500, cursor: "pointer", width: "100%" }} className="hover:brightness-90 transition">
               {t("demo.seeItInAction")}
             </button>
           )}
@@ -324,7 +324,7 @@ export default function DemoBoard() {
 
         {/* ── Side panel ── */}
         {isSideBySide && (
-          <div style={{ width: 280, minHeight: 480, background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: 12, padding: 24, display: "flex", flexDirection: "column", gap: 12, justifyContent: "center" }} className="hidden lg:flex">
+          <div style={{ width: 220, flexShrink: 0, minHeight: 300, background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: 12, padding: 20, display: "flex", flexDirection: "column", gap: 12, justifyContent: "center" }} className="hidden lg:flex">
 
             {/* Results */}
             {phase === "results" && data && (
@@ -435,7 +435,7 @@ function RecentStrip({ entries, t }: { entries: RecentEntry[]; t: (key: string) 
   }, [step, count]);
 
   return (
-    <div style={{ width: 480, maxWidth: "100%", background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: 8, padding: "12px 0", overflow: "hidden", position: "relative" }}>
+    <div style={{ width: "100%", maxWidth: 480, background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: 8, padding: "12px 0", overflow: "hidden", position: "relative" }}>
       <div style={{ display: "flex", transition: transitioning ? "transform 0.8s ease" : "none", transform: `translateX(-${step * ENTRY_W}px)` }}>
         {tripled.map((entry, i) => (
           <div key={`s-${i}`} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#555", whiteSpace: "nowrap", flexShrink: 0, width: ENTRY_W, padding: "0 16px", boxSizing: "border-box" }}>
