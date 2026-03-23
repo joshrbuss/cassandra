@@ -27,8 +27,8 @@ export default async function Home() {
   return (
     <main className="min-h-screen flex flex-col">
       {/* ── Navbar ── */}
-      <nav className="bg-[#0e0e0e] px-3 sm:px-4 py-3.5">
-        <div className="max-w-[1400px] mx-auto flex items-center justify-between">
+      <nav className="bg-[#0e0e0e] px-4 sm:px-8 py-3.5">
+        <div className="max-w-[1200px] mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
             <CassandraLogo className="w-9 h-9" />
             <span className="text-white text-[32px]" style={{ fontFamily: "Georgia, serif" }}>
@@ -61,8 +61,8 @@ export default async function Home() {
       </nav>
 
       {/* ── Hero ── */}
-      <section className="bg-[#f9f7f4] px-3 sm:px-4 pt-6 sm:pt-8 pb-4 sm:pb-6 flex-1">
-        <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 items-start">
+      <section className="bg-[#f9f7f4] px-4 sm:px-8 pt-10 sm:pt-12 pb-4 sm:pb-6 flex-1">
+        <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 items-start">
 
           {/* Left column — floating card */}
           <div className="bg-white rounded-2xl border border-[#e8e5e0] shadow-[0_2px_20px_rgba(0,0,0,0.06)] overflow-hidden">
