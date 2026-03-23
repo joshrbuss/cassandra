@@ -416,7 +416,7 @@ function ResultRow({ icon, count, label, onClick }: { icon: string; count: numbe
 function RecentStrip({ entries }: { entries: RecentEntry[] }) {
   const [step, setStep] = useState(0);
   const [transitioning, setTransitioning] = useState(true);
-  const ENTRY_W = 200;
+  const ENTRY_W = 260;
   const count = entries.length;
   const tripled = [...entries, ...entries, ...entries];
 
@@ -440,9 +440,9 @@ function RecentStrip({ entries }: { entries: RecentEntry[] }) {
     <div style={{ width: 480, maxWidth: "100%", background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: 8, padding: "12px 0", overflow: "hidden", position: "relative" }}>
       <div style={{ display: "flex", transition: transitioning ? "transform 0.8s ease" : "none", transform: `translateX(-${step * ENTRY_W}px)` }}>
         {tripled.map((entry, i) => (
-          <div key={`s-${i}`} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#555", whiteSpace: "nowrap", flexShrink: 0, width: ENTRY_W, padding: "0 16px", boxSizing: "border-box" }}>
+          <div key={`s-${i}`} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#555", whiteSpace: "nowrap", flexShrink: 0, width: ENTRY_W, padding: "0 16px", boxSizing: "border-box" }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#c8942a", flexShrink: 0 }} />
-            <span>{entry.username} &mdash; {entry.puzzleCount} puzzles <span style={{ color: "#ccc" }}>&middot;</span> {entry.timeAgo}</span>
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", maxWidth: ENTRY_W - 46 }}>{entry.username} — {entry.puzzleCount} puzzles <span style={{ color: "#ccc" }}>·</span> {entry.timeAgo}</span>
           </div>
         ))}
       </div>

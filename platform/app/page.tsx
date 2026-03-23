@@ -8,6 +8,7 @@ import DemoBoard from "./DemoBoard";
 import HeroForm from "./HeroForm";
 import SocialLinks from "@/components/SocialLinks";
 import CookiePreferencesLink from "@/components/CookiePreferencesLink";
+import NavLanguageToggle from "@/components/NavLanguageToggle";
 
 export default async function Home() {
   // Redirect logged-in users straight to their dashboard
@@ -48,10 +49,10 @@ export default async function Home() {
             >
               {t("landing.nav.signIn")}
             </Link>
+            <NavLanguageToggle />
             <Link
               href="/connect"
-              className="text-[#c8942a] text-sm font-semibold px-4 py-1.5 rounded-full hover:bg-[#c8942a]/10 transition-colors"
-              style={{ border: "0.5px solid #c8942a" }}
+              className="text-[#0e0e0e] text-sm font-semibold px-4 py-1.5 rounded-full bg-[#c49e45] hover:bg-[#b5892a] transition-colors"
             >
               {t("landing.nav.getStarted")}
             </Link>

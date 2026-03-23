@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 const DEMO_USERNAME = "J_R_B_01";
 
 const PUZZLE_SELECT = {
@@ -105,14 +107,14 @@ export async function GET() {
     try {
       const recentUsersRaw = await prisma.user.findMany({
         take: 6,
-        orderBy: { createdAt: "desc" },
-        where: { puzzles: { some: {} } },
+        orderBy: { lastSyncedAt: "desc" },
+        where: { puzzles: { some: {} }, lastSyncedAt: { not: null } },
         include: { _count: { select: { puzzles: true } } },
       });
       recentActivity = recentUsersRaw.map((u) => ({
         username: u.chessComUsername ?? u.lichessUsername ?? "anon",
         puzzleCount: u._count.puzzles,
-        timeAgo: timeAgo(u.createdAt),
+        timeAgo: timeAgo(u.lastSyncedAt ?? u.createdAt),
       }));
     } catch (err) {
       console.error("[demo] Recent users query failed:", err);
