@@ -382,5 +382,23 @@
   "about.freeTitle": "Schachverbesserung sollte nicht hinter einer Paywall stecken",
   "about.freeBody": "Die besten Schachtools waren immer teuer, abo-lastig oder in Plattformen vergraben, die dein Geld wollen, bevor sie dir beim Verbessern helfen. Cassandra ist kostenlos. Keine Paywall, kein Abo. Weil besser im Schach werden nicht davon abhängen sollte, was du dir leisten kannst.",
   "about.signOff": "— Josh",
-  "about.signOffHandle": "j_r_b_01 auf Chess.com"
+  "about.signOffHandle": "j_r_b_01 auf Chess.com",
+
+  "feedback.eyebrow": "Kontakt",
+  "feedback.headline": "Wir hören zu.",
+  "feedback.intro": "Cassandra ist im Grunde ein Ein-Mann-Projekt — also hab etwas Geduld!\nEinen Bug gefunden? Eine Idee? Einfach Hallo sagen? Cassandra wird offen entwickelt, jede Nachricht wird gelesen und dein Feedback bestimmt direkt, was als Nächstes gebaut wird.",
+  "feedback.typeLabel": "Worum geht es?",
+  "feedback.typeBug": "Fehlermeldung",
+  "feedback.typeFeature": "Funktionswunsch",
+  "feedback.typeGeneral": "Allgemeines Feedback",
+  "feedback.messageLabel": "Deine Nachricht",
+  "feedback.messagePlaceholder": "Erzähl uns, was passiert ist, was du dir wünschst, oder was dir auf dem Herzen liegt...",
+  "feedback.emailLabel": "E-Mail",
+  "feedback.emailHint": "Nur wenn du eine Antwort möchtest",
+  "feedback.submit": "Feedback senden →",
+  "feedback.sending": "Wird gesendet...",
+  "feedback.note": "Jede Nachricht geht direkt an Josh. Keine Support-Tickets, keine Bots.",
+  "feedback.error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+  "feedback.thankYou": "Danke für dein Feedback.",
+  "feedback.thankYouDesc": "Jede Nachricht wird gelesen. Wenn du eine E-Mail hinterlassen hast, erwarte eine Antwort."
 }

@@ -382,5 +382,23 @@
   "about.freeTitle": "Mejorar en ajedrez no debería estar detrás de un paywall",
   "about.freeBody": "Las mejores herramientas de ajedrez siempre han sido caras, basadas en suscripciones, o enterradas dentro de plataformas que quieren tu dinero antes de ayudarte a mejorar. Cassandra es gratis. Sin paywall, sin suscripción. Porque mejorar en ajedrez no debería depender de lo que puedas pagar.",
   "about.signOff": "— Josh",
-  "about.signOffHandle": "j_r_b_01 en Chess.com"
+  "about.signOffHandle": "j_r_b_01 en Chess.com",
+
+  "feedback.eyebrow": "Contacto",
+  "feedback.headline": "Te escuchamos.",
+  "feedback.intro": "Cassandra es básicamente un proyecto de una sola persona — ¡así que ten paciencia!\n¿Encontraste un error? ¿Tienes una idea? ¿Solo quieres saludar? Cassandra se construye de forma abierta, cada mensaje se lee y tu opinión decide directamente lo que se construye después.",
+  "feedback.typeLabel": "¿De qué se trata?",
+  "feedback.typeBug": "Reporte de error",
+  "feedback.typeFeature": "Solicitud de función",
+  "feedback.typeGeneral": "Opinión general",
+  "feedback.messageLabel": "Tu mensaje",
+  "feedback.messagePlaceholder": "Cuéntanos qué pasó, qué te gustaría ver, o lo que tengas en mente...",
+  "feedback.emailLabel": "Correo electrónico",
+  "feedback.emailHint": "Solo si quieres una respuesta",
+  "feedback.submit": "Enviar opinión →",
+  "feedback.sending": "Enviando...",
+  "feedback.note": "Cada envío llega directamente a Josh. Sin tickets de soporte, sin bots.",
+  "feedback.error": "Algo salió mal. Intenta de nuevo.",
+  "feedback.thankYou": "Gracias por tu opinión.",
+  "feedback.thankYouDesc": "Cada mensaje se lee. Si dejaste un correo, espera una respuesta."
 }

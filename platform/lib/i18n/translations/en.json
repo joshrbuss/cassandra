@@ -382,5 +382,23 @@
   "about.freeTitle": "Chess improvement shouldn't be locked behind a paywall",
   "about.freeBody": "The best tools in chess have always been expensive, subscription-heavy, or buried inside platforms that want your money before they help you improve. Cassandra is free to use. No paywall, no subscription. Because getting better at chess shouldn't depend on what you can afford.",
   "about.signOff": "— Josh",
-  "about.signOffHandle": "j_r_b_01 on Chess.com"
+  "about.signOffHandle": "j_r_b_01 on Chess.com",
+
+  "feedback.eyebrow": "Get in touch",
+  "feedback.headline": "We're listening.",
+  "feedback.intro": "Cassandra is pretty much a one-man show — so bear with me!\nFound a bug? Have an idea? Just want to say hi? Cassandra is built in the open, every message gets read and your feedback directly shapes what gets built next.",
+  "feedback.typeLabel": "What's this about?",
+  "feedback.typeBug": "Bug report",
+  "feedback.typeFeature": "Feature request",
+  "feedback.typeGeneral": "General feedback",
+  "feedback.messageLabel": "Your message",
+  "feedback.messagePlaceholder": "Tell us what happened, what you'd like to see, or whatever's on your mind...",
+  "feedback.emailLabel": "Email",
+  "feedback.emailHint": "Only if you'd like a reply",
+  "feedback.submit": "Send feedback →",
+  "feedback.sending": "Sending...",
+  "feedback.note": "Every submission goes directly to Josh. No support tickets, no bots.",
+  "feedback.error": "Something went wrong. Please try again.",
+  "feedback.thankYou": "Thanks for your feedback.",
+  "feedback.thankYouDesc": "Every message gets read. If you left an email, expect a reply."
 }

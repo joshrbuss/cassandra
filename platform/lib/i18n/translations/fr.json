@@ -382,5 +382,23 @@
   "about.freeTitle": "Progresser aux échecs ne devrait pas être derrière un paywall",
   "about.freeBody": "Les meilleurs outils aux échecs ont toujours été chers, basés sur des abonnements, ou enfouis dans des plateformes qui veulent votre argent avant de vous aider à progresser. Cassandra est gratuit. Pas de paywall, pas d'abonnement. Parce que devenir meilleur aux échecs ne devrait pas dépendre de ce que vous pouvez vous permettre.",
   "about.signOff": "— Josh",
-  "about.signOffHandle": "j_r_b_01 sur Chess.com"
+  "about.signOffHandle": "j_r_b_01 sur Chess.com",
+
+  "feedback.eyebrow": "Nous contacter",
+  "feedback.headline": "Nous sommes à l'écoute.",
+  "feedback.intro": "Cassandra est essentiellement un projet solo — soyez indulgent !\nUn bug ? Une idée ? Juste envie de dire bonjour ? Cassandra est construit en toute transparence, chaque message est lu et vos retours façonnent directement ce qui est développé ensuite.",
+  "feedback.typeLabel": "De quoi s'agit-il ?",
+  "feedback.typeBug": "Signalement de bug",
+  "feedback.typeFeature": "Demande de fonctionnalité",
+  "feedback.typeGeneral": "Retour général",
+  "feedback.messageLabel": "Votre message",
+  "feedback.messagePlaceholder": "Dites-nous ce qui s'est passé, ce que vous aimeriez voir, ou ce qui vous passe par la tête...",
+  "feedback.emailLabel": "Email",
+  "feedback.emailHint": "Uniquement si vous souhaitez une réponse",
+  "feedback.submit": "Envoyer →",
+  "feedback.sending": "Envoi en cours...",
+  "feedback.note": "Chaque soumission arrive directement à Josh. Pas de tickets support, pas de bots.",
+  "feedback.error": "Une erreur s'est produite. Veuillez réessayer.",
+  "feedback.thankYou": "Merci pour votre retour.",
+  "feedback.thankYouDesc": "Chaque message est lu. Si vous avez laissé un email, attendez une réponse."
 }
