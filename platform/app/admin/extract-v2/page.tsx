@@ -151,6 +151,16 @@ export default function ExtractV2Admin() {
       )}
 
       {/* Results */}
+      {/* Raw debug output */}
+      {data && !loading && (
+        <details style={{ marginBottom: 24 }}>
+          <summary style={{ fontSize: 12, color: "#888", cursor: "pointer", marginBottom: 8 }}>Raw API response</summary>
+          <pre style={{ background: "#111", border: "1px solid #333", borderRadius: 8, padding: 16, fontSize: 12, color: "#aaa", overflow: "auto", maxHeight: 600, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+            {JSON.stringify(data, null, 2)}
+          </pre>
+        </details>
+      )}
+
       {data?.ok && data.games && (
         <div>
           {/* Summary bar */}
