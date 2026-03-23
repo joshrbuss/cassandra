@@ -60,69 +60,69 @@ export default async function Home() {
       </nav>
 
       {/* ── Hero ── */}
-      <section className="bg-[#f9f7f4] px-4 sm:px-6 py-14 sm:py-20 flex-1">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+      <section className="bg-[#f9f7f4] px-3 sm:px-4 py-4 sm:py-6 flex-1">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 items-start">
 
           {/* Left column — floating card */}
           <div className="bg-white rounded-2xl border border-[#e8e5e0] shadow-[0_2px_20px_rgba(0,0,0,0.06)] overflow-hidden">
-            <div className="p-6 sm:p-8 pb-0">
+            <div className="p-5 sm:p-6 pb-0">
               {/* Eyebrow */}
-              <p className="text-[11px] uppercase tracking-[0.12em] text-[#c49e45] font-semibold mb-3">
+              <p className="text-[11px] uppercase tracking-[0.12em] text-[#c49e45] font-semibold mb-2">
                 Personalised chess training
               </p>
 
               <h1
-                className="text-[36px] sm:text-[46px] leading-[1.1] font-normal text-[#111] mb-5"
+                className="text-[32px] sm:text-[42px] leading-[1.1] font-normal text-[#111] mb-3"
                 style={{ fontFamily: "Georgia, serif", letterSpacing: "-0.02em" }}
               >
                 {t("landing.hero.h1")}{" "}
                 <span className="inline-block">&#9823;</span>
               </h1>
 
-              <p className="text-[#555] text-[17px] leading-relaxed mb-8 max-w-lg">
+              <p className="text-[#555] text-[16px] leading-relaxed mb-5 max-w-lg">
                 {t("landing.hero.value")}
               </p>
 
               {/* How it works */}
-              <p className="text-[11px] uppercase tracking-[0.1em] text-[#999] font-semibold mb-4">
+              <p className="text-[11px] uppercase tracking-[0.1em] text-[#999] font-semibold mb-3">
                 {t("landing.hero.howItWorks")}
               </p>
 
-              <div className="space-y-5 mb-8">
-                <div className="flex gap-3.5 items-start">
-                  <span className="w-7 h-7 rounded-full bg-[#c8942a] text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+              <div className="space-y-3 mb-5">
+                <div className="flex gap-3 items-start">
+                  <span className="w-6 h-6 rounded-full bg-[#c8942a] text-white text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                     1
                   </span>
                   <div>
-                    <p className="text-[15px] font-semibold text-[#111]">{t("landing.hero.step1.title")}</p>
-                    <p className="text-[14px] text-[#777] mt-0.5">{t("landing.hero.step1.desc")}</p>
+                    <p className="text-[14px] font-semibold text-[#111]">{t("landing.hero.step1.title")}</p>
+                    <p className="text-[13px] text-[#777] mt-0.5">{t("landing.hero.step1.desc")}</p>
                   </div>
                 </div>
 
-                <div className="flex gap-3.5 items-start">
-                  <span className="w-7 h-7 rounded-full bg-[#c8942a] text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                <div className="flex gap-3 items-start">
+                  <span className="w-6 h-6 rounded-full bg-[#c8942a] text-white text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                     2
                   </span>
                   <div>
-                    <p className="text-[15px] font-semibold text-[#111]">{t("landing.hero.step2.title")}</p>
-                    <p className="text-[14px] text-[#777] mt-0.5">{t("landing.hero.step2.desc")}</p>
+                    <p className="text-[14px] font-semibold text-[#111]">{t("landing.hero.step2.title")}</p>
+                    <p className="text-[13px] text-[#777] mt-0.5">{t("landing.hero.step2.desc")}</p>
                   </div>
                 </div>
 
-                <div className="flex gap-3.5 items-start">
-                  <span className="w-7 h-7 rounded-full bg-[#c8942a] text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                <div className="flex gap-3 items-start">
+                  <span className="w-6 h-6 rounded-full bg-[#c8942a] text-white text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                     3
                   </span>
                   <div>
-                    <p className="text-[15px] font-semibold text-[#111]">{t("landing.hero.step3.title")}</p>
-                    <p className="text-[14px] text-[#777] mt-0.5">Enter your username below</p>
+                    <p className="text-[14px] font-semibold text-[#111]">{t("landing.hero.step3.title")}</p>
+                    <p className="text-[13px] text-[#777] mt-0.5">Enter your username below</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Obsidian input card — flush to bottom of white card */}
-            <div className="bg-[#0e0e0e] rounded-b-2xl p-5 px-6">
+            {/* Obsidian input card — flush to bottom, no top radius */}
+            <div className="bg-[#0e0e0e] p-4 px-6" style={{ borderRadius: "0 0 16px 16px" }}>
               <HeroForm
                 dark
                 ctaLabel={t("landing.hero.cta")}
@@ -137,7 +137,7 @@ export default async function Home() {
           </div>
 
           {/* Right column — animated board */}
-          <div className="lg:sticky lg:top-8">
+          <div className="lg:sticky lg:top-4">
             <DemoBoard />
           </div>
         </div>
