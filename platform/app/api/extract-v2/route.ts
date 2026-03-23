@@ -54,6 +54,8 @@ export async function POST(request: Request) {
       puzzles: ExtractResultV2["candidates"];
       moveEvals: ExtractResultV2["moveEvals"];
       totalMoves: number;
+      stockfishAvailable: boolean;
+      stockfishError?: string;
     }[] = [];
 
     let allCandidates: ExtractResultV2["candidates"] = [];
@@ -76,6 +78,8 @@ export async function POST(request: Request) {
         puzzles: result.candidates,
         moveEvals: result.moveEvals,
         totalMoves: result.totalPositions,
+        stockfishAvailable: result.stockfishAvailable,
+        stockfishError: result.stockfishError,
       });
 
       // Store MoveEvals for this game
@@ -154,6 +158,8 @@ export async function POST(request: Request) {
       elapsedSeconds: parseFloat(elapsed),
       games: gameResults.map((gr) => ({
         gameUrl: gr.gameUrl,
+        stockfishAvailable: gr.stockfishAvailable,
+        stockfishError: gr.stockfishError,
         accuracy: gr.accuracy,
         totalMoves: gr.totalMoves,
         puzzleCount: gr.puzzles.length,

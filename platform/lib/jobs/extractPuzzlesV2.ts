@@ -74,6 +74,10 @@ export interface ExtractResultV2 {
   stoppedAt: number;
   totalPositions: number;
   complete: boolean;
+  /** Diagnostic: was the Stockfish health check successful? */
+  stockfishAvailable: boolean;
+  /** Diagnostic: health check error message if failed */
+  stockfishError?: string;
 }
 
 // ─── Rating estimation ──────────────────────────────────────────────────────
@@ -733,7 +737,7 @@ export async function extractPuzzlesV2(
 
   if (positions.length < 5) {
     console.log(`[extract-v2] Skipped — too few positions (${positions.length})`);
-    return { candidates: [], moveEvals: [], accuracy: EMPTY_ACCURACY, gameUrl, stoppedAt: positions.length, totalPositions: positions.length, complete: true };
+    return { candidates: [], moveEvals: [], accuracy: EMPTY_ACCURACY, gameUrl, stoppedAt: positions.length, totalPositions: positions.length, complete: true, stockfishAvailable: false, stockfishError: "Too few positions" };
   }
 
   const playerTurn: "w" | "b" | null =
@@ -753,7 +757,7 @@ export async function extractPuzzlesV2(
   if (!healthCheck) {
     console.error(`[extract-v2] ⚠️  STOCKFISH HEALTH CHECK FAILED — getBestMove returned null for starting position`);
     console.error(`[extract-v2] ⚠️  Engine is not available. All evals will be null. Aborting game.`);
-    return { candidates: [], moveEvals: [], accuracy: EMPTY_ACCURACY, gameUrl, stoppedAt: 0, totalPositions: positions.length, complete: false };
+    return { candidates: [], moveEvals: [], accuracy: EMPTY_ACCURACY, gameUrl, stoppedAt: 0, totalPositions: positions.length, complete: false, stockfishAvailable: false, stockfishError: "getBestMove returned null — engine not found or crashed" };
   }
   console.log(`[extract-v2] ✓ Stockfish health check passed: bestMove=${healthCheck.move} cp=${healthCheck.cp}`);
 
@@ -884,5 +888,6 @@ export async function extractPuzzlesV2(
     stoppedAt: positions.length,
     totalPositions: positions.length,
     complete: true,
+    stockfishAvailable: true,
   };
 }
