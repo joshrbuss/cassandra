@@ -111,7 +111,7 @@ export default function ExtractV2Admin() {
 
       for (let g = 0; g < pgns.length; g++) {
         if (abortRef.current) break;
-        setProgress(`Analysing game ${g + 1}/${pgns.length} with Stockfish WASM (depth 8)...`);
+        setProgress(`Analysing game ${g + 1}/${pgns.length} with Stockfish WASM (depth 14)...`);
 
         const result = await extractPuzzlesV2Client(
           pgns[g],
@@ -208,7 +208,7 @@ export default function ExtractV2Admin() {
           Extract V2 — Test Console
         </h1>
         <p style={{ fontSize: 13, color: "#888", margin: 0 }}>
-          Client-side extraction using browser WASM Stockfish (depth 8)
+          Client-side extraction using browser WASM Stockfish (depth 14)
         </p>
       </div>
 

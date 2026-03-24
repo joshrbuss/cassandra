@@ -12,6 +12,7 @@ import { analyzePosition, type EngineResult } from "./stockfishBrowser";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
+const ANALYSIS_DEPTH = 14; // deeper than default 8 for accurate CPL
 const BLUNDER_THRESHOLD = 60; // centipawns
 const MAX_PER_GAME = 5;
 const MAX_EXTENSION_PLY = 10;
@@ -614,7 +615,7 @@ export async function extractPuzzlesV2Client(
   let prevBestMove: string | null = null;
 
   // Health check
-  const healthCheck = await analyzePosition(positions[0].fen);
+  const healthCheck = await analyzePosition(positions[0].fen, ANALYSIS_DEPTH);
   if (!healthCheck) {
     return { candidates: [], moveEvals: [], accuracy: EMPTY_ACCURACY, gameUrl, stoppedAt: 0, totalPositions: positions.length, complete: false, stockfishAvailable: false, stockfishError: "Browser Stockfish WASM not available" };
   }
@@ -623,7 +624,7 @@ export async function extractPuzzlesV2Client(
     onProgress?.(i, positions.length);
 
     const { fen } = positions[i];
-    const result = await analyzePosition(fen);
+    const result = await analyzePosition(fen, ANALYSIS_DEPTH);
     if (!result) {
       prevCp = null;
       prevBestMove = null;

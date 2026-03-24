@@ -15,8 +15,8 @@ export interface EngineResult {
   pv?: string;
 }
 
-const DEPTH = 8;
-const TIMEOUT_MS = 8_000;
+const DEFAULT_DEPTH = 8;
+const DEFAULT_TIMEOUT_MS = 8_000;
 
 let worker: Worker | null = null;
 let initPromise: Promise<void> | null = null;
@@ -55,11 +55,12 @@ function ensureInit(): Promise<void> {
 let lock: Promise<void> = Promise.resolve();
 
 /**
- * Evaluates a FEN position at depth 8 and returns the best move + centipawn score.
+ * Evaluates a FEN position and returns the best move + centipawn score.
+ * @param depth — search depth (default 8). Higher = slower but more accurate.
  * Returns null on timeout or if the worker is unavailable.
  */
-export async function analyzePosition(fen: string): Promise<EngineResult | null> {
-  const myTurn = lock.then(() => runAnalysis(fen));
+export async function analyzePosition(fen: string, depth: number = DEFAULT_DEPTH): Promise<EngineResult | null> {
+  const myTurn = lock.then(() => runAnalysis(fen, depth));
   // Advance the lock even if this analysis fails
   lock = myTurn.then(
     () => {},
@@ -68,7 +69,7 @@ export async function analyzePosition(fen: string): Promise<EngineResult | null>
   return myTurn;
 }
 
-async function runAnalysis(fen: string): Promise<EngineResult | null> {
+async function runAnalysis(fen: string, depth: number): Promise<EngineResult | null> {
   try {
     await ensureInit();
   } catch {
@@ -76,6 +77,8 @@ async function runAnalysis(fen: string): Promise<EngineResult | null> {
   }
 
   const sf = ensureWorker();
+  // Scale timeout with depth: ~1s per depth level, minimum 8s
+  const timeoutMs = Math.max(DEFAULT_TIMEOUT_MS, depth * 1500);
 
   return new Promise<EngineResult | null>((resolve) => {
     let bestMove = "";
@@ -90,7 +93,7 @@ async function runAnalysis(fen: string): Promise<EngineResult | null> {
       resolve(result);
     };
 
-    const timeout = setTimeout(() => finish(null), TIMEOUT_MS);
+    const timeout = setTimeout(() => finish(null), timeoutMs);
 
     const handler = (e: MessageEvent) => {
       const line = typeof e.data === "string" ? e.data : "";
@@ -110,7 +113,7 @@ async function runAnalysis(fen: string): Promise<EngineResult | null> {
     sf.addEventListener("message", handler);
     sf.postMessage("ucinewgame");
     sf.postMessage(`position fen ${fen}`);
-    sf.postMessage(`go depth ${DEPTH}`);
+    sf.postMessage(`go depth ${depth}`);
   });
 }
 
@@ -161,9 +164,9 @@ async function runMultiPVAnalysis(
     };
 
     const timeout = setTimeout(() => {
-      console.warn(`[Stockfish MultiPV] Timeout after ${TIMEOUT_MS}ms`);
+      console.warn(`[Stockfish MultiPV] Timeout after ${DEFAULT_TIMEOUT_MS}ms`);
       finish([]);
-    }, TIMEOUT_MS);
+    }, DEFAULT_TIMEOUT_MS);
 
     const handler = (e: MessageEvent) => {
       const line = typeof e.data === "string" ? e.data : "";
@@ -172,8 +175,8 @@ async function runMultiPVAnalysis(
       // Also handle "score mate N" lines
       if (line.includes("multipv") && (line.includes("score cp") || line.includes("score mate"))) {
         const depthMatch = line.match(/depth (\d+)/);
-        const depth = depthMatch ? parseInt(depthMatch[1], 10) : 0;
-        if (depth < DEPTH) return; // Only use final depth results
+        const d = depthMatch ? parseInt(depthMatch[1], 10) : 0;
+        if (d < DEFAULT_DEPTH) return; // Only use final depth results
 
         const pvNum = line.match(/multipv (\d+)/);
         const moveMatch = line.match(/\bpv ([a-h][1-8][a-h][1-8]\w?)/);
@@ -192,7 +195,7 @@ async function runMultiPVAnalysis(
           return;
         }
 
-        console.log(`[Stockfish MultiPV] depth=${depth} pv=${pvNum[1]} move=${moveMatch[1]} cp=${cp}`);
+        console.log(`[Stockfish MultiPV] depth=${d} pv=${pvNum[1]} move=${moveMatch[1]} cp=${cp}`);
         pvResults.set(parseInt(pvNum[1], 10), {
           move: moveMatch[1],
           cp,
@@ -213,7 +216,7 @@ async function runMultiPVAnalysis(
     sf.postMessage("ucinewgame");
     sf.postMessage(`setoption name MultiPV value ${numLines}`);
     sf.postMessage(`position fen ${fen}`);
-    sf.postMessage(`go depth ${DEPTH}`);
+    sf.postMessage(`go depth ${DEFAULT_DEPTH}`);
   });
 }
 
