@@ -16,8 +16,12 @@ interface PuzzleResult {
   solutionDepth: number;
   themes: string;
   themeDescriptions?: string[];
-  type: "standard" | "move_ranking";
+  type: "standard" | "move_ranking" | "opponent_threat";
   candidateMoves?: string;
+  /** opponent_threat fields */
+  parentPuzzleId?: string;
+  opponentBestMove?: string;
+  counterMove?: string;
   rating: number;
   evalCp: number;
   fen: string;
@@ -149,6 +153,9 @@ export default function ExtractV2Admin() {
             themeDescriptions: c.themeDescriptions,
             type: c.type,
             candidateMoves: c.candidateMoves,
+            parentPuzzleId: c.parentPuzzleId,
+            opponentBestMove: c.opponentBestMove,
+            counterMove: c.counterMove,
             rating: c.rating,
             evalCp: c.evalCp ?? 0,
             fen: c.solvingFen,
@@ -337,6 +344,11 @@ export default function ExtractV2Admin() {
                           move_ranking
                         </span>
                       )}
+                      {selectedPuzzle.type === "opponent_threat" && (
+                        <span style={{ fontSize: 10, background: "#f9731622", color: "#fb923c", border: "1px solid #f9731644", borderRadius: 4, padding: "2px 8px" }}>
+                          opponent_threat
+                        </span>
+                      )}
                       {selectedPuzzle.themes.split(" ").map((t) => (
                         <span key={t} style={{ fontSize: 10, background: "#c8942a22", color: "#c8942a", border: "1px solid #c8942a44", borderRadius: 4, padding: "2px 8px" }}>
                           {t}
@@ -348,6 +360,24 @@ export default function ExtractV2Admin() {
                         {selectedPuzzle.themeDescriptions.map((d, i) => (
                           <p key={i} style={{ fontSize: 11, color: "#999", margin: "2px 0", fontStyle: "italic" }}>{d}</p>
                         ))}
+                      </div>
+                    )}
+                    {selectedPuzzle.type === "opponent_threat" && selectedPuzzle.opponentBestMove && (
+                      <div style={{ marginTop: 8, padding: "8px 10px", background: "#f9731610", border: "1px solid #f9731633", borderRadius: 6 }}>
+                        <p style={{ margin: "0 0 6px", fontWeight: 600, fontSize: 11, color: "#fb923c" }}>Two-step puzzle</p>
+                        <p style={{ margin: "2px 0", fontSize: 11, color: "#ccc" }}>
+                          Step 1 — Opponent threatens: <span style={{ fontFamily: "monospace", color: "#fb923c" }}>{selectedPuzzle.opponentBestMove}</span>
+                        </p>
+                        {selectedPuzzle.counterMove && (
+                          <p style={{ margin: "2px 0", fontSize: 11, color: "#ccc" }}>
+                            Step 2 — Best counter: <span style={{ fontFamily: "monospace", color: "#4ade80" }}>{selectedPuzzle.counterMove}</span>
+                          </p>
+                        )}
+                        {selectedPuzzle.parentPuzzleId && (
+                          <p style={{ margin: "4px 0 0", fontSize: 10, color: "#666" }}>
+                            Parent: {selectedPuzzle.parentPuzzleId}
+                          </p>
+                        )}
                       </div>
                     )}
                     {selectedPuzzle.candidateMoves && (
@@ -457,12 +487,17 @@ function GameCard({
                   <div>
                     <span style={{ fontSize: 13, fontWeight: 500 }}>Move {p.moveNumber}</span>
                     <span style={{ fontSize: 11, color: "#888", marginLeft: 8 }}>
-                      {p.type === "move_ranking" ? "stronger move" : `${p.solutionDepth} ply`} · {p.rating}r
+                      {p.type === "opponent_threat" ? "threat" : p.type === "move_ranking" ? "stronger move" : `${p.solutionDepth} ply`} · {p.rating}r
                     </span>
                     <div style={{ display: "flex", gap: 3, marginTop: 4, flexWrap: "wrap" }}>
                       {p.type === "move_ranking" && (
                         <span style={{ fontSize: 9, background: "#3b82f622", color: "#60a5fa", borderRadius: 3, padding: "1px 6px" }}>
                           move_ranking
+                        </span>
+                      )}
+                      {p.type === "opponent_threat" && (
+                        <span style={{ fontSize: 9, background: "#f9731622", color: "#fb923c", borderRadius: 3, padding: "1px 6px" }}>
+                          opponent_threat
                         </span>
                       )}
                       {p.themes.split(" ").filter(t => t !== "v2").map((t) => (

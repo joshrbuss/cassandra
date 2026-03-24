@@ -27,6 +27,9 @@ export async function POST(request: Request) {
           type: string;
           candidateMoves?: string;
           outOfTheory?: boolean;
+          parentPuzzleId?: string;
+          opponentBestMove?: string;
+          counterMove?: string;
           gameUrl?: string;
           opponentUsername?: string;
           gameDate?: string;
@@ -97,6 +100,9 @@ export async function POST(request: Request) {
             type: c.type,
             candidateMoves: c.candidateMoves ?? null,
             outOfTheory: c.outOfTheory ?? null,
+            parentPuzzleId: c.parentPuzzleId ?? null,
+            opponentBestMove: c.opponentBestMove ?? null,
+            counterMove: c.counterMove ?? null,
             source: "user_import",
             sourceUserId: sourceUserId ?? undefined,
             isPublic: false,

@@ -19,6 +19,7 @@ const MAX_STRONGER_MOVE_PER_GAME = 3;
 const STRONGER_MOVE_MIN_CP_DIFF = 30; // minimum cp difference to count as "genuinely better"
 const STRONGER_MOVE_MAX_CPL = 59; // must be below blunder threshold
 const STRONGER_MOVE_MIN_CPL = 10; // don't flag near-perfect moves
+const OPPONENT_THREAT_MIN_CP = 40; // opponent's reply must gain ≥40cp vs position after best move
 const MAX_EXTENSION_PLY = 10;
 const FORCING_ADVANTAGE_CP = 150;
 const WINNING_THRESHOLD_CP = 300;
@@ -33,14 +34,20 @@ export interface PuzzleCandidateV2 {
   solutionMoves: string;
   rating: number;
   themes: string;
-  /** "standard" for missed tactics, "move_ranking" for stronger-move-available */
-  type: "standard" | "move_ranking";
+  /** "standard" for missed tactics, "move_ranking" for stronger-move-available, "opponent_threat" for tactical threats after suboptimal play */
+  type: "standard" | "move_ranking" | "opponent_threat";
   /** JSON stringified CandidateMove[] for move_ranking puzzles */
   candidateMoves?: string;
   /** Detailed theme descriptions for verification, e.g. "pin — bishop pinning knight to king" */
   themeDescriptions?: string[];
   /** True if the move deviated from opening database theory (move_ranking only) */
   outOfTheory?: boolean;
+  /** ID of the parent move_ranking puzzle (opponent_threat only) */
+  parentPuzzleId?: string;
+  /** Opponent's best reply UCI (opponent_threat step 1 answer) */
+  opponentBestMove?: string;
+  /** User's best counter-response UCI (opponent_threat step 2 answer) */
+  counterMove?: string;
   gameUrl?: string;
   opponentUsername?: string;
   gameDate?: string;
@@ -827,8 +834,9 @@ export async function extractPuzzlesV2Client(
       ...topAlts.map((a) => ({ move: a.move, cp: a.cp, played: false })),
     ]);
 
+    const moveRankingId = clientId();
     candidates.push({
-      id: clientId(),
+      id: moveRankingId,
       fen,
       solvingFen: fen,
       lastMove,
@@ -845,6 +853,109 @@ export async function extractPuzzlesV2Client(
       evalCp: playedCp,
     });
     strongerMoveCount++;
+
+    // ── Opponent threat detection ──
+    // Check if the user's suboptimal move created a concrete tactical opportunity.
+    // Apply the user's played move, then check opponent's best reply vs what would
+    // have happened after the user's best move.
+    try {
+      // Position after user's suboptimal move (opponent to move)
+      const afterPlayed = new Chess(fen);
+      const playedMoveResult = afterPlayed.move({
+        from: me.movePlayed.slice(0, 2),
+        to: me.movePlayed.slice(2, 4),
+        promotion: me.movePlayed[4] || undefined,
+      });
+      if (playedMoveResult) {
+        const threatFen = afterPlayed.fen(); // opponent is to move here
+
+        // Opponent's best reply after our suboptimal move
+        const opponentReply = await analyzePosition(threatFen, ANALYSIS_DEPTH);
+        if (opponentReply) {
+          // Position after user's best move (for comparison baseline)
+          const bestAlt = topAlts[0]; // best alternative from MultiPV
+          const afterBest = new Chess(fen);
+          const bestMoveResult = afterBest.move({
+            from: bestAlt.move.slice(0, 2),
+            to: bestAlt.move.slice(2, 4),
+            promotion: bestAlt.move[4] || undefined,
+          });
+
+          if (bestMoveResult) {
+            const afterBestFen = afterBest.fen();
+            const opponentReplyAfterBest = await analyzePosition(afterBestFen, ANALYSIS_DEPTH);
+
+            // Compare: how much does the opponent gain from our mistake?
+            // opponentReply.cp is from opponent's perspective after our bad move
+            // opponentReplyAfterBest.cp is from opponent's perspective after our best move
+            // A bigger number means opponent is happier — the difference is the "threat gain"
+            const opponentGainAfterBad = opponentReply.cp; // opponent eval after our bad move
+            const opponentGainAfterGood = opponentReplyAfterBest?.cp ?? 0;
+            const threatGain = opponentGainAfterBad - opponentGainAfterGood;
+
+            if (threatGain >= OPPONENT_THREAT_MIN_CP) {
+              // Apply opponent's threat move to find the counter-response position
+              const afterThreat = new Chess(threatFen);
+              const threatMoveResult = afterThreat.move({
+                from: opponentReply.move.slice(0, 2),
+                to: opponentReply.move.slice(2, 4),
+                promotion: opponentReply.move[4] || undefined,
+              });
+
+              if (threatMoveResult) {
+                const counterFen = afterThreat.fen(); // user must respond to the threat
+                const counterReply = await analyzePosition(counterFen, ANALYSIS_DEPTH);
+
+                if (counterReply) {
+                  // Get SAN for readable descriptions
+                  const playedSan = playedMoveResult.san;
+                  const bestSan = bestMoveResult.san;
+                  const threatSan = threatMoveResult.san;
+                  const counterSan = (() => {
+                    try {
+                      const c = new Chess(counterFen);
+                      const r = c.move({
+                        from: counterReply.move.slice(0, 2),
+                        to: counterReply.move.slice(2, 4),
+                        promotion: counterReply.move[4] || undefined,
+                      });
+                      return r?.san ?? counterReply.move;
+                    } catch { return counterReply.move; }
+                  })();
+
+                  // solutionMoves: step 1 (find threat) + step 2 (counter it)
+                  const solutionMoves = `${opponentReply.move} ${counterReply.move}`;
+
+                  candidates.push({
+                    id: clientId(),
+                    fen: fen, // original position (before user's move)
+                    solvingFen: threatFen, // position after user's suboptimal move
+                    lastMove: me.movePlayed,
+                    solutionMoves,
+                    rating: Math.min(estimateRating(me.cpl, 2) + 100, 1800),
+                    themes: "opponentThreat",
+                    themeDescriptions: [
+                      `you played ${playedSan} instead of ${bestSan} — your opponent can now play ${threatSan} (gaining ${(threatGain / 100).toFixed(1)} pawns)`,
+                      `best response to the threat: ${counterSan}`,
+                    ],
+                    type: "opponent_threat",
+                    parentPuzzleId: moveRankingId,
+                    opponentBestMove: opponentReply.move,
+                    counterMove: counterReply.move,
+                    gameUrl,
+                    ...gameContext,
+                    moveNumber: me.moveNumber,
+                    evalCp: -opponentReply.cp, // from player's perspective (negative = bad for us)
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn(`[V2 Extract] opponent_threat detection failed for move ${me.moveNumber}:`, err);
+    }
   }
 
   const playerSide = (gameContext.playerColor as "white" | "black") ?? "white";

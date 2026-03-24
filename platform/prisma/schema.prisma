@@ -21,10 +21,16 @@ model Puzzle {
   rating        Int
   /// Space-separated Lichess theme tags
   themes        String   @default("")
-  /// "standard" | "retrograde" | "opponent_prediction" | "move_ranking" | "weakness_spot"
+  /// "standard" | "retrograde" | "opponent_prediction" | "move_ranking" | "weakness_spot" | "opponent_threat"
   type          String   @default("standard")
   /// JSON: CandidateMove[] — populated for move_ranking puzzles
   candidateMoves    String?
+  /// ID of the parent move_ranking puzzle (opponent_threat only)
+  parentPuzzleId    String?
+  /// Opponent's best reply UCI (opponent_threat step 1 answer)
+  opponentBestMove  String?
+  /// User's best counter-response UCI (opponent_threat step 2 answer)
+  counterMove       String?
   /// JSON: string[] of algebraic squares, e.g. ["d5","f7"] — for weakness_spot puzzles
   weaknessSquares   String?
   /// Explanation text revealed after submitting a weakness_spot puzzle
