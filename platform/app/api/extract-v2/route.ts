@@ -25,25 +25,46 @@ export async function POST(request: Request) {
 
     console.log(`\n[extract-v2] ═══ Starting V2 extraction for ${username} (max ${maxGames} games) ═══\n`);
 
-    // ── Inline Stockfish diagnostic (bypass module cache) ──
-    const sfPaths = ["/opt/homebrew/bin/stockfish", "/usr/local/bin/stockfish", "/usr/bin/stockfish"];
-    const sfDiag: Record<string, unknown> = { cwd: process.cwd(), nodeVersion: process.version };
-    for (const p of sfPaths) {
-      sfDiag[p] = existsSync(p);
-    }
+    // ── Inline Stockfish diagnostic ──
+    const sfDiag: Record<string, unknown> = {
+      cwd: process.cwd(),
+      __dirname: __dirname,
+      nodeVersion: process.version,
+      platform: process.platform,
+    };
 
-    // Try a direct spawn test
-    const sfBin = sfPaths.find((p) => existsSync(p));
-    if (sfBin) {
-      sfDiag.selectedBinary = sfBin;
+    // Check system binaries
+    const sfBinPaths = ["/opt/homebrew/bin/stockfish", "/usr/local/bin/stockfish", "/usr/bin/stockfish"];
+    for (const p of sfBinPaths) sfDiag[p] = existsSync(p);
+
+    // Check npm package paths
+    const { join } = await import("path");
+    const npmPaths = [
+      join(process.cwd(), "node_modules/stockfish/bin/stockfish-18-lite-single.js"),
+      join(process.cwd(), "..", "node_modules/stockfish/bin/stockfish-18-lite-single.js"),
+      "/var/task/node_modules/stockfish/bin/stockfish-18-lite-single.js",
+      "/var/task/platform/node_modules/stockfish/bin/stockfish-18-lite-single.js",
+    ];
+    for (const p of npmPaths) sfDiag[p] = existsSync(p);
+
+    // Find whichever exists — prefer system binary, fall back to npm WASM
+    const sfBin = sfBinPaths.find((p) => existsSync(p));
+    const sfNpm = npmPaths.find((p) => existsSync(p));
+    sfDiag.selectedBinary = sfBin ?? null;
+    sfDiag.selectedNpm = sfNpm ?? null;
+
+    // Try spawn test with whatever we found
+    const testCmd: string[] | null = sfBin ? [sfBin] : sfNpm ? ["node", sfNpm] : null;
+    if (testCmd) {
+      sfDiag.testCommand = testCmd.join(" ");
       try {
         const testResult = await new Promise<string>((resolve) => {
-          const proc = spawn(sfBin, [], { stdio: ["pipe", "pipe", "pipe"] });
+          const proc = spawn(testCmd[0], testCmd.slice(1), { stdio: ["pipe", "pipe", "pipe"] });
           let out = "";
-          const timer = setTimeout(() => { proc.kill(); resolve(`TIMEOUT after 5s. output: ${out.slice(0, 300)}`); }, 5000);
+          const timer = setTimeout(() => { proc.kill(); resolve(`TIMEOUT after 8s. output: ${out.slice(0, 500)}`); }, 8000);
           proc.stdout.on("data", (d: Buffer) => {
             out += d.toString();
-            if (out.includes("readyok")) {
+            if (out.includes("readyok") && !out.includes("go depth")) {
               proc.stdin!.write("position fen rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\ngo depth 5\n");
             }
             if (out.includes("bestmove")) {
@@ -57,6 +78,7 @@ export async function POST(request: Request) {
           });
           proc.stderr.on("data", (d: Buffer) => { out += `[stderr]${d.toString()}`; });
           proc.on("error", (e) => { clearTimeout(timer); resolve(`SPAWN_ERROR: ${e.message}`); });
+          proc.on("exit", (code) => { if (code && !out.includes("bestmove")) { clearTimeout(timer); resolve(`EXIT_CODE: ${code}. output: ${out.slice(0, 500)}`); } });
           proc.stdin!.write("uci\nisready\n");
         });
         sfDiag.spawnTest = testResult;
@@ -64,8 +86,8 @@ export async function POST(request: Request) {
         sfDiag.spawnTest = `ERROR: ${e}`;
       }
     } else {
-      sfDiag.selectedBinary = null;
-      sfDiag.spawnTest = "NO_BINARY_FOUND";
+      sfDiag.testCommand = null;
+      sfDiag.spawnTest = "NO_ENGINE_FOUND";
     }
     console.log(`[extract-v2] Stockfish diagnostic:`, JSON.stringify(sfDiag));
     // ── End diagnostic ──

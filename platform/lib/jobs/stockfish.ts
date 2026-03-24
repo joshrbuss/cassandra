@@ -52,8 +52,10 @@ function getEngineCommand(): string[] | null {
   ];
   const basePaths = [
     process.cwd(),
+    join(process.cwd(), ".."),                // one level up from cwd (e.g. /var/task/platform -> /var/task)
     join(__dirname, "..", ".."),              // lib/jobs/../../node_modules
-    "/var/task",                               // Vercel serverless
+    "/var/task",                               // Vercel serverless root
+    "/var/task/platform",                      // Vercel serverless with platform subdir
     join(__dirname, "..", "..", "..", ".."),   // deeper traversal for bundled output
   ];
 
