@@ -19,8 +19,12 @@ const MAX_STRONGER_MOVE_PER_GAME = 3;
 const STRONGER_MOVE_MIN_CP_DIFF = 30; // minimum cp difference to count as "genuinely better"
 const STRONGER_MOVE_MAX_CPL = 59; // must be below blunder threshold
 const STRONGER_MOVE_MIN_CPL = 10; // don't flag near-perfect moves
-const OPPONENT_THREAT_MIN_GAIN = 80; // opponent's reply must gain ≥80cp vs position after best move
-const OPPONENT_THREAT_DANGER_CP = 150; // position after opponent's reply must be within ±150cp (roughly equal/dangerous)
+// Boundary-crossing thresholds for opponent_threat detection.
+// A puzzle is generated when the user's move causes the eval to cross
+// a meaningful boundary — winning→equal, equal→losing, or winning→losing.
+const WINNING_BOUNDARY = 150;  // above this = "winning"
+const EQUAL_BOUNDARY = 100;    // below this (and above -EQUAL_BOUNDARY) = "roughly equal"
+const LOSING_BOUNDARY = -150;  // below this = "losing"
 const MAX_EXTENSION_PLY = 10;
 const FORCING_ADVANTAGE_CP = 150;
 const WINNING_THRESHOLD_CP = 300;
@@ -873,37 +877,32 @@ export async function extractPuzzlesV2Client(
         // Opponent's best reply after our suboptimal move
         const opponentReply = await analyzePosition(threatFen, ANALYSIS_DEPTH);
         if (opponentReply) {
-          // Position after user's best move (for comparison baseline)
-          const bestAlt = topAlts[0]; // best alternative from MultiPV
-          const afterBest = new Chess(fen);
-          const bestMoveResult = afterBest.move({
-            from: bestAlt.move.slice(0, 2),
-            to: bestAlt.move.slice(2, 4),
-            promotion: bestAlt.move[4] || undefined,
-          });
+          // Get SAN of the best alternative for descriptions
+          const bestAlt = topAlts[0];
+          const bestSan = (() => {
+            try {
+              const c = new Chess(fen);
+              const r = c.move({ from: bestAlt.move.slice(0, 2), to: bestAlt.move.slice(2, 4), promotion: bestAlt.move[4] || undefined });
+              return r?.san ?? bestAlt.move;
+            } catch { return bestAlt.move; }
+          })();
 
-          if (bestMoveResult) {
-            const afterBestFen = afterBest.fen();
-            const opponentReplyAfterBest = await analyzePosition(afterBestFen, ANALYSIS_DEPTH);
-
-            // Compare: how much does the opponent gain from our mistake?
-            // opponentReply.cp is from opponent's perspective after our bad move
-            // opponentReplyAfterBest.cp is from opponent's perspective after our best move
-            // A bigger number means opponent is happier — the difference is the "threat gain"
-            const opponentGainAfterBad = opponentReply.cp; // opponent eval after our bad move
-            const opponentGainAfterGood = opponentReplyAfterBest?.cp ?? 0;
-            const threatGain = opponentGainAfterBad - opponentGainAfterGood;
-
-            // opponentReply.cp is from opponent's perspective — negate to get player's perspective
+          {
+            // Eval before the user's move (from player's perspective) = bestCp from MultiPV.
+            // Eval after opponent's best reply to our bad move (player's perspective):
             const playerEvalAfterThreat = -opponentReply.cp;
+            const evalBefore = bestCp; // what we had if we played correctly
 
-            // Two quality gates:
-            // 1. Opponent must gain significantly from our mistake (≥80cp swing)
-            // 2. The resulting position must be genuinely dangerous — within ±150cp
-            //    (skip if user is still clearly winning, e.g. +3.0)
-            const isDangerous = Math.abs(playerEvalAfterThreat) <= OPPONENT_THREAT_DANGER_CP;
+            // Boundary-crossing detection:
+            // Winning→equal: was above +150, now below +100
+            // Equal→losing:  was above -100, now below -150
+            // Winning→losing: crossed zero (was positive, now negative)
+            const winningToEqual = evalBefore > WINNING_BOUNDARY && playerEvalAfterThreat < EQUAL_BOUNDARY;
+            const equalToLosing = evalBefore > -EQUAL_BOUNDARY && playerEvalAfterThreat < LOSING_BOUNDARY;
+            const winningToLosing = evalBefore > 0 && playerEvalAfterThreat < 0;
+            const crossedBoundary = winningToEqual || equalToLosing || winningToLosing;
 
-            if (threatGain >= OPPONENT_THREAT_MIN_GAIN && isDangerous) {
+            if (crossedBoundary) {
               // Apply opponent's threat move to find the counter-response position
               const afterThreat = new Chess(threatFen);
               const threatMoveResult = afterThreat.move({
@@ -919,7 +918,6 @@ export async function extractPuzzlesV2Client(
                 if (counterReply) {
                   // Get SAN for readable descriptions
                   const playedSan = playedMoveResult.san;
-                  const bestSan = bestMoveResult.san;
                   const threatSan = threatMoveResult.san;
                   const counterSan = (() => {
                     try {
@@ -936,14 +934,11 @@ export async function extractPuzzlesV2Client(
                   // solutionMoves: step 1 (find threat) + step 2 (counter it)
                   const solutionMoves = `${opponentReply.move} ${counterReply.move}`;
 
-                  // Describe severity based on resulting eval
-                  const severityLabel =
-                    playerEvalAfterThreat <= -100 ? "winning position"
-                    : playerEvalAfterThreat <= -30 ? "strong advantage"
-                    : playerEvalAfterThreat <= 30 ? "equal position"
-                    : playerEvalAfterThreat <= 100 ? "slight edge"
-                    : "advantage you're losing";
-                  const actionWord = playerEvalAfterThreat <= 30 ? "exploit" : "punish";
+                  // Describe which boundary was crossed
+                  const boundaryLabel =
+                    winningToLosing ? "turned a winning position into a losing one"
+                    : equalToLosing ? "let a holdable position slip into a loss"
+                    : "gave away your advantage";
 
                   candidates.push({
                     id: clientId(),
@@ -954,7 +949,7 @@ export async function extractPuzzlesV2Client(
                     rating: Math.min(estimateRating(me.cpl, 2) + 100, 1800),
                     themes: "opponentThreat",
                     themeDescriptions: [
-                      `you played ${playedSan} instead of ${bestSan} — your opponent can now ${actionWord} this with ${threatSan}, reaching a ${severityLabel}`,
+                      `you played ${playedSan} instead of ${bestSan} — ${boundaryLabel}. Your opponent can play ${threatSan}`,
                       `best response: ${counterSan}`,
                     ],
                     type: "opponent_threat",
