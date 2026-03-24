@@ -505,15 +505,20 @@ function computeAccuracy(evals: MoveEvalData[], side: "white" | "black"): GameAc
   const totalCpl = playerEvals.reduce((sum, e) => sum + e.cpl, 0);
   const avgCpl = totalCpl / playerEvals.length;
 
+  // Chess.com-style: compute accuracy per move, then average.
+  // This avoids Jensen's inequality distortion from averaging CPL first.
+  const perMoveAccuracies = playerEvals.map((e) => cplToAccuracy(e.cpl));
+  const avgAccuracy = perMoveAccuracies.reduce((s, a) => s + a, 0) / perMoveAccuracies.length;
+
   const byPhase = (phase: "opening" | "middlegame" | "endgame") => {
     const phaseEvals = playerEvals.filter((e) => e.phase === phase);
     if (phaseEvals.length === 0) return 0;
-    const phaseAvg = phaseEvals.reduce((s, e) => s + e.cpl, 0) / phaseEvals.length;
-    return cplToAccuracy(phaseAvg);
+    const phaseAccuracies = phaseEvals.map((e) => cplToAccuracy(e.cpl));
+    return Math.round(phaseAccuracies.reduce((s, a) => s + a, 0) / phaseAccuracies.length * 10) / 10;
   };
 
   return {
-    overall: cplToAccuracy(avgCpl),
+    overall: Math.round(avgAccuracy * 10) / 10,
     opening: byPhase("opening"),
     middlegame: byPhase("middlegame"),
     endgame: byPhase("endgame"),
