@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Chessboard } from "react-chessboard";
 
 export interface PieceDropHandlerArgs {
@@ -20,7 +21,7 @@ interface ChessBoardWrapperProps {
   boardOrientation?: "white" | "black";
 }
 
-export default function ChessBoardWrapper({
+export default memo(function ChessBoardWrapper({
   position,
   squareStyles,
   interactive = false,
@@ -44,4 +45,4 @@ export default function ChessBoardWrapper({
       }}
     />
   );
-}
+});

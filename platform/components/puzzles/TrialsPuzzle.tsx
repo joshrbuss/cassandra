@@ -5,6 +5,7 @@ import { Chess } from "chess.js";
 import dynamic from "next/dynamic";
 import { BoardSkeleton } from "@/components/Skeleton";
 import type { PieceDropHandlerArgs } from "@/components/ChessBoardWrapper";
+import { safeMove } from "@/lib/chess-move";
 
 const ChessBoardWrapper = dynamic(() => import("@/components/ChessBoardWrapper"), {
   ssr: false,
@@ -104,7 +105,8 @@ export default function TrialsPuzzle({
 
   function handleDrop({ sourceSquare, targetSquare }: PieceDropHandlerArgs): boolean {
     if (phase !== "playing" || !targetSquare) return false;
-    const result = chess.move({ from: sourceSquare, to: targetSquare, promotion: "q" });
+    if (sourceSquare === targetSquare) return false;
+    const result = safeMove(chess, sourceSquare, targetSquare);
     if (!result) return false;
 
     const uci = `${sourceSquare}${targetSquare}${result.promotion ?? ""}`;
@@ -134,7 +136,11 @@ export default function TrialsPuzzle({
     if (phase !== "playing") return;
 
     if (selectedSquare) {
-      const result = chess.move({ from: selectedSquare, to: square, promotion: "q" });
+      if (selectedSquare === square) {
+        setSelectedSquare(null);
+        return;
+      }
+      const result = safeMove(chess, selectedSquare, square);
       setSelectedSquare(null);
 
       if (!result) {

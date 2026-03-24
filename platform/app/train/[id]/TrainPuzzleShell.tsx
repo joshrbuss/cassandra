@@ -6,6 +6,7 @@ import { Chess } from "chess.js";
 import dynamic from "next/dynamic";
 import { BoardSkeleton } from "@/components/Skeleton";
 import type { PieceDropHandlerArgs } from "@/components/ChessBoardWrapper";
+import { safeMove } from "@/lib/chess-move";
 import { useTimer } from "@/hooks/useTimer";
 import type { AttemptResponse } from "@/app/api/puzzles/[id]/attempt/route";
 import type { LeaderboardEntry } from "@/app/api/puzzles/[id]/leaderboard/route";
@@ -171,7 +172,8 @@ export default function TrainPuzzleShell({
 
   function handleDrop({ sourceSquare, targetSquare }: PieceDropHandlerArgs): boolean {
     if (phase !== "playing" || !targetSquare) return false;
-    const moveResult = chess.move({ from: sourceSquare, to: targetSquare, promotion: "q" });
+    if (sourceSquare === targetSquare) return false;
+    const moveResult = safeMove(chess, sourceSquare, targetSquare);
     if (!moveResult) return false;
 
     const uci = `${sourceSquare}${targetSquare}${moveResult.promotion ?? ""}`;

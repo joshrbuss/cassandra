@@ -13,26 +13,11 @@ export default async function ScalesPage() {
   const session = await auth();
   if (!session?.userId) redirect("/connect");
 
-  // Pick a random pre-seeded ScalesPosition
-  const total = await prisma.scalesPosition.count();
-
-  if (total === 0) {
-    return (
-      <main className="min-h-screen bg-[#0e0e0e] flex flex-col items-center justify-center px-4 text-center">
-        <p className="text-[#c8942a] text-3xl mb-4">&#9878;</p>
-        <h1 className="text-xl font-bold text-white mb-2">No Positions Available</h1>
-        <p className="text-gray-500 text-sm mb-6">
-          The Scales needs pre-seeded positions to work. Run the seeder script first.
-        </p>
-      </main>
-    );
-  }
-
-  const skip = Math.floor(Math.random() * total);
-  const position = await prisma.scalesPosition.findFirst({
-    orderBy: { id: "asc" },
-    skip,
-  });
+  // Pick a random pre-seeded ScalesPosition (single query via raw SQL for speed)
+  const positions = await prisma.$queryRaw<{ id: string; fen: string; move1: string; move2: string; move3: string; eval1: number; eval2: number; eval3: number; pv1: string | null; pv2: string | null; pv3: string | null; hasSacrifice: boolean }[]>`
+    SELECT * FROM ScalesPosition ORDER BY RANDOM() LIMIT 1
+  `;
+  const position = positions[0] ?? null;
 
   if (!position) {
     return (
@@ -40,7 +25,7 @@ export default async function ScalesPage() {
         <p className="text-[#c8942a] text-3xl mb-4">&#9878;</p>
         <h1 className="text-xl font-bold text-white mb-2">No Positions Available</h1>
         <p className="text-gray-500 text-sm mb-6">
-          The Scales needs pre-seeded positions to work. Try again later.
+          The Scales needs pre-seeded positions to work. Run the seeder script first.
         </p>
       </main>
     );

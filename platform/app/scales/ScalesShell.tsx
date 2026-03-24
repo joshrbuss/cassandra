@@ -1,21 +1,23 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Chess } from "chess.js";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { BoardSkeleton } from "@/components/Skeleton";
 import type { PieceDropHandlerArgs } from "@/components/ChessBoardWrapper";
+import { safeMove } from "@/lib/chess-move";
 import {
   analyzePosition,
   terminateEngine,
 } from "@/lib/chess-client/stockfishBrowser";
 import type { EngineResult } from "@/lib/chess-client/stockfishBrowser";
 import { gtagEvent } from "@/lib/gtag";
+import NavLanguageToggle from "@/components/NavLanguageToggle";
+import { useTranslation } from "@/components/i18n/LocaleProvider";
 
 const ChessBoardWrapper = dynamic(() => import("@/components/ChessBoardWrapper"), {
   ssr: false,
-  loading: () => <BoardSkeleton />,
+  loading: () => <div className="w-full aspect-square rounded-lg bg-[#1a1a1a] animate-pulse" />,
 });
 
 interface Props {
@@ -38,8 +40,12 @@ interface SlotData {
 type Phase = "picking" | "evaluating" | "results";
 
 export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacrifice }: Props) {
+  const { t } = useTranslation();
   const boardOrientation: "white" | "black" =
     fen.split(" ")[1] === "b" ? "black" : "white";
+
+  // Memoize a Chess instance for the static position — avoids recreating on every click/render
+  const posChess = useMemo(() => new Chess(fen), [fen]);
 
   const [slots, setSlots] = useState<(SlotData | null)[]>([null, null, null]);
   const [activeSlot, setActiveSlot] = useState<number>(0);
@@ -62,7 +68,7 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
       if (slots[activeSlot] !== null) return false;
 
       const chess = new Chess(fen);
-      const moveResult = chess.move({ from, to, promotion: "q" });
+      const moveResult = safeMove(chess, from, to);
       if (!moveResult) return false;
 
       const uci = `${from}${to}${moveResult.promotion ?? ""}`;
@@ -95,7 +101,7 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
   );
 
   function handleDrop({ sourceSquare, targetSquare }: PieceDropHandlerArgs): boolean {
-    if (!targetSquare) return false;
+    if (!targetSquare || sourceSquare === targetSquare) return false;
     return placeMove(sourceSquare, targetSquare);
   }
 
@@ -103,29 +109,30 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
     if (phase !== "picking") return;
 
     if (selectedSquare) {
+      if (selectedSquare === square) {
+        setSelectedSquare(null);
+        return;
+      }
       const success = placeMove(selectedSquare, square);
       if (!success) {
         setSelectedSquare(null);
-        const chess = new Chess(fen);
-        const moves = chess.moves({ square: square as never, verbose: true });
+        const moves = posChess.moves({ square: square as never, verbose: true });
         if (moves.length > 0) setSelectedSquare(square);
       } else {
         setSelectedSquare(null);
       }
     } else {
-      const chess = new Chess(fen);
-      const moves = chess.moves({ square: square as never, verbose: true });
+      const moves = posChess.moves({ square: square as never, verbose: true });
       if (moves.length > 0) setSelectedSquare(square);
     }
   }
 
   function getClickStyles(): Record<string, React.CSSProperties> {
     if (!selectedSquare || phase !== "picking") return {};
-    const chess = new Chess(fen);
     const styles: Record<string, React.CSSProperties> = {
       [selectedSquare]: { backgroundColor: "rgba(255, 200, 0, 0.5)" },
     };
-    const moves = chess.moves({ square: selectedSquare as never, verbose: true });
+    const moves = posChess.moves({ square: selectedSquare as never, verbose: true });
     for (const m of moves) {
       styles[m.to] = {
         background: "radial-gradient(circle, rgba(0,0,0,0.2) 25%, transparent 25%)",
@@ -319,10 +326,10 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
   }
 
   const scoreLabels = [
-    "Keep going — try another!",
-    "Nice start — getting there!",
-    "Strong evaluation!",
-    "Perfect read!",
+    t("scales.score0"),
+    t("scales.score1"),
+    t("scales.score2"),
+    t("scales.score3"),
   ];
 
   const scoreColors = [
@@ -340,22 +347,22 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
           href="/home"
           className="text-sm font-medium text-[#c8942a] hover:text-[#e0ad3a] transition-colors"
         >
-          &larr; Home
+          {t("scales.home")}
         </Link>
         <span className="text-xs font-semibold uppercase tracking-widest text-gray-600">
-          The Scales
+          {t("scales.title")}
         </span>
-        <span className="w-16" />
+        <NavLanguageToggle />
       </nav>
 
       <div className="max-w-lg mx-auto px-4 pt-4 pb-6">
-        {/* Instruction / Results panel */}
-        <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-5 py-4 mb-4">
+        {/* Instruction / Results panel — min-height prevents CLS when content changes */}
+        <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-5 py-4 mb-4 min-h-[220px]">
           {phase === "evaluating" ? (
             <div className="text-center py-4">
               <div className="inline-block w-6 h-6 border-2 border-[#c8942a] border-t-transparent rounded-full animate-spin mb-3" />
               <p className="text-gray-400 text-sm">
-                Evaluating your moves...
+                {t("scales.evaluating")}
               </p>
             </div>
           ) : phase === "results" && score !== null ? (
@@ -367,7 +374,7 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
               {/* Engine ranking reveal */}
               <div className="mt-3 space-y-2">
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 mb-2">
-                  Stockfish ranking
+                  {t("scales.stockfishRanking")}
                 </p>
                 {engineTop3.map((em, i) => {
                   const san = getMoveLabel(em.move);
@@ -409,7 +416,7 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
               {/* Your ranking */}
               <div className="mt-4 space-y-2">
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 mb-2">
-                  Your ranking
+                  {t("scales.yourRanking")}
                 </p>
                 {slots.map((s, i) => {
                   if (!s) return null;
@@ -453,12 +460,12 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
                         </div>
                         <span className="text-xs text-gray-500">
                           {isCorrect
-                            ? "Correct"
+                            ? t("scales.correct")
                             : isInTop3
-                            ? `Engine: #${engineIdx + 1}`
+                            ? `${t("scales.engine")}: #${engineIdx + 1}`
                             : isClose
-                            ? "Close"
-                            : "Not in top 3"}
+                            ? t("scales.close")
+                            : t("scales.notInTop3")}
                         </span>
                       </div>
                       {showExplanation && (
@@ -477,29 +484,28 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
                   onClick={() => { window.location.href = "/scales"; }}
                   className="flex-1 text-center bg-[#c8942a] text-white px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#b5852a] transition-colors"
                 >
-                  Next position
+                  {t("scales.nextPosition")}
                 </button>
                 <Link
                   href="/home"
                   className="flex-1 text-center bg-[#2a2a2a] text-gray-400 px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#333] hover:text-gray-300 transition-colors"
                 >
-                  Done
+                  {t("scales.done")}
                 </Link>
               </div>
             </>
           ) : (
             <>
               <p className="text-white font-bold text-lg">
-                Rank the top 3 moves
+                {t("scales.rankTop3")}
               </p>
               <p className="text-gray-500 text-sm mt-1">
-                Click a slot to activate it, then make a move on the board. Rank
-                all 3 from best to worst.
+                {t("scales.instructions")}
               </p>
 
               {hasSacrifice && (
                 <p className="text-[#c8942a] opacity-80 text-xs mt-2 italic">
-                  One of the top moves involves a sacrifice
+                  {t("scales.sacrificeHint")}
                 </p>
               )}
 
@@ -522,7 +528,7 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
                     }`}
                   >
                     <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 mb-1">
-                      {i === 0 ? "1st" : i === 1 ? "2nd" : "3rd"}
+                      {t(`scales.slot${i + 1}`)}
                     </p>
                     {slot ? (
                       <>
@@ -547,7 +553,7 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
                             : "text-gray-600"
                         }`}
                       >
-                        {activeSlot === i ? "Active" : "—"}
+                        {activeSlot === i ? t("scales.active") : "—"}
                       </p>
                     )}
                   </button>
@@ -560,7 +566,7 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
                   onClick={handleSubmit}
                   className="w-full mt-4 bg-[#c8942a] text-white px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#b5852a] transition-colors"
                 >
-                  Submit ranking
+                  {t("scales.submit")}
                 </button>
               )}
             </>
@@ -568,13 +574,13 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
         </div>
 
         {/* Board label */}
-        <div className="mb-2">
+        <div className="mb-2 h-4">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-600">
             {phase === "picking"
-              ? `Playing as ${boardOrientation} · Rating ${rating}`
+              ? t("scales.playingAs", { color: boardOrientation, rating: String(rating) })
               : phase === "evaluating"
-              ? "Evaluating your moves..."
-              : "Position evaluated"}
+              ? t("scales.evaluating")
+              : t("scales.evaluated")}
           </p>
         </div>
 
@@ -596,15 +602,14 @@ export default function ScalesShell({ puzzleId, fen, rating, engineTop3, hasSacr
         {/* Tagline */}
         <div className="mt-3 text-center">
           <p className="text-xs text-gray-600">
-            The Scales trains your ability to compare moves — the skill that
-            separates good players from great ones.
+            {t("scales.tagline")}
           </p>
         </div>
 
         {/* Footer */}
         <footer className="mt-10 pt-6 border-t border-[#1a1a1a] text-center">
           <p className="text-xs text-gray-600">
-            Cassandra &middot; Puzzles from the Lichess open database (CC0)
+            {t("scales.footer")}
           </p>
         </footer>
       </div>

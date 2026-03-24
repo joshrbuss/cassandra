@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "@/components/i18n/LocaleProvider";
 
 interface AdSlotProps {
   /** AdSense slot ID */
@@ -32,6 +33,7 @@ export default function AdSlot({
   isPaid = false,
   className = "",
 }: AdSlotProps) {
+  const { t } = useTranslation();
   const pushed = useRef(false);
   const [adLoaded, setAdLoaded] = useState(false);
 
@@ -66,7 +68,7 @@ export default function AdSlot({
     return (
       <div className={`w-full rounded-xl bg-[#0e0e0e] border border-[#2a2a2a] p-5 text-center ${className}`}>
         <p className="text-[#c8942a] font-semibold text-sm">
-          Thank you for supporting Cassandra &#9823;
+          {t("ad.thanks")}
         </p>
       </div>
     );
@@ -78,7 +80,7 @@ export default function AdSlot({
       className={`w-full rounded-lg border border-[#c8942a]/40 overflow-hidden ${className}`}
     >
       <p className="text-[11px] text-[#999] px-3 pt-2 pb-1">
-        Ads keep Cassandra free
+        {t("ad.keepsFree")}
       </p>
       <div className="px-2 pb-2" style={{ minHeight: adLoaded ? undefined : "90px" }}>
         <ins

@@ -14,6 +14,7 @@ export default function LanguageToggleGuard() {
   if (
     pathname.startsWith("/train") ||
     pathname.startsWith("/unlearned") ||
+    pathname.startsWith("/scales") ||
     pathname === "/" ||
     pathname === "/connect" ||
     pathname === "/analysing" ||

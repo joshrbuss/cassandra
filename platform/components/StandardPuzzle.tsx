@@ -6,6 +6,7 @@ import { Chess } from "chess.js";
 import dynamic from "next/dynamic";
 import { BoardSkeleton } from "./Skeleton";
 import type { PieceDropHandlerArgs } from "./ChessBoardWrapper";
+import { safeMove } from "@/lib/chess-move";
 import { useTimer } from "@/hooks/useTimer";
 import PuzzleTimer from "./PuzzleTimer";
 import SolveResultCard from "./SolveResultCard";
@@ -116,12 +117,9 @@ export default function StandardPuzzle({
 
   function handleDrop({ sourceSquare, targetSquare }: PieceDropHandlerArgs): boolean {
     if (phase !== "playing" || !targetSquare) return false;
+    if (sourceSquare === targetSquare) return false;
 
-    const moveResult = chess.move({
-      from: sourceSquare,
-      to: targetSquare,
-      promotion: "q",
-    });
+    const moveResult = safeMove(chess, sourceSquare, targetSquare);
     if (!moveResult) return false;
 
     const uci = `${sourceSquare}${targetSquare}${moveResult.promotion ?? ""}`;
@@ -159,12 +157,12 @@ export default function StandardPuzzle({
     if (phase !== "playing") return;
 
     if (selectedSquare) {
+      if (selectedSquare === square) {
+        setSelectedSquare(null);
+        return;
+      }
       // Second click — attempt move
-      const moveResult = chess.move({
-        from: selectedSquare,
-        to: square,
-        promotion: "q",
-      });
+      const moveResult = safeMove(chess, selectedSquare, square);
       setSelectedSquare(null);
 
       if (!moveResult) {
