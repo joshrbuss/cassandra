@@ -123,9 +123,10 @@ async function runAnalysis(fen: string, depth: number): Promise<EngineResult | n
  */
 export async function analyzePositionMultiPV(
   fen: string,
-  numLines: number = 3
+  numLines: number = 3,
+  depth: number = DEFAULT_DEPTH
 ): Promise<EngineResult[]> {
-  const myTurn = lock.then(() => runMultiPVAnalysis(fen, numLines));
+  const myTurn = lock.then(() => runMultiPVAnalysis(fen, numLines, depth));
   lock = myTurn.then(
     () => {},
     () => {}
@@ -135,7 +136,8 @@ export async function analyzePositionMultiPV(
 
 async function runMultiPVAnalysis(
   fen: string,
-  numLines: number
+  numLines: number,
+  depth: number
 ): Promise<EngineResult[]> {
   try {
     await ensureInit();
@@ -163,10 +165,11 @@ async function runMultiPVAnalysis(
       resolve(results);
     };
 
+    const timeoutMs = Math.max(DEFAULT_TIMEOUT_MS, depth * 1500);
     const timeout = setTimeout(() => {
-      console.warn(`[Stockfish MultiPV] Timeout after ${DEFAULT_TIMEOUT_MS}ms`);
+      console.warn(`[Stockfish MultiPV] Timeout after ${timeoutMs}ms`);
       finish([]);
-    }, DEFAULT_TIMEOUT_MS);
+    }, timeoutMs);
 
     const handler = (e: MessageEvent) => {
       const line = typeof e.data === "string" ? e.data : "";
@@ -176,7 +179,7 @@ async function runMultiPVAnalysis(
       if (line.includes("multipv") && (line.includes("score cp") || line.includes("score mate"))) {
         const depthMatch = line.match(/depth (\d+)/);
         const d = depthMatch ? parseInt(depthMatch[1], 10) : 0;
-        if (d < DEFAULT_DEPTH) return; // Only use final depth results
+        if (d < depth) return; // Only use final depth results
 
         const pvNum = line.match(/multipv (\d+)/);
         const moveMatch = line.match(/\bpv ([a-h][1-8][a-h][1-8]\w?)/);
@@ -216,7 +219,7 @@ async function runMultiPVAnalysis(
     sf.postMessage("ucinewgame");
     sf.postMessage(`setoption name MultiPV value ${numLines}`);
     sf.postMessage(`position fen ${fen}`);
-    sf.postMessage(`go depth ${DEFAULT_DEPTH}`);
+    sf.postMessage(`go depth ${depth}`);
   });
 }
 

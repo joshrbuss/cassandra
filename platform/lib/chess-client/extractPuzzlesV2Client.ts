@@ -8,13 +8,17 @@
  */
 
 import { Chess, type Square, type PieceSymbol, type Color } from "chess.js";
-import { analyzePosition, type EngineResult } from "./stockfishBrowser";
+import { analyzePosition, analyzePositionMultiPV, type EngineResult } from "./stockfishBrowser";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 const ANALYSIS_DEPTH = 14; // deeper than default 8 for accurate CPL
 const BLUNDER_THRESHOLD = 60; // centipawns
 const MAX_PER_GAME = 5;
+const MAX_STRONGER_MOVE_PER_GAME = 3;
+const STRONGER_MOVE_MIN_CP_DIFF = 30; // minimum cp difference to count as "genuinely better"
+const STRONGER_MOVE_MAX_CPL = 59; // must be below blunder threshold
+const STRONGER_MOVE_MIN_CPL = 10; // don't flag near-perfect moves
 const MAX_EXTENSION_PLY = 10;
 const FORCING_ADVANTAGE_CP = 150;
 const WINNING_THRESHOLD_CP = 300;
@@ -29,7 +33,12 @@ export interface PuzzleCandidateV2 {
   solutionMoves: string;
   rating: number;
   themes: string;
-  type: "standard";
+  /** "standard" for missed tactics, "move_ranking" for stronger-move-available */
+  type: "standard" | "move_ranking";
+  /** JSON stringified CandidateMove[] for move_ranking puzzles */
+  candidateMoves?: string;
+  /** Detailed theme descriptions for verification, e.g. "pin — bishop pinning knight to king" */
+  themeDescriptions?: string[];
   gameUrl?: string;
   opponentUsername?: string;
   gameDate?: string;
@@ -247,6 +256,11 @@ function pieceValue(type: PieceSymbol): number {
   return values[type] ?? 0;
 }
 
+function pieceName(type: PieceSymbol): string {
+  const names: Record<PieceSymbol, string> = { p: "pawn", n: "knight", b: "bishop", r: "rook", q: "queen", k: "king" };
+  return names[type] ?? type;
+}
+
 function findKing(board: BoardSquare[][], color: Color): string | null {
   for (let r = 0; r < 8; r++) {
     for (let f = 0; f < 8; f++) {
@@ -340,35 +354,50 @@ function findFriendlySlidingPiecesThrough(
   return result;
 }
 
-function detectThemes(chess: Chess, bestMoveUci: string): string[] {
-  const themes: string[] = [];
+interface ThemeResult {
+  tags: string[];
+  descriptions: string[];
+}
+
+function detectThemes(chess: Chess, bestMoveUci: string): ThemeResult {
+  const tags: string[] = [];
+  const descriptions: string[] = [];
   const from = bestMoveUci.slice(0, 2) as Square;
   const to = bestMoveUci.slice(2, 4) as Square;
   const promo = bestMoveUci[4] as PieceSymbol | undefined;
 
   const boardBefore = getBoard(chess);
   const movingPiece = chess.get(from);
-  if (!movingPiece) return ["tactics"];
+  if (!movingPiece) return { tags: ["tactics"], descriptions: [] };
 
+  const mpName = pieceName(movingPiece.type);
   const myColor = movingPiece.color;
   const oppColor: Color = myColor === "w" ? "b" : "w";
 
   const moveResult = chess.move({ from, to, promotion: promo });
-  if (!moveResult) return ["tactics"];
+  if (!moveResult) return { tags: ["tactics"], descriptions: [] };
 
   const boardAfter = getBoard(chess);
 
   // Checkmate
   if (chess.isCheckmate()) {
-    themes.push("mateIn1");
+    tags.push("mateIn1");
+    descriptions.push(`mateIn1 — ${mpName} on ${to} delivers checkmate`);
     const kingRank = oppColor === "w" ? "1" : "8";
     const oppKingSq = findKing(boardAfter, oppColor);
-    if (oppKingSq && oppKingSq[1] === kingRank) themes.push("backRankMate");
+    if (oppKingSq && oppKingSq[1] === kingRank) {
+      tags.push("backRankMate");
+      descriptions.push(`backRankMate — king trapped on back rank at ${oppKingSq}`);
+    }
   } else if (chess.inCheck()) {
-    themes.push("check");
+    tags.push("check");
+    descriptions.push(`check — ${mpName} on ${to} gives check`);
   }
 
-  if (moveResult.captured) themes.push("capture");
+  if (moveResult.captured) {
+    tags.push("capture");
+    descriptions.push(`capture — ${mpName} captures ${pieceName(moveResult.captured as PieceSymbol)} on ${to}`);
+  }
 
   // Fork
   const attackedEnemies = getAttackedSquares(chess, to, myColor, boardAfter)
@@ -376,7 +405,14 @@ function detectThemes(chess: Chess, bestMoveUci: string): string[] {
       const p = chess.get(sq);
       return p && p.color === oppColor;
     });
-  if (attackedEnemies.length >= 2) themes.push("fork");
+  if (attackedEnemies.length >= 2) {
+    tags.push("fork");
+    const targets = attackedEnemies.map((sq) => {
+      const p = chess.get(sq);
+      return p ? `${pieceName(p.type)} on ${sq}` : sq;
+    });
+    descriptions.push(`fork — ${mpName} on ${to} attacks ${targets.join(" and ")}`);
+  }
 
   // Pin
   if (["b", "r", "q"].includes(movingPiece.type)) {
@@ -387,9 +423,11 @@ function detectThemes(chess: Chess, bestMoveUci: string): string[] {
         if (behindPiece && behindPiece.color === oppColor) {
           const pinnedPiece = chess.get(enemySq);
           if (behindPiece.type === "k") {
-            themes.push("pin");
+            tags.push("pin");
+            descriptions.push(`pin — ${mpName} on ${to} pinning ${pinnedPiece ? pieceName(pinnedPiece.type) : "piece"} on ${enemySq} to king on ${behindSq}`);
           } else if (pinnedPiece && pieceValue(behindPiece.type) > pieceValue(pinnedPiece.type)) {
-            themes.push("pin");
+            tags.push("pin");
+            descriptions.push(`pin — ${mpName} on ${to} pinning ${pieceName(pinnedPiece.type)} on ${enemySq} to ${pieceName(behindPiece.type)} on ${behindSq}`);
           }
         }
       }
@@ -405,7 +443,8 @@ function detectThemes(chess: Chess, bestMoveUci: string): string[] {
       if (behindSq) {
         const behindPiece = chess.get(behindSq);
         if (behindPiece && behindPiece.color === oppColor && pieceValue(targetPiece.type) > pieceValue(behindPiece.type)) {
-          themes.push("skewer");
+          tags.push("skewer");
+          descriptions.push(`skewer — ${mpName} on ${to} attacks ${pieceName(targetPiece.type)} on ${enemySq}, exposing ${pieceName(behindPiece.type)} on ${behindSq}`);
         }
       }
     }
@@ -413,7 +452,7 @@ function detectThemes(chess: Chess, bestMoveUci: string): string[] {
 
   // Discovered attack / discovered check
   const friendlySlidingPieces = findFriendlySlidingPiecesThrough(boardBefore, from, myColor);
-  for (const { sq: sliderSq } of friendlySlidingPieces) {
+  for (const { sq: sliderSq, type: sliderType } of friendlySlidingPieces) {
     const nowAttacks = getAttackedSquares(chess, sliderSq, myColor, boardAfter)
       .filter((sq) => {
         const p = chess.get(sq);
@@ -424,8 +463,17 @@ function detectThemes(chess: Chess, bestMoveUci: string): string[] {
         const p = chess.get(sq);
         return p && p.type === "k";
       });
-      if (attacksKing) themes.push("discoveredCheck");
-      else themes.push("discoveredAttack");
+      if (attacksKing) {
+        tags.push("discoveredCheck");
+        descriptions.push(`discoveredCheck — ${mpName} moves from ${from}, ${pieceName(sliderType)} on ${sliderSq} gives check`);
+      } else {
+        tags.push("discoveredAttack");
+        const targets = nowAttacks.map((sq) => {
+          const p = chess.get(sq);
+          return p ? `${pieceName(p.type)} on ${sq}` : sq;
+        });
+        descriptions.push(`discoveredAttack — ${mpName} moves from ${from}, ${pieceName(sliderType)} on ${sliderSq} attacks ${targets.join(", ")}`);
+      }
     }
   }
 
@@ -440,12 +488,15 @@ function detectThemes(chess: Chess, bestMoveUci: string): string[] {
         const sliderAttacks = getAttackedSquares(chess, sliderSq, myColor, boardAfter);
         if (sliderAttacks.some((sq) => sq === oppKingSq)) checkCount++;
       }
-      if (checkCount >= 2) themes.push("doubleCheck");
+      if (checkCount >= 2) {
+        tags.push("doubleCheck");
+        descriptions.push(`doubleCheck — ${mpName} on ${to} and discovered piece both give check`);
+      }
     }
   }
 
   // Back rank weakness
-  if (!themes.includes("backRankMate")) {
+  if (!tags.includes("backRankMate")) {
     const oppKingSq = findKing(boardAfter, oppColor);
     if (oppKingSq) {
       const kingRank = oppColor === "w" ? "1" : "8";
@@ -462,7 +513,10 @@ function detectThemes(chess: Chess, bestMoveUci: string): string[] {
             const p = boardAfter[rank8][pf];
             if (p && p.color === oppColor && p.type === "p") blockedSquares++;
           }
-          if (blockedSquares >= 2 && chess.inCheck()) themes.push("backRankWeakness");
+          if (blockedSquares >= 2 && chess.inCheck()) {
+            tags.push("backRankWeakness");
+            descriptions.push(`backRankWeakness — king hemmed in on ${oppKingSq} by own pawns`);
+          }
         }
       }
     }
@@ -473,13 +527,17 @@ function detectThemes(chess: Chess, bestMoveUci: string): string[] {
   if (history.length >= 2) {
     const prevMove = history[history.length - 2];
     if (prevMove?.captured && moveResult.to !== prevMove.to) {
-      if (chess.inCheck() || themes.includes("fork")) themes.push("zwischenzug");
+      if (chess.inCheck() || tags.includes("fork")) {
+        tags.push("zwischenzug");
+        descriptions.push(`zwischenzug — ${mpName} to ${to} instead of recapturing on ${prevMove.to}`);
+      }
     }
   }
 
   chess.undo();
 
-  return [...new Set(themes.length > 0 ? themes : ["tactics"])];
+  const dedupedTags = [...new Set(tags.length > 0 ? tags : ["tactics"])];
+  return { tags: dedupedTags, descriptions };
 }
 
 // ─── Accuracy calculation ───────────────────────────────────────────────────
@@ -666,7 +724,7 @@ export async function extractPuzzlesV2Client(
         const lastMove = i >= 2 ? positions[i - 2].uci : "";
 
         const solvingChess = new Chess(blunderFen);
-        const themes = detectThemes(solvingChess, prevBestMove);
+        const themeResult = detectThemes(solvingChess, prevBestMove);
 
         const solutionMoves = await extendForcingSequence(blunderFen, prevBestMove);
         const solutionDepth = solutionMoves.split(" ").length;
@@ -678,7 +736,8 @@ export async function extractPuzzlesV2Client(
           lastMove,
           solutionMoves,
           rating: estimateRating(swing, solutionDepth),
-          themes: themes.join(" "),
+          themes: themeResult.tags.join(" "),
+          themeDescriptions: themeResult.descriptions,
           type: "standard",
           gameUrl,
           ...gameContext,
@@ -690,6 +749,74 @@ export async function extractPuzzlesV2Client(
 
     prevCp = currentCp;
     prevBestMove = result.move;
+  }
+
+  // ── Stronger-move-available detection (MultiPV) ──
+  // Find positions where the player's move was OK (not a blunder) but
+  // there were objectively better alternatives.
+  const playerMoveEvals = moveEvals.filter((e) => e.side === ((gameContext.playerColor as "white" | "black") ?? "white"));
+  let strongerMoveCount = 0;
+
+  for (const me of playerMoveEvals) {
+    if (strongerMoveCount >= MAX_STRONGER_MOVE_PER_GAME) break;
+    // Only consider non-blunder moves that still lost some centipawns
+    if (me.cpl < STRONGER_MOVE_MIN_CPL || me.cpl > STRONGER_MOVE_MAX_CPL) continue;
+
+    // Find the position index for this move
+    const posIdx = positions.findIndex((p, idx) => {
+      if (idx === 0) return false;
+      const side: "white" | "black" = positions[idx - 1].fen.split(" ")[1] === "w" ? "white" : "black";
+      const mn = Math.floor((idx - 1) / 2) + 1;
+      return side === me.side && mn === me.moveNumber;
+    });
+    if (posIdx < 1) continue;
+    const fen = positions[posIdx - 1].fen;
+    const lastMove = posIdx >= 2 ? positions[posIdx - 2].uci : "";
+
+    // Get top 4 moves via MultiPV (need 4 to find up to 3 better than played)
+    const multiPv = await analyzePositionMultiPV(fen, 4, ANALYSIS_DEPTH);
+    if (multiPv.length < 2) continue;
+
+    // Find alternatives that are genuinely better than the played move
+    const playedCp = me.evalCp; // eval after the played move, from mover's perspective
+    const alternatives: { move: string; cp: number }[] = [];
+
+    for (const pv of multiPv) {
+      if (pv.move === me.movePlayed) continue; // skip the move actually played
+      // pv.cp is from side-to-move's perspective (= mover's perspective) — higher is better
+      if (pv.cp - playedCp >= STRONGER_MOVE_MIN_CP_DIFF) {
+        alternatives.push({ move: pv.move, cp: pv.cp });
+      }
+    }
+
+    if (alternatives.length === 0) continue;
+
+    // Cap at 3 alternatives
+    const topAlts = alternatives.slice(0, 3);
+
+    // Build candidateMoves JSON: include played move + better alternatives
+    const candidateMovesJson = JSON.stringify([
+      { move: me.movePlayed, cp: playedCp, played: true },
+      ...topAlts.map((a) => ({ move: a.move, cp: a.cp, played: false })),
+    ]);
+
+    candidates.push({
+      id: clientId(),
+      fen,
+      solvingFen: fen,
+      lastMove,
+      solutionMoves: topAlts[0].move, // best alternative as the "solution"
+      rating: estimateRating(me.cpl, 1),
+      themes: "strongerMove",
+      themeDescriptions: [`strongerMove — played ${me.movePlayed} (${playedCp}cp), better: ${topAlts.map((a) => `${a.move} (${a.cp}cp)`).join(", ")}`],
+      type: "move_ranking",
+      candidateMoves: candidateMovesJson,
+      gameUrl,
+      ...gameContext,
+      moveNumber: me.moveNumber,
+      evalCp: playedCp,
+    });
+    strongerMoveCount++;
   }
 
   const playerSide = (gameContext.playerColor as "white" | "black") ?? "white";

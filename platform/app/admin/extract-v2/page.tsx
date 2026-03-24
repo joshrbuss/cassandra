@@ -15,6 +15,9 @@ interface PuzzleResult {
   solutionMoves: string;
   solutionDepth: number;
   themes: string;
+  themeDescriptions?: string[];
+  type: "standard" | "move_ranking";
+  candidateMoves?: string;
   rating: number;
   evalCp: number;
   fen: string;
@@ -143,6 +146,9 @@ export default function ExtractV2Admin() {
             solutionMoves: c.solutionMoves,
             solutionDepth: c.solutionMoves.split(" ").length,
             themes: c.themes,
+            themeDescriptions: c.themeDescriptions,
+            type: c.type,
+            candidateMoves: c.candidateMoves,
             rating: c.rating,
             evalCp: c.evalCp ?? 0,
             fen: c.solvingFen,
@@ -326,12 +332,34 @@ export default function ExtractV2Admin() {
                       Eval: <span style={{ color: selectedPuzzle.evalCp >= 0 ? "#4ade80" : "#f87171" }}>{selectedPuzzle.evalCp > 0 ? "+" : ""}{(selectedPuzzle.evalCp / 100).toFixed(1)}</span>
                     </p>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 8 }}>
+                      {selectedPuzzle.type === "move_ranking" && (
+                        <span style={{ fontSize: 10, background: "#3b82f622", color: "#60a5fa", border: "1px solid #3b82f644", borderRadius: 4, padding: "2px 8px" }}>
+                          move_ranking
+                        </span>
+                      )}
                       {selectedPuzzle.themes.split(" ").map((t) => (
                         <span key={t} style={{ fontSize: 10, background: "#c8942a22", color: "#c8942a", border: "1px solid #c8942a44", borderRadius: 4, padding: "2px 8px" }}>
                           {t}
                         </span>
                       ))}
                     </div>
+                    {selectedPuzzle.themeDescriptions && selectedPuzzle.themeDescriptions.length > 0 && (
+                      <div style={{ marginTop: 8 }}>
+                        {selectedPuzzle.themeDescriptions.map((d, i) => (
+                          <p key={i} style={{ fontSize: 11, color: "#999", margin: "2px 0", fontStyle: "italic" }}>{d}</p>
+                        ))}
+                      </div>
+                    )}
+                    {selectedPuzzle.candidateMoves && (
+                      <div style={{ marginTop: 8, fontSize: 11, color: "#888" }}>
+                        <p style={{ margin: "0 0 4px", fontWeight: 600, color: "#aaa" }}>Candidate moves:</p>
+                        {(JSON.parse(selectedPuzzle.candidateMoves) as { move: string; cp: number; played: boolean }[]).map((cm, i) => (
+                          <p key={i} style={{ margin: "1px 0", fontFamily: "monospace", color: cm.played ? "#f59e0b" : "#4ade80" }}>
+                            {cm.move} ({cm.cp > 0 ? "+" : ""}{(cm.cp / 100).toFixed(1)}) {cm.played ? "← played" : ""}
+                          </p>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -428,8 +456,15 @@ function GameCard({
                 >
                   <div>
                     <span style={{ fontSize: 13, fontWeight: 500 }}>Move {p.moveNumber}</span>
-                    <span style={{ fontSize: 11, color: "#888", marginLeft: 8 }}>{p.solutionDepth} ply · {p.rating}r</span>
-                    <div style={{ display: "flex", gap: 3, marginTop: 4 }}>
+                    <span style={{ fontSize: 11, color: "#888", marginLeft: 8 }}>
+                      {p.type === "move_ranking" ? "stronger move" : `${p.solutionDepth} ply`} · {p.rating}r
+                    </span>
+                    <div style={{ display: "flex", gap: 3, marginTop: 4, flexWrap: "wrap" }}>
+                      {p.type === "move_ranking" && (
+                        <span style={{ fontSize: 9, background: "#3b82f622", color: "#60a5fa", borderRadius: 3, padding: "1px 6px" }}>
+                          move_ranking
+                        </span>
+                      )}
                       {p.themes.split(" ").filter(t => t !== "v2").map((t) => (
                         <span key={t} style={{ fontSize: 9, background: "#c8942a22", color: "#c8942a", borderRadius: 3, padding: "1px 6px" }}>
                           {t}
@@ -443,29 +478,8 @@ function GameCard({
             </div>
           )}
 
-          {/* CPL per move — compact bar chart */}
-          {game.moveEvals.length > 0 && (
-            <div>
-              <p style={{ fontSize: 11, color: "#888", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 8px" }}>Centipawn loss per move</p>
-              <div style={{ display: "flex", alignItems: "flex-end", gap: 1, height: 60 }}>
-                {game.moveEvals.map((e, i) => {
-                  const h = Math.min(e.cpl / 3, 60);
-                  const color = e.cpl >= 100 ? "#ef4444" : e.cpl >= 50 ? "#f59e0b" : "#4ade80";
-                  return (
-                    <div
-                      key={i}
-                      title={`Move ${e.move} (${e.side}): ${e.cpl}cp — played ${e.played}, best ${e.best} [${e.phase}]`}
-                      style={{ width: Math.max(3, 400 / game.moveEvals.length), height: Math.max(1, h), background: color, borderRadius: "2px 2px 0 0", opacity: 0.8 }}
-                    />
-                  );
-                })}
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
-                <span style={{ fontSize: 9, color: "#555" }}>Move 1</span>
-                <span style={{ fontSize: 9, color: "#555" }}>Move {game.moveEvals[game.moveEvals.length - 1]?.move}</span>
-              </div>
-            </div>
-          )}
+          {/* CPL per move — compact bar chart (player moves only) */}
+          <CplChart moveEvals={game.moveEvals} playerColor={game.playerColor} />
         </div>
       )}
     </div>
@@ -488,6 +502,34 @@ function PhaseAccuracy({ label, value }: { label: string; value: number }) {
     <div>
       <p style={{ fontSize: 10, color: "#666", margin: "0 0 2px" }}>{label}</p>
       <p style={{ fontSize: 14, fontWeight: 600, color, margin: 0 }}>{value}%</p>
+    </div>
+  );
+}
+
+function CplChart({ moveEvals, playerColor }: { moveEvals: MoveEvalResult[]; playerColor: string }) {
+  const playerEvals = moveEvals.filter((e) => e.side === playerColor);
+  if (playerEvals.length === 0) return null;
+  const lastMove = playerEvals[playerEvals.length - 1]?.move;
+  return (
+    <div>
+      <p style={{ fontSize: 11, color: "#888", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 8px" }}>Centipawn loss per move ({playerColor})</p>
+      <div style={{ display: "flex", alignItems: "flex-end", gap: 1, height: 60 }}>
+        {playerEvals.map((e, i) => {
+          const h = Math.min(e.cpl / 3, 60);
+          const color = e.cpl >= 100 ? "#ef4444" : e.cpl >= 50 ? "#f59e0b" : "#4ade80";
+          return (
+            <div
+              key={i}
+              title={`Move ${e.move}: ${e.cpl}cp — played ${e.played}, best ${e.best} [${e.phase}]`}
+              style={{ width: Math.max(3, 400 / playerEvals.length), height: Math.max(1, h), background: color, borderRadius: "2px 2px 0 0", opacity: 0.8 }}
+            />
+          );
+        })}
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+        <span style={{ fontSize: 9, color: "#555" }}>Move 1</span>
+        <span style={{ fontSize: 9, color: "#555" }}>Move {lastMove}</span>
+      </div>
     </div>
   );
 }

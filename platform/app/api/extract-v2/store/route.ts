@@ -25,6 +25,7 @@ export async function POST(request: Request) {
           rating: number;
           themes: string;
           type: string;
+          candidateMoves?: string;
           gameUrl?: string;
           opponentUsername?: string;
           gameDate?: string;
@@ -93,6 +94,7 @@ export async function POST(request: Request) {
             rating: c.rating,
             themes: `${c.themes} v2`,
             type: c.type,
+            candidateMoves: c.candidateMoves ?? null,
             source: "user_import",
             sourceUserId: sourceUserId ?? undefined,
             isPublic: false,
