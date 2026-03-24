@@ -93,136 +93,11 @@ export type ProgressCallback = (info: {
   phase: string;
 }) => void;
 
-// ─── Opening theory check (Lichess explorer API) ────────────────────────────
+// ─── Opening theory check (embedded opening book) ───────────────────────────
+
+import { isMoveInBook, fenKey } from "./openingBook";
 
 const OPENING_THEORY_MOVE_LIMIT = 15; // only check moves 1–15
-const OPENING_THEORY_MIN_GAMES = 100; // move must have ≥100 games to count as "known theory"
-
-interface OpeningDbMove {
-  uci?: string;
-  san?: string;
-  white: number;
-  draws: number;
-  black: number;
-}
-
-interface OpeningDbResponse {
-  moves: OpeningDbMove[];
-}
-
-/**
- * Convert a UCI move string (e.g. "d7d5") to SAN (e.g. "d5") using chess.js.
- * Returns null if the move is invalid for the position.
- */
-function uciToSan(fen: string, uci: string): string | null {
-  try {
-    const c = new Chess(fen);
-    const from = uci.slice(0, 2);
-    const to = uci.slice(2, 4);
-    const promotion = uci.length > 4 ? uci[4] : undefined;
-    const result = c.move({ from, to, promotion });
-    return result ? result.san : null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Per-extraction-run cache keyed by FEN.
- * Avoids hitting the Lichess API repeatedly for the same position.
- * Create a new cache for each extraction run.
- */
-function createOpeningDbCache() {
-  const cache = new Map<string, OpeningDbResponse | null>();
-
-  return async function lookupOpeningDb(fen: string): Promise<OpeningDbResponse | null> {
-    if (cache.has(fen)) {
-      console.log(`[OpeningDB] Cache hit for FEN: ${fen}`);
-      return cache.get(fen)!;
-    }
-
-    // Try explorer.lichess.org first (current), fall back to .ovh (legacy)
-    const urls = [
-      `https://explorer.lichess.org/lichess?fen=${encodeURIComponent(fen)}&topGames=0&recentGames=0`,
-      `https://explorer.lichess.ovh/lichess?fen=${encodeURIComponent(fen)}&topGames=0&recentGames=0`,
-    ];
-
-    for (const url of urls) {
-      try {
-        console.log(`[OpeningDB] Fetching: ${url}`);
-        const res = await fetch(url);
-        if (!res.ok) {
-          console.warn(`[OpeningDB] HTTP ${res.status} from ${new URL(url).hostname}`);
-          continue; // try next URL
-        }
-        const data: OpeningDbResponse = await res.json();
-        console.log(`[OpeningDB] Response for FEN: ${fen}`);
-        console.log(`[OpeningDB]   Moves returned: ${data.moves.length}`);
-        for (const m of data.moves.slice(0, 10)) {
-          const total = m.white + m.draws + m.black;
-          console.log(`[OpeningDB]   uci="${m.uci}" san="${m.san}": ${total} games`);
-        }
-        cache.set(fen, data);
-        return data;
-      } catch (err) {
-        console.error(`[OpeningDB] Fetch error from ${new URL(url).hostname}:`, err);
-      }
-    }
-
-    console.warn(`[OpeningDB] All endpoints failed for FEN: ${fen}`);
-    cache.set(fen, null);
-    return null;
-  };
-}
-
-/**
- * Check if a move (UCI) is in known opening theory for the given position.
- * Returns true if the move appears in the Lichess opening database with
- * at least OPENING_THEORY_MIN_GAMES total games.
- *
- * Matches by UCI first, then falls back to SAN comparison to handle
- * format differences between our pipeline and the Lichess API.
- */
-async function isMoveInTheory(
-  fen: string,
-  moveUci: string,
-  lookupFn: ReturnType<typeof createOpeningDbCache>,
-): Promise<boolean> {
-  console.log(`[OpeningDB] Checking theory: move="${moveUci}" in FEN="${fen}"`);
-  const data = await lookupFn(fen);
-  if (!data) {
-    console.log(`[OpeningDB]   → No data returned (API failed or empty)`);
-    return false;
-  }
-
-  // 1) Try direct UCI match
-  let entry = data.moves.find((m) => m.uci === moveUci);
-
-  // 2) Fallback: convert our UCI to SAN and match against the san field
-  if (!entry) {
-    const san = uciToSan(fen, moveUci);
-    console.log(`[OpeningDB]   UCI "${moveUci}" not found directly, converted to SAN="${san}"`);
-    if (san) {
-      entry = data.moves.find((m) => m.san === san);
-    }
-  }
-
-  // 3) Fallback: try matching against UCI without promotion suffix (e.g. "e7e8q" → "e7e8")
-  if (!entry && moveUci.length > 4) {
-    entry = data.moves.find((m) => m.uci === moveUci.slice(0, 4));
-  }
-
-  if (!entry) {
-    const available = data.moves.map((m) => `${m.uci ?? "?"}/${m.san ?? "?"}`).join(", ");
-    console.log(`[OpeningDB]   → Move "${moveUci}" NOT FOUND. Available: [${available}]`);
-    return false;
-  }
-
-  const totalGames = entry.white + entry.draws + entry.black;
-  const inTheory = totalGames >= OPENING_THEORY_MIN_GAMES;
-  console.log(`[OpeningDB]   → Matched (uci="${entry.uci}" san="${entry.san}"): ${totalGames} games (threshold: ${OPENING_THEORY_MIN_GAMES}) → ${inTheory ? "IN THEORY (skip)" : "OUT OF THEORY (flag)"}`);
-  return inTheory;
-}
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -802,7 +677,6 @@ export async function extractPuzzlesV2Client(
 
   const candidates: PuzzleCandidateV2[] = [];
   const moveEvals: MoveEvalData[] = [];
-  const lookupOpeningDb = createOpeningDbCache();
   let prevCp: number | null = null;
   let prevBestMove: string | null = null;
 
@@ -908,27 +782,35 @@ export async function extractPuzzlesV2Client(
     const fen = positions[posIdx - 1].fen;
     const lastMove = posIdx >= 2 ? positions[posIdx - 2].uci : "";
 
-    // Opening theory awareness: for moves 1–15, check Lichess opening database.
-    // If the played move is in known theory (≥100 games), skip — don't flag it.
+    // Opening theory awareness: for moves 1–15, check embedded opening book.
+    // If the played move is known theory, skip — don't flag it.
     let outOfTheory = false;
     if (me.moveNumber <= OPENING_THEORY_MOVE_LIMIT) {
-      console.log(`[OpeningDB] ── Move ${me.moveNumber} (${me.side}) ── movePlayed="${me.movePlayed}" cpl=${me.cpl} fen="${fen}"`);
-      const inTheory = await isMoveInTheory(fen, me.movePlayed, lookupOpeningDb);
-      if (inTheory) continue; // move is in known theory — don't flag
-      outOfTheory = true; // deviated from opening database
+      const inBook = isMoveInBook(fen, me.movePlayed);
+      console.log(`[OpeningBook] Move ${me.moveNumber} (${me.side}): "${me.movePlayed}" fenKey="${fenKey(fen)}" → ${inBook ? "IN BOOK (skip)" : "OUT OF BOOK"}`);
+      if (inBook) continue; // move is in known theory — don't flag
+      outOfTheory = true; // deviated from opening book
     }
 
     // Get top 4 moves via MultiPV (need 4 to find up to 3 better than played)
     const multiPv = await analyzePositionMultiPV(fen, 4, ANALYSIS_DEPTH);
     if (multiPv.length < 2) continue;
 
-    // Find alternatives that are genuinely better than the played move
-    const playedCp = me.evalCp; // eval after the played move, from mover's perspective
+    // Find the played move's eval from MultiPV (consistent source for threshold).
+    // Fall back to me.evalCp if the played move isn't in the PV results.
+    const playedPv = multiPv.find((pv) => pv.move === me.movePlayed);
+    const playedCp = playedPv ? playedPv.cp : me.evalCp;
+    const bestCp = multiPv[0].cp; // MultiPV[0] is always the best move
+
+    // Use MultiPV-consistent threshold: best move must be ≥30cp better than played
+    const multiPvDiff = bestCp - playedCp;
+    if (multiPvDiff < STRONGER_MOVE_MIN_CP_DIFF) continue;
+
+    // Collect alternatives that are genuinely better than the played move
     const alternatives: { move: string; cp: number }[] = [];
 
     for (const pv of multiPv) {
       if (pv.move === me.movePlayed) continue; // skip the move actually played
-      // pv.cp is from side-to-move's perspective (= mover's perspective) — higher is better
       if (pv.cp - playedCp >= STRONGER_MOVE_MIN_CP_DIFF) {
         alternatives.push({ move: pv.move, cp: pv.cp });
       }
