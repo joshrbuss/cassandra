@@ -26,6 +26,7 @@ export async function POST(request: Request) {
           themes: string;
           type: string;
           candidateMoves?: string;
+          outOfTheory?: boolean;
           gameUrl?: string;
           opponentUsername?: string;
           gameDate?: string;
@@ -95,6 +96,7 @@ export async function POST(request: Request) {
             themes: `${c.themes} v2`,
             type: c.type,
             candidateMoves: c.candidateMoves ?? null,
+            outOfTheory: c.outOfTheory ?? null,
             source: "user_import",
             sourceUserId: sourceUserId ?? undefined,
             isPublic: false,

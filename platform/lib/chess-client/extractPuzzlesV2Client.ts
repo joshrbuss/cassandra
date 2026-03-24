@@ -39,6 +39,8 @@ export interface PuzzleCandidateV2 {
   candidateMoves?: string;
   /** Detailed theme descriptions for verification, e.g. "pin — bishop pinning knight to king" */
   themeDescriptions?: string[];
+  /** True if the move deviated from opening database theory (move_ranking only) */
+  outOfTheory?: boolean;
   gameUrl?: string;
   opponentUsername?: string;
   gameDate?: string;
@@ -90,6 +92,70 @@ export type ProgressCallback = (info: {
   puzzlesFound: number;
   phase: string;
 }) => void;
+
+// ─── Opening theory check (Lichess explorer API) ────────────────────────────
+
+const OPENING_THEORY_MOVE_LIMIT = 15; // only check moves 1–15
+const OPENING_THEORY_MIN_GAMES = 100; // move must have ≥100 games to count as "known theory"
+
+interface OpeningDbMove {
+  uci: string;
+  white: number;
+  draws: number;
+  black: number;
+}
+
+interface OpeningDbResponse {
+  moves: OpeningDbMove[];
+}
+
+/**
+ * Per-extraction-run cache keyed by FEN.
+ * Avoids hitting the Lichess API repeatedly for the same position.
+ * Create a new cache for each extraction run.
+ */
+function createOpeningDbCache() {
+  const cache = new Map<string, OpeningDbResponse | null>();
+
+  return async function lookupOpeningDb(fen: string): Promise<OpeningDbResponse | null> {
+    if (cache.has(fen)) return cache.get(fen)!;
+
+    try {
+      const url = `https://explorer.lichess.ovh/lichess?fen=${encodeURIComponent(fen)}&topGames=0&recentGames=0`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        cache.set(fen, null);
+        return null;
+      }
+      const data: OpeningDbResponse = await res.json();
+      cache.set(fen, data);
+      return data;
+    } catch {
+      cache.set(fen, null);
+      return null;
+    }
+  };
+}
+
+/**
+ * Check if a move (UCI) is in known opening theory for the given position.
+ * Returns true if the move appears in the Lichess opening database with
+ * at least OPENING_THEORY_MIN_GAMES total games.
+ */
+async function isMoveInTheory(
+  fen: string,
+  moveUci: string,
+  lookupFn: ReturnType<typeof createOpeningDbCache>,
+): Promise<boolean> {
+  const data = await lookupFn(fen);
+  if (!data) return false;
+
+  const entry = data.moves.find((m) => m.uci === moveUci);
+  if (!entry) return false;
+
+  const totalGames = entry.white + entry.draws + entry.black;
+  return totalGames >= OPENING_THEORY_MIN_GAMES;
+}
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -669,6 +735,7 @@ export async function extractPuzzlesV2Client(
 
   const candidates: PuzzleCandidateV2[] = [];
   const moveEvals: MoveEvalData[] = [];
+  const lookupOpeningDb = createOpeningDbCache();
   let prevCp: number | null = null;
   let prevBestMove: string | null = null;
 
@@ -754,6 +821,7 @@ export async function extractPuzzlesV2Client(
   // ── Stronger-move-available detection (MultiPV) ──
   // Find positions where the player's move was OK (not a blunder) but
   // there were objectively better alternatives.
+  // For moves 1–15, skip moves that are in known opening theory (Lichess explorer).
   const playerMoveEvals = moveEvals.filter((e) => e.side === ((gameContext.playerColor as "white" | "black") ?? "white"));
   let strongerMoveCount = 0;
 
@@ -763,7 +831,7 @@ export async function extractPuzzlesV2Client(
     if (me.cpl < STRONGER_MOVE_MIN_CPL || me.cpl > STRONGER_MOVE_MAX_CPL) continue;
 
     // Find the position index for this move
-    const posIdx = positions.findIndex((p, idx) => {
+    const posIdx = positions.findIndex((_p, idx) => {
       if (idx === 0) return false;
       const side: "white" | "black" = positions[idx - 1].fen.split(" ")[1] === "w" ? "white" : "black";
       const mn = Math.floor((idx - 1) / 2) + 1;
@@ -772,6 +840,15 @@ export async function extractPuzzlesV2Client(
     if (posIdx < 1) continue;
     const fen = positions[posIdx - 1].fen;
     const lastMove = posIdx >= 2 ? positions[posIdx - 2].uci : "";
+
+    // Opening theory awareness: for moves 1–15, check Lichess opening database.
+    // If the played move is in known theory (≥100 games), skip — don't flag it.
+    let outOfTheory = false;
+    if (me.moveNumber <= OPENING_THEORY_MOVE_LIMIT) {
+      const inTheory = await isMoveInTheory(fen, me.movePlayed, lookupOpeningDb);
+      if (inTheory) continue; // move is in known theory — don't flag
+      outOfTheory = true; // deviated from opening database
+    }
 
     // Get top 4 moves via MultiPV (need 4 to find up to 3 better than played)
     const multiPv = await analyzePositionMultiPV(fen, 4, ANALYSIS_DEPTH);
@@ -811,6 +888,7 @@ export async function extractPuzzlesV2Client(
       themeDescriptions: [`strongerMove — played ${me.movePlayed} (${playedCp}cp), better: ${topAlts.map((a) => `${a.move} (${a.cp}cp)`).join(", ")}`],
       type: "move_ranking",
       candidateMoves: candidateMovesJson,
+      outOfTheory,
       gameUrl,
       ...gameContext,
       moveNumber: me.moveNumber,

@@ -59,6 +59,8 @@ model Puzzle {
   evalCp           Int?
   /// "white" | "black" — which side the user played in the source game
   playerColor      String?
+  /// True if the move deviated from opening database theory (move_ranking puzzles only)
+  outOfTheory      Boolean?
   createdAt     DateTime @default(now())
 
   sourceUser User?           @relation(fields: [sourceUserId], references: [id], onDelete: Cascade)
