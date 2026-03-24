@@ -140,12 +140,14 @@ export async function getBestMove(fen: string): Promise<EngineResult | null> {
     let cp = 0;
     let done = false;
     let gotAnyOutput = false;
+    let isReady = false;
 
     const finish = (result: EngineResult | null) => {
       if (!done) {
         done = true;
         clearTimeout(timeout);
         try {
+          proc.stdin!.write("quit\n");
           proc.kill();
         } catch {
           // ignore
@@ -158,7 +160,7 @@ export async function getBestMove(fen: string): Promise<EngineResult | null> {
     };
 
     const timeout = setTimeout(() => {
-      console.warn(`[stockfish] Call #${callId}: Timeout after ${ENGINE_TIMEOUT_MS}ms (gotOutput=${gotAnyOutput})`);
+      console.warn(`[stockfish] Call #${callId}: Timeout after ${ENGINE_TIMEOUT_MS}ms (gotOutput=${gotAnyOutput}, ready=${isReady})`);
       finish(null);
     }, ENGINE_TIMEOUT_MS);
 
@@ -170,9 +172,24 @@ export async function getBestMove(fen: string): Promise<EngineResult | null> {
       buf = lines.pop() ?? "";
 
       for (const line of lines) {
-        if (line.startsWith("info") && line.includes("score cp")) {
+        // Wait for engine to be ready before sending position + go
+        if (!isReady && line.trim() === "readyok") {
+          isReady = true;
+          proc.stdin!.write(`position fen ${fen}\n`);
+          proc.stdin!.write(`go depth ${ANALYSIS_DEPTH}\n`);
+          continue;
+        }
+
+        // Parse score — handle both cp and mate scores
+        if (line.startsWith("info") && line.includes(" score ")) {
           const cpMatch = line.match(/score cp (-?\d+)/);
           if (cpMatch) cp = parseInt(cpMatch[1], 10);
+          // Mate score: convert to large cp value
+          const mateMatch = line.match(/score mate (-?\d+)/);
+          if (mateMatch) {
+            const mateMoves = parseInt(mateMatch[1], 10);
+            cp = mateMoves > 0 ? 10000 - mateMoves * 10 : -10000 - mateMoves * 10;
+          }
           const pvMatch = line.match(/\bpv ([a-h][1-8][a-h][1-8]\w?)/);
           if (pvMatch) bestMove = pvMatch[1];
         }
@@ -203,10 +220,8 @@ export async function getBestMove(fen: string): Promise<EngineResult | null> {
       }
     });
 
-    // Send UCI commands
+    // Send UCI init — wait for readyok before sending position/go
     proc.stdin!.write("uci\n");
     proc.stdin!.write("isready\n");
-    proc.stdin!.write(`position fen ${fen}\n`);
-    proc.stdin!.write(`go depth ${ANALYSIS_DEPTH}\n`);
   });
 }
