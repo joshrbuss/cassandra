@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fetchRecentGames } from "@/lib/chess-apis/chesscom";
 import { extractPuzzlesV2, type ExtractResultV2 } from "@/lib/jobs/extractPuzzlesV2";
+import { spawn } from "child_process";
+import { existsSync } from "fs";
 
 /**
  * V2 puzzle extraction — internal testing endpoint.
@@ -22,6 +24,51 @@ export async function POST(request: Request) {
     const maxGames = Math.min((body.maxGames as number) || 3, 10);
 
     console.log(`\n[extract-v2] ═══ Starting V2 extraction for ${username} (max ${maxGames} games) ═══\n`);
+
+    // ── Inline Stockfish diagnostic (bypass module cache) ──
+    const sfPaths = ["/opt/homebrew/bin/stockfish", "/usr/local/bin/stockfish", "/usr/bin/stockfish"];
+    const sfDiag: Record<string, unknown> = { cwd: process.cwd(), nodeVersion: process.version };
+    for (const p of sfPaths) {
+      sfDiag[p] = existsSync(p);
+    }
+
+    // Try a direct spawn test
+    const sfBin = sfPaths.find((p) => existsSync(p));
+    if (sfBin) {
+      sfDiag.selectedBinary = sfBin;
+      try {
+        const testResult = await new Promise<string>((resolve) => {
+          const proc = spawn(sfBin, [], { stdio: ["pipe", "pipe", "pipe"] });
+          let out = "";
+          const timer = setTimeout(() => { proc.kill(); resolve(`TIMEOUT after 5s. output: ${out.slice(0, 300)}`); }, 5000);
+          proc.stdout.on("data", (d: Buffer) => {
+            out += d.toString();
+            if (out.includes("readyok")) {
+              proc.stdin!.write("position fen rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\ngo depth 5\n");
+            }
+            if (out.includes("bestmove")) {
+              clearTimeout(timer);
+              proc.stdin!.write("quit\n");
+              proc.kill();
+              const bm = out.match(/bestmove (\S+)/)?.[1] ?? "?";
+              const cp = out.match(/score cp (-?\d+)/)?.[1] ?? "none";
+              resolve(`OK: bestmove=${bm} cp=${cp}`);
+            }
+          });
+          proc.stderr.on("data", (d: Buffer) => { out += `[stderr]${d.toString()}`; });
+          proc.on("error", (e) => { clearTimeout(timer); resolve(`SPAWN_ERROR: ${e.message}`); });
+          proc.stdin!.write("uci\nisready\n");
+        });
+        sfDiag.spawnTest = testResult;
+      } catch (e) {
+        sfDiag.spawnTest = `ERROR: ${e}`;
+      }
+    } else {
+      sfDiag.selectedBinary = null;
+      sfDiag.spawnTest = "NO_BINARY_FOUND";
+    }
+    console.log(`[extract-v2] Stockfish diagnostic:`, JSON.stringify(sfDiag));
+    // ── End diagnostic ──
 
     const user = await prisma.user.findFirst({
       where: {
@@ -150,6 +197,7 @@ export async function POST(request: Request) {
     const summary = {
       ok: true,
       username,
+      stockfishDiagnostic: sfDiag,
       gamesAnalysed: pgns.length,
       totalPositionsAnalysed,
       puzzlesExtracted: allCandidates.length,
