@@ -117,7 +117,7 @@ export default function ExtractV2Admin() {
           (posIdx, totalPos) => {
             setProgress(
               `Game ${g + 1}/${pgns.length} — position ${posIdx + 1}/${totalPos} ` +
-              `(${totalPuzzles + result?.candidates?.length || 0} puzzles so far)`
+              `(${totalPuzzles} puzzles so far)`
             );
           },
         );
