@@ -33,6 +33,14 @@ export async function POST(request: Request) {
           threatBluffAnswer?: string;
           decoyMoves?: string;
           score?: number;
+          moveEntropy?: number;
+          classification?: string;
+          gamePhase?: string;
+          variations?: string;
+          annotationType?: string | null;
+          targetSquares?: string[];
+          targetPiece?: string | null;
+          sourceGameId?: string;
           gameUrl?: string;
           opponentUsername?: string;
           gameDate?: string;
@@ -109,6 +117,14 @@ export async function POST(request: Request) {
             threatBluffAnswer: c.threatBluffAnswer ?? null,
             decoyMoves: c.decoyMoves ?? null,
             puzzleScore: c.score ?? null,
+            moveEntropy: c.moveEntropy ?? null,
+            classification: c.classification ?? null,
+            classifiedPhase: c.gamePhase ?? null,
+            variations: c.variations ?? null,
+            annotationType: c.annotationType ?? null,
+            targetSquares: c.targetSquares ? JSON.stringify(c.targetSquares) : null,
+            targetPiece: c.targetPiece ?? null,
+            sourceGameId: c.sourceGameId ?? null,
             source: "user_import",
             sourceUserId: sourceUserId ?? undefined,
             isPublic: false,

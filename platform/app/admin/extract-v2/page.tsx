@@ -24,6 +24,9 @@ interface PuzzleResult {
   threatBluffAnswer?: "real_threat" | "bluff";
   decoyMoves?: string;
   score?: number;
+  moveEntropy?: number;
+  classification?: "forcing" | "quiet_best" | "positional" | "chaotic";
+  gamePhase?: "opening" | "middlegame" | "endgame";
   rating: number;
   evalCp: number;
   fen: string;
@@ -161,6 +164,9 @@ export default function ExtractV2Admin() {
             threatBluffAnswer: c.threatBluffAnswer,
             decoyMoves: c.decoyMoves,
             score: c.score,
+            moveEntropy: c.moveEntropy,
+            classification: c.classification,
+            gamePhase: c.gamePhase,
             rating: c.rating,
             evalCp: c.evalCp ?? 0,
             fen: c.solvingFen,
@@ -367,6 +373,28 @@ export default function ExtractV2Admin() {
                       {selectedPuzzle.score != null && (
                         <span style={{ fontSize: 10, background: "#33333366", color: "#aaa", borderRadius: 4, padding: "2px 8px" }}>
                           score: {selectedPuzzle.score}
+                        </span>
+                      )}
+                      {selectedPuzzle.moveEntropy != null && (
+                        <span style={{ fontSize: 10, background: "#33333366", color: "#aaa", borderRadius: 4, padding: "2px 8px" }}>
+                          entropy: {selectedPuzzle.moveEntropy.toFixed(1)}
+                        </span>
+                      )}
+                      {selectedPuzzle.classification && (
+                        <span style={{ fontSize: 10, borderRadius: 4, padding: "2px 8px",
+                          ...({
+                            forcing: { background: "#ef444422", color: "#f87171" },
+                            quiet_best: { background: "#3b82f622", color: "#60a5fa" },
+                            positional: { background: "#a855f722", color: "#c084fc" },
+                            chaotic: { background: "#f9731622", color: "#fb923c" },
+                          }[selectedPuzzle.classification])
+                        }}>
+                          {selectedPuzzle.classification}
+                        </span>
+                      )}
+                      {selectedPuzzle.gamePhase && (
+                        <span style={{ fontSize: 10, background: "#33333366", color: "#888", borderRadius: 4, padding: "2px 8px" }}>
+                          {selectedPuzzle.gamePhase}
                         </span>
                       )}
                       {selectedPuzzle.themes.split(" ").map((t) => (

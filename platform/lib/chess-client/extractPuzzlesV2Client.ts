@@ -38,6 +38,14 @@ const MAX_RETROGRADE_PER_GAME = 2;
 // Position scoring: minimum score to keep a puzzle (0-100)
 const MIN_PUZZLE_SCORE = 40;
 
+// ─── Position classifier thresholds (configurable) ──────────────────────────
+const CLASSIFIER_MULTIPV = 5;          // number of PV lines for entropy calc
+const CLASSIFIER_DEPTH = ANALYSIS_DEPTH; // reuse pipeline depth
+const ENTROPY_HIGH_THRESHOLD = 40;     // std dev of top N evals above this = "high entropy"
+const ENTROPY_LOW_THRESHOLD = 15;      // below this = "low entropy"
+const DELTA_HIGH_THRESHOLD = 80;       // best move advantage above this = "high delta"
+const DELTA_LOW_THRESHOLD = 30;        // below this = "low delta"
+
 const MAX_EXTENSION_PLY = 10;
 const FORCING_ADVANTAGE_CP = 150;
 const WINNING_THRESHOLD_CP = 300;
@@ -45,6 +53,26 @@ const WINNING_THRESHOLD_CP = 300;
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 export type PuzzleType = "standard" | "move_ranking" | "opponent_threat" | "threat_bluff" | "retrograde_v2";
+
+export type PositionClassificationType = "forcing" | "quiet_best" | "positional" | "chaotic";
+
+export interface PositionClassification {
+  /** Standard deviation of Stockfish top-N move evals */
+  moveEntropy: number;
+  /** "forcing" | "quiet_best" | "positional" | "chaotic" */
+  classification: PositionClassificationType;
+  /** Game phase at this position */
+  gamePhase: "opening" | "middlegame" | "endgame";
+  /** Eval delta: best move cp minus second-best move cp */
+  evalDelta: number;
+}
+
+export interface Variation {
+  move: string;
+  source: "engine" | "markov" | "behavioral";
+  weight: number;
+  continuation: string | null;
+}
 
 export interface PuzzleCandidateV2 {
   id: string;
@@ -71,8 +99,30 @@ export interface PuzzleCandidateV2 {
   threatBluffAnswer?: "real_threat" | "bluff";
   /** JSON stringified decoy moves for retrograde_v2 MCQ [{uci,san,resultFen}] */
   decoyMoves?: string;
-  /** Extraction confidence score (0–100). Used to pick best puzzle when position qualifies for multiple types. */
+  /** Extraction confidence score (0–100) */
   score?: number;
+
+  // ── Position classification (computed at extraction time) ──
+  /** Std dev of Stockfish top-5 move evals */
+  moveEntropy?: number;
+  /** "forcing" | "quiet_best" | "positional" | "chaotic" */
+  classification?: PositionClassificationType;
+  /** "opening" | "middlegame" | "endgame" */
+  gamePhase?: "opening" | "middlegame" | "endgame";
+
+  // ── Variation tree (engine top 3, stub for markov/behavioral) ──
+  /** JSON stringified Variation[] */
+  variations?: string;
+
+  // ── Annotation puzzle support (data layer only, no UI yet) ──
+  annotationType?: "move_input" | "highlight_squares" | "identify_piece" | null;
+  /** e.g. ["e5", "d6"] for highlight puzzles */
+  targetSquares?: string[];
+  /** e.g. "Bb3" for identify_piece puzzles */
+  targetPiece?: string | null;
+
+  // ── Context ──
+  sourceGameId?: string;
   gameUrl?: string;
   opponentUsername?: string;
   gameDate?: string;
@@ -589,6 +639,111 @@ function getPhase(moveNumber: number, fen: string): "opening" | "middlegame" | "
   if (moveNumber <= 10) return "opening";
   return "middlegame";
 }
+
+// ─── Position classifier ────────────────────────────────────────────────────
+
+/**
+ * Classify a position by running MultiPV and computing move entropy
+ * (std dev of top-N evals) and eval delta (best minus second-best).
+ *
+ * Returns classification, entropy, delta, and game phase.
+ */
+export async function classifyPosition(
+  fen: string,
+  moveNumber: number,
+): Promise<PositionClassification> {
+  const gamePhase = getPhase(moveNumber, fen);
+
+  const pvs = await analyzePositionMultiPV(fen, CLASSIFIER_MULTIPV, CLASSIFIER_DEPTH);
+  if (pvs.length < 2) {
+    // Not enough data — default to forcing (only one legal move or engine failure)
+    return { moveEntropy: 0, classification: "forcing", gamePhase, evalDelta: 9999 };
+  }
+
+  const evals = pvs.map((pv) => pv.cp);
+
+  // Eval delta: gap between best and second-best move
+  const evalDelta = Math.abs(evals[0] - evals[1]);
+
+  // Move entropy: std dev of all top-N evals
+  const mean = evals.reduce((s, v) => s + v, 0) / evals.length;
+  const variance = evals.reduce((s, v) => s + (v - mean) ** 2, 0) / evals.length;
+  const moveEntropy = Math.round(Math.sqrt(variance) * 10) / 10;
+
+  // Classification matrix:
+  //                  low delta          high delta
+  // low entropy  → quiet_best         forcing
+  // high entropy → positional         chaotic
+  const highDelta = evalDelta >= DELTA_HIGH_THRESHOLD;
+  const lowDelta = evalDelta < DELTA_LOW_THRESHOLD;
+  const highEntropy = moveEntropy >= ENTROPY_HIGH_THRESHOLD;
+
+  let classification: PositionClassificationType;
+  if (highDelta && !highEntropy) classification = "forcing";
+  else if (highDelta && highEntropy) classification = "chaotic";
+  else if (!highDelta && highEntropy) classification = "positional";
+  else if (lowDelta && !highEntropy) classification = "quiet_best";
+  else classification = "quiet_best"; // middle ground defaults to quiet_best
+
+  return { moveEntropy, classification, gamePhase, evalDelta };
+}
+
+/**
+ * Build a variation tree stub from MultiPV engine results.
+ * Source is always "engine" for now; markov/behavioral will be added later.
+ */
+function buildVariations(pvs: EngineResult[]): Variation[] {
+  return pvs.slice(0, 3).map((pv) => ({
+    move: pv.move,
+    source: "engine" as const,
+    weight: pv.cp,
+    continuation: pv.pv ?? null,
+  }));
+}
+
+// ─── Stub extractors (function signatures only, no logic yet) ───────────────
+
+/**
+ * Prophylaxis puzzle extractor (stub).
+ *
+ * Trigger: classification === "positional" AND the engine's best move
+ * disagrees with the predicted player move (Markov model, future).
+ *
+ * The idea: positions where many moves look equal but one quiet move
+ * is necessary to prevent the opponent's plan.
+ */
+export async function extractProphylaxisPuzzle(
+  _fen: string,
+  _classification: PositionClassification,
+  _engineBestMove: string,
+  _predictedPlayerMove?: string,
+): Promise<PuzzleCandidateV2 | null> {
+  // TODO: implement when Markov model is available
+  // Trigger: classification.classification === "positional"
+  //   && predictedPlayerMove !== engineBestMove
+  return null;
+}
+
+/**
+ * Bad-piece puzzle extractor (stub).
+ *
+ * Trigger: a piece has a mobility score below a threshold and has been
+ * stationary (same square) for 5+ consecutive moves.
+ *
+ * The idea: identify the worst-placed piece and find the move that
+ * improves it. Teaches piece activity awareness.
+ */
+export async function extractBadPiecePuzzle(
+  _fen: string,
+  _moveHistory: MoveEvalData[],
+  _classification: PositionClassification,
+): Promise<PuzzleCandidateV2 | null> {
+  // TODO: implement piece mobility scoring
+  // Trigger: piece on same square for 5+ moves with low mobility
+  return null;
+}
+
+// ─── Accuracy calculation ───────────────────────────────────────────────────
 
 function cplToAccuracy(avgCpl: number): number {
   if (avgCpl <= 0) return 100;
@@ -1224,6 +1379,28 @@ export async function extractPuzzlesV2Client(
       retrogradeCount++;
     } catch (err) {
       console.warn(`[V2 Extract] retrograde detection failed for move ${moveNum}:`, err);
+    }
+  }
+
+  // ── Classify each candidate position & enrich with metadata ──
+  // Runs MultiPV on each puzzle's solvingFen to compute entropy,
+  // classification, variation tree, and game phase.
+  const sourceGameId = gameUrl ?? `game-${Date.now()}`;
+  for (const c of candidates) {
+    try {
+      const cls = await classifyPosition(c.solvingFen, c.moveNumber ?? 1);
+      c.moveEntropy = cls.moveEntropy;
+      c.classification = cls.classification;
+      c.gamePhase = cls.gamePhase;
+
+      // Build variation tree from same MultiPV data
+      const pvs = await analyzePositionMultiPV(c.solvingFen, 3, CLASSIFIER_DEPTH);
+      c.variations = JSON.stringify(buildVariations(pvs));
+
+      // Attach context
+      c.sourceGameId = sourceGameId;
+    } catch {
+      // Non-fatal — puzzle is still valid without classification
     }
   }
 

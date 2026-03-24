@@ -37,6 +37,22 @@ model Puzzle {
   decoyMoves        String?
   /// Extraction confidence score (0–100)
   puzzleScore       Int?
+  /// Std dev of Stockfish top-5 move evals at extraction depth
+  moveEntropy       Float?
+  /// "forcing" | "quiet_best" | "positional" | "chaotic"
+  classification    String?
+  /// "opening" | "middlegame" | "endgame" (classifier output)
+  classifiedPhase   String?
+  /// JSON: Variation[] — engine top 3 moves with continuations
+  variations        String?
+  /// "move_input" | "highlight_squares" | "identify_piece" — annotation puzzle type (future)
+  annotationType    String?
+  /// JSON: string[] of target squares for annotation puzzles, e.g. ["e5","d6"]
+  targetSquares     String?
+  /// Target piece for identify_piece annotation puzzles, e.g. "Bb3"
+  targetPiece       String?
+  /// Source game identifier
+  sourceGameId      String?
   /// JSON: string[] of algebraic squares, e.g. ["d5","f7"] — for weakness_spot puzzles
   weaknessSquares   String?
   /// Explanation text revealed after submitting a weakness_spot puzzle
