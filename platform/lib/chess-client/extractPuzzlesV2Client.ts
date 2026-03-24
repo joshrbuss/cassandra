@@ -63,6 +63,7 @@ export interface ExtractResultV2 {
   moveEvals: MoveEvalData[];
   accuracy: GameAccuracy;
   gameUrl?: string;
+  playerColor?: "white" | "black";
   stoppedAt: number;
   totalPositions: number;
   complete: boolean;
@@ -690,14 +691,15 @@ export async function extractPuzzlesV2Client(
     prevBestMove = result.move;
   }
 
-  const playerSide = gameContext.playerColor ?? "white";
-  const accuracy = computeAccuracy(moveEvals, playerSide as "white" | "black");
+  const playerSide = (gameContext.playerColor as "white" | "black") ?? "white";
+  const accuracy = computeAccuracy(moveEvals, playerSide);
 
   return {
     candidates,
     moveEvals,
     accuracy,
     gameUrl,
+    playerColor: playerSide,
     stoppedAt: positions.length,
     totalPositions: positions.length,
     complete: true,

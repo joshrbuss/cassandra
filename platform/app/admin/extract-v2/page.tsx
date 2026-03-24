@@ -18,6 +18,7 @@ interface PuzzleResult {
   rating: number;
   evalCp: number;
   fen: string;
+  playerColor: "white" | "black";
 }
 
 interface MoveEvalResult {
@@ -31,6 +32,7 @@ interface MoveEvalResult {
 
 interface GameResult {
   gameUrl?: string;
+  playerColor: "white" | "black";
   accuracy: {
     overall: number;
     opening: number;
@@ -125,8 +127,11 @@ export default function ExtractV2Admin() {
         totalPositions += result.totalPositions;
         totalPuzzles += result.candidates.length;
 
+        const playerColor = result.playerColor ?? "white";
+
         gameResults.push({
           gameUrl: result.gameUrl,
+          playerColor,
           accuracy: result.accuracy,
           totalMoves: result.totalPositions,
           puzzleCount: result.candidates.length,
@@ -141,6 +146,7 @@ export default function ExtractV2Admin() {
             rating: c.rating,
             evalCp: c.evalCp ?? 0,
             fen: c.solvingFen,
+            playerColor,
           })),
           moveEvals: result.moveEvals.map((e) => ({
             move: e.moveNumber,
@@ -305,7 +311,7 @@ export default function ExtractV2Admin() {
                     <ChessBoardWrapper
                       position={selectedPuzzle.fen}
                       interactive={false}
-                      boardOrientation="white"
+                      boardOrientation={selectedPuzzle.playerColor}
                     />
                   </div>
                   <div style={{ marginTop: 12 }}>
@@ -375,7 +381,7 @@ function GameCard({
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <span style={{ fontSize: 14, fontWeight: 600 }}>Game {index + 1}</span>
           <AccuracyBadge value={game.accuracy.overall} />
-          <span style={{ fontSize: 12, color: "#888" }}>{game.totalMoves} moves · {game.puzzleCount} puzzles</span>
+          <span style={{ fontSize: 12, color: "#888" }}>{game.playerColor} · {game.totalMoves} moves · {game.puzzleCount} puzzles</span>
           {!game.stockfishAvailable && (
             <span style={{ fontSize: 11, color: "#ef4444", background: "#ef444422", padding: "2px 8px", borderRadius: 4 }}>
               Engine unavailable
