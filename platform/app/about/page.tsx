@@ -2,17 +2,24 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { getT, resolveLocale, LOCALE_COOKIE, preloadLocale } from "@/lib/i18n";
+import { aboutMeta, type LocaleKey } from "@/lib/seo-metadata";
 import CassandraLogo from "@/components/CassandraLogo";
 import NavLanguageToggle from "@/components/NavLanguageToggle";
 import HeroForm from "../HeroForm";
 import SocialLinks from "@/components/SocialLinks";
 import CookiePreferencesLink from "@/components/CookiePreferencesLink";
 
-export const metadata: Metadata = {
-  title: "About Cassandra — Your games contain a pattern for why you lose",
-  description:
-    "Cassandra finds the mistakes in your games and builds personalised puzzles around them. Free, no paywall.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const cookieStore = await cookies();
+  const locale = resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value) as LocaleKey;
+  const meta = aboutMeta[locale] ?? aboutMeta.en;
+  return {
+    title: meta.title,
+    description: meta.description,
+    openGraph: { title: meta.title, description: meta.description },
+    twitter: { title: meta.title, description: meta.description },
+  };
+}
 
 const PUZZLE_TYPES = [
   { titleKey: "about.puzzleType.whatYouMissed", descKey: "about.puzzleType.whatYouMissedDesc" },

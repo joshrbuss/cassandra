@@ -33,13 +33,13 @@ export default function ConsentAwareScripts({ gaId, metaPixelId, isPaid }: Props
   if (!mounted) return null;
 
   const fullConsent = consent === "true";
-  const loadAdsense = fullConsent && !isPaid;
   const loadMetaPixel = fullConsent && !!metaPixelId;
 
   return (
     <>
-      {/* AdSense — only with full consent and non-paid users */}
-      {loadAdsense && (
+      {/* AdSense library — loaded for all non-paid users so Google can verify ads.txt.
+          Ad units themselves are only rendered when consent is given (see AdSlot). */}
+      {!isPaid && (
         <Script
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1008999288444187"
           crossOrigin="anonymous"

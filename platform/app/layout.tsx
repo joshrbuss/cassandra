@@ -35,11 +35,11 @@ const hreflangAlternates = Object.fromEntries(
 
 export const metadata: Metadata = {
   title: {
-    default: "Cassandra — Turn your mistakes into progress",
+    default: "Cassandra — Free Chess Puzzles From Your Own Games | Tactics Trainer",
     template: "%s | Cassandra",
   },
   description:
-    "Cassandra finds the positions from your real games where things went wrong and turns them into personalised puzzles. Free, unlimited, no paywall.",
+    "Cassandra analyses your Chess.com and Lichess games and turns your mistakes into personalised puzzles. Free game review, accuracy tracking, and tactics training — no paywall.",
   metadataBase: new URL(BASE_URL),
   alternates: {
     languages: {
@@ -56,16 +56,16 @@ export const metadata: Metadata = {
     siteName: "Cassandra",
     type: "website",
     locale: "en_US",
-    title: "Cassandra — Turn your mistakes into progress",
+    title: "Cassandra — Free Chess Puzzles From Your Own Games",
     description:
-      "Cassandra finds the positions from your real games where things went wrong and turns them into personalised puzzles. Free, unlimited, no paywall.",
+      "Cassandra analyses your Chess.com and Lichess games and turns your mistakes into personalised puzzles. Free game review, accuracy tracking, and tactics training — no paywall.",
   },
   twitter: {
     card: "summary_large_image",
     site: "@joshrbuss",
-    title: "Cassandra — Turn your mistakes into progress",
+    title: "Cassandra — Free Chess Puzzles From Your Own Games",
     description:
-      "Cassandra finds the positions from your real games where things went wrong and turns them into personalised puzzles. Free, unlimited, no paywall.",
+      "Cassandra analyses your Chess.com and Lichess games and turns your mistakes into personalised puzzles. Free game review, accuracy tracking, and tactics training — no paywall.",
   },
   robots: {
     index: true,

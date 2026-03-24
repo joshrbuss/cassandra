@@ -2,16 +2,24 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { getT, resolveLocale, LOCALE_COOKIE, preloadLocale } from "@/lib/i18n";
+import { feedbackMeta, type LocaleKey } from "@/lib/seo-metadata";
 import CassandraLogo from "@/components/CassandraLogo";
 import NavLanguageToggle from "@/components/NavLanguageToggle";
 import SocialLinks from "@/components/SocialLinks";
 import CookiePreferencesLink from "@/components/CookiePreferencesLink";
 import FeedbackForm from "./FeedbackForm";
 
-export const metadata: Metadata = {
-  title: "Feedback — Cassandra",
-  description: "Found a bug? Have an idea? Send feedback directly to the team.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const cookieStore = await cookies();
+  const locale = resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value) as LocaleKey;
+  const meta = feedbackMeta[locale] ?? feedbackMeta.en;
+  return {
+    title: meta.title,
+    description: meta.description,
+    openGraph: { title: meta.title, description: meta.description },
+    twitter: { title: meta.title, description: meta.description },
+  };
+}
 
 export default async function FeedbackPage() {
   const cookieStore = await cookies();

@@ -1,7 +1,9 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { getT, resolveLocale, LOCALE_COOKIE, preloadLocale } from "@/lib/i18n";
+import { homeMeta, type LocaleKey } from "@/lib/seo-metadata";
 import CassandraLogo from "@/components/CassandraLogo";
 import ConfirmedToast from "@/components/marketing/ConfirmedToast";
 import DemoBoard from "./DemoBoard";
@@ -9,6 +11,18 @@ import HeroForm from "./HeroForm";
 import SocialLinks from "@/components/SocialLinks";
 import CookiePreferencesLink from "@/components/CookiePreferencesLink";
 import NavLanguageToggle from "@/components/NavLanguageToggle";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const cookieStore = await cookies();
+  const locale = resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value) as LocaleKey;
+  const meta = homeMeta[locale] ?? homeMeta.en;
+  return {
+    title: meta.title,
+    description: meta.description,
+    openGraph: { title: meta.title, description: meta.description },
+    twitter: { title: meta.title, description: meta.description },
+  };
+}
 
 export default async function Home() {
   // Redirect logged-in users straight to their dashboard
