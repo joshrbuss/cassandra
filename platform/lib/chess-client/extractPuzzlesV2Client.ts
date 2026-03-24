@@ -118,19 +118,31 @@ function createOpeningDbCache() {
   const cache = new Map<string, OpeningDbResponse | null>();
 
   return async function lookupOpeningDb(fen: string): Promise<OpeningDbResponse | null> {
-    if (cache.has(fen)) return cache.get(fen)!;
+    if (cache.has(fen)) {
+      console.log(`[OpeningDB] Cache hit for FEN: ${fen}`);
+      return cache.get(fen)!;
+    }
 
     try {
       const url = `https://explorer.lichess.ovh/lichess?fen=${encodeURIComponent(fen)}&topGames=0&recentGames=0`;
+      console.log(`[OpeningDB] Fetching: ${url}`);
       const res = await fetch(url);
       if (!res.ok) {
+        console.warn(`[OpeningDB] HTTP ${res.status} for FEN: ${fen}`);
         cache.set(fen, null);
         return null;
       }
       const data: OpeningDbResponse = await res.json();
+      console.log(`[OpeningDB] Response for FEN: ${fen}`);
+      console.log(`[OpeningDB]   Moves returned: ${data.moves.length}`);
+      for (const m of data.moves.slice(0, 10)) {
+        const total = m.white + m.draws + m.black;
+        console.log(`[OpeningDB]   ${m.uci}: ${total} games (W:${m.white} D:${m.draws} B:${m.black})`);
+      }
       cache.set(fen, data);
       return data;
-    } catch {
+    } catch (err) {
+      console.error(`[OpeningDB] Fetch error for FEN: ${fen}`, err);
       cache.set(fen, null);
       return null;
     }
@@ -147,14 +159,24 @@ async function isMoveInTheory(
   moveUci: string,
   lookupFn: ReturnType<typeof createOpeningDbCache>,
 ): Promise<boolean> {
+  console.log(`[OpeningDB] Checking theory: move="${moveUci}" in FEN="${fen}"`);
   const data = await lookupFn(fen);
-  if (!data) return false;
+  if (!data) {
+    console.log(`[OpeningDB]   → No data returned (API failed or empty)`);
+    return false;
+  }
 
   const entry = data.moves.find((m) => m.uci === moveUci);
-  if (!entry) return false;
+  if (!entry) {
+    const availableUcis = data.moves.map((m) => m.uci).join(", ");
+    console.log(`[OpeningDB]   → Move "${moveUci}" NOT FOUND in DB moves: [${availableUcis}]`);
+    return false;
+  }
 
   const totalGames = entry.white + entry.draws + entry.black;
-  return totalGames >= OPENING_THEORY_MIN_GAMES;
+  const inTheory = totalGames >= OPENING_THEORY_MIN_GAMES;
+  console.log(`[OpeningDB]   → Move "${moveUci}" found: ${totalGames} games (threshold: ${OPENING_THEORY_MIN_GAMES}) → ${inTheory ? "IN THEORY (skip)" : "OUT OF THEORY (flag)"}`);
+  return inTheory;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -845,6 +867,7 @@ export async function extractPuzzlesV2Client(
     // If the played move is in known theory (≥100 games), skip — don't flag it.
     let outOfTheory = false;
     if (me.moveNumber <= OPENING_THEORY_MOVE_LIMIT) {
+      console.log(`[OpeningDB] ── Move ${me.moveNumber} (${me.side}) ── movePlayed="${me.movePlayed}" cpl=${me.cpl} fen="${fen}"`);
       const inTheory = await isMoveInTheory(fen, me.movePlayed, lookupOpeningDb);
       if (inTheory) continue; // move is in known theory — don't flag
       outOfTheory = true; // deviated from opening database
