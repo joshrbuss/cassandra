@@ -19,7 +19,8 @@ const MAX_STRONGER_MOVE_PER_GAME = 3;
 const STRONGER_MOVE_MIN_CP_DIFF = 30; // minimum cp difference to count as "genuinely better"
 const STRONGER_MOVE_MAX_CPL = 59; // must be below blunder threshold
 const STRONGER_MOVE_MIN_CPL = 10; // don't flag near-perfect moves
-const OPPONENT_THREAT_MIN_CP = 40; // opponent's reply must gain ≥40cp vs position after best move
+const OPPONENT_THREAT_MIN_GAIN = 80; // opponent's reply must gain ≥80cp vs position after best move
+const OPPONENT_THREAT_DANGER_CP = 150; // position after opponent's reply must be within ±150cp (roughly equal/dangerous)
 const MAX_EXTENSION_PLY = 10;
 const FORCING_ADVANTAGE_CP = 150;
 const WINNING_THRESHOLD_CP = 300;
@@ -893,7 +894,16 @@ export async function extractPuzzlesV2Client(
             const opponentGainAfterGood = opponentReplyAfterBest?.cp ?? 0;
             const threatGain = opponentGainAfterBad - opponentGainAfterGood;
 
-            if (threatGain >= OPPONENT_THREAT_MIN_CP) {
+            // opponentReply.cp is from opponent's perspective — negate to get player's perspective
+            const playerEvalAfterThreat = -opponentReply.cp;
+
+            // Two quality gates:
+            // 1. Opponent must gain significantly from our mistake (≥80cp swing)
+            // 2. The resulting position must be genuinely dangerous — within ±150cp
+            //    (skip if user is still clearly winning, e.g. +3.0)
+            const isDangerous = Math.abs(playerEvalAfterThreat) <= OPPONENT_THREAT_DANGER_CP;
+
+            if (threatGain >= OPPONENT_THREAT_MIN_GAIN && isDangerous) {
               // Apply opponent's threat move to find the counter-response position
               const afterThreat = new Chess(threatFen);
               const threatMoveResult = afterThreat.move({
@@ -926,6 +936,15 @@ export async function extractPuzzlesV2Client(
                   // solutionMoves: step 1 (find threat) + step 2 (counter it)
                   const solutionMoves = `${opponentReply.move} ${counterReply.move}`;
 
+                  // Describe severity based on resulting eval
+                  const severityLabel =
+                    playerEvalAfterThreat <= -100 ? "winning position"
+                    : playerEvalAfterThreat <= -30 ? "strong advantage"
+                    : playerEvalAfterThreat <= 30 ? "equal position"
+                    : playerEvalAfterThreat <= 100 ? "slight edge"
+                    : "advantage you're losing";
+                  const actionWord = playerEvalAfterThreat <= 30 ? "exploit" : "punish";
+
                   candidates.push({
                     id: clientId(),
                     fen: fen, // original position (before user's move)
@@ -935,8 +954,8 @@ export async function extractPuzzlesV2Client(
                     rating: Math.min(estimateRating(me.cpl, 2) + 100, 1800),
                     themes: "opponentThreat",
                     themeDescriptions: [
-                      `you played ${playedSan} instead of ${bestSan} — your opponent can now play ${threatSan} (gaining ${(threatGain / 100).toFixed(1)} pawns)`,
-                      `best response to the threat: ${counterSan}`,
+                      `you played ${playedSan} instead of ${bestSan} — your opponent can now ${actionWord} this with ${threatSan}, reaching a ${severityLabel}`,
+                      `best response: ${counterSan}`,
                     ],
                     type: "opponent_threat",
                     parentPuzzleId: moveRankingId,
@@ -945,7 +964,7 @@ export async function extractPuzzlesV2Client(
                     gameUrl,
                     ...gameContext,
                     moveNumber: me.moveNumber,
-                    evalCp: -opponentReply.cp, // from player's perspective (negative = bad for us)
+                    evalCp: playerEvalAfterThreat,
                   });
                 }
               }
