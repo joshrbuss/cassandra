@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import dynamic from "next/dynamic";
+import { extractPuzzlesV2Client, type ExtractResultV2, type PuzzleCandidateV2, type MoveEvalData } from "@/lib/chess-client/extractPuzzlesV2Client";
+import { terminateEngine } from "@/lib/chess-client/stockfishBrowser";
 
 const ChessBoardWrapper = dynamic(() => import("@/components/ChessBoardWrapper"), { ssr: false });
 
@@ -41,9 +43,11 @@ interface GameResult {
   puzzleCount: number;
   puzzles: PuzzleResult[];
   moveEvals: MoveEvalResult[];
+  stockfishAvailable: boolean;
+  stockfishError?: string;
 }
 
-interface ExtractResponse {
+interface FullResponse {
   ok: boolean;
   error?: string;
   username?: string;
@@ -62,29 +66,131 @@ export default function ExtractV2Admin() {
   const [username, setUsername] = useState("j_r_b_01");
   const [maxGames, setMaxGames] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<ExtractResponse | null>(null);
+  const [data, setData] = useState<FullResponse | null>(null);
   const [selectedPuzzle, setSelectedPuzzle] = useState<PuzzleResult | null>(null);
   const [expandedGame, setExpandedGame] = useState<number | null>(0);
+  const [progress, setProgress] = useState("");
+  const abortRef = useRef(false);
 
   async function handleRun() {
     setLoading(true);
     setData(null);
     setSelectedPuzzle(null);
+    abortRef.current = false;
+    const start = Date.now();
+
     try {
-      const res = await fetch("/api/extract-v2", {
+      // Step 1: Fetch games from server
+      setProgress("Fetching games from Chess.com...");
+      const fetchRes = await fetch("/api/extract-v2", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, maxGames }),
       });
-      const json = await res.json();
-      setData(json);
-      if (json.games?.[0]?.puzzles?.[0]) {
-        setSelectedPuzzle(json.games[0].puzzles[0]);
+      const fetchData = await fetchRes.json();
+
+      if (!fetchData.ok) {
+        setData({ ok: false, error: fetchData.error });
+        return;
+      }
+
+      const pgns: string[] = fetchData.pgns;
+      const sourceUserId: string | null = fetchData.sourceUserId;
+
+      // Step 2: Analyse each game client-side with browser WASM Stockfish
+      const gameResults: GameResult[] = [];
+      const storeGames: Array<{
+        gameUrl?: string;
+        puzzles: PuzzleCandidateV2[];
+        moveEvals: MoveEvalData[];
+      }> = [];
+      let totalPositions = 0;
+      let totalPuzzles = 0;
+
+      for (let g = 0; g < pgns.length; g++) {
+        if (abortRef.current) break;
+        setProgress(`Analysing game ${g + 1}/${pgns.length} with Stockfish WASM (depth 8)...`);
+
+        const result = await extractPuzzlesV2Client(
+          pgns[g],
+          username,
+          (posIdx, totalPos) => {
+            setProgress(
+              `Game ${g + 1}/${pgns.length} — position ${posIdx + 1}/${totalPos} ` +
+              `(${totalPuzzles + result?.candidates?.length || 0} puzzles so far)`
+            );
+          },
+        );
+
+        totalPositions += result.totalPositions;
+        totalPuzzles += result.candidates.length;
+
+        gameResults.push({
+          gameUrl: result.gameUrl,
+          accuracy: result.accuracy,
+          totalMoves: result.totalPositions,
+          puzzleCount: result.candidates.length,
+          stockfishAvailable: result.stockfishAvailable,
+          stockfishError: result.stockfishError,
+          puzzles: result.candidates.map((c) => ({
+            id: c.id,
+            moveNumber: c.moveNumber ?? 0,
+            solutionMoves: c.solutionMoves,
+            solutionDepth: c.solutionMoves.split(" ").length,
+            themes: c.themes,
+            rating: c.rating,
+            evalCp: c.evalCp ?? 0,
+            fen: c.solvingFen,
+          })),
+          moveEvals: result.moveEvals.map((e) => ({
+            move: e.moveNumber,
+            side: e.side,
+            cpl: e.cpl,
+            phase: e.phase,
+            played: e.movePlayed,
+            best: e.bestMove,
+          })),
+        });
+
+        storeGames.push({
+          gameUrl: result.gameUrl,
+          puzzles: result.candidates,
+          moveEvals: result.moveEvals,
+        });
+      }
+
+      // Step 3: Store results on server
+      setProgress("Storing results...");
+      const storeRes = await fetch("/api/extract-v2/store", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sourceUserId, games: storeGames }),
+      });
+      const storeData = await storeRes.json();
+
+      const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+
+      setData({
+        ok: true,
+        username,
+        gamesAnalysed: pgns.length,
+        totalPositionsAnalysed: totalPositions,
+        puzzlesExtracted: totalPuzzles,
+        puzzlesStored: storeData.stored ?? 0,
+        puzzlesSkipped: storeData.skipped ?? 0,
+        elapsedSeconds: parseFloat(elapsed),
+        games: gameResults,
+      });
+
+      if (gameResults[0]?.puzzles?.[0]) {
+        setSelectedPuzzle(gameResults[0].puzzles[0]);
       }
     } catch (err) {
       setData({ ok: false, error: String(err) });
     } finally {
       setLoading(false);
+      setProgress("");
+      terminateEngine();
     }
   }
 
@@ -95,7 +201,9 @@ export default function ExtractV2Admin() {
         <h1 style={{ fontFamily: "Georgia, serif", fontSize: 28, color: "#c8942a", margin: "0 0 4px" }}>
           Extract V2 — Test Console
         </h1>
-        <p style={{ fontSize: 13, color: "#888", margin: 0 }}>Internal testing page for v2 puzzle extraction pipeline</p>
+        <p style={{ fontSize: 13, color: "#888", margin: 0 }}>
+          Client-side extraction using browser WASM Stockfish (depth 8)
+        </p>
       </div>
 
       {/* Controls */}
@@ -131,13 +239,12 @@ export default function ExtractV2Admin() {
         </button>
       </div>
 
-      {/* Loading state */}
+      {/* Progress */}
       {loading && (
-        <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 32, textAlign: "center" }}>
-          <p style={{ fontSize: 16, color: "#c8942a", animation: "pulse 1.5s ease-in-out infinite" }}>
-            Analysing games with Stockfish (depth 12)...
+        <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 24, marginBottom: 24 }}>
+          <p style={{ fontSize: 14, color: "#c8942a", margin: 0, animation: "pulse 1.5s ease-in-out infinite" }}>
+            {progress || "Initialising..."}
           </p>
-          <p style={{ fontSize: 12, color: "#666", marginTop: 8 }}>This may take 30-60 seconds per game</p>
           <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
         </div>
       )}
@@ -150,7 +257,6 @@ export default function ExtractV2Admin() {
         </div>
       )}
 
-      {/* Results */}
       {/* Raw debug output */}
       {data && !loading && (
         <details style={{ marginBottom: 24 }}>
@@ -161,6 +267,7 @@ export default function ExtractV2Admin() {
         </details>
       )}
 
+      {/* Results */}
       {data?.ok && data.games && (
         <div>
           {/* Summary bar */}
@@ -269,6 +376,11 @@ function GameCard({
           <span style={{ fontSize: 14, fontWeight: 600 }}>Game {index + 1}</span>
           <AccuracyBadge value={game.accuracy.overall} />
           <span style={{ fontSize: 12, color: "#888" }}>{game.totalMoves} moves · {game.puzzleCount} puzzles</span>
+          {!game.stockfishAvailable && (
+            <span style={{ fontSize: 11, color: "#ef4444", background: "#ef444422", padding: "2px 8px", borderRadius: 4 }}>
+              Engine unavailable
+            </span>
+          )}
         </div>
         <span style={{ fontSize: 12, color: "#555" }}>{expanded ? "▼" : "▶"}</span>
       </button>
@@ -331,7 +443,7 @@ function GameCard({
               <p style={{ fontSize: 11, color: "#888", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 8px" }}>Centipawn loss per move</p>
               <div style={{ display: "flex", alignItems: "flex-end", gap: 1, height: 60 }}>
                 {game.moveEvals.map((e, i) => {
-                  const h = Math.min(e.cpl / 3, 60); // scale: 180cp = full height
+                  const h = Math.min(e.cpl / 3, 60);
                   const color = e.cpl >= 100 ? "#ef4444" : e.cpl >= 50 ? "#f59e0b" : "#4ade80";
                   return (
                     <div
