@@ -16,12 +16,14 @@ interface PuzzleResult {
   solutionDepth: number;
   themes: string;
   themeDescriptions?: string[];
-  type: "standard" | "move_ranking" | "opponent_threat";
+  type: "standard" | "move_ranking" | "opponent_threat" | "threat_bluff" | "retrograde_v2";
   candidateMoves?: string;
-  /** opponent_threat fields */
   parentPuzzleId?: string;
   opponentBestMove?: string;
   counterMove?: string;
+  threatBluffAnswer?: "real_threat" | "bluff";
+  decoyMoves?: string;
+  score?: number;
   rating: number;
   evalCp: number;
   fen: string;
@@ -156,6 +158,9 @@ export default function ExtractV2Admin() {
             parentPuzzleId: c.parentPuzzleId,
             opponentBestMove: c.opponentBestMove,
             counterMove: c.counterMove,
+            threatBluffAnswer: c.threatBluffAnswer,
+            decoyMoves: c.decoyMoves,
+            score: c.score,
             rating: c.rating,
             evalCp: c.evalCp ?? 0,
             fen: c.solvingFen,
@@ -349,6 +354,21 @@ export default function ExtractV2Admin() {
                           opponent_threat
                         </span>
                       )}
+                      {selectedPuzzle.type === "threat_bluff" && (
+                        <span style={{ fontSize: 10, background: selectedPuzzle.threatBluffAnswer === "bluff" ? "#a855f722" : "#ef444422", color: selectedPuzzle.threatBluffAnswer === "bluff" ? "#c084fc" : "#f87171", border: `1px solid ${selectedPuzzle.threatBluffAnswer === "bluff" ? "#a855f744" : "#ef444444"}`, borderRadius: 4, padding: "2px 8px" }}>
+                          {selectedPuzzle.threatBluffAnswer === "bluff" ? "bluff" : "real_threat"}
+                        </span>
+                      )}
+                      {selectedPuzzle.type === "retrograde_v2" && (
+                        <span style={{ fontSize: 10, background: "#06b6d422", color: "#22d3ee", border: "1px solid #06b6d444", borderRadius: 4, padding: "2px 8px" }}>
+                          retrograde
+                        </span>
+                      )}
+                      {selectedPuzzle.score != null && (
+                        <span style={{ fontSize: 10, background: "#33333366", color: "#aaa", borderRadius: 4, padding: "2px 8px" }}>
+                          score: {selectedPuzzle.score}
+                        </span>
+                      )}
                       {selectedPuzzle.themes.split(" ").map((t) => (
                         <span key={t} style={{ fontSize: 10, background: "#c8942a22", color: "#c8942a", border: "1px solid #c8942a44", borderRadius: 4, padding: "2px 8px" }}>
                           {t}
@@ -378,6 +398,30 @@ export default function ExtractV2Admin() {
                             Parent: {selectedPuzzle.parentPuzzleId}
                           </p>
                         )}
+                      </div>
+                    )}
+                    {selectedPuzzle.type === "threat_bluff" && (
+                      <div style={{ marginTop: 8, padding: "8px 10px", background: selectedPuzzle.threatBluffAnswer === "bluff" ? "#a855f710" : "#ef444410", border: `1px solid ${selectedPuzzle.threatBluffAnswer === "bluff" ? "#a855f733" : "#ef444433"}`, borderRadius: 6 }}>
+                        <p style={{ margin: "0 0 6px", fontWeight: 600, fontSize: 11, color: selectedPuzzle.threatBluffAnswer === "bluff" ? "#c084fc" : "#f87171" }}>
+                          {selectedPuzzle.threatBluffAnswer === "bluff" ? "Bluff — don't take the bait" : "Real threat — must respond"}
+                        </p>
+                        <p style={{ margin: "2px 0", fontSize: 11, color: "#ccc" }}>
+                          Answer: <span style={{ fontFamily: "monospace", color: "#4ade80" }}>{selectedPuzzle.solutionMoves}</span>
+                        </p>
+                      </div>
+                    )}
+                    {selectedPuzzle.type === "retrograde_v2" && selectedPuzzle.decoyMoves && (
+                      <div style={{ marginTop: 8, padding: "8px 10px", background: "#06b6d410", border: "1px solid #06b6d433", borderRadius: 6 }}>
+                        <p style={{ margin: "0 0 6px", fontWeight: 600, fontSize: 11, color: "#22d3ee" }}>Retrograde MCQ</p>
+                        <p style={{ margin: "2px 0", fontSize: 11, color: "#4ade80" }}>
+                          Correct: <span style={{ fontFamily: "monospace" }}>{selectedPuzzle.solutionMoves}</span>
+                        </p>
+                        <p style={{ margin: "4px 0 2px", fontSize: 10, color: "#888" }}>Decoys:</p>
+                        {(JSON.parse(selectedPuzzle.decoyMoves) as { uci: string; san: string }[]).map((d, i) => (
+                          <p key={i} style={{ margin: "1px 0", fontSize: 11, fontFamily: "monospace", color: "#f87171" }}>
+                            {d.san} ({d.uci})
+                          </p>
+                        ))}
                       </div>
                     )}
                     {selectedPuzzle.candidateMoves && (
@@ -487,7 +531,11 @@ function GameCard({
                   <div>
                     <span style={{ fontSize: 13, fontWeight: 500 }}>Move {p.moveNumber}</span>
                     <span style={{ fontSize: 11, color: "#888", marginLeft: 8 }}>
-                      {p.type === "opponent_threat" ? "threat" : p.type === "move_ranking" ? "stronger move" : `${p.solutionDepth} ply`} · {p.rating}r
+                      {p.type === "threat_bluff" ? (p.threatBluffAnswer === "bluff" ? "bluff" : "real threat")
+                        : p.type === "retrograde_v2" ? "retrograde"
+                        : p.type === "opponent_threat" ? "threat"
+                        : p.type === "move_ranking" ? "stronger move"
+                        : `${p.solutionDepth} ply`} · {p.rating}r{p.score != null ? ` · ${p.score}%` : ""}
                     </span>
                     <div style={{ display: "flex", gap: 3, marginTop: 4, flexWrap: "wrap" }}>
                       {p.type === "move_ranking" && (
@@ -498,6 +546,16 @@ function GameCard({
                       {p.type === "opponent_threat" && (
                         <span style={{ fontSize: 9, background: "#f9731622", color: "#fb923c", borderRadius: 3, padding: "1px 6px" }}>
                           opponent_threat
+                        </span>
+                      )}
+                      {p.type === "threat_bluff" && (
+                        <span style={{ fontSize: 9, background: p.threatBluffAnswer === "bluff" ? "#a855f722" : "#ef444422", color: p.threatBluffAnswer === "bluff" ? "#c084fc" : "#f87171", borderRadius: 3, padding: "1px 6px" }}>
+                          {p.threatBluffAnswer === "bluff" ? "bluff" : "real_threat"}
+                        </span>
+                      )}
+                      {p.type === "retrograde_v2" && (
+                        <span style={{ fontSize: 9, background: "#06b6d422", color: "#22d3ee", borderRadius: 3, padding: "1px 6px" }}>
+                          retrograde
                         </span>
                       )}
                       {p.themes.split(" ").filter(t => t !== "v2").map((t) => (

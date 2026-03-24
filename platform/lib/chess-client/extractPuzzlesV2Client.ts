@@ -25,11 +25,26 @@ const STRONGER_MOVE_MIN_CPL = 10; // don't flag near-perfect moves
 const WINNING_BOUNDARY = 150;  // above this = "winning"
 const EQUAL_BOUNDARY = 100;    // below this (and above -EQUAL_BOUNDARY) = "roughly equal"
 const LOSING_BOUNDARY = -150;  // below this = "losing"
+// Threat/bluff detection
+const THREAT_BLUFF_MIN_SWING = 80;     // opponent's move must create ≥80cp "apparent" danger
+const THREAT_BLUFF_BAIT_PENALTY = 60;  // taking bait must lose ≥60cp vs correct response to be a bluff
+const MAX_THREAT_BLUFF_PER_GAME = 2;
+
+// Retrograde detection
+const RETROGRADE_MIN_EVAL_SHIFT = 50;  // previous move must have caused ≥50cp shift
+const RETROGRADE_DECOY_COUNT = 3;      // number of wrong-answer decoy moves
+const MAX_RETROGRADE_PER_GAME = 2;
+
+// Position scoring: minimum score to keep a puzzle (0-100)
+const MIN_PUZZLE_SCORE = 40;
+
 const MAX_EXTENSION_PLY = 10;
 const FORCING_ADVANTAGE_CP = 150;
 const WINNING_THRESHOLD_CP = 300;
 
 // ─── Types ──────────────────────────────────────────────────────────────────
+
+export type PuzzleType = "standard" | "move_ranking" | "opponent_threat" | "threat_bluff" | "retrograde_v2";
 
 export interface PuzzleCandidateV2 {
   id: string;
@@ -39,11 +54,10 @@ export interface PuzzleCandidateV2 {
   solutionMoves: string;
   rating: number;
   themes: string;
-  /** "standard" for missed tactics, "move_ranking" for stronger-move-available, "opponent_threat" for tactical threats after suboptimal play */
-  type: "standard" | "move_ranking" | "opponent_threat";
+  type: PuzzleType;
   /** JSON stringified CandidateMove[] for move_ranking puzzles */
   candidateMoves?: string;
-  /** Detailed theme descriptions for verification, e.g. "pin — bishop pinning knight to king" */
+  /** Detailed theme descriptions for verification */
   themeDescriptions?: string[];
   /** True if the move deviated from opening database theory (move_ranking only) */
   outOfTheory?: boolean;
@@ -53,6 +67,12 @@ export interface PuzzleCandidateV2 {
   opponentBestMove?: string;
   /** User's best counter-response UCI (opponent_threat step 2 answer) */
   counterMove?: string;
+  /** "real_threat" | "bluff" — for threat_bluff puzzles */
+  threatBluffAnswer?: "real_threat" | "bluff";
+  /** JSON stringified decoy moves for retrograde_v2 MCQ [{uci,san,resultFen}] */
+  decoyMoves?: string;
+  /** Extraction confidence score (0–100). Used to pick best puzzle when position qualifies for multiple types. */
+  score?: number;
   gameUrl?: string;
   opponentUsername?: string;
   gameDate?: string;
@@ -969,6 +989,241 @@ export async function extractPuzzlesV2Client(
       }
     } catch (err) {
       console.warn(`[V2 Extract] opponent_threat detection failed for move ${me.moveNumber}:`, err);
+    }
+  }
+
+  // ── Threat/bluff detection ──
+  // Look for opponent moves that create apparent danger. Is it a real threat
+  // or a trap/bluff that the player should ignore?
+  const opponentSide: "white" | "black" = (gameContext.playerColor === "white" ? "black" : "white");
+  const opponentMoveEvals = moveEvals.filter((e) => e.side === opponentSide);
+  let threatBluffCount = 0;
+
+  for (const oe of opponentMoveEvals) {
+    if (threatBluffCount >= MAX_THREAT_BLUFF_PER_GAME) break;
+
+    // We need the position AFTER the opponent's move (player to respond)
+    // and the eval shift caused by the opponent's move
+    const posIdx = positions.findIndex((_p, idx) => {
+      if (idx === 0) return false;
+      const side: "white" | "black" = positions[idx - 1].fen.split(" ")[1] === "w" ? "white" : "black";
+      const mn = Math.floor((idx - 1) / 2) + 1;
+      return side === oe.side && mn === oe.moveNumber;
+    });
+    if (posIdx < 1 || posIdx >= positions.length) continue;
+
+    const fenBeforeOpMove = positions[posIdx - 1].fen;
+    const fenAfterOpMove = positions[posIdx].fen;
+    const opMoveUci = positions[posIdx - 1].uci;
+
+    // The opponent's move must create "apparent danger" — a big eval swing from
+    // the opponent's perspective, suggesting an aggressive/tactical move
+    if (oe.cpl > 30) continue; // opponent played badly — not a threat
+    const swing = Math.abs(oe.bestMoveCp - oe.evalCp);
+    if (swing < THREAT_BLUFF_MIN_SWING) continue; // not dramatic enough
+
+    // Check: what does the opponent's move look like?
+    // Captures, checks, pieces moving toward king = "apparent threat"
+    try {
+      const checkChess = new Chess(fenBeforeOpMove);
+      const moveResult = checkChess.move({
+        from: opMoveUci.slice(0, 2), to: opMoveUci.slice(2, 4),
+        promotion: opMoveUci[4] || undefined,
+      });
+      if (!moveResult) continue;
+
+      const isCapture = !!moveResult.captured;
+      const isCheck = checkChess.isCheck();
+      const isSacrifice = isCapture && oe.evalCp > oe.bestMoveCp; // gave up material but position is fine
+
+      if (!isCapture && !isCheck && !isSacrifice) continue; // not visually threatening
+
+      // Now analyse: what happens if the player responds to the "threat" naively
+      // vs correctly?
+      const multiPv = await analyzePositionMultiPV(fenAfterOpMove, 3, ANALYSIS_DEPTH);
+      if (multiPv.length < 2) continue;
+
+      const bestResponse = multiPv[0]; // correct response
+      // "Naive" response: the most tempting-looking bad move (usually recapture)
+      const naiveResponses = multiPv.slice(1);
+      const baitPenalty = bestResponse.cp - (naiveResponses[0]?.cp ?? bestResponse.cp);
+
+      // Determine: bluff or real threat?
+      let answer: "bluff" | "real_threat";
+      let tags: string[] = [];
+      let description: string;
+
+      if (baitPenalty >= THREAT_BLUFF_BAIT_PENALTY) {
+        // Taking the bait / panicking costs material → it's a bluff
+        answer = "bluff";
+        tags = isSacrifice ? ["sacrifice_lure"] : isCheck ? ["check_bluff"] : ["trap"];
+        const bestSan = (() => {
+          try { const c = new Chess(fenAfterOpMove); const r = c.move({ from: bestResponse.move.slice(0, 2), to: bestResponse.move.slice(2, 4), promotion: bestResponse.move[4] || undefined }); return r?.san ?? bestResponse.move; } catch { return bestResponse.move; }
+        })();
+        description = `opponent played ${moveResult.san} — looks dangerous but the correct response is ${bestSan}, not ${naiveResponses[0]?.move ?? "panicking"}`;
+      } else if (bestResponse.cp <= -50) {
+        // Even the best response leaves us worse — real threat
+        answer = "real_threat";
+        tags = isCheck ? ["real_threat", "check"] : isCapture ? ["real_threat", "fork_setup"] : ["real_threat"];
+        const bestSan = (() => {
+          try { const c = new Chess(fenAfterOpMove); const r = c.move({ from: bestResponse.move.slice(0, 2), to: bestResponse.move.slice(2, 4), promotion: bestResponse.move[4] || undefined }); return r?.san ?? bestResponse.move; } catch { return bestResponse.move; }
+        })();
+        description = `opponent played ${moveResult.san} — this is a genuine threat. Best defense: ${bestSan}`;
+      } else {
+        continue; // ambiguous — neither clearly bluff nor clearly dangerous
+      }
+
+      // Score: higher for clearer signals
+      const signalStrength = answer === "bluff" ? baitPenalty : Math.abs(bestResponse.cp);
+      const puzzleScore = Math.min(100, Math.round(40 + signalStrength / 3));
+      if (puzzleScore < MIN_PUZZLE_SCORE) continue;
+
+      candidates.push({
+        id: clientId(),
+        fen: fenBeforeOpMove,
+        solvingFen: fenAfterOpMove,
+        lastMove: opMoveUci,
+        solutionMoves: bestResponse.move,
+        rating: Math.min(1200 + Math.round(signalStrength / 2), 1800),
+        themes: tags.join(" "),
+        themeDescriptions: [description],
+        type: "threat_bluff",
+        threatBluffAnswer: answer,
+        score: puzzleScore,
+        gameUrl,
+        ...gameContext,
+        moveNumber: oe.moveNumber,
+        evalCp: bestResponse.cp,
+      });
+      threatBluffCount++;
+    } catch (err) {
+      console.warn(`[V2 Extract] threat_bluff detection failed for move ${oe.moveNumber}:`, err);
+    }
+  }
+
+  // ── Retrograde detection ──
+  // Find positions where the previous move caused a significant eval shift or
+  // structural change that isn't immediately obvious. The puzzle asks: "what
+  // was the last move?"
+  let retrogradeCount = 0;
+
+  for (let i = 2; i < positions.length && retrogradeCount < MAX_RETROGRADE_PER_GAME; i++) {
+    // We need at least 2 prior positions to have the move and a "before" position
+    const fenBefore = positions[i - 1].fen; // position before the move
+    const fenAfter = positions[i].fen;      // position after the move
+    const moveUci = positions[i - 1].uci;   // the move itself
+
+    // Only consider the player's moves (the lesson is about what happened to them)
+    const moveSide: "white" | "black" = fenBefore.split(" ")[1] === "w" ? "white" : "black";
+    const moveNum = Math.floor((i - 1) / 2) + 1;
+
+    // Skip very early opening moves (boring) and very late endgame (limited pieces)
+    if (moveNum < 5 || moveNum > 40) continue;
+
+    // Find this move's eval data
+    const meVal = moveEvals.find((e) => e.side === moveSide && e.moveNumber === moveNum);
+    if (!meVal) continue;
+
+    // The move must have caused a meaningful eval shift
+    const evalShift = Math.abs(meVal.bestMoveCp - meVal.evalCp);
+    if (evalShift < RETROGRADE_MIN_EVAL_SHIFT) continue;
+
+    // Detect structural tags
+    try {
+      const beforeChess = new Chess(fenBefore);
+      const moveResult = beforeChess.move({
+        from: moveUci.slice(0, 2), to: moveUci.slice(2, 4),
+        promotion: moveUci[4] || undefined,
+      });
+      if (!moveResult) continue;
+
+      const retroTags: string[] = [];
+      const isCheck = beforeChess.isCheck();
+      const isCapture = !!moveResult.captured;
+      const isPawnMove = moveResult.piece === "p";
+      const movedToRank = parseInt(moveResult.to[1]);
+      const isKingMove = moveResult.piece === "k";
+
+      // Tag detection
+      if (isPawnMove && (movedToRank === 4 || movedToRank === 5)) retroTags.push("pawn_break");
+      if (moveResult.piece === "n" || moveResult.piece === "b" || moveResult.piece === "r" || moveResult.piece === "q") {
+        // Piece activation: piece moves from back rank to active square
+        const fromRank = parseInt(moveResult.from[1]);
+        if ((moveSide === "white" && fromRank <= 2 && movedToRank >= 4) ||
+            (moveSide === "black" && fromRank >= 7 && movedToRank <= 5)) {
+          retroTags.push("piece_activation");
+        }
+      }
+      if (isKingMove) retroTags.push("king_exposure");
+      if (isCheck && !isCapture) retroTags.push("zwischenzug");
+      if (!isCapture && !isCheck && evalShift >= 100) retroTags.push("quiet_move");
+
+      if (retroTags.length === 0 && evalShift < 80) continue; // not interesting enough without tags
+
+      // Generate decoy moves (plausible but wrong answers for MCQ)
+      const allLegalMoves = new Chess(fenBefore).moves({ verbose: true });
+      const excluded = new Set([moveUci]);
+      const decoys: { uci: string; san: string; resultFen: string }[] = [];
+
+      // Score decoys by plausibility (captures, checks, same-piece moves score higher)
+      const decoyCandidates = allLegalMoves
+        .filter((m) => {
+          const uci = `${m.from}${m.to}${m.promotion ?? ""}`;
+          return !excluded.has(uci);
+        })
+        .map((m) => {
+          const uci = `${m.from}${m.to}${m.promotion ?? ""}`;
+          let plausibility = Math.random();
+          if (m.captured) plausibility += 2;
+          if (m.san.includes("+") || m.san.includes("#")) plausibility += 1.5;
+          if (m.piece === moveResult.piece) plausibility += 1;
+          if (m.from === moveResult.from) plausibility += 0.5; // same piece
+          return { uci, san: m.san, plausibility, move: m };
+        })
+        .sort((a, b) => b.plausibility - a.plausibility);
+
+      for (const dc of decoyCandidates.slice(0, RETROGRADE_DECOY_COUNT)) {
+        const preview = new Chess(fenBefore);
+        preview.move({ from: dc.move.from, to: dc.move.to, promotion: dc.move.promotion });
+        decoys.push({ uci: dc.uci, san: dc.san, resultFen: preview.fen() });
+      }
+
+      if (decoys.length < 2) continue; // need enough wrong answers
+
+      // Score: structural tags + eval shift + not a simple recapture
+      let puzzleScore = 30;
+      puzzleScore += Math.min(30, evalShift / 5);
+      puzzleScore += retroTags.length * 10;
+      if (!isCapture) puzzleScore += 10; // non-captures are harder to spot
+      if (retroTags.includes("quiet_move")) puzzleScore += 15;
+      puzzleScore = Math.min(100, Math.round(puzzleScore));
+      if (puzzleScore < MIN_PUZZLE_SCORE) continue;
+
+      const lastMove = i >= 2 ? positions[i - 2].uci : "";
+      const moveSan = moveResult.san;
+
+      candidates.push({
+        id: clientId(),
+        fen: fenBefore,
+        solvingFen: fenAfter, // show the position AFTER the mystery move
+        lastMove,
+        solutionMoves: moveUci, // the correct answer is "what was just played"
+        rating: Math.min(1000 + retroTags.length * 100 + Math.round(evalShift / 3), 1600),
+        themes: retroTags.join(" "),
+        themeDescriptions: [
+          `the key move was ${moveSan} (${retroTags.join(", ") || "eval shift " + evalShift + "cp"})`,
+        ],
+        type: "retrograde_v2",
+        decoyMoves: JSON.stringify(decoys),
+        score: puzzleScore,
+        gameUrl,
+        ...gameContext,
+        moveNumber: moveNum,
+        evalCp: meVal.evalCp,
+      });
+      retrogradeCount++;
+    } catch (err) {
+      console.warn(`[V2 Extract] retrograde detection failed for move ${moveNum}:`, err);
     }
   }
 

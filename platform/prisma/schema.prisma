@@ -21,7 +21,7 @@ model Puzzle {
   rating        Int
   /// Space-separated Lichess theme tags
   themes        String   @default("")
-  /// "standard" | "retrograde" | "opponent_prediction" | "move_ranking" | "weakness_spot" | "opponent_threat"
+  /// "standard" | "retrograde" | "opponent_prediction" | "move_ranking" | "weakness_spot" | "opponent_threat" | "threat_bluff" | "retrograde_v2"
   type          String   @default("standard")
   /// JSON: CandidateMove[] — populated for move_ranking puzzles
   candidateMoves    String?
@@ -31,6 +31,12 @@ model Puzzle {
   opponentBestMove  String?
   /// User's best counter-response UCI (opponent_threat step 2 answer)
   counterMove       String?
+  /// "real_threat" | "bluff" — answer for threat_bluff puzzles
+  threatBluffAnswer String?
+  /// JSON: decoy moves for retrograde_v2 MCQ [{uci,san,resultFen}]
+  decoyMoves        String?
+  /// Extraction confidence score (0–100)
+  puzzleScore       Int?
   /// JSON: string[] of algebraic squares, e.g. ["d5","f7"] — for weakness_spot puzzles
   weaknessSquares   String?
   /// Explanation text revealed after submitting a weakness_spot puzzle

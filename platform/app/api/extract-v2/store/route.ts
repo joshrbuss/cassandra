@@ -30,6 +30,9 @@ export async function POST(request: Request) {
           parentPuzzleId?: string;
           opponentBestMove?: string;
           counterMove?: string;
+          threatBluffAnswer?: string;
+          decoyMoves?: string;
+          score?: number;
           gameUrl?: string;
           opponentUsername?: string;
           gameDate?: string;
@@ -103,6 +106,9 @@ export async function POST(request: Request) {
             parentPuzzleId: c.parentPuzzleId ?? null,
             opponentBestMove: c.opponentBestMove ?? null,
             counterMove: c.counterMove ?? null,
+            threatBluffAnswer: c.threatBluffAnswer ?? null,
+            decoyMoves: c.decoyMoves ?? null,
+            puzzleScore: c.score ?? null,
             source: "user_import",
             sourceUserId: sourceUserId ?? undefined,
             isPublic: false,
