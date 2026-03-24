@@ -99,7 +99,8 @@ const OPENING_THEORY_MOVE_LIMIT = 15; // only check moves 1–15
 const OPENING_THEORY_MIN_GAMES = 100; // move must have ≥100 games to count as "known theory"
 
 interface OpeningDbMove {
-  uci: string;
+  uci?: string;
+  san?: string;
   white: number;
   draws: number;
   black: number;
@@ -107,6 +108,23 @@ interface OpeningDbMove {
 
 interface OpeningDbResponse {
   moves: OpeningDbMove[];
+}
+
+/**
+ * Convert a UCI move string (e.g. "d7d5") to SAN (e.g. "d5") using chess.js.
+ * Returns null if the move is invalid for the position.
+ */
+function uciToSan(fen: string, uci: string): string | null {
+  try {
+    const c = new Chess(fen);
+    const from = uci.slice(0, 2);
+    const to = uci.slice(2, 4);
+    const promotion = uci.length > 4 ? uci[4] : undefined;
+    const result = c.move({ from, to, promotion });
+    return result ? result.san : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -123,29 +141,37 @@ function createOpeningDbCache() {
       return cache.get(fen)!;
     }
 
-    try {
-      const url = `https://explorer.lichess.ovh/lichess?fen=${encodeURIComponent(fen)}&topGames=0&recentGames=0`;
-      console.log(`[OpeningDB] Fetching: ${url}`);
-      const res = await fetch(url);
-      if (!res.ok) {
-        console.warn(`[OpeningDB] HTTP ${res.status} for FEN: ${fen}`);
-        cache.set(fen, null);
-        return null;
+    // Try explorer.lichess.org first (current), fall back to .ovh (legacy)
+    const urls = [
+      `https://explorer.lichess.org/lichess?fen=${encodeURIComponent(fen)}&topGames=0&recentGames=0`,
+      `https://explorer.lichess.ovh/lichess?fen=${encodeURIComponent(fen)}&topGames=0&recentGames=0`,
+    ];
+
+    for (const url of urls) {
+      try {
+        console.log(`[OpeningDB] Fetching: ${url}`);
+        const res = await fetch(url);
+        if (!res.ok) {
+          console.warn(`[OpeningDB] HTTP ${res.status} from ${new URL(url).hostname}`);
+          continue; // try next URL
+        }
+        const data: OpeningDbResponse = await res.json();
+        console.log(`[OpeningDB] Response for FEN: ${fen}`);
+        console.log(`[OpeningDB]   Moves returned: ${data.moves.length}`);
+        for (const m of data.moves.slice(0, 10)) {
+          const total = m.white + m.draws + m.black;
+          console.log(`[OpeningDB]   uci="${m.uci}" san="${m.san}": ${total} games`);
+        }
+        cache.set(fen, data);
+        return data;
+      } catch (err) {
+        console.error(`[OpeningDB] Fetch error from ${new URL(url).hostname}:`, err);
       }
-      const data: OpeningDbResponse = await res.json();
-      console.log(`[OpeningDB] Response for FEN: ${fen}`);
-      console.log(`[OpeningDB]   Moves returned: ${data.moves.length}`);
-      for (const m of data.moves.slice(0, 10)) {
-        const total = m.white + m.draws + m.black;
-        console.log(`[OpeningDB]   ${m.uci}: ${total} games (W:${m.white} D:${m.draws} B:${m.black})`);
-      }
-      cache.set(fen, data);
-      return data;
-    } catch (err) {
-      console.error(`[OpeningDB] Fetch error for FEN: ${fen}`, err);
-      cache.set(fen, null);
-      return null;
     }
+
+    console.warn(`[OpeningDB] All endpoints failed for FEN: ${fen}`);
+    cache.set(fen, null);
+    return null;
   };
 }
 
@@ -153,6 +179,9 @@ function createOpeningDbCache() {
  * Check if a move (UCI) is in known opening theory for the given position.
  * Returns true if the move appears in the Lichess opening database with
  * at least OPENING_THEORY_MIN_GAMES total games.
+ *
+ * Matches by UCI first, then falls back to SAN comparison to handle
+ * format differences between our pipeline and the Lichess API.
  */
 async function isMoveInTheory(
   fen: string,
@@ -166,16 +195,32 @@ async function isMoveInTheory(
     return false;
   }
 
-  const entry = data.moves.find((m) => m.uci === moveUci);
+  // 1) Try direct UCI match
+  let entry = data.moves.find((m) => m.uci === moveUci);
+
+  // 2) Fallback: convert our UCI to SAN and match against the san field
   if (!entry) {
-    const availableUcis = data.moves.map((m) => m.uci).join(", ");
-    console.log(`[OpeningDB]   → Move "${moveUci}" NOT FOUND in DB moves: [${availableUcis}]`);
+    const san = uciToSan(fen, moveUci);
+    console.log(`[OpeningDB]   UCI "${moveUci}" not found directly, converted to SAN="${san}"`);
+    if (san) {
+      entry = data.moves.find((m) => m.san === san);
+    }
+  }
+
+  // 3) Fallback: try matching against UCI without promotion suffix (e.g. "e7e8q" → "e7e8")
+  if (!entry && moveUci.length > 4) {
+    entry = data.moves.find((m) => m.uci === moveUci.slice(0, 4));
+  }
+
+  if (!entry) {
+    const available = data.moves.map((m) => `${m.uci ?? "?"}/${m.san ?? "?"}`).join(", ");
+    console.log(`[OpeningDB]   → Move "${moveUci}" NOT FOUND. Available: [${available}]`);
     return false;
   }
 
   const totalGames = entry.white + entry.draws + entry.black;
   const inTheory = totalGames >= OPENING_THEORY_MIN_GAMES;
-  console.log(`[OpeningDB]   → Move "${moveUci}" found: ${totalGames} games (threshold: ${OPENING_THEORY_MIN_GAMES}) → ${inTheory ? "IN THEORY (skip)" : "OUT OF THEORY (flag)"}`);
+  console.log(`[OpeningDB]   → Matched (uci="${entry.uci}" san="${entry.san}"): ${totalGames} games (threshold: ${OPENING_THEORY_MIN_GAMES}) → ${inTheory ? "IN THEORY (skip)" : "OUT OF THEORY (flag)"}`);
   return inTheory;
 }
 
