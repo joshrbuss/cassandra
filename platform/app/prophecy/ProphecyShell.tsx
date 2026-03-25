@@ -203,15 +203,20 @@ export default function ProphecyShell({
     const expected = solution[moveIndex];
 
     if (uci !== expected) {
+      // Wrong move — undo immediately to avoid react-chessboard DOM crash.
+      // Return false so the library snaps the piece back; flash squares red.
       hadWrongMove.current = true;
-      setFen(chess.fen());
+      chess.undo();
+      setLastSquares({
+        [sourceSquare]: { backgroundColor: "rgba(248,113,113,0.5)" },
+        [targetSquare]: { backgroundColor: "rgba(248,113,113,0.5)" },
+      });
       setPhase("wrong");
       setTimeout(() => {
-        chess.undo();
-        setFen(chess.fen());
+        setLastSquares({});
         setPhase("playing");
       }, 800);
-      return true;
+      return false;
     }
 
     setHintLevel(0);
@@ -249,12 +254,16 @@ export default function ProphecyShell({
       const expected = solution[moveIndex];
 
       if (uci !== expected) {
+        // Wrong move — undo immediately, flash squares red
         hadWrongMove.current = true;
-        setFen(chess.fen());
+        chess.undo();
+        setLastSquares({
+          [selectedSquare]: { backgroundColor: "rgba(248,113,113,0.5)" },
+          [square]: { backgroundColor: "rgba(248,113,113,0.5)" },
+        });
         setPhase("wrong");
         setTimeout(() => {
-          chess.undo();
-          setFen(chess.fen());
+          setLastSquares({});
           setPhase("playing");
         }, 800);
         return;
