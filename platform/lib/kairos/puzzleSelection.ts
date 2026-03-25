@@ -1,5 +1,5 @@
 import type { KairosPuzzle, KairosCategory } from "./types";
-import puzzleData from "../../data/cassandra_puzzle_queue_v4_final.json";
+import puzzleData from "./puzzleData";
 
 // ─── Category mapping ────────────────────────────────────────────────────────
 
@@ -79,7 +79,7 @@ function seededShuffle<T>(arr: T[], rng: () => number): T[] {
 // ─── Main selection function ─────────────────────────────────────────────────
 
 export function selectKairosPuzzles(sessionId: string): KairosPuzzle[] {
-  const allPuzzles = (puzzleData as { puzzles: RawPuzzle[] }).puzzles;
+  const allPuzzles = (puzzleData as unknown as { puzzles: RawPuzzle[] }).puzzles;
   const rng = mulberry32(hashString(sessionId));
 
   // Group by category
