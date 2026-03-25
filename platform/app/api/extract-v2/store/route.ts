@@ -48,6 +48,11 @@ export async function POST(request: Request) {
           moveNumber?: number;
           evalCp?: number;
           playerColor?: string;
+          defensiveMove?: string;
+          engineAgrees?: boolean;
+          engineMove?: string;
+          pieceStationary?: number;
+          mobilityScore?: number;
         }>;
         moveEvals: Array<{
           moveNumber: number;
@@ -135,6 +140,11 @@ export async function POST(request: Request) {
             moveNumber: c.moveNumber,
             evalCp: c.evalCp,
             playerColor: c.playerColor,
+            defensiveMove: c.defensiveMove ?? null,
+            engineAgrees: c.engineAgrees ?? null,
+            engineMove: c.engineMove ?? null,
+            pieceStationary: c.pieceStationary ?? null,
+            mobilityScore: c.mobilityScore ?? null,
             subtype: "v2",
           },
         });

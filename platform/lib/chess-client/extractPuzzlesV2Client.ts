@@ -38,6 +38,17 @@ const MAX_RETROGRADE_PER_GAME = 2;
 // Position scoring: minimum score to keep a puzzle (0-100)
 const MIN_PUZZLE_SCORE = 40;
 
+// Counter puzzle detection
+const COUNTER_THREAT_MIN_SHIFT = 50;   // opponent's move must create ≥50cp eval shift against player
+const COUNTER_GAP_MIN = 60;            // counter-attack must be ≥60cp better than best defensive move
+const MAX_COUNTER_PER_GAME = 2;
+
+// Bad piece detection
+const BAD_PIECE_STATIONARY_MIN = 5;   // piece must be on same square for ≥5 consecutive moves
+const BAD_PIECE_MOBILITY_MAX = 3;     // piece must have ≤3 legal squares
+const BAD_PIECE_DECIDED_EVAL = 300;   // skip positions where eval > ±300cp (decided game)
+const MAX_BAD_PIECE_PER_GAME = 1;     // max 1 bad piece puzzle per game
+
 // ─── Position classifier thresholds (configurable) ──────────────────────────
 const CLASSIFIER_MULTIPV = 5;          // number of PV lines for entropy calc
 const CLASSIFIER_DEPTH = ANALYSIS_DEPTH; // reuse pipeline depth
@@ -52,7 +63,7 @@ const WINNING_THRESHOLD_CP = 300;
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
-export type PuzzleType = "standard" | "move_ranking" | "opponent_threat" | "threat_bluff" | "retrograde_v2";
+export type PuzzleType = "standard" | "move_ranking" | "opponent_threat" | "threat_bluff" | "retrograde_v2" | "bad_piece" | "counter";
 
 export type PositionClassificationType = "forcing" | "quiet_best" | "positional" | "chaotic";
 
@@ -120,6 +131,20 @@ export interface PuzzleCandidateV2 {
   targetSquares?: string[];
   /** e.g. "Bb3" for identify_piece puzzles */
   targetPiece?: string | null;
+
+  // ── Counter puzzle fields ──
+  /** The "natural" defensive move that the player would instinctively play (wrong answer) */
+  defensiveMove?: string | null;
+
+  // ── Bad piece puzzle fields ──
+  /** Whether Stockfish's overall best move is the same as the piece activation move */
+  engineAgrees?: boolean;
+  /** Stockfish top move if different from the piece activation solution */
+  engineMove?: string | null;
+  /** How many consecutive moves the bad piece has been stationary */
+  pieceStationary?: number;
+  /** Number of legal squares available to the bad piece */
+  mobilityScore?: number;
 
   // ── Context ──
   sourceGameId?: string;
@@ -725,22 +750,584 @@ export async function extractProphylaxisPuzzle(
 }
 
 /**
- * Bad-piece puzzle extractor (stub).
+ * Counter puzzle extractor.
  *
- * Trigger: a piece has a mobility score below a threshold and has been
- * stationary (same square) for 5+ consecutive moves.
+ * Detects positions where the opponent just made a threatening move, but the
+ * correct response is a counter-attack rather than defense. Trains the player
+ * to ask "what if I ignore this threat and hit back?"
  *
- * The idea: identify the worst-placed piece and find the move that
- * improves it. Teaches piece activity awareness.
+ * Detection:
+ * 1. Opponent's last move created a genuine threat (≥50cp eval shift against player)
+ * 2. Stockfish best response is an offensive move (does not address the threat directly)
+ * 3. The "natural" defensive move is ≥60cp worse than the counter-attack
+ */
+export async function extractCounterPuzzle(
+  fenBeforeOpMove: string,
+  fenAfterOpMove: string,
+  opMoveUci: string,
+  evalShift: number,
+  moveNumber: number,
+  gameUrl: string | undefined,
+  gameContext: Record<string, unknown>,
+): Promise<PuzzleCandidateV2 | null> {
+  // Must be a genuine threat
+  if (evalShift < COUNTER_THREAT_MIN_SHIFT) return null;
+
+  const chess = new Chess(fenAfterOpMove);
+
+  // Determine what the opponent's move threatens:
+  // - Which player pieces are now attacked by the piece on its new square?
+  // - Is the player in check?
+  const inCheck = chess.inCheck();
+  const opTo = opMoveUci.slice(2, 4) as Square;
+  const opFrom = opMoveUci.slice(0, 2) as Square;
+  const attackingPiece = chess.get(opTo);
+
+  // Identify threatened squares — the squares the opponent's piece attacks
+  // that contain our pieces, plus discovered attacks from the vacated square.
+  const playerColor = chess.turn(); // player to move
+  const oppColor: Color = playerColor === "w" ? "b" : "w";
+  const board = getBoard(chess);
+
+  const threatenedSquares = new Set<string>();
+
+  if (attackingPiece && attackingPiece.color === oppColor) {
+    const attacked = getAttackedSquares(chess, opTo, oppColor, board);
+    for (const sq of attacked) {
+      const p = chess.get(sq);
+      if (p && p.color === playerColor) {
+        threatenedSquares.add(sq);
+      }
+    }
+  }
+
+  // Discovered attacks: pieces that can now attack through the vacated square
+  // Check each opponent sliding piece that might have been unblocked
+  const discoveredAttackers = findFriendlySlidingPiecesThrough(board, opFrom, oppColor);
+  for (const { sq: sliderSq } of discoveredAttackers) {
+    const attacked = getAttackedSquares(chess, sliderSq, oppColor, board);
+    for (const sq of attacked) {
+      const p = chess.get(sq);
+      if (p && p.color === playerColor) {
+        threatenedSquares.add(sq);
+      }
+    }
+  }
+
+  // Need at least one threatened piece (or check) to qualify
+  if (threatenedSquares.size === 0 && !inCheck) return null;
+
+  // Get MultiPV to find best move + alternatives
+  const multiPv = await analyzePositionMultiPV(fenAfterOpMove, 5, ANALYSIS_DEPTH);
+  if (multiPv.length < 2) return null;
+
+  const bestMove = multiPv[0];
+
+  // Classify each MultiPV move as "defensive" or "offensive"
+  // Defensive: addresses the threat directly
+  //   - Moves a threatened piece away
+  //   - Captures the attacker on opTo
+  //   - Interposes (blocks an attack line)
+  //   - If in check: king moves to non-attacking square, simple blocks
+  // Offensive: everything else (ignores the threat, plays elsewhere)
+
+  function isDefensiveMove(moveUci: string): boolean {
+    const from = moveUci.slice(0, 2);
+    const to = moveUci.slice(2, 4);
+
+    // Moving a threatened piece away from danger
+    if (threatenedSquares.has(from)) return true;
+
+    // Capturing the attacking piece
+    if (to === opTo) return true;
+
+    // Interposing: moving a piece to block the attack line between
+    // attacker and threatened piece. For simplicity, check if the
+    // destination square is between the attacker and any threatened piece.
+    if (attackingPiece && ["b", "r", "q"].includes(attackingPiece.type)) {
+      for (const tSq of threatenedSquares) {
+        if (isOnLineBetween(opTo, tSq as Square, to as Square)) return true;
+      }
+    }
+
+    // If in check, king moves are inherently defensive
+    if (inCheck) {
+      const piece = chess.get(from as Square);
+      if (piece && piece.type === "k") return true;
+    }
+
+    return false;
+  }
+
+  // Check if the best move is offensive (the core requirement)
+  if (isDefensiveMove(bestMove.move)) return null; // best move IS defensive — no counter puzzle
+
+  // Find the best defensive move from the remaining PV lines
+  let bestDefensive: EngineResult | null = null;
+  for (const pv of multiPv) {
+    if (isDefensiveMove(pv.move)) {
+      bestDefensive = pv;
+      break; // MultiPV is sorted by eval, first defensive = best defensive
+    }
+  }
+
+  // If there's no defensive move in top 5, we can't show a meaningful wrong answer.
+  // Expand search: look through all legal moves to find the most natural defensive move.
+  if (!bestDefensive) {
+    const allMoves = chess.moves({ verbose: true });
+    const defensiveMoves = allMoves.filter((m) => {
+      const uci = `${m.from}${m.to}${m.promotion ?? ""}`;
+      return isDefensiveMove(uci);
+    });
+    if (defensiveMoves.length === 0) return null; // no defensive moves exist — position is too forcing
+
+    // Pick the most "natural" defensive move (captures of attacker first, then
+    // moves of high-value threatened pieces)
+    defensiveMoves.sort((a, b) => {
+      // Capturing the attacker is the most natural
+      if (a.to === opTo && b.to !== opTo) return -1;
+      if (b.to === opTo && a.to !== opTo) return 1;
+      // Moving a more valuable piece is more natural
+      const aVal = pieceValue(a.piece);
+      const bVal = pieceValue(b.piece);
+      return bVal - aVal;
+    });
+
+    // Evaluate the most natural defensive move
+    const topDefensive = defensiveMoves[0];
+    const defUci = `${topDefensive.from}${topDefensive.to}${topDefensive.promotion ?? ""}`;
+    const testChess = new Chess(fenAfterOpMove);
+    try {
+      testChess.move({ from: topDefensive.from, to: topDefensive.to, promotion: topDefensive.promotion });
+      const defEval = await analyzePosition(testChess.fen(), ANALYSIS_DEPTH);
+      if (defEval) {
+        bestDefensive = { move: defUci, cp: -defEval.cp }; // flip perspective
+      }
+    } catch {
+      return null;
+    }
+  }
+
+  if (!bestDefensive) return null;
+
+  // The counter-attack must be significantly better than defense
+  const counterGap = bestMove.cp - bestDefensive.cp;
+  if (counterGap < COUNTER_GAP_MIN) return null;
+
+  // Extend the counter-attack into a forcing sequence
+  const solutionMoves = await extendForcingSequence(fenAfterOpMove, bestMove.move);
+
+  // Get SANs for readable descriptions
+  const counterSan = (() => {
+    try {
+      const c = new Chess(fenAfterOpMove);
+      const r = c.move({ from: bestMove.move.slice(0, 2), to: bestMove.move.slice(2, 4), promotion: bestMove.move[4] || undefined });
+      return r?.san ?? bestMove.move;
+    } catch { return bestMove.move; }
+  })();
+
+  const defensiveSan = (() => {
+    try {
+      const c = new Chess(fenAfterOpMove);
+      const r = c.move({ from: bestDefensive.move.slice(0, 2), to: bestDefensive.move.slice(2, 4), promotion: bestDefensive.move[4] || undefined });
+      return r?.san ?? bestDefensive.move;
+    } catch { return bestDefensive.move; }
+  })();
+
+  const opMoveSan = (() => {
+    try {
+      const c = new Chess(fenBeforeOpMove);
+      const r = c.move({ from: opMoveUci.slice(0, 2), to: opMoveUci.slice(2, 4), promotion: opMoveUci[4] || undefined });
+      return r?.san ?? opMoveUci;
+    } catch { return opMoveUci; }
+  })();
+
+  // Determine tags
+  const tags: string[] = [];
+  // counter_sacrifice: our counter-attack gives up material
+  const counterTo = bestMove.move.slice(2, 4) as Square;
+  const capturedByCounter = chess.get(counterTo);
+  const counterFrom = bestMove.move.slice(0, 2) as Square;
+  const counterPiece = chess.get(counterFrom);
+  if (capturedByCounter && counterPiece && pieceValue(counterPiece.type) > pieceValue(capturedByCounter.type)) {
+    tags.push("counter_sacrifice");
+  }
+  // faster_attack: our counter creates check or checkmate
+  try {
+    const testChess2 = new Chess(fenAfterOpMove);
+    testChess2.move({ from: counterFrom, to: counterTo, promotion: bestMove.move[4] as PieceSymbol || undefined });
+    if (testChess2.isCheckmate()) tags.push("faster_attack");
+    else if (testChess2.inCheck()) tags.push("faster_attack");
+  } catch { /* ignore */ }
+  // ignore_threat: we're leaving a piece en prise
+  if (threatenedSquares.size > 0) tags.push("ignore_threat");
+  // Default tag
+  if (tags.length === 0) tags.push("counter_thrust");
+
+  // Score: higher when defensive move is tempting and counter is non-obvious
+  let score = 40;
+  score += Math.min(30, counterGap / 4); // bigger gap = clearer lesson
+  if (inCheck) score += 10; // counter-attacking while in check is surprising
+  if (tags.includes("counter_sacrifice")) score += 10;
+  if (evalShift >= 100) score += 5; // bigger threat = more tempting to defend
+  score = Math.min(100, Math.round(score));
+  if (score < MIN_PUZZLE_SCORE) return null;
+
+  return {
+    id: clientId(),
+    fen: fenBeforeOpMove,
+    solvingFen: fenAfterOpMove,
+    lastMove: opMoveUci,
+    solutionMoves,
+    rating: Math.min(1200 + Math.round(counterGap / 2), 1800),
+    themes: tags.join(" "),
+    themeDescriptions: [
+      `after ${opMoveSan}, the natural response is ${defensiveSan} — but ${counterSan} is ${counterGap}cp better`,
+    ],
+    type: "counter",
+    annotationType: "move_input",
+    defensiveMove: bestDefensive.move,
+    score,
+    gameUrl,
+    ...gameContext,
+    moveNumber,
+    evalCp: bestMove.cp,
+  };
+}
+
+/**
+ * Check if square `mid` lies on the line between `from` and `to`.
+ * Used for interposition detection.
+ */
+function isOnLineBetween(from: Square, to: Square, mid: Square): boolean {
+  const [fr, ff] = sqToCoords(from);
+  const [tr, tf] = sqToCoords(to);
+  const [mr, mf] = sqToCoords(mid);
+
+  // Must be on the same line (rank, file, or diagonal)
+  const dr = Math.sign(tr - fr);
+  const df = Math.sign(tf - ff);
+  if (dr === 0 && df === 0) return false;
+
+  // Check mid is on the ray from→to
+  const dmr = mr - fr;
+  const dmf = mf - ff;
+  if (dr === 0 && dmr !== 0) return false;
+  if (df === 0 && dmf !== 0) return false;
+  if (dr !== 0 && df !== 0) {
+    if (Math.abs(dmr) !== Math.abs(dmf)) return false;
+    if (Math.sign(dmr) !== dr || Math.sign(dmf) !== df) return false;
+  } else if (dr !== 0) {
+    if (Math.sign(dmr) !== dr) return false;
+    if (dmf !== 0) return false;
+  } else {
+    if (Math.sign(dmf) !== df) return false;
+    if (dmr !== 0) return false;
+  }
+
+  // Must be strictly between (not on from or to)
+  const distFromTo = Math.max(Math.abs(tr - fr), Math.abs(tf - ff));
+  const distFromMid = Math.max(Math.abs(mr - fr), Math.abs(mf - ff));
+  return distFromMid > 0 && distFromMid < distFromTo;
+}
+
+/**
+ * Compute mobility for a single piece: count legal moves from its square,
+ * excluding captures into defended squares (losing exchanges).
+ */
+function computePieceMobility(chess: Chess, sq: Square): number {
+  const piece = chess.get(sq);
+  if (!piece) return 0;
+
+  const myColor = piece.color;
+
+  // Get all legal moves for this piece
+  const legalMoves = chess.moves({ square: sq, verbose: true });
+
+  let mobility = 0;
+  for (const m of legalMoves) {
+    if (!m.captured) {
+      // Non-capture move — always counts
+      mobility++;
+    } else {
+      // Capture — only count if it's not a losing exchange.
+      // Check if the target square is defended by the opponent.
+      const capturedValue = pieceValue(m.captured as PieceSymbol);
+      const attackerValue = pieceValue(piece.type);
+
+      // If we capture something worth more or equal, it's real mobility.
+      // If we capture something worth less AND the square is defended, skip it.
+      if (capturedValue >= attackerValue) {
+        mobility++;
+      } else {
+        // Check if the square is defended: temporarily make the capture
+        // and see if the opponent can recapture
+        const testChess = new Chess(chess.fen());
+        try {
+          testChess.move({ from: m.from, to: m.to, promotion: m.promotion });
+          const recaptures = testChess.moves({ verbose: true })
+            .filter((rm) => rm.to === m.to && rm.captured);
+          if (recaptures.length === 0) {
+            mobility++; // undefended — real mobility
+          }
+          // else: defended capture into losing exchange — not real mobility
+        } catch {
+          // move failed — don't count
+        }
+      }
+    }
+  }
+
+  return mobility;
+}
+
+/** Track which square each piece sits on across consecutive player moves. */
+interface PieceTracker {
+  /** Map from current square → number of consecutive player-moves it's been stationary */
+  stationary: Map<string, number>;
+}
+
+function initPieceTracker(): PieceTracker {
+  return { stationary: new Map() };
+}
+
+/**
+ * Update piece tracker after a move. Call this for every move in the game,
+ * but only increment stationary counters on the player's moves.
+ *
+ * Returns a map of non-pawn, non-king pieces → stationary count for the
+ * player's side at this position.
+ */
+function updatePieceTracker(
+  tracker: PieceTracker,
+  fenBefore: string,
+  moveUci: string,
+  isPlayerMove: boolean,
+): void {
+  if (!isPlayerMove) return;
+
+  const chess = new Chess(fenBefore);
+  const playerColor = chess.turn(); // side to move = the player making this move
+
+  // Snapshot: which squares have our non-pawn, non-king pieces?
+  const currentPieceSquares = new Set<string>();
+  const board = chess.board();
+  for (let r = 0; r < 8; r++) {
+    for (let f = 0; f < 8; f++) {
+      const p = board[r][f];
+      if (p && p.color === playerColor && p.type !== "p" && p.type !== "k") {
+        currentPieceSquares.add(p.square);
+      }
+    }
+  }
+
+  // The moved piece resets its counter
+  const fromSq = moveUci.slice(0, 2);
+
+  // Increment stationary count for pieces that didn't move
+  const newMap = new Map<string, number>();
+  for (const sq of currentPieceSquares) {
+    if (sq === fromSq) {
+      // This piece just moved — it'll be on a new square, don't track old square
+      continue;
+    }
+    const prev = tracker.stationary.get(sq) ?? 0;
+    newMap.set(sq, prev + 1);
+  }
+
+  // The piece that moved lands on a new square — start at 0
+  const toSq = moveUci.slice(2, 4);
+  const movedPiece = chess.get(fromSq as Square);
+  if (movedPiece && movedPiece.type !== "p" && movedPiece.type !== "k") {
+    newMap.set(toSq, 0);
+  }
+
+  tracker.stationary = newMap;
+}
+
+/**
+ * Bad-piece puzzle extractor.
+ *
+ * Trigger: a non-pawn piece has been stationary for 5+ consecutive player
+ * moves AND has mobility ≤ 3 legal squares. Must be middlegame or endgame.
+ *
+ * Puzzle type: "identify_piece" annotation — player identifies the bad piece,
+ * solution is the best move to activate it.
  */
 export async function extractBadPiecePuzzle(
-  _fen: string,
-  _moveHistory: MoveEvalData[],
-  _classification: PositionClassification,
+  fen: string,
+  tracker: PieceTracker,
+  moveNumber: number,
+  evalCp: number,
+  lastMove: string,
+  gameUrl: string | undefined,
+  gameContext: Record<string, unknown>,
 ): Promise<PuzzleCandidateV2 | null> {
-  // TODO: implement piece mobility scoring
-  // Trigger: piece on same square for 5+ moves with low mobility
-  return null;
+  const chess = new Chess(fen);
+  const phase = getPhase(moveNumber, fen);
+
+  // Skip opening — pieces are naturally undeveloped
+  if (phase === "opening") return null;
+
+  // Skip decided positions — bad piece puzzles in won/lost games aren't instructive
+  if (Math.abs(evalCp) > BAD_PIECE_DECIDED_EVAL) return null;
+
+  const playerColor = chess.turn();
+
+  // Find all candidate bad pieces: stationary ≥5 moves, mobility ≤3, non-pawn non-king
+  interface BadPieceCandidate {
+    square: Square;
+    pieceType: PieceSymbol;
+    stationary: number;
+    mobility: number;
+  }
+
+  const badCandidates: BadPieceCandidate[] = [];
+
+  for (const [sq, stationaryCount] of tracker.stationary.entries()) {
+    if (stationaryCount < BAD_PIECE_STATIONARY_MIN) continue;
+
+    const piece = chess.get(sq as Square);
+    if (!piece || piece.color !== playerColor) continue;
+    if (piece.type === "p" || piece.type === "k") continue;
+
+    const mobility = computePieceMobility(chess, sq as Square);
+    if (mobility > BAD_PIECE_MOBILITY_MAX) continue;
+
+    badCandidates.push({
+      square: sq as Square,
+      pieceType: piece.type,
+      stationary: stationaryCount,
+      mobility,
+    });
+  }
+
+  if (badCandidates.length === 0) return null;
+
+  // Pick the worst piece: lowest mobility, then longest stationary streak
+  badCandidates.sort((a, b) => {
+    if (a.mobility !== b.mobility) return a.mobility - b.mobility;
+    return b.stationary - a.stationary;
+  });
+
+  const worst = badCandidates[0];
+
+  // Use Stockfish MultiPV to find the best move for this specific piece
+  const multiPv = await analyzePositionMultiPV(fen, 5, ANALYSIS_DEPTH);
+  if (multiPv.length === 0) return null;
+
+  const overallBestMove = multiPv[0].move;
+
+  // Filter MultiPV results to moves that move the identified bad piece
+  const pieceMoves = multiPv.filter((pv) => pv.move.slice(0, 2) === worst.square);
+  if (pieceMoves.length === 0) {
+    // Stockfish doesn't think moving this piece is in the top 5 — still valid puzzle
+    // but we need to find the best move for this piece ourselves
+    const allMoves = chess.moves({ square: worst.square, verbose: true });
+    if (allMoves.length === 0) return null;
+
+    // Analyse each legal move for this piece to find the best one
+    let bestPieceMove: string | null = null;
+    let bestPieceEval = -Infinity;
+
+    for (const m of allMoves) {
+      const uci = `${m.from}${m.to}${m.promotion ?? ""}`;
+      const testChess = new Chess(fen);
+      try {
+        testChess.move({ from: m.from, to: m.to, promotion: m.promotion });
+        const evalResult = await analyzePosition(testChess.fen(), ANALYSIS_DEPTH);
+        if (evalResult) {
+          const evalFromPlayer = -evalResult.cp; // flip perspective
+          if (evalFromPlayer > bestPieceEval) {
+            bestPieceEval = evalFromPlayer;
+            bestPieceMove = uci;
+          }
+        }
+      } catch {
+        continue;
+      }
+    }
+
+    if (!bestPieceMove) return null;
+
+    const engineAgrees = overallBestMove === bestPieceMove;
+
+    // Score the puzzle
+    let score = 40;
+    if (!engineAgrees) score += 20; // more instructive tension
+    if (worst.stationary >= 8) score += 10;
+    else if (worst.stationary >= 6) score += 5;
+    if (worst.mobility <= 1) score += 15;
+    else if (worst.mobility === 0) score += 20;
+    if (Math.abs(evalCp) > 200) score -= 10; // less instructive in lopsided positions
+    score = Math.min(100, Math.max(0, Math.round(score)));
+    if (score < MIN_PUZZLE_SCORE) return null;
+
+    return {
+      id: clientId(),
+      fen,
+      solvingFen: fen,
+      lastMove,
+      solutionMoves: bestPieceMove,
+      rating: Math.min(1000 + worst.stationary * 50 + (3 - worst.mobility) * 50, 1600),
+      themes: "badPiece",
+      themeDescriptions: [
+        `${pieceName(worst.pieceType)} on ${worst.square} has been stationary for ${worst.stationary} moves with only ${worst.mobility} legal squares`,
+      ],
+      type: "bad_piece",
+      annotationType: "identify_piece",
+      targetPiece: worst.square,
+      engineAgrees,
+      engineMove: engineAgrees ? null : overallBestMove,
+      pieceStationary: worst.stationary,
+      mobilityScore: worst.mobility,
+      score,
+      gameUrl,
+      ...gameContext,
+      moveNumber,
+      evalCp,
+    };
+  }
+
+  // Best activation move for this piece from MultiPV
+  const bestPieceMove = pieceMoves[0];
+  const engineAgrees = overallBestMove === bestPieceMove.move;
+
+  // Score the puzzle
+  let score = 40;
+  if (!engineAgrees) score += 20; // more instructive tension
+  if (worst.stationary >= 8) score += 10;
+  else if (worst.stationary >= 6) score += 5;
+  if (worst.mobility <= 1) score += 15;
+  else if (worst.mobility === 0) score += 20;
+  if (Math.abs(evalCp) > 200) score -= 10;
+  score = Math.min(100, Math.max(0, Math.round(score)));
+  if (score < MIN_PUZZLE_SCORE) return null;
+
+  return {
+    id: clientId(),
+    fen,
+    solvingFen: fen,
+    lastMove,
+    solutionMoves: bestPieceMove.move,
+    rating: Math.min(1000 + worst.stationary * 50 + (3 - worst.mobility) * 50, 1600),
+    themes: "badPiece",
+    themeDescriptions: [
+      `${pieceName(worst.pieceType)} on ${worst.square} has been stationary for ${worst.stationary} moves with only ${worst.mobility} legal squares`,
+    ],
+    type: "bad_piece",
+    annotationType: "identify_piece",
+    targetPiece: worst.square,
+    engineAgrees,
+    engineMove: engineAgrees ? null : overallBestMove,
+    pieceStationary: worst.stationary,
+    mobilityScore: worst.mobility,
+    score,
+    gameUrl,
+    ...gameContext,
+    moveNumber,
+    evalCp,
+  };
 }
 
 // ─── Accuracy calculation ───────────────────────────────────────────────────
@@ -867,6 +1454,9 @@ export async function extractPuzzlesV2Client(
   let prevCp: number | null = null;
   let prevBestMove: string | null = null;
 
+  // Piece position tracker for bad_piece detection
+  const pieceTracker = initPieceTracker();
+
   // Health check
   const healthCheck = await analyzePosition(positions[0].fen, ANALYSIS_DEPTH);
   if (!healthCheck) {
@@ -904,6 +1494,10 @@ export async function extractPuzzlesV2Client(
         movePlayed: positions[i - 1].uci,
         bestMove: prevBestMove,
       });
+
+      // Update piece tracker for bad_piece detection
+      const isPlayerMoveForTracker = playerTurn ? positions[i - 1].fen.split(" ")[1] === playerTurn : false;
+      updatePieceTracker(pieceTracker, positions[i - 1].fen, positions[i - 1].uci, isPlayerMoveForTracker);
 
       const blunderTurn = positions[i - 1].fen.split(" ")[1];
       if (playerTurn && blunderTurn !== playerTurn) {
@@ -1379,6 +1973,98 @@ export async function extractPuzzlesV2Client(
       retrogradeCount++;
     } catch (err) {
       console.warn(`[V2 Extract] retrograde detection failed for move ${moveNum}:`, err);
+    }
+  }
+
+  // ── Counter puzzle detection ──
+  // Find positions where the opponent just made a threatening move, but the
+  // correct response is a counter-attack rather than defense.
+  let counterCount = 0;
+  for (const oe of opponentMoveEvals) {
+    if (counterCount >= MAX_COUNTER_PER_GAME) break;
+
+    // Find the position before and after the opponent's move
+    const posIdx = positions.findIndex((_p, idx) => {
+      if (idx === 0) return false;
+      const side: "white" | "black" = positions[idx - 1].fen.split(" ")[1] === "w" ? "white" : "black";
+      const mn = Math.floor((idx - 1) / 2) + 1;
+      return side === oe.side && mn === oe.moveNumber;
+    });
+    if (posIdx < 1 || posIdx >= positions.length) continue;
+
+    const fenBeforeOp = positions[posIdx - 1].fen;
+    const fenAfterOp = positions[posIdx].fen;
+    const opMoveUci = positions[posIdx - 1].uci;
+
+    // Eval shift from the player's perspective: how much worse did it get?
+    // oe.evalCp is from side-to-move perspective (opponent), so flip it
+    const evalShift = Math.abs(oe.bestMoveCp - oe.evalCp);
+
+    // Skip positions where opponent played badly (we want genuine threats)
+    if (oe.cpl > 20) continue;
+
+    // Skip opening (counter puzzles need tactical tension)
+    const mn = oe.moveNumber;
+    if (mn < 8) continue;
+
+    try {
+      const counterPuzzle = await extractCounterPuzzle(
+        fenBeforeOp,
+        fenAfterOp,
+        opMoveUci,
+        evalShift,
+        mn,
+        gameUrl,
+        gameContext,
+      );
+      if (counterPuzzle) {
+        candidates.push(counterPuzzle);
+        counterCount++;
+      }
+    } catch (err) {
+      console.warn(`[V2 Extract] counter detection failed for move ${mn}:`, err);
+    }
+  }
+
+  // ── Bad piece detection ──
+  // Scan positions where the player is to move, looking for pieces that
+  // have been stationary for 5+ moves with low mobility.
+  let badPieceCount = 0;
+  if (playerTurn) {
+    // We need to re-walk the positions to find the right spots to check,
+    // but we already have the tracker populated from the main loop.
+    // Check each player-move position using the move evals we collected.
+    for (const me of playerMoveEvals) {
+      if (badPieceCount >= MAX_BAD_PIECE_PER_GAME) break;
+
+      const posIdx = positions.findIndex((_p, idx) => {
+        if (idx === 0) return false;
+        const side: "white" | "black" = positions[idx - 1].fen.split(" ")[1] === "w" ? "white" : "black";
+        const mn = Math.floor((idx - 1) / 2) + 1;
+        return side === me.side && mn === me.moveNumber;
+      });
+      if (posIdx < 1) continue;
+
+      const positionFen = positions[posIdx - 1].fen;
+      const lastMoveForBadPiece = posIdx >= 2 ? positions[posIdx - 2].uci : "";
+
+      try {
+        const badPiece = await extractBadPiecePuzzle(
+          positionFen,
+          pieceTracker,
+          me.moveNumber,
+          me.evalCp,
+          lastMoveForBadPiece,
+          gameUrl,
+          gameContext,
+        );
+        if (badPiece) {
+          candidates.push(badPiece);
+          badPieceCount++;
+        }
+      } catch (err) {
+        console.warn(`[V2 Extract] bad_piece detection failed for move ${me.moveNumber}:`, err);
+      }
     }
   }
 

@@ -5,6 +5,7 @@ import { Chess } from "chess.js";
 import dynamic from "next/dynamic";
 import { BoardSkeleton } from "@/components/Skeleton";
 import type { PieceDropHandlerArgs } from "@/components/ChessBoardWrapper";
+import { safeMove } from "@/lib/chess-move";
 import { useTimer } from "@/hooks/useTimer";
 import { formatTime } from "@/lib/benchmarks";
 import Link from "next/link";
@@ -194,7 +195,8 @@ export default function ProphecyShell({
 
   function handleDrop({ sourceSquare, targetSquare }: PieceDropHandlerArgs): boolean {
     if (phase !== "playing" || !targetSquare) return false;
-    const moveResult = chess.move({ from: sourceSquare, to: targetSquare, promotion: "q" });
+    if (sourceSquare === targetSquare) return false;
+    const moveResult = safeMove(chess, sourceSquare, targetSquare);
     if (!moveResult) return false;
 
     const uci = `${sourceSquare}${targetSquare}${moveResult.promotion ?? ""}`;
@@ -234,7 +236,7 @@ export default function ProphecyShell({
     if (phase !== "playing") return;
 
     if (selectedSquare) {
-      const moveResult = chess.move({ from: selectedSquare, to: square, promotion: "q" });
+      const moveResult = safeMove(chess, selectedSquare, square);
       setSelectedSquare(null);
 
       if (!moveResult) {

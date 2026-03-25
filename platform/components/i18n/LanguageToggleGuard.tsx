@@ -18,7 +18,8 @@ export default function LanguageToggleGuard() {
     pathname === "/" ||
     pathname === "/connect" ||
     pathname === "/analysing" ||
-    pathname === "/prophecy"
+    pathname === "/prophecy" ||
+    pathname === "/kairos"
   ) return null;
 
   return <LanguageToggle />;

@@ -16,17 +16,23 @@ interface PuzzleResult {
   solutionDepth: number;
   themes: string;
   themeDescriptions?: string[];
-  type: "standard" | "move_ranking" | "opponent_threat" | "threat_bluff" | "retrograde_v2";
+  type: "standard" | "move_ranking" | "opponent_threat" | "threat_bluff" | "retrograde_v2" | "bad_piece" | "counter";
   candidateMoves?: string;
   parentPuzzleId?: string;
   opponentBestMove?: string;
   counterMove?: string;
   threatBluffAnswer?: "real_threat" | "bluff";
   decoyMoves?: string;
+  defensiveMove?: string | null;
   score?: number;
   moveEntropy?: number;
   classification?: "forcing" | "quiet_best" | "positional" | "chaotic";
   gamePhase?: "opening" | "middlegame" | "endgame";
+  engineAgrees?: boolean;
+  engineMove?: string | null;
+  pieceStationary?: number;
+  mobilityScore?: number;
+  targetPiece?: string | null;
   rating: number;
   evalCp: number;
   fen: string;
@@ -163,10 +169,16 @@ export default function ExtractV2Admin() {
             counterMove: c.counterMove,
             threatBluffAnswer: c.threatBluffAnswer,
             decoyMoves: c.decoyMoves,
+            defensiveMove: c.defensiveMove,
             score: c.score,
             moveEntropy: c.moveEntropy,
             classification: c.classification,
             gamePhase: c.gamePhase,
+            engineAgrees: c.engineAgrees,
+            engineMove: c.engineMove,
+            pieceStationary: c.pieceStationary,
+            mobilityScore: c.mobilityScore,
+            targetPiece: c.targetPiece,
             rating: c.rating,
             evalCp: c.evalCp ?? 0,
             fen: c.solvingFen,
@@ -370,6 +382,19 @@ export default function ExtractV2Admin() {
                           retrograde
                         </span>
                       )}
+                      {selectedPuzzle.type === "bad_piece" && (
+                        <span style={{ fontSize: 10, background: "#55555522", color: "#999", border: "1px solid #55555544", borderRadius: 4, padding: "2px 8px", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                          bad piece
+                          {selectedPuzzle.engineAgrees != null && (
+                            <span style={{ width: 7, height: 7, borderRadius: "50%", background: selectedPuzzle.engineAgrees ? "#4ade80" : "#f87171", display: "inline-block" }} title={selectedPuzzle.engineAgrees ? "Engine agrees" : "Engine prefers different move"} />
+                          )}
+                        </span>
+                      )}
+                      {selectedPuzzle.type === "counter" && (
+                        <span style={{ fontSize: 10, background: "#10b98122", color: "#34d399", border: "1px solid #10b98144", borderRadius: 4, padding: "2px 8px" }}>
+                          counter
+                        </span>
+                      )}
                       {selectedPuzzle.score != null && (
                         <span style={{ fontSize: 10, background: "#33333366", color: "#aaa", borderRadius: 4, padding: "2px 8px" }}>
                           score: {selectedPuzzle.score}
@@ -450,6 +475,45 @@ export default function ExtractV2Admin() {
                             {d.san} ({d.uci})
                           </p>
                         ))}
+                      </div>
+                    )}
+                    {selectedPuzzle.type === "bad_piece" && selectedPuzzle.targetPiece && (
+                      <div style={{ marginTop: 8, padding: "8px 10px", background: "#55555510", border: "1px solid #55555533", borderRadius: 6 }}>
+                        <p style={{ margin: "0 0 6px", fontWeight: 600, fontSize: 11, color: "#999" }}>Bad piece</p>
+                        <p style={{ margin: "2px 0", fontSize: 11, color: "#ccc" }}>
+                          Piece on: <span style={{ fontFamily: "monospace", color: "#f59e0b" }}>{selectedPuzzle.targetPiece}</span>
+                          {selectedPuzzle.pieceStationary != null && (
+                            <span style={{ color: "#888" }}> · stationary {selectedPuzzle.pieceStationary} moves</span>
+                          )}
+                          {selectedPuzzle.mobilityScore != null && (
+                            <span style={{ color: "#888" }}> · mobility {selectedPuzzle.mobilityScore}</span>
+                          )}
+                        </p>
+                        <p style={{ margin: "2px 0", fontSize: 11, color: "#ccc" }}>
+                          Activation: <span style={{ fontFamily: "monospace", color: "#4ade80" }}>{selectedPuzzle.solutionMoves}</span>
+                        </p>
+                        {selectedPuzzle.engineAgrees === false && selectedPuzzle.engineMove && (
+                          <p style={{ margin: "2px 0", fontSize: 11, color: "#ccc" }}>
+                            Engine prefers: <span style={{ fontFamily: "monospace", color: "#f87171" }}>{selectedPuzzle.engineMove}</span>
+                          </p>
+                        )}
+                        <p style={{ margin: "4px 0 0", fontSize: 10, color: "#666" }}>
+                          Engine agrees: {selectedPuzzle.engineAgrees ? <span style={{ color: "#4ade80" }}>yes</span> : <span style={{ color: "#f87171" }}>no</span>}
+                        </p>
+                      </div>
+                    )}
+                    {selectedPuzzle.type === "counter" && (
+                      <div style={{ marginTop: 8, padding: "8px 10px", background: "#10b98110", border: "1px solid #10b98133", borderRadius: 6 }}>
+                        <p style={{ margin: "0 0 6px", fontWeight: 600, fontSize: 11, color: "#34d399" }}>Counter-attack</p>
+                        <p style={{ margin: "2px 0", fontSize: 11, color: "#ccc" }}>
+                          Counter: <span style={{ fontFamily: "monospace", color: "#34d399" }}>{selectedPuzzle.solutionMoves}</span>
+                        </p>
+                        {selectedPuzzle.defensiveMove && (
+                          <p style={{ margin: "2px 0", fontSize: 11, color: "#ccc" }}>
+                            Natural defense: <span style={{ fontFamily: "monospace", color: "#f87171" }}>{selectedPuzzle.defensiveMove}</span>
+                            <span style={{ color: "#666" }}> (wrong)</span>
+                          </p>
+                        )}
                       </div>
                     )}
                     {selectedPuzzle.candidateMoves && (
@@ -563,6 +627,8 @@ function GameCard({
                         : p.type === "retrograde_v2" ? "retrograde"
                         : p.type === "opponent_threat" ? "threat"
                         : p.type === "move_ranking" ? "stronger move"
+                        : p.type === "bad_piece" ? "bad piece"
+                        : p.type === "counter" ? "counter"
                         : `${p.solutionDepth} ply`} · {p.rating}r{p.score != null ? ` · ${p.score}%` : ""}
                     </span>
                     <div style={{ display: "flex", gap: 3, marginTop: 4, flexWrap: "wrap" }}>
@@ -584,6 +650,19 @@ function GameCard({
                       {p.type === "retrograde_v2" && (
                         <span style={{ fontSize: 9, background: "#06b6d422", color: "#22d3ee", borderRadius: 3, padding: "1px 6px" }}>
                           retrograde
+                        </span>
+                      )}
+                      {p.type === "bad_piece" && (
+                        <span style={{ fontSize: 9, background: "#55555522", color: "#999", borderRadius: 3, padding: "1px 6px", display: "inline-flex", alignItems: "center", gap: 3 }}>
+                          bad piece
+                          {p.engineAgrees != null && (
+                            <span style={{ width: 6, height: 6, borderRadius: "50%", background: p.engineAgrees ? "#4ade80" : "#f87171", display: "inline-block" }} />
+                          )}
+                        </span>
+                      )}
+                      {p.type === "counter" && (
+                        <span style={{ fontSize: 9, background: "#10b98122", color: "#34d399", borderRadius: 3, padding: "1px 6px" }}>
+                          counter
                         </span>
                       )}
                       {p.themes.split(" ").filter(t => t !== "v2").map((t) => (

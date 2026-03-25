@@ -89,6 +89,16 @@ model Puzzle {
   playerColor      String?
   /// True if the move deviated from opening database theory (move_ranking puzzles only)
   outOfTheory      Boolean?
+  /// The "natural" defensive move shown as wrong answer (counter puzzles only)
+  defensiveMove    String?
+  /// Whether Stockfish's overall best move matches the piece activation move (bad_piece only)
+  engineAgrees     Boolean?
+  /// Stockfish top move if different from solution (bad_piece only)
+  engineMove       String?
+  /// How many consecutive moves the bad piece has been stationary (bad_piece only)
+  pieceStationary  Int?
+  /// Number of legal squares available to the bad piece (bad_piece only)
+  mobilityScore    Int?
   createdAt     DateTime @default(now())
 
   sourceUser User?           @relation(fields: [sourceUserId], references: [id], onDelete: Cascade)
@@ -181,6 +191,20 @@ model Subscriber {
   /// "homepage" | "post_solve" | "event"
   source    String
   createdAt DateTime @default(now())
+}
+
+model KairosSession {
+  id              String   @id @default(cuid())
+  /// JSON: KairosPuzzleResult[] — full puzzle-by-puzzle breakdown
+  puzzleResults   String
+  /// JSON: aggregate metrics computed from puzzleResults
+  aggregateMetrics String
+  /// Headline insight key + values (generated server-side)
+  insightKey      String?
+  insightData     String?
+  email           String?
+  chesscomUsername String?
+  createdAt       DateTime @default(now())
 }
 
 model Trial {
