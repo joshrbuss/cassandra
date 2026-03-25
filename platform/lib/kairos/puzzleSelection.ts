@@ -3,7 +3,7 @@ import { join } from "path";
 import type { KairosPuzzle, KairosCategory } from "./types";
 
 // Read puzzle data at module load — this file is server-only
-const puzzlePath = join(process.cwd(), "data", "kairos_puzzles.json");
+const puzzlePath = join(process.cwd(), "data", "cassandra_puzzle_queue_v4_final.json");
 const puzzleData = JSON.parse(readFileSync(puzzlePath, "utf-8"));
 
 // ─── Category mapping ────────────────────────────────────────────────────────
