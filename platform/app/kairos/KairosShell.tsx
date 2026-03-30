@@ -83,8 +83,9 @@ export default function KairosShell({ puzzles, sessionId }: Props) {
   const [boardFen, setBoardFen] = useState("");
   const [squareStyles, setSquareStyles] = useState<Record<string, React.CSSProperties>>({});
 
-  // Timer
-  const [timerMs, setTimerMs] = useState(0);
+  // Timer — 20s countdown
+  const COUNTDOWN_MS = 20_000;
+  const [timerMs, setTimerMs] = useState(COUNTDOWN_MS);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef(0);
 
@@ -104,15 +105,17 @@ export default function KairosShell({ puzzles, sessionId }: Props) {
 
   const puzzle = puzzles[currentIdx];
 
-  // Start timer when puzzle starts
+  // Start countdown when puzzle starts, reset between puzzles
   useEffect(() => {
     if (phase === "puzzle" && puzzle) {
       setBoardFen(puzzle.fen);
       setSquareStyles({});
       startTimeRef.current = Date.now();
-      setTimerMs(0);
+      setTimerMs(COUNTDOWN_MS);
       timerRef.current = setInterval(() => {
-        setTimerMs(Date.now() - startTimeRef.current);
+        const elapsed = Date.now() - startTimeRef.current;
+        const remaining = Math.max(0, COUNTDOWN_MS - elapsed);
+        setTimerMs(remaining);
       }, 100);
     }
     return () => {
@@ -297,11 +300,15 @@ export default function KairosShell({ puzzles, sessionId }: Props) {
     void navigator.clipboard?.writeText(imgUrl);
   }
 
-  const formatTime = (ms: number) => {
-    const secs = Math.floor(ms / 1000);
-    const mins = Math.floor(secs / 60);
-    const s = secs % 60;
-    return `${mins}:${s.toString().padStart(2, "0")}`;
+  function getInstruction(p: KairosPuzzle): string {
+    if (p.is_defensive) return "Your opponent just played — respond.";
+    if (p.kairos_category === "markov_threat") return "You've seen this position before. What's your plan?";
+    return "Find the best move.";
+  }
+
+  const formatCountdown = (ms: number) => {
+    const secs = Math.ceil(ms / 1000);
+    return `0:${secs.toString().padStart(2, "0")}`;
   };
 
   // ─── INTRO ────────────────────────────────────────────────────────────────
@@ -365,10 +372,13 @@ export default function KairosShell({ puzzles, sessionId }: Props) {
             <p className="text-[#666] text-sm">
               Position {currentIdx + 1} of {puzzles.length}
             </p>
-            <p className="text-[#555] text-sm font-mono tabular-nums">
-              {formatTime(timerMs)}
+            <p className={`text-sm font-mono tabular-nums ${timerMs <= 5000 ? "text-red-400" : "text-[#555]"}`}>
+              {formatCountdown(timerMs)}
             </p>
           </div>
+
+          {/* Instruction */}
+          <p className="text-[#888] text-sm mb-3">{getInstruction(puzzle)}</p>
 
           {/* Board */}
           <div className="w-full aspect-square rounded-lg overflow-hidden border-2 border-zinc-800">
@@ -397,7 +407,7 @@ export default function KairosShell({ puzzles, sessionId }: Props) {
               Position {currentIdx + 1} of {puzzles.length}
             </p>
             <p className="text-[#555] text-sm font-mono tabular-nums">
-              {formatTime(timerMs)}
+              {formatCountdown(timerMs)}
             </p>
           </div>
 
